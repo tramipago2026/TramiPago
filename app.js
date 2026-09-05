@@ -85,7 +85,7 @@
 
     return {
       ...merged,
-      active: Boolean(merged.active && hasCommercialData(merged))
+      active: Boolean(merged.active && (window.TRAMI_CONFIG?.demoMode || hasCommercialData(merged)))
     };
   }
 
@@ -790,6 +790,16 @@
     const anyOf = service.rules?.anyOf;
     if (anyOf && !anyOf.some((fieldId) => hasValue(values[fieldId]))) {
       return service.rules.message || "Completá al menos una de las opciones requeridas.";
+    }
+
+    const oneOfGroups = service.rules?.oneOfGroups;
+    if (Array.isArray(oneOfGroups) && oneOfGroups.length) {
+      const validGroup = oneOfGroups.some((group) =>
+        Array.isArray(group) && group.length && group.every((fieldId) => hasValue(values[fieldId]))
+      );
+      if (!validGroup) {
+        return service.rules.message || "Completá una de las alternativas requeridas.";
+      }
     }
     return "";
   }
