@@ -152,21 +152,21 @@
       shortDescription: "Estado de deuda inmobiliaria + plancheta catastral.",
       description: "Paquete de estado de deuda inmobiliaria y copia de plancheta catastral. La plancheta puede requerir acceso de titular o representación habilitada en ARBA.",
       active: true,
-      requirements: ["Foto de una boleta o documento donde figure el inmueble, o Localidad y número de Partida.", "WhatsApp de contacto."],
+      requirements: ["Foto de una boleta o documento donde figure el inmueble, o Partido y número de Partida.", "WhatsApp de contacto."],
       components: ["Estado de deuda inmobiliaria", "Copia de plancheta catastral"],
       officialFee: 0,
       priceField: "serviceOption",
       priceOptions: [{ value: "debt-plan", label: "Deuda + plancheta", amount: 25000, duration: "Sujeto a disponibilidad de ARBA" }],
       fields: [
         { id: "propertyDocument", label: "Foto de boleta o documento del inmueble", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
-        { id: "propertyDistrict", label: "Localidad", type: "text", required: false },
+        { id: "propertyDistrict", label: "Partido", type: "text", required: false },
         { id: "propertyNumber", label: "Partida", type: "text", required: false, inputmode: "numeric" },
         ...contactFields.slice(2),
         authorizationField
       ],
       rules: {
         oneOfGroups: [["propertyDocument"], ["propertyDistrict", "propertyNumber"]],
-        message: "Subí una foto donde figure el inmueble o completá Localidad y Partida."
+        message: "Subí una foto donde figure el inmueble o completá Partido y Partida."
       }
     },
     {
