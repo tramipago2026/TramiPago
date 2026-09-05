@@ -48,7 +48,7 @@
 
     body {
       color: var(--navy-deep);
-      background: var(--surface);
+      background: #edf4f8;
       font-size: var(--text-normal);
     }
 
@@ -92,9 +92,9 @@
       transition: color .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease;
     }
 
-    .main-nav a.nav-home { background: var(--cyan); color: var(--black); }
-    .main-nav a.nav-tracking { background: var(--blue-mid); color: var(--black); }
-    .main-nav button.nav-help { background: var(--orange); color: var(--black); }
+    .main-nav a.nav-home { background: var(--white); color: var(--navy-deep); }
+    .main-nav a.nav-tracking { background: var(--cyan); color: var(--black); }
+    .main-nav button.nav-help { background: #25D366; color: var(--navy-deep); }
 
     .main-nav a:hover,
     .main-nav a:focus-visible,
@@ -139,8 +139,8 @@
 
     .button.button-primary,
     .family-service-card .button.button-primary {
-      color: var(--black);
-      background: var(--green-action);
+      color: var(--white);
+      background: var(--blue-mid);
       border-color: var(--black);
       box-shadow: 0 4px 9px var(--shadow-black);
     }
@@ -150,9 +150,9 @@
     .family-service-card .button.button-primary:hover,
     .family-service-card .button.button-primary:focus-visible {
       color: var(--white);
-      background: var(--green-action-hover);
+      background: #12537e;
       border-color: var(--white);
-      box-shadow: 0 0 0 3px var(--green-ring), 0 5px 11px var(--shadow-black);
+      box-shadow: 0 0 0 3px var(--focus-ring), 0 5px 11px var(--shadow-black);
       outline: none;
       transform: translateY(-1px);
     }
@@ -198,7 +198,7 @@
 
     .home-hero-clean {
       padding: 28px 0 18px;
-      background: var(--surface);
+      background: linear-gradient(180deg,#f8fbfd 0%,#edf4f8 100%);
     }
 
     .home-hero-clean .home-hero-copy h1 { color: var(--navy-deep); }
@@ -230,7 +230,7 @@
 
     .home-catalog {
       padding: 14px 0 44px;
-      background: var(--surface);
+      background: #edf4f8;
     }
 
     .home-section-title {
@@ -510,9 +510,6 @@
       </nav>
     </div>
   </header>
-  <div class="notice notice-danger" style="margin:12px auto;max-width:900px;text-align:center">
-    <strong>Versión de prueba:</strong> no ingreses datos reales ni realices pagos.
-  </div>
 
   <main id="app" class="site-main" tabindex="-1"></main>
 
@@ -526,8 +523,8 @@
     </div>
   </footer>
 
-  <script src="services.js?v=20260905-2"></script>
-  <script src="app.js?v=20260905-2"></script>
+  <script src="services.js?v=20260905-0905"></script>
+  <script src="app.js?v=20260905-0905"></script>
   <script>
     (function () {
       "use strict";
@@ -658,7 +655,7 @@
           "Volver": "Atrás",
           "Consultar": "Consultá estado",
           "Consultar estado": "Consultá estado",
-          "Revisar datos": "Revisá datos",
+          "Revisar datos": "Volver a datos",
           "Informar pago": "Informá pago",
           "Revisar requisitos": "Revisá requisitos",
           "Copiar código": "Copiá código",
@@ -729,7 +726,7 @@
         box.className = "finalization-box";
         box.innerHTML =
           '<h3>Trámite finalizado</h3>' +
-          '<p>La gestión terminó. Conservá este código como referencia y descargá el resultado si está disponible.</p>' +
+          '<p>La gestión terminó. Conservá este código como referencia y revisá el resultado o la indicación de entrega.</p>' +
           '<div class="finalization-summary">' +
             '<div class="finalization-summary-item"><small>Código</small><strong>' + escapeText(request.code) + '</strong></div>' +
             '<div class="finalization-summary-item"><small>Servicio</small><strong>' + escapeText(request.serviceName) + '</strong></div>' +
