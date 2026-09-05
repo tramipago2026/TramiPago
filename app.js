@@ -371,14 +371,13 @@
 
   function renderStepper(service) {
     if (["correction", "ineligible"].includes(state.step)) return "";
-    const steps = service.eligibility?.required
-      ? [["eligibility", "Requisitos"], ["data", "Datos"], ["payment", "Pago"], ["confirmation", "Confirmación"]]
-      : [["data", "Datos"], ["payment", "Pago"], ["confirmation", "Confirmación"]];
-    const currentIndex = steps.findIndex(([id]) => id === state.step);
+    const steps = [["data", "Datos"], ["payment", "Pago"], ["confirmation", "Finalización"]];
+    const visibleStep = state.step === "eligibility" ? "data" : state.step;
+    const currentIndex = steps.findIndex(([id]) => id === visibleStep);
     if (currentIndex < 0) return "";
 
     return `
-      <div class="stepper" style="grid-template-columns:repeat(${steps.length},1fr)" aria-label="Progreso del trámite">
+      <div class="stepper" style="grid-template-columns:repeat(3,1fr)" aria-label="Progreso del trámite">
         ${steps.map(([id, label], index) => `
           <div class="step ${index === currentIndex ? "current" : ""} ${index < currentIndex ? "done" : ""}">
             <span class="step-number">${index < currentIndex ? "✓" : index + 1}</span>
@@ -483,12 +482,15 @@
   function renderDataStage(service) {
     return `
       <div class="panel">
-        <div class="panel-header"><h2>Datos de la solicitud</h2></div>
-        ${renderServiceSummary(service)}
+        <div class="panel-header"><h2>Completá tus datos</h2></div>
+        <div class="service-quick-summary">
+          <strong>${escapeHTML(service.shortDescription || service.name)}</strong>
+          <span>Completá los campos y tocá Siguiente.</span>
+        </div>
         <form id="data-form" novalidate>
           <div class="form-grid">${(service.fields || []).map((field) => renderField(field, service)).join("")}</div>
           <div class="form-error" role="alert"></div>
-          ${renderActionBar("Atrás", state.requestId ? "Guardar y continuar" : "Crear solicitud")}
+          ${renderActionBar("Atrás", "Siguiente")}
         </form>
       </div>
     `;
