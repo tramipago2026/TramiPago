@@ -171,7 +171,7 @@
     box.className = "payment-access";
     box.innerHTML = `
       <div class="payment-qr-wrap">
-        <img class="payment-qr" src="${String(config.paymentQr || "assets/qr-tramipago-ok.svg")}" alt="QR con datos de transferencia" />
+        <img class="payment-qr" src="${String(config.paymentQr || "assets/qr-modo-prueba.svg")}" alt="QR con datos de transferencia" />
         <small>QR de transferencia</small>
       </div>
       <div class="payment-transfer">
