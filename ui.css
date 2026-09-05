@@ -371,6 +371,7 @@
 .admin-backup-tools > div { display: flex; flex-wrap: wrap; gap: 8px; }
 .legal-links { display: flex; flex-wrap: wrap; gap: 12px; }
 .legal-links a { color: inherit; }
+.site-footer .legal-links a { font-weight: 500 !important; }
 .whatsapp-float { display: none !important; }
 
 @media (max-width: 980px) {
