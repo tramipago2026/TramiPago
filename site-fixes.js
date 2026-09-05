@@ -120,7 +120,7 @@
       document.querySelector(".site-header")?.insertAdjacentElement("afterend", banner);
     }
     const receiptLabel = document.querySelector('#payment-form label[for="receipt"]');
-    if (receiptLabel) receiptLabel.textContent = "Comprobante de prueba *";
+    if (receiptLabel && receiptLabel.textContent !== "Comprobante de prueba *") receiptLabel.textContent = "Comprobante de prueba *";
   }
 
   function configureAdminLink() {
@@ -157,7 +157,8 @@
   function normalizeConsentCopy() {
     document.querySelectorAll('.form-check input[name="authorization"]').forEach((input) => {
       const label = input.closest("label")?.querySelector(".form-check-label");
-      if (label) label.textContent = "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.";
+      const copy = "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.";
+      if (label && label.textContent !== copy) label.textContent = copy;
     });
   }
 
@@ -285,7 +286,8 @@
     if (!/antecedentes penales/i.test(title)) return;
     document.querySelectorAll(".tracking-result .file-download").forEach((link) => link.remove());
     const finalizedText = document.querySelector(".tracking-result .finalization-box > p");
-    if (finalizedText) finalizedText.textContent = "La gestión terminó. El Registro Nacional de Reincidencia envía el certificado directamente al correo del titular.";
+    const finalCopy = "La gestión terminó. El Registro Nacional de Reincidencia envía el certificado directamente al correo del titular.";
+    if (finalizedText && finalizedText.textContent !== finalCopy) finalizedText.textContent = finalCopy;
     const result = document.querySelector(".tracking-result");
     if (!result || result.querySelector(".authority-direct-note")) return;
     const note = document.createElement("div");
@@ -434,6 +436,14 @@
 
   cleanupExpiredFiles();
   injectStyles();
-  new MutationObserver(() => window.requestAnimationFrame(enhance)).observe(document.body, { childList:true, subtree:true });
+  let enhanceQueued = false;
+  new MutationObserver(() => {
+    if (enhanceQueued) return;
+    enhanceQueued = true;
+    window.requestAnimationFrame(() => {
+      enhanceQueued = false;
+      enhance();
+    });
+  }).observe(document.body, { childList:true, subtree:true });
   enhance();
 })();
