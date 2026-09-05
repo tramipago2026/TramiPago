@@ -134,20 +134,16 @@
       codePrefix: "AN",
       name: "Constancias ANSES",
       shortDescription: "CODEM y Certificación Negativa en una misma gestión.",
-      description: "Reunimos las constancias que necesitás y te informamos el resultado.",
+      description: "Ingresá el CUIL y un WhatsApp de contacto.",
       active: true,
-      requirements: ["DNI y CUIL del solicitante.", "Período de la Certificación Negativa dentro de los últimos seis meses."],
+      requirements: ["CUIL del titular.", "WhatsApp de contacto."],
       components: ["CODEM", "Certificación Negativa"],
-      officialFee: null,
+      officialFee: 0,
       priceField: "serviceOption",
       priceOptions: [{ value: "constancias", label: "CODEM + Certificación Negativa", amount: null, duration: "Plazo a confirmar" }],
       fields: [
-        ...contactFields.slice(0, 1),
-        { id: "dni", label: "DNI", type: "text", required: true, inputmode: "numeric" },
-        { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric" },
-        { id: "periodFrom", label: "Certificación desde", type: "month", required: true },
-        { id: "periodTo", label: "Certificación hasta", type: "month", required: true },
-        ...contactFields.slice(1),
+        { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-3" },
+        { id: "whatsapp", label: "WhatsApp", type: "tel", required: true, placeholder: "Ej.: 11 6708-3232 (sin +54 9)", autocomplete: "tel" },
         authorizationField
       ]
     },
@@ -156,26 +152,24 @@
       codePrefix: "AI",
       name: "ARBA / Inmobiliario",
       shortDescription: "Estado de deuda inmobiliaria y plancheta catastral.",
-      description: "Podés indicar Partido y Partida o cargar un documento municipal o provincial del inmueble.",
+      description: "Subí una foto del documento o completá Localidad y número de Partida.",
       active: true,
-      requirements: ["Partido y Partida, o un documento del inmueble.", "La plancheta debe solicitarla el titular o un representante autorizado.", "No solicitamos claves ni contraseñas."],
-      components: ["Estado de deuda inmobiliaria", "Copia de plancheta catastral"],
+      requirements: ["Foto del documento municipal o provincial, o Localidad y número de Partida.", "WhatsApp de contacto."],
+      components: ["Estado de deuda inmobiliaria", "Plancheta catastral"],
       officialFee: null,
       priceField: "serviceOption",
       priceOptions: [{ value: "debt-plan", label: "Deuda + plancheta", amount: null, duration: "Plazo a confirmar" }],
       fields: [
-        ...contactFields.slice(0, 1),
-        { id: "cuil", label: "CUIL o CUIT", type: "text", required: true, inputmode: "numeric" },
-        { id: "applicantRole", label: "¿Quién solicita?", type: "select", required: true, options: [
-          { value: "owner", label: "Titular" },
-          { value: "authorized", label: "Representante autorizado" }
-        ] },
-        { id: "propertyId", label: "Partido y Partida", type: "text", required: false, placeholder: "Ej.: 067-123456" },
-        { id: "propertyDocument", label: "Documento municipal o provincial", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
-        ...contactFields.slice(1),
+        { id: "propertyDocument", label: "Foto del documento municipal o provincial", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
+        { id: "locality", label: "Localidad", type: "text", required: false, autocomplete: "address-level2" },
+        { id: "propertyNumber", label: "Número de Partida", type: "text", required: false, inputmode: "numeric" },
+        { id: "whatsapp", label: "WhatsApp", type: "tel", required: true, placeholder: "Ej.: 11 6708-3232 (sin +54 9)", autocomplete: "tel" },
         authorizationField
       ],
-      rules: { anyOf: ["propertyId", "propertyDocument"], message: "Ingresá Partido y Partida o cargá un documento del inmueble." }
+      rules: {
+        oneOfGroups: [["propertyDocument"], ["locality", "propertyNumber"]],
+        message: "Subí una foto del documento o completá Localidad y número de Partida."
+      }
     },
     {
       id: "turnos-licencia",
