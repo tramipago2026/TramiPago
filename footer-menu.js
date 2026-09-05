@@ -3,7 +3,7 @@
 
   const DRAFT_PREFIX="tramipago_draft_";
 
-  if(window.TRAMI_CONFIG){
+  if(window.TRAMI_CONFIG&&!window.TRAMI_CONFIG.demoMode){
     window.TRAMI_CONFIG.alias="TRAMIPAGO";
   }
 
@@ -42,10 +42,11 @@
   }
 
   function tidyPayment(){
-    if(window.TRAMI_CONFIG&&!window.TRAMI_CONFIG.demoMode) window.TRAMI_CONFIG.alias='TRAMIPAGO';
+    const demoMode=Boolean(window.TRAMI_CONFIG?.demoMode);
+    if(window.TRAMI_CONFIG&&!demoMode) window.TRAMI_CONFIG.alias='TRAMIPAGO';
     const payment=document.querySelector('.payment-access-v2');if(!payment) return;const cards=payment.querySelectorAll('.payment-method-card');
-    if(cards[0]){const title=cards[0].querySelector('h3');if(title&&title.textContent!=='Pago por QR') title.textContent='Pago por QR';const small=cards[0].querySelector('small');if(small&&small.textContent!=='Escaneá el QR desde tu banco o billetera.') small.textContent='Escaneá el QR desde tu banco o billetera.';}
-    if(cards[1]){const title=cards[1].querySelector('h3');if(title&&title.textContent!=='Pago por transferencia') title.textContent='Pago por transferencia';cards[1].querySelectorAll('.payment-data-row').forEach(row=>{const label=row.querySelector('span');const value=row.querySelector('strong');if(label&&/alias/i.test(label.textContent||'')){if(value&&value.textContent!=='TRAMIPAGO')value.textContent='TRAMIPAGO';const button=row.querySelector('[data-copy-payment]');if(button&&button.getAttribute('data-copy-payment')!=='TRAMIPAGO')button.setAttribute('data-copy-payment','TRAMIPAGO');}});}
+    if(!demoMode&&cards[0]){const title=cards[0].querySelector('h3');if(title&&title.textContent!=='Pago por QR') title.textContent='Pago por QR';const small=cards[0].querySelector('small');if(small&&small.textContent!=='Escaneá el QR desde tu banco o billetera.') small.textContent='Escaneá el QR desde tu banco o billetera.';}
+    if(!demoMode&&cards[1]){const title=cards[1].querySelector('h3');if(title&&title.textContent!=='Pago por transferencia') title.textContent='Pago por transferencia';cards[1].querySelectorAll('.payment-data-row').forEach(row=>{const label=row.querySelector('span');const value=row.querySelector('strong');if(label&&/alias/i.test(label.textContent||'')){if(value&&value.textContent!=='TRAMIPAGO')value.textContent='TRAMIPAGO';const button=row.querySelector('[data-copy-payment]');if(button&&button.getAttribute('data-copy-payment')!=='TRAMIPAGO')button.setAttribute('data-copy-payment','TRAMIPAGO');}});}
     const back=document.querySelector('#payment-form [data-action="back-step"]');if(back&&back.textContent!=='Volver a datos')back.textContent='Volver a datos';
   }
 
