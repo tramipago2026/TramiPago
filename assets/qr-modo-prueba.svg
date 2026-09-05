@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" role="img" aria-label="Modo prueba, no pagar">
+<rect width="300" height="300" rx="20" fill="#ffffff"/>
+<rect x="12" y="12" width="276" height="276" rx="16" fill="none" stroke="#0b3d66" stroke-width="8"/>
+<text x="150" y="125" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#0b3d66">MODO</text>
+<text x="150" y="170" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#29b6f6">PRUEBA</text>
+<text x="150" y="220" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" font-weight="700" fill="#b42318">NO PAGAR</text>
+</svg>
