@@ -257,8 +257,8 @@
       document.head.appendChild(script);
     };
 
-    loadScript("flow-ui.js?v=20260905-1500", "data-tramipago-flow-ui");
-    loadScript("site-fixes.js?v=20260905-1500", "data-tramipago-site-fixes");
-    loadScript("footer-menu.js?v=20260905-1500", "data-tramipago-footer-menu");
+    loadScript("flow-ui.js?v=20260905-1501", "data-tramipago-flow-ui");
+    loadScript("site-fixes.js?v=20260905-1501", "data-tramipago-site-fixes");
+    loadScript("footer-menu.js?v=20260905-1501", "data-tramipago-footer-menu");
   }
 })();
