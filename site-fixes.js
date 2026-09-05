@@ -46,68 +46,12 @@
         padding: 6px 10px !important;
         border-radius: 999px !important;
       }
-      .consumer-rights-bar {
-        width: min(1120px, calc(100% - 40px));
-        margin: 8px auto 0;
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-      .consumer-rights-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 30px;
-        padding: 5px 10px;
-        color: #103b68;
-        background: #fff;
-        border: 1px solid #a8cde9;
-        border-radius: 999px;
-        font-size: .74rem;
-        font-weight: 500;
-        line-height: 1.15;
-        text-decoration: none;
-        box-shadow: 0 1px 3px rgba(8,42,71,.08);
-      }
-      .consumer-rights-link:hover,
-      .consumer-rights-link:focus-visible {
-        color: #fff;
-        background: #0b3d66;
-        border-color: #0b3d66;
-        outline: none;
-      }
       @media (max-width: 620px) {
         .payment-access { grid-template-columns: 1fr !important; }
         .eligibility-list { grid-template-columns: 1fr !important; }
-        .consumer-rights-bar {
-          width: min(100% - 24px, 1120px);
-          justify-content: center;
-          gap: 6px;
-        }
-        .consumer-rights-link {
-          flex: 1 1 210px;
-          font-size: .70rem;
-        }
       }
     `;
     document.head.appendChild(style);
-  }
-
-  function ensureConsumerRightsLinks() {
-    if (document.querySelector(".consumer-rights-bar")) return;
-    const header = document.querySelector(".site-header");
-    if (!header) return;
-
-    const bar = document.createElement("div");
-    bar.className = "consumer-rights-bar";
-    bar.setAttribute("aria-label", "Derechos del consumidor");
-    bar.innerHTML = `
-      <a class="consumer-rights-link" href="https://wa.me/5491167083232?text=Solicito%20ejercer%20el%20derecho%20de%20arrepentimiento%20de%20mi%20contrataci%C3%B3n%20en%20TramiPago." target="_blank" rel="noopener noreferrer">BOTÓN DE ARREPENTIMIENTO</a>
-      <a class="consumer-rights-link" href="https://wa.me/5491167083232?text=Solicito%20la%20baja%20del%20servicio%20contratado%20en%20TramiPago." target="_blank" rel="noopener noreferrer">BOTÓN DE BAJA DE SERVICIO</a>
-    `;
-    header.insertAdjacentElement("afterend", bar);
   }
 
   function fixAdminLink() {
@@ -144,7 +88,6 @@
   }
 
   function enhance() {
-    ensureConsumerRightsLinks();
     fixAdminLink();
     enhanceTracking();
   }
