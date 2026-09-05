@@ -15,7 +15,7 @@
 
   window.TRAMI_CONFIG = {
     whatsappNumber: "5491167083232",
-    alias: "tramipago",
+    alias: "MODO PRUEBA",
     paymentCvu: "",
     paymentHolder: "No realizar pagos",
     paymentQr: "assets/qr-modo-prueba.svg",
