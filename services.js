@@ -15,7 +15,7 @@
 
   window.TRAMI_CONFIG = {
     whatsappNumber: "5491167083232",
-    alias: "TRAMIPAGO.OK",
+    alias: "TRAMIPAGO",
     paymentCvu: "0000003100004971102062",
     paymentHolder: "Christian Marcelo Adriano Montiel",
     paymentQr: "assets/qr-tramipago-ok.svg",
@@ -261,6 +261,6 @@
 
     loadScript("flow-ui.js?v=20260905-review1", "data-tramipago-flow-ui");
     loadScript("site-fixes.js?v=20260905-review3", "data-tramipago-site-fixes");
-    loadScript("footer-menu.js?v=20260905-2", "data-tramipago-footer-menu");
+    loadScript("footer-menu.js?v=20260905-3", "data-tramipago-footer-menu");
   }
 })();
