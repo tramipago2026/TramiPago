@@ -15,12 +15,12 @@
 
   window.TRAMI_CONFIG = {
     whatsappNumber: "5491167083232",
-    alias: "TRAMIPAGO",
-    paymentCvu: "0000003100004971102062",
-    paymentHolder: "Christian Marcelo Adriano Montiel",
-    paymentQr: "assets/qr-tramipago-ok.svg",
-    paymentNote: "Transferí el total indicado y cargá el comprobante.",
-    demoMode: false,
+    alias: "MODO PRUEBA",
+    paymentCvu: "",
+    paymentHolder: "No realizar pagos",
+    paymentQr: "assets/qr-modo-prueba.svg",
+    paymentNote: "Versión de prueba: no realices transferencias.",
+    demoMode: true,
     maxLocalFileBytes: 1500000
   };
 
@@ -138,7 +138,7 @@
       codePrefix: "AN",
       name: "Constancias ANSES",
       shortDescription: "CODEM + Certificación Negativa en un solo pedido.",
-      description: "Ingresá el CUIL. TramiPago toma automáticamente el período máximo disponible para la Certificación Negativa dentro de los últimos seis meses.",
+      description: "Ingresá el CUIL y un WhatsApp de contacto.",
       active: true,
       requirements: ["CUIL del titular.", "WhatsApp de contacto."],
       components: ["CODEM", "Certificación Negativa por el período máximo disponible"],
@@ -147,8 +147,6 @@
       priceOptions: [{ value: "constancias", label: "CODEM + Certificación Negativa", amount: 3000, duration: "Gestión online" }],
       fields: [
         { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-3" },
-        { id: "periodFrom", label: "Período desde", type: "month", required: true },
-        { id: "periodTo", label: "Período hasta", type: "month", required: true },
         ...contactFields.slice(2),
         authorizationField
       ]
@@ -160,21 +158,21 @@
       shortDescription: "Estado de deuda inmobiliaria + plancheta catastral.",
       description: "Paquete de estado de deuda inmobiliaria y copia de plancheta catastral. La plancheta requiere acceso de titular o representante habilitado en ARBA.",
       active: true,
-      requirements: ["Foto de una boleta o documento donde figure el inmueble, o número de Partido y Partida.", "WhatsApp de contacto."],
+      requirements: ["Foto de una boleta o documento donde figure el inmueble, o Localidad y número de Partida.", "WhatsApp de contacto."],
       components: ["Estado de deuda inmobiliaria", "Copia de plancheta catastral"],
       officialFee: 0,
       priceField: "serviceOption",
       priceOptions: [{ value: "debt-plan", label: "Deuda + plancheta", amount: 25000, duration: "Sujeto a disponibilidad de ARBA" }],
       fields: [
         { id: "propertyDocument", label: "Foto de boleta o documento del inmueble", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
-        { id: "propertyDistrict", label: "Partido", type: "text", required: false },
+        { id: "propertyDistrict", label: "Localidad", type: "text", required: false },
         { id: "propertyNumber", label: "Partida", type: "text", required: false, inputmode: "numeric" },
         ...contactFields.slice(2),
         authorizationField
       ],
       rules: {
         oneOfGroups: [["propertyDocument"], ["propertyDistrict", "propertyNumber"]],
-        message: "Subí una foto donde figure el inmueble o completá Partido y Partida."
+        message: "Subí una foto donde figure el inmueble o completá Localidad y Partida."
       }
     },
     {
@@ -259,8 +257,8 @@
       document.head.appendChild(script);
     };
 
-    loadScript("flow-ui.js?v=20260905-0905", "data-tramipago-flow-ui");
-    loadScript("site-fixes.js?v=20260905-0905", "data-tramipago-site-fixes");
-    loadScript("footer-menu.js?v=20260905-0905", "data-tramipago-footer-menu");
+    loadScript("flow-ui.js?v=20260905-1500", "data-tramipago-flow-ui");
+    loadScript("site-fixes.js?v=20260905-1500", "data-tramipago-site-fixes");
+    loadScript("footer-menu.js?v=20260905-1500", "data-tramipago-footer-menu");
   }
 })();
