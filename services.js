@@ -35,7 +35,7 @@
     {
       id: "arca-monotributo",
       name: "ARCA / Monotributo",
-      description: "Inscripción al Monotributo, cambio de categoría y consulta de deuda.",
+      description: "Alta de Monotributo, constancia de inscripción, consulta de deuda y gestión de VEP.",
       image: "assets/arca-v3.webp",
       serviceIds: ["arca-monotributo"]
     },
@@ -228,11 +228,11 @@
       id: "arca-monotributo",
       codePrefix: "AR",
       name: "ARCA / Monotributo",
-      shortDescription: "Inscripción al Monotributo, cambio de categoría y consulta de deuda.",
+      shortDescription: "Alta de Monotributo, constancia de inscripción, consulta de deuda y gestión de VEP.",
       description: "Servicio en preparación. Se definirán requisitos y precio por cada gestión antes de activarlo.",
       active: false,
       requirements: [],
-      components: ["Inscripción al Monotributo", "Cambio de categoría", "Consulta de deuda"],
+      components: ["Alta de Monotributo", "Constancia de inscripción ARCA", "Consulta de deuda", "Generación o gestión de VEP"],
       officialFee: null,
       priceOptions: [],
       fields: []
