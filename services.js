@@ -3,7 +3,7 @@
   const contactFields = [
     { id: "fullName", label: "Nombre y apellido", type: "text", required: true, autocomplete: "name" },
     { id: "email", label: "Correo electrónico", type: "email", required: true, autocomplete: "email" },
-    { id: "whatsapp", label: "WhatsApp", type: "tel", required: true, placeholder: "Ej.: 11 6708-3232 (sin +54 9)", autocomplete: "tel" }
+    { id: "whatsapp", label: "WhatsApp", type: "tel", required: true, placeholder: "Ej.: 11 1234-5678 (sin +54 9)", autocomplete: "tel" }
   ];
 
   const authorizationField = {
