@@ -114,18 +114,20 @@
       codePrefix: "IV",
       name: "Informe vehicular",
       shortDescription: "Dominio, infracciones y deuda de patentes en una gestión.",
-      description: "Con la patente consultamos la información del vehículo en CABA y Provincia de Buenos Aires.",
+      description: "Elegí el tipo de vehículo e ingresá el dominio.",
       active: true,
-      requirements: ["Dominio o patente del vehículo.", "DNI y datos de contacto del solicitante."],
+      requirements: ["Tipo de vehículo.", "Dominio o patente.", "WhatsApp de contacto."],
       components: ["Informe oficial e histórico de dominio", "Inhibiciones y prendas, si existieran", "Infracciones de CABA y PBA", "Estado de deuda de patentes de CABA y PBA"],
       officialFee: null,
       priceField: "serviceOption",
       priceOptions: [{ value: "complete", label: "Informe completo", amount: null, duration: "Plazo a confirmar" }],
       fields: [
-        { id: "patent", label: "Dominio (patente)", type: "text", required: true, placeholder: "AB 123 CD" },
-        ...contactFields.slice(0, 1),
-        { id: "dni", label: "DNI del solicitante", type: "text", required: true, inputmode: "numeric" },
-        ...contactFields.slice(1),
+        { id: "vehicleType", label: "Tipo de vehículo", type: "choice", required: true, options: [
+          { value: "automotor", label: "Automotor" },
+          { value: "moto", label: "Moto" }
+        ] },
+        { id: "patent", label: "Dominio (patente)", type: "text", required: true, placeholder: "Ej.: AB 123 CD" },
+        { id: "whatsapp", label: "WhatsApp", type: "tel", required: true, placeholder: "Ej.: 11 6708-3232 (sin +54 9)", autocomplete: "tel" },
         authorizationField
       ]
     },
