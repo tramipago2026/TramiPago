@@ -391,7 +391,6 @@
   function enhance() {
     injectStyles();
     removeZeroOfficialFee();
-    enhancePayment();
     enhanceAdminFlow();
     enhanceAdminBackup();
     addLocalAdminAccess();
@@ -440,8 +439,14 @@
   window.addEventListener("storage", refreshTrackingFromStorage);
 
   [document.getElementById("app"), document.getElementById("admin-app")].filter(Boolean).forEach(function (root) {
+    let enhanceQueued = false;
     new MutationObserver(function () {
-      window.requestAnimationFrame(enhance);
+      if (enhanceQueued) return;
+      enhanceQueued = true;
+      window.requestAnimationFrame(function () {
+        enhanceQueued = false;
+        enhance();
+      });
     }).observe(root, { childList: true, subtree: true });
   });
 
