@@ -246,6 +246,10 @@
     const title = document.querySelector(".tracking-result .status-header h2")?.textContent.trim() || "";
     if (!/antecedentes penales/i.test(title)) return;
     document.querySelectorAll(".tracking-result .file-download").forEach((link) => link.remove());
+    const finalizedText = document.querySelector(".tracking-result .finalization-box > p");
+    if (finalizedText) {
+      finalizedText.textContent = "La gestión terminó. El Registro Nacional de Reincidencia envía el certificado directamente al correo del titular.";
+    }
     const result = document.querySelector(".tracking-result");
     if (!result || result.querySelector(".authority-direct-note")) return;
     const note = document.createElement("div");
