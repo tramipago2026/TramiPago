@@ -38,15 +38,6 @@
       <div class="footer-menu-bottom"><span>© 2026 TramiPago · Todos los derechos reservados</span><span>CUIT 20-25988733-0 · tramipago@gmail.com</span></div>`;
   }
 
-  function addConsumerLinks(){
-    const header=document.querySelector(".site-header");
-    if(!header||document.querySelector(".consumer-top-links"))return;
-    const bar=document.createElement("div");
-    bar.className="consumer-top-links";
-    bar.innerHTML='<a href="arrepentimiento.html">BOTÓN DE ARREPENTIMIENTO</a><span>·</span><a href="baja-servicio.html">BOTÓN DE BAJA DE SERVICIO</a>';
-    header.insertAdjacentElement("afterend",bar);
-  }
-
   function addStyles(){
     if(document.getElementById("tramipago-audit-styles"))return;
     const style=document.createElement("style");
@@ -57,14 +48,13 @@
       .home-catalog,.process-shell,.family-page,.tracking-page{background:#eaf2f7!important}
       .panel,.family-heading,.family-service-card{background:#fbfdff!important}
       .service-summary-block{background:#f3f8fb!important}
-      .consumer-top-links{min-height:24px;display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:3px max(18px,calc((100% - 1180px)/2));background:#f5f9fc;border-bottom:1px solid #d4e1e9;font-size:9px;line-height:1.2}.consumer-top-links a{color:#456579;text-decoration:none}.consumer-top-links a:hover,.consumer-top-links a:focus-visible{color:#075985;text-decoration:underline;text-underline-offset:2px}
       .process-container{max-width:1040px!important}.process-top{margin-bottom:10px!important}.process-title h1{font-size:clamp(1.45rem,2.5vw,2rem)!important}.process-title p{font-size:.88rem!important;line-height:1.4!important}.process-content>.panel{padding:16px 18px!important}.panel-header{margin-bottom:10px!important}.panel-header h2{font-size:1.15rem!important}.panel-header p{font-size:.86rem!important}.service-summary{gap:8px!important;margin:10px 0!important}.service-summary-block{padding:9px 11px!important}.service-summary-block h3{font-size:.85rem!important;margin-bottom:5px!important}.service-summary-block li,.service-summary-option,.service-summary-row{font-size:.78rem!important;line-height:1.35!important}.form-grid{gap:9px 14px!important}.field label,.choice-field legend{font-size:.82rem!important}.form-control,.form-select{min-height:39px!important;padding:7px 9px!important;font-size:.88rem!important}.form-check{padding:7px 9px!important}.form-check-label,.privacy-help{font-size:.78rem!important;line-height:1.35!important}.step-actions{margin-top:12px!important}.step-actions .button{min-height:40px!important}.stepper{margin:8px 0 12px!important}
       .payment-access{display:none!important}.payment-access-v2{grid-template-columns:minmax(210px,.78fr) minmax(300px,1.22fr)!important;gap:13px!important;margin:10px 0 12px!important}.payment-method-card{padding:12px!important;background:#f6fafc!important}.payment-method-card h3{margin-bottom:7px!important;font-size:.95rem!important}.payment-qr-image{width:176px!important;height:176px!important;margin:0 auto 6px!important;padding:0!important;border:0!important;background:transparent!important}.payment-data-row{grid-template-columns:78px minmax(0,1fr) auto!important;padding:6px 0!important}.payment-data-row span{font-size:.75rem!important}.payment-data-row strong{font-size:.86rem!important}.payment-copy{min-height:28px!important;padding:3px 7px!important;box-shadow:none!important}
       .email-pair{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 14px}.email-pair>.field{min-width:0}.existing-file-note,.draft-restored-note,.payment-back-warning{display:block;margin-top:5px;padding:6px 8px;border-radius:7px;background:#eef8ff;border:1px solid #b8dbef;color:#103b68;font-size:.72rem;line-height:1.35}.existing-file-note strong{overflow-wrap:anywhere}.field input:invalid.user-touched,.field select:invalid.user-touched,.field textarea:invalid.user-touched{border-color:#b42318!important;box-shadow:0 0 0 2px rgba(180,35,24,.08)!important}
       .site-footer{padding:12px 0 8px!important;background:#082A47!important}.site-footer .footer-inner{display:block!important;width:min(1180px,calc(100% - clamp(30px,6vw,96px)))!important;max-width:none!important;margin-inline:auto!important;padding-inline:0!important}.footer-menu-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:clamp(26px,5vw,78px);row-gap:18px;width:100%;align-items:start}.footer-menu-col{min-width:0;text-align:left}.footer-menu-col h3{margin:0 0 5px;color:#fff;font-size:10.5px;font-weight:650}.footer-menu-col a{display:block;margin:2px 0;color:rgba(255,255,255,.82);font-size:9.5px;font-weight:400;line-height:1.35;text-decoration:none;overflow-wrap:anywhere}.footer-menu-col a:hover,.footer-menu-col a:focus-visible{color:#29B6F6;text-decoration:underline;text-underline-offset:2px}.footer-menu-bottom{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;width:100%;margin-top:10px;padding-top:6px;border-top:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.68);font-size:9px;line-height:1.3}
       .tramipago-error-box{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(8,42,71,.42)}.tramipago-error-card{width:min(460px,100%);padding:22px;border-radius:12px;background:#fff;border:1px solid #c8dae5;box-shadow:0 18px 48px rgba(0,0,0,.22);text-align:center}.tramipago-error-actions{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
-      @media(max-width:900px){.site-footer .footer-inner{width:min(720px,calc(100% - 36px))!important}.footer-menu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.consumer-top-links{padding-inline:18px}.service-summary{grid-template-columns:1fr!important}}
-      @media(max-width:760px){.payment-access-v2,.email-pair{grid-template-columns:1fr!important}.process-content>.panel{padding:14px!important}.form-grid{grid-template-columns:1fr!important}.consumer-top-links{justify-content:center;text-align:center;flex-wrap:wrap}}
+      @media(max-width:900px){.site-footer .footer-inner{width:min(720px,calc(100% - 36px))!important}.footer-menu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.service-summary{grid-template-columns:1fr!important}}
+      @media(max-width:760px){.payment-access-v2,.email-pair{grid-template-columns:1fr!important}.process-content>.panel{padding:14px!important}.form-grid{grid-template-columns:1fr!important}}
       @media(max-width:520px){.footer-menu-grid{grid-template-columns:1fr;row-gap:14px}.footer-menu-bottom{display:block}.footer-menu-bottom span{display:block;margin-top:4px}.payment-qr-image{width:160px!important;height:160px!important}}
     `;
     document.head.appendChild(style);
@@ -156,7 +146,7 @@
     if(document.querySelector(".tramipago-error-box"))return;const box=document.createElement("div");box.className="tramipago-error-box";box.innerHTML='<div class="tramipago-error-card" role="alert"><h2>No pudimos completar esta acción</h2><p>Lo que ya fue guardado no se modificó. Podés volver a intentar o regresar al inicio.</p><div class="tramipago-error-actions"><button class="button button-primary" type="button" data-error-retry>Reintentar</button><a class="button button-secondary" href="#/">Ir al inicio</a></div></div>';document.body.appendChild(box);
   }
 
-  function enhance(){buildFooter();addConsumerLinks();pairEmails();normalizeButtons();tidyPayment();showExistingFiles();restoreDraft();clearDraftWhenSaved();simplifyStepper();simplifyTimeline();linkOpinion();friendlyErrors();}
+  function enhance(){buildFooter();pairEmails();normalizeButtons();tidyPayment();showExistingFiles();restoreDraft();clearDraftWhenSaved();simplifyStepper();simplifyTimeline();linkOpinion();friendlyErrors();}
 
   document.addEventListener("input",e=>{const form=e.target.closest?.("#data-form");if(form)saveDraft(form);if(e.target.matches?.("input,select,textarea"))validateField(e.target);});
   document.addEventListener("change",e=>{const form=e.target.closest?.("#data-form");if(form)saveDraft(form);});
