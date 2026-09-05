@@ -246,19 +246,4 @@
     }
   ];
 
-  if (typeof document !== "undefined" && document.currentScript && document.getElementById("app")) {
-    const baseUrl = document.currentScript.src;
-    const loadScript = (src, marker) => {
-      if (document.querySelector(`script[${marker}]`)) return;
-      const script = document.createElement("script");
-      script.src = new URL(src, baseUrl).href;
-      script.async = false;
-      script.setAttribute(marker, "true");
-      document.head.appendChild(script);
-    };
-
-    loadScript("flow-ui.js?v=20260905-1504", "data-tramipago-flow-ui");
-    loadScript("site-fixes.js?v=20260905-1504", "data-tramipago-site-fixes");
-    loadScript("footer-menu.js?v=20260905-1504", "data-tramipago-footer-menu");
-  }
 })();
