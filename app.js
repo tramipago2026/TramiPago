@@ -522,7 +522,7 @@
 
   function renderField(field, service, sourceValues = state.draft) {
     const value = sourceValues?.[field.id];
-    const full = ["checkbox", "textarea", "file"].includes(field.type) ? "field-full" : "";
+    const full = ["checkbox", "textarea", "file", "choice"].includes(field.type) ? "field-full" : "";
     const required = field.required ? "required" : "";
     const requiredMark = field.required && field.type !== "checkbox" ? " *" : "";
 
@@ -537,6 +537,23 @@
             ? `<small class="privacy-help"><a href="politica-privacidad.html" target="_blank" rel="noopener">Política de Privacidad</a> · <a href="terminos-condiciones.html" target="_blank" rel="noopener">Términos y Condiciones</a></small>`
             : ""}
         </div>
+      `;
+    }
+
+    if (field.type === "choice") {
+      return `
+        <fieldset class="field field-full choice-field">
+          <legend>${escapeHTML(field.label)}${requiredMark}</legend>
+          <div class="choice-grid">
+            ${(field.options || []).map((option, index) => `
+              <label class="choice-option compact-choice">
+                <input type="radio" name="${escapeHTML(field.id)}" value="${escapeHTML(option.value)}"
+                  ${(value === option.value || (!value && index === 0)) ? "checked" : ""} ${required} />
+                <span><strong>${escapeHTML(option.label)}</strong></span>
+              </label>
+            `).join("")}
+          </div>
+        </fieldset>
       `;
     }
 
