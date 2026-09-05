@@ -20,6 +20,7 @@
       .home-catalog,.process-shell,.family-page,.tracking-page{background:transparent!important}
       .panel,.family-heading,.family-service-card{background:#fff!important}
       .home-catalog .home-tile{border:1px solid #d7e4ec!important}
+      .consumer-top-links{display:none!important}
 
       .main-nav a.nav-home{background:#fff!important;color:#082A47!important}
       .main-nav a.nav-tracking{background:#29B6F6!important;color:#050505!important}
@@ -27,6 +28,12 @@
       .main-nav a.nav-home:hover,.main-nav a.nav-home:focus-visible{background:#dceaf3!important;color:#082A47!important}
       .main-nav a.nav-tracking:hover,.main-nav a.nav-tracking:focus-visible{background:#1B6FA8!important;color:#fff!important}
       .main-nav button.nav-help:hover,.main-nav button.nav-help:focus-visible{background:#126B3A!important;color:#fff!important}
+
+      .process-top{margin-bottom:4px!important;padding-top:12px!important;padding-bottom:12px!important}
+      .process-title .eyebrow{display:none!important}
+      .process-title h1{margin:0 0 4px!important}
+      .process-title>p:not(.eyebrow){margin:0!important}
+      .stepper{margin:4px 0 8px!important}
 
       .service-summary{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;align-items:start!important}
       .service-summary-block{min-width:0;height:100%;margin:0!important;padding:12px 14px!important;background:#f7fbfd!important;border:1px solid #d8e5ed!important;border-radius:10px!important}
@@ -108,6 +115,10 @@
       });
       if (changed) localStorage.setItem(REQUESTS_KEY, JSON.stringify(next));
     } catch (_) {}
+  }
+
+  function removeConsumerTopLinks() {
+    document.querySelectorAll(".consumer-top-links").forEach((element) => element.remove());
   }
 
   function enhanceDemoMode() {
@@ -393,6 +404,7 @@
   }
 
   function enhance() {
+    removeConsumerTopLinks();
     enhanceDemoMode();
     configureAdminLink();
     ensureFamilyAvailability();
