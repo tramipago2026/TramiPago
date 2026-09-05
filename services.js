@@ -104,7 +104,7 @@
       shortDescription: "Dominio, infracciones y deuda de patentes en una gestión.",
       description: "Ingresá el dominio y elegí Automotor o Moto. El paquete incluye informe de dominio, infracciones CABA/PBA y deuda de patentes CABA/PBA. Si un vehículo de PBA está municipalizado, la deuda se consulta en el municipio correspondiente.",
       active: true,
-      requirements: ["Tipo de vehículo.", "Dominio o patente."],
+      requirements: ["Tipo de vehículo.", "Dominio o patente.", "WhatsApp de contacto."],
       components: [
         "Informe de dominio oficial",
         "Inhibiciones y prendas, si existieran",
@@ -120,6 +120,7 @@
           { value: "moto", label: "Moto" }
         ] },
         { id: "patent", label: "Dominio (patente)", type: "text", required: true, placeholder: "Ej.: AB 123 CD" },
+        ...contactFields.slice(2),
         authorizationField
       ]
     },
@@ -128,9 +129,9 @@
       codePrefix: "AN",
       name: "Constancias ANSES",
       shortDescription: "CODEM + Certificación Negativa en un solo pedido.",
-      description: "Ingresá únicamente el CUIL. TramiPago toma automáticamente el período máximo disponible para la Certificación Negativa dentro de los últimos seis meses.",
+      description: "Ingresá el CUIL. TramiPago toma automáticamente el período máximo disponible para la Certificación Negativa dentro de los últimos seis meses.",
       active: true,
-      requirements: ["CUIL del titular."],
+      requirements: ["CUIL del titular.", "WhatsApp de contacto."],
       components: ["CODEM", "Certificación Negativa por el período máximo disponible"],
       officialFee: 0,
       priceField: "serviceOption",
@@ -139,6 +140,7 @@
         { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-3" },
         { id: "periodFrom", label: "Período desde", type: "month", required: true },
         { id: "periodTo", label: "Período hasta", type: "month", required: true },
+        ...contactFields.slice(2),
         authorizationField
       ]
     },
@@ -149,7 +151,7 @@
       shortDescription: "Estado de deuda inmobiliaria + plancheta catastral.",
       description: "Paquete de estado de deuda inmobiliaria y copia de plancheta catastral. La plancheta requiere acceso de titular o representante habilitado en ARBA.",
       active: true,
-      requirements: ["Foto de una boleta o documento donde figure el inmueble, o número de Partido y Partida."],
+      requirements: ["Foto de una boleta o documento donde figure el inmueble, o número de Partido y Partida.", "WhatsApp de contacto."],
       components: ["Estado de deuda inmobiliaria", "Copia de plancheta catastral"],
       officialFee: 0,
       priceField: "serviceOption",
@@ -158,6 +160,7 @@
         { id: "propertyDocument", label: "Foto de boleta o documento del inmueble", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
         { id: "propertyDistrict", label: "Partido", type: "text", required: false },
         { id: "propertyNumber", label: "Partida", type: "text", required: false, inputmode: "numeric" },
+        ...contactFields.slice(2),
         authorizationField
       ],
       rules: {
