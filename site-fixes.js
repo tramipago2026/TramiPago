@@ -16,8 +16,39 @@
         color: #103b68 !important;
         background: #fff !important;
       }
+      .eligibility-list {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 14px !important;
+      }
+      .eligibility-question {
+        min-width: 0;
+        margin: 0 !important;
+        padding: 13px 16px !important;
+        border: 2px solid #a8cde9 !important;
+        border-radius: 999px !important;
+      }
+      .eligibility-question legend {
+        max-width: 100%;
+        margin: 0 auto 6px;
+        padding: 0 8px;
+        text-align: center;
+        font-weight: 700;
+      }
+      .eligibility-options {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+      }
+      .eligibility-options .choice-option {
+        justify-content: center;
+        min-height: 38px !important;
+        padding: 6px 10px !important;
+        border-radius: 999px !important;
+      }
       @media (max-width: 620px) {
         .payment-access { grid-template-columns: 1fr !important; }
+        .eligibility-list { grid-template-columns: 1fr !important; }
       }
     `;
     document.head.appendChild(style);
