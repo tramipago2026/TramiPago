@@ -15,12 +15,12 @@
 
   window.TRAMI_CONFIG = {
     whatsappNumber: "5491167083232",
-    alias: "MODO PRUEBA",
-    paymentCvu: "",
-    paymentHolder: "No realizar pagos",
-    paymentQr: "assets/qr-modo-prueba.svg",
-    paymentNote: "Versión de prueba: no realices transferencias.",
-    demoMode: true,
+    alias: "TRAMIPAGO",
+    paymentCvu: "0000003100004971102062",
+    paymentHolder: "Christian Marcelo Adriano Montiel",
+    paymentQr: "assets/qr-tramipago-ok.svg",
+    paymentNote: "Transferí el total indicado y cargá el comprobante.",
+    demoMode: false,
     maxLocalFileBytes: 1500000
   };
 
@@ -54,22 +54,14 @@
       codePrefix: "AP",
       name: "Antecedentes Penales",
       shortDescription: "Asistencia para solicitar el certificado y seguir el trámite.",
-      description: "Te asistimos durante la solicitud. Las validaciones personales las realiza el titular y el Registro Nacional de Reincidencia envía el certificado directamente a su correo.",
+      description: "Completá los datos una sola vez. El Registro Nacional de Reincidencia envía el certificado directamente al correo del titular.",
       resultDelivery: "authority-direct",
       active: true,
-      eligibility: {
-        required: true,
-        questions: [
-          { id: "adultEligibility", label: "¿Sos mayor de 18 años?" },
-          { id: "argentineDniEligibility", label: "¿Tenés DNI argentino vigente?" }
-        ],
-        failureMessage: "Este trámite en línea requiere ser mayor de 18 años y contar con DNI argentino vigente."
-      },
+      eligibility: { required: false },
       requirements: [
         "Ser mayor de 18 años.",
         "Tener DNI argentino vigente.",
-        "Tener acceso al correo electrónico personal informado.",
-        "Informar domicilio y datos de padre y madre para evitar interrupciones si el organismo los solicita."
+        "Tener acceso al correo electrónico informado."
       ],
       components: [
         "Asistencia en la carga y seguimiento",
@@ -83,6 +75,8 @@
         { value: "six-hours", label: "6 horas", amount: 15000, duration: "Modalidad: 6 horas" }
       ],
       fields: [
+        { id: "adultEligibility", label: "Confirmo que soy mayor de 18 años.", type: "checkbox", required: true },
+        { id: "argentineDniEligibility", label: "Confirmo que tengo DNI argentino vigente.", type: "checkbox", required: true },
         ...contactFields.slice(0, 1),
         { id: "birthDate", label: "Fecha de nacimiento", type: "date", required: true },
         { id: "dni", label: "DNI", type: "text", required: true, inputmode: "numeric" },
@@ -156,7 +150,7 @@
       codePrefix: "AI",
       name: "ARBA / Inmobiliario",
       shortDescription: "Estado de deuda inmobiliaria + plancheta catastral.",
-      description: "Paquete de estado de deuda inmobiliaria y copia de plancheta catastral. La plancheta requiere acceso de titular o representante habilitado en ARBA.",
+      description: "Paquete de estado de deuda inmobiliaria y copia de plancheta catastral. La plancheta puede requerir acceso de titular o representación habilitada en ARBA.",
       active: true,
       requirements: ["Foto de una boleta o documento donde figure el inmueble, o Localidad y número de Partida.", "WhatsApp de contacto."],
       components: ["Estado de deuda inmobiliaria", "Copia de plancheta catastral"],
@@ -245,5 +239,4 @@
       fields: []
     }
   ];
-
 })();
