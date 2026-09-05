@@ -401,7 +401,6 @@
               <h1>${escapeHTML(service.name)}</h1>
               <p>${escapeHTML(service.description)}</p>
             </div>
-            <button class="button button-secondary" type="button" data-action="back-home">Volver al inicio</button>
           </div>
           ${renderStepper(service)}
           <div class="process-content">${renderStage(service)}</div>
@@ -428,7 +427,6 @@
           <h2>Confirmá los requisitos</h2>
           <p>Para continuar, ambas respuestas deben ser “Sí”.</p>
         </div>
-        ${renderServiceSummary(service)}
         <form id="eligibility-form" novalidate>
           <div class="eligibility-list">
             ${questions.map((question) => `
