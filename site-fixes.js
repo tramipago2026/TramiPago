@@ -13,17 +13,26 @@
     style.textContent = `
       html, body { background:#edf4f8 !important; }
       .site-main { background:#edf4f8 !important; }
-      .home-hero-clean {
-        background:linear-gradient(180deg,#f8fbfd 0%,#edf4f8 100%) !important;
-      }
-      .home-catalog,
-      .process-shell,
-      .family-page,
-      .tracking-page { background:#edf4f8 !important; }
-      .panel,
-      .family-heading,
-      .family-service-card { background:#fff !important; }
+      .home-hero-clean { background:linear-gradient(180deg,#f8fbfd 0%,#edf4f8 100%) !important; }
+      .home-catalog,.process-shell,.family-page,.tracking-page { background:#edf4f8 !important; }
+      .panel,.family-heading,.family-service-card { background:#fff !important; }
       .home-catalog .home-tile { border:1px solid #d7e4ec !important; }
+
+      .main-nav a.nav-home {
+        background:#fff !important;
+        color:#082A47 !important;
+      }
+      .main-nav a.nav-tracking {
+        background:#29B6F6 !important;
+        color:#050505 !important;
+      }
+      .main-nav button.nav-help {
+        background:#23A85D !important;
+        color:#fff !important;
+      }
+      .main-nav a.nav-home:hover,.main-nav a.nav-home:focus-visible { background:#dceaf3 !important; color:#082A47 !important; }
+      .main-nav a.nav-tracking:hover,.main-nav a.nav-tracking:focus-visible { background:#1B6FA8 !important; color:#fff !important; }
+      .main-nav button.nav-help:hover,.main-nav button.nav-help:focus-visible { background:#126B3A !important; color:#fff !important; }
 
       .service-summary {
         display:grid !important;
@@ -32,117 +41,68 @@
         align-items:start !important;
       }
       .service-summary-block {
-        min-width:0;
-        height:100%;
-        margin:0 !important;
-        padding:12px 14px !important;
-        background:#f7fbfd !important;
-        border:1px solid #d8e5ed !important;
-        border-radius:10px !important;
+        min-width:0;height:100%;margin:0 !important;padding:12px 14px !important;
+        background:#f7fbfd !important;border:1px solid #d8e5ed !important;border-radius:10px !important;
       }
       .service-summary-block h3 { margin-top:0 !important; }
-      .form-grid {
-        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-        gap:13px 16px !important;
-      }
+      .form-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:13px 16px !important; }
       .form-grid .field-full { grid-column:1 / -1 !important; }
 
-      .payment-access { grid-template-columns:190px minmax(0,1fr) !important; }
-      .payment-qr { width:166px !important; height:166px !important; }
-      .tracking-new-query {
-        margin-top:16px;
-        color:#103b68 !important;
-        background:#fff !important;
-      }
-      .eligibility-list {
-        display:grid !important;
-        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-        gap:14px !important;
-      }
-      .eligibility-question {
-        min-width:0;
-        margin:0 !important;
-        padding:13px 16px !important;
-        border:2px solid #a8cde9 !important;
-        border-radius:999px !important;
-      }
-      .eligibility-question legend {
-        max-width:100%;
-        margin:0 auto 6px;
-        padding:0 8px;
-        text-align:center;
-        font-weight:700;
-      }
-      .eligibility-options {
-        display:grid !important;
-        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-        gap:8px !important;
-      }
-      .eligibility-options .choice-option {
-        justify-content:center;
-        min-height:38px !important;
-        padding:6px 10px !important;
-        border-radius:999px !important;
-      }
-
-      .authority-direct-note {
-        margin:14px 0 0;
-        padding:11px 13px;
-        color:#103b68;
-        background:#eef8ff;
+      .anses-period-note {
+        grid-column:1 / -1 !important;
+        margin:0 0 2px;
+        padding:10px 12px;
         border:1px solid #b8dbef;
         border-radius:9px;
-        font-size:.88rem;
-        line-height:1.45;
+        background:#eef8ff;
+        color:#103b68;
+        font-size:.9rem;
+        line-height:1.4;
       }
 
-      .site-footer .footer-inner {
-        align-items:flex-start !important;
-        gap:14px !important;
+      .payment-access { grid-template-columns:190px minmax(0,1fr) !important; }
+      .payment-qr { width:166px !important;height:166px !important; }
+      .tracking-new-query { margin-top:16px;color:#103b68 !important;background:#fff !important; }
+      .eligibility-list { display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:14px !important; }
+      .eligibility-question { min-width:0;margin:0 !important;padding:13px 16px !important;border:2px solid #a8cde9 !important;border-radius:999px !important; }
+      .eligibility-question legend { max-width:100%;margin:0 auto 6px;padding:0 8px;text-align:center;font-weight:700; }
+      .eligibility-options { display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:8px !important; }
+      .eligibility-options .choice-option { justify-content:center;min-height:38px !important;padding:6px 10px !important;border-radius:999px !important; }
+
+      .authority-direct-note {
+        margin:14px 0 0;padding:11px 13px;color:#103b68;background:#eef8ff;
+        border:1px solid #b8dbef;border-radius:9px;font-size:.88rem;line-height:1.45;
       }
-      .site-footer .legal-links {
-        display:flex !important;
-        flex-wrap:wrap !important;
-        justify-content:flex-end !important;
-        gap:3px 10px !important;
-        max-width:760px;
-        margin-left:auto;
-        line-height:1.25;
-        text-align:right;
-      }
+
+      .site-footer .footer-inner { align-items:flex-start !important;gap:14px !important; }
+      .site-footer .footer-inner > span:first-child,
       .site-footer .legal-links a {
         color:#fff !important;
         font-size:9.5px !important;
         font-weight:400 !important;
-        text-decoration-thickness:1px !important;
-        text-underline-offset:2px !important;
-        white-space:nowrap;
+        line-height:1.25 !important;
       }
-      .site-footer .legal-links a:hover,
-      .site-footer .legal-links a:focus-visible { color:#29B6F6 !important; }
+      .site-footer .legal-links {
+        display:flex !important;flex-wrap:wrap !important;justify-content:flex-end !important;
+        gap:3px 10px !important;max-width:760px;margin-left:auto;line-height:1.25;text-align:right;
+      }
+      .site-footer .legal-links a {
+        text-decoration-thickness:1px !important;text-underline-offset:2px !important;white-space:nowrap;
+      }
+      .site-footer .legal-links a:hover,.site-footer .legal-links a:focus-visible { color:#29B6F6 !important; }
       .site-footer .consumer-legal-note {
-        flex-basis:100%;
-        color:rgba(255,255,255,.72);
-        font-size:8.5px;
-        font-weight:400;
-        line-height:1.25;
-        text-align:right;
+        flex-basis:100%;color:rgba(255,255,255,.68);font-size:8.5px;font-weight:400;line-height:1.25;text-align:right;
       }
 
       @media (max-width:760px) {
-        .service-summary,
-        .form-grid { grid-template-columns:1fr !important; }
-        .form-grid .field-full { grid-column:auto !important; }
+        .service-summary,.form-grid { grid-template-columns:1fr !important; }
+        .form-grid .field-full,.anses-period-note { grid-column:auto !important; }
       }
       @media (max-width:620px) {
         .payment-access { grid-template-columns:1fr !important; }
         .eligibility-list { grid-template-columns:1fr !important; }
         .site-footer .footer-inner { display:block !important; }
-        .site-footer .legal-links {
-          justify-content:flex-start !important;
-          margin:7px 0 0 !important;
-          text-align:left !important;
-        }
+        .site-footer .legal-links { justify-content:flex-start !important;margin:7px 0 0 !important;text-align:left !important; }
         .site-footer .consumer-legal-note { text-align:left !important; }
       }
     `;
@@ -165,21 +125,12 @@
         const closedAt = Date.parse(request.updatedAt || request.createdAt || "");
         if (!Number.isFinite(closedAt) || now - closedAt < RETENTION_MS) return request;
         const copy = { ...request };
-        if (copy.payment?.dataUrl) {
-          copy.payment = stripStoredFile(copy.payment);
-          changed = true;
-        }
-        if (copy.resultFile?.dataUrl) {
-          copy.resultFile = stripStoredFile(copy.resultFile);
-          changed = true;
-        }
+        if (copy.payment?.dataUrl) { copy.payment = stripStoredFile(copy.payment); changed = true; }
+        if (copy.resultFile?.dataUrl) { copy.resultFile = stripStoredFile(copy.resultFile); changed = true; }
         if (copy.answers && typeof copy.answers === "object") {
           const answers = { ...copy.answers };
           Object.keys(answers).forEach((key) => {
-            if (answers[key]?.dataUrl) {
-              answers[key] = stripStoredFile(answers[key]);
-              changed = true;
-            }
+            if (answers[key]?.dataUrl) { answers[key] = stripStoredFile(answers[key]); changed = true; }
           });
           copy.answers = answers;
         }
@@ -266,6 +217,12 @@
     });
   }
 
+  function monthLabel(value) {
+    if (!/^\d{4}-\d{2}$/.test(value)) return value;
+    const [year, month] = value.split("-").map(Number);
+    return new Intl.DateTimeFormat("es-AR", { month:"long", year:"numeric" }).format(new Date(year, month - 1, 1));
+  }
+
   function configureAnsesPeriod() {
     const from = document.querySelector('input[name="periodFrom"]');
     const to = document.querySelector('input[name="periodTo"]');
@@ -275,13 +232,21 @@
     const max = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
     const minDate = new Date(now.getFullYear(), now.getMonth()-5, 1);
     const min = `${minDate.getFullYear()}-${String(minDate.getMonth()+1).padStart(2,"0")}`;
-    [from,to].forEach((input) => { input.min = min; input.max = max; });
-    const validate = () => {
-      to.setCustomValidity(from.value && to.value && from.value > to.value ? "El período hasta no puede ser anterior al período desde." : "");
-    };
-    from.addEventListener("change", validate);
-    to.addEventListener("change", validate);
-    validate();
+    from.value = min;
+    to.value = max;
+    from.min = min; from.max = max;
+    to.min = min; to.max = max;
+    const fromField = from.closest(".field");
+    const toField = to.closest(".field");
+    if (fromField) fromField.hidden = true;
+    if (toField) toField.hidden = true;
+    const formGrid = from.closest("form")?.querySelector(".form-grid");
+    if (formGrid && !formGrid.querySelector(".anses-period-note")) {
+      const note = document.createElement("div");
+      note.className = "anses-period-note";
+      note.innerHTML = `<strong>Período automático:</strong> ${monthLabel(min)} a ${monthLabel(max)}. No tenés que elegir fechas.`;
+      formGrid.insertAdjacentElement("afterbegin", note);
+    }
   }
 
   function protectAuthorityDirectResult() {
@@ -289,9 +254,7 @@
     if (!/antecedentes penales/i.test(title)) return;
     document.querySelectorAll(".tracking-result .file-download").forEach((link) => link.remove());
     const finalizedText = document.querySelector(".tracking-result .finalization-box > p");
-    if (finalizedText) {
-      finalizedText.textContent = "La gestión terminó. El Registro Nacional de Reincidencia envía el certificado directamente al correo del titular.";
-    }
+    if (finalizedText) finalizedText.textContent = "La gestión terminó. El Registro Nacional de Reincidencia envía el certificado directamente al correo del titular.";
     const result = document.querySelector(".tracking-result");
     if (!result || result.querySelector(".authority-direct-note")) return;
     const note = document.createElement("div");
