@@ -3,108 +3,69 @@
 
   const app = document.getElementById("app");
   if (!app) return;
+
   const REQUESTS_KEY = "tramipago_requests_v1";
   const RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
+  const MAX_LOCAL_FILE_BYTES = Number(window.TRAMI_CONFIG?.maxLocalFileBytes || 1500000);
+  const IMAGE_TARGET_BYTES = Math.min(1200000, Math.max(700000, MAX_LOCAL_FILE_BYTES - 150000));
 
   function injectStyles() {
     if (document.getElementById("tramipago-site-review-styles")) return;
     const style = document.createElement("style");
     style.id = "tramipago-site-review-styles";
     style.textContent = `
-      html, body { background:#edf4f8 !important; }
-      .site-main { background:#edf4f8 !important; }
-      .home-hero-clean { background:linear-gradient(180deg,#f8fbfd 0%,#edf4f8 100%) !important; }
-      .home-catalog,.process-shell,.family-page,.tracking-page { background:#edf4f8 !important; }
-      .panel,.family-heading,.family-service-card { background:#fff !important; }
-      .home-catalog .home-tile { border:1px solid #d7e4ec !important; }
+      html,body{background:#edf4f8!important}
+      .site-main{background:#edf4f8!important}
+      .home-hero-clean{background:linear-gradient(180deg,#f8fbfd 0%,#edf4f8 100%)!important}
+      .home-catalog,.process-shell,.family-page,.tracking-page{background:#edf4f8!important}
+      .panel,.family-heading,.family-service-card{background:#fff!important}
+      .home-catalog .home-tile{border:1px solid #d7e4ec!important}
 
-      .main-nav a.nav-home {
-        background:#fff !important;
-        color:#082A47 !important;
-      }
-      .main-nav a.nav-tracking {
-        background:#29B6F6 !important;
-        color:#050505 !important;
-      }
-      .main-nav button.nav-help {
-        background:#23A85D !important;
-        color:#fff !important;
-      }
-      .main-nav a.nav-home:hover,.main-nav a.nav-home:focus-visible { background:#dceaf3 !important; color:#082A47 !important; }
-      .main-nav a.nav-tracking:hover,.main-nav a.nav-tracking:focus-visible { background:#1B6FA8 !important; color:#fff !important; }
-      .main-nav button.nav-help:hover,.main-nav button.nav-help:focus-visible { background:#126B3A !important; color:#fff !important; }
+      .main-nav a.nav-home{background:#fff!important;color:#082A47!important}
+      .main-nav a.nav-tracking{background:#29B6F6!important;color:#050505!important}
+      .main-nav button.nav-help{background:#23A85D!important;color:#fff!important}
+      .main-nav a.nav-home:hover,.main-nav a.nav-home:focus-visible{background:#dceaf3!important;color:#082A47!important}
+      .main-nav a.nav-tracking:hover,.main-nav a.nav-tracking:focus-visible{background:#1B6FA8!important;color:#fff!important}
+      .main-nav button.nav-help:hover,.main-nav button.nav-help:focus-visible{background:#126B3A!important;color:#fff!important}
 
-      .service-summary {
-        display:grid !important;
-        grid-template-columns:repeat(3,minmax(0,1fr)) !important;
-        gap:12px !important;
-        align-items:start !important;
-      }
-      .service-summary-block {
-        min-width:0;height:100%;margin:0 !important;padding:12px 14px !important;
-        background:#f7fbfd !important;border:1px solid #d8e5ed !important;border-radius:10px !important;
-      }
-      .service-summary-block h3 { margin-top:0 !important; }
-      .form-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:13px 16px !important; }
-      .form-grid .field-full { grid-column:1 / -1 !important; }
+      .service-summary{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;align-items:start!important}
+      .service-summary-block{min-width:0;height:100%;margin:0!important;padding:12px 14px!important;background:#f7fbfd!important;border:1px solid #d8e5ed!important;border-radius:10px!important}
+      .service-summary-block h3{margin-top:0!important}
+      .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:13px 16px!important}
+      .form-grid .field-full{grid-column:1/-1!important}
 
-      .anses-period-note {
-        grid-column:1 / -1 !important;
-        margin:0 0 2px;
-        padding:10px 12px;
-        border:1px solid #b8dbef;
-        border-radius:9px;
-        background:#eef8ff;
-        color:#103b68;
-        font-size:.9rem;
-        line-height:1.4;
-      }
+      .anses-period-note{grid-column:1/-1!important;margin:0 0 2px;padding:10px 12px;border:1px solid #b8dbef;border-radius:9px;background:#eef8ff;color:#103b68;font-size:.9rem;line-height:1.4}
+      .payment-access-v2{display:grid;grid-template-columns:minmax(210px,.8fr) minmax(280px,1.4fr);gap:14px;margin:14px 0 16px}
+      .payment-method-card{min-width:0;padding:14px;background:#f7fbfd;border:1px solid #c9dce8;border-radius:10px}
+      .payment-method-card h3{margin:0 0 10px;color:#082A47;font-size:1rem}
+      .payment-qr-image{display:block;width:172px;height:172px;max-width:100%;margin:2px auto 8px;padding:7px;background:#fff;border:1px solid #d5e2ea;border-radius:8px}
+      .payment-method-card small{display:block;color:#607789;line-height:1.35}
+      .payment-data-row{display:grid;grid-template-columns:78px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #e2ebf0}
+      .payment-data-row:last-of-type{border-bottom:0}
+      .payment-data-row span{font-size:.8rem;color:#607789}
+      .payment-data-row strong{min-width:0;overflow-wrap:anywhere;color:#082A47}
+      .payment-copy{min-height:30px;padding:4px 8px;border:1px solid #082A47;border-radius:6px;background:#fff;color:#082A47;font:inherit;font-size:.75rem;font-weight:700;cursor:pointer}
+      .payment-copy:hover,.payment-copy:focus-visible{background:#082A47;color:#fff}
+      .upload-optimizer-note{display:block;margin-top:5px;color:#607789;font-size:.78rem}
+      .upload-optimizer-note.is-working{color:#1B6FA8;font-weight:650}
+      .upload-optimizer-note.is-ready{color:#126B3A;font-weight:650}
+      .payment-review-note,.final-opinion-cta{margin:14px 0 0;padding:12px 14px;border-radius:9px;line-height:1.45}
+      .payment-review-note{background:#eef8ff;border:1px solid #b8dbef;color:#103b68}
+      .final-opinion-cta{background:#effaf4;border:1px solid #a8dfbd;color:#124c2d}
+      .final-opinion-cta a{display:inline-block;margin-top:7px;font-weight:700}
 
-      .payment-access { grid-template-columns:190px minmax(0,1fr) !important; }
-      .payment-qr { width:166px !important;height:166px !important; }
-      .tracking-new-query { margin-top:16px;color:#103b68 !important;background:#fff !important; }
-      .eligibility-list { display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:14px !important; }
-      .eligibility-question { min-width:0;margin:0 !important;padding:13px 16px !important;border:2px solid #a8cde9 !important;border-radius:999px !important; }
-      .eligibility-question legend { max-width:100%;margin:0 auto 6px;padding:0 8px;text-align:center;font-weight:700; }
-      .eligibility-options { display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:8px !important; }
-      .eligibility-options .choice-option { justify-content:center;min-height:38px !important;padding:6px 10px !important;border-radius:999px !important; }
+      .payment-access{grid-template-columns:190px minmax(0,1fr)!important}
+      .payment-qr{width:166px!important;height:166px!important}
+      .tracking-new-query{margin-top:16px;color:#103b68!important;background:#fff!important}
+      .eligibility-list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+      .eligibility-question{min-width:0;margin:0!important;padding:13px 16px!important;border:2px solid #a8cde9!important;border-radius:999px!important}
+      .eligibility-question legend{max-width:100%;margin:0 auto 6px;padding:0 8px;text-align:center;font-weight:700}
+      .eligibility-options{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+      .eligibility-options .choice-option{justify-content:center;min-height:38px!important;padding:6px 10px!important;border-radius:999px!important}
+      .authority-direct-note{margin:14px 0 0;padding:11px 13px;color:#103b68;background:#eef8ff;border:1px solid #b8dbef;border-radius:9px;font-size:.88rem;line-height:1.45}
 
-      .authority-direct-note {
-        margin:14px 0 0;padding:11px 13px;color:#103b68;background:#eef8ff;
-        border:1px solid #b8dbef;border-radius:9px;font-size:.88rem;line-height:1.45;
-      }
-
-      .site-footer .footer-inner { align-items:flex-start !important;gap:14px !important; }
-      .site-footer .footer-inner > span:first-child,
-      .site-footer .legal-links a {
-        color:#fff !important;
-        font-size:9.5px !important;
-        font-weight:400 !important;
-        line-height:1.25 !important;
-      }
-      .site-footer .legal-links {
-        display:flex !important;flex-wrap:wrap !important;justify-content:flex-end !important;
-        gap:3px 10px !important;max-width:760px;margin-left:auto;line-height:1.25;text-align:right;
-      }
-      .site-footer .legal-links a {
-        text-decoration-thickness:1px !important;text-underline-offset:2px !important;white-space:nowrap;
-      }
-      .site-footer .legal-links a:hover,.site-footer .legal-links a:focus-visible { color:#29B6F6 !important; }
-      .site-footer .consumer-legal-note {
-        flex-basis:100%;color:rgba(255,255,255,.68);font-size:8.5px;font-weight:400;line-height:1.25;text-align:right;
-      }
-
-      @media (max-width:760px) {
-        .service-summary,.form-grid { grid-template-columns:1fr !important; }
-        .form-grid .field-full,.anses-period-note { grid-column:auto !important; }
-      }
-      @media (max-width:620px) {
-        .payment-access { grid-template-columns:1fr !important; }
-        .eligibility-list { grid-template-columns:1fr !important; }
-        .site-footer .footer-inner { display:block !important; }
-        .site-footer .legal-links { justify-content:flex-start !important;margin:7px 0 0 !important;text-align:left !important; }
-        .site-footer .consumer-legal-note { text-align:left !important; }
-      }
+      @media(max-width:760px){.service-summary,.form-grid{grid-template-columns:1fr!important}.form-grid .field-full,.anses-period-note{grid-column:auto!important}.payment-access-v2{grid-template-columns:1fr}}
+      @media(max-width:620px){.payment-access{grid-template-columns:1fr!important}.eligibility-list{grid-template-columns:1fr!important}.payment-data-row{grid-template-columns:72px minmax(0,1fr)}.payment-data-row .payment-copy{grid-column:2;justify-self:start}}
     `;
     document.head.appendChild(style);
   }
@@ -140,33 +101,19 @@
     } catch (_) {}
   }
 
-  function fixAdminLink() {
-    document.querySelectorAll("a.local-admin-link").forEach((link) => {
-      if (link.getAttribute("href") !== "admin/index.html") link.setAttribute("href", "admin/index.html");
+  function removeDemoNotice() {
+    document.querySelectorAll(".notice.notice-danger").forEach((notice) => {
+      if (/versión de prueba|modo prueba/i.test(notice.textContent || "")) notice.remove();
     });
   }
 
-  function ensureConsumerLinks() {
-    const legalLinks = document.querySelector(".site-footer .legal-links");
-    if (!legalLinks) return;
-    const links = [
-      { href:"arrepentimiento.html", text:"BOTÓN DE ARREPENTIMIENTO", key:"consumer-withdrawal" },
-      { href:"baja-servicio.html", text:"BOTÓN DE BAJA DE SERVICIO", key:"consumer-cancel" }
-    ];
-    links.forEach((item) => {
-      if (legalLinks.querySelector(`[data-legal-link="${item.key}"]`)) return;
-      const anchor = document.createElement("a");
-      anchor.href = item.href;
-      anchor.textContent = item.text;
-      anchor.setAttribute("data-legal-link", item.key);
-      legalLinks.appendChild(anchor);
+  function configureAdminLink() {
+    document.querySelectorAll("a.local-admin-link").forEach((link) => {
+      const local = ["", "localhost", "127.0.0.1"].includes(location.hostname);
+      const privateBuild = /TramiPago-web/i.test(location.pathname);
+      if (local || privateBuild) link.setAttribute("href", "admin/index.html");
+      else link.hidden = true;
     });
-    if (!legalLinks.querySelector(".consumer-legal-note")) {
-      const note = document.createElement("span");
-      note.className = "consumer-legal-note";
-      note.textContent = "Revocación y baja por canal digital · sin registración previa · respuesta con código de solicitud dentro de 24 h.";
-      legalLinks.appendChild(note);
-    }
   }
 
   function ensureFamilyAvailability() {
@@ -194,8 +141,7 @@
   function normalizeConsentCopy() {
     document.querySelectorAll('.form-check input[name="authorization"]').forEach((input) => {
       const label = input.closest("label")?.querySelector(".form-check-label");
-      if (!label) return;
-      label.textContent = "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.";
+      if (label) label.textContent = "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.";
     });
   }
 
@@ -217,6 +163,19 @@
     });
   }
 
+  function validateEmailPair() {
+    const email = document.querySelector('input[name="email"]');
+    const confirm = document.querySelector('input[name="emailConfirm"]');
+    if (!email || !confirm || confirm.dataset.pairReady === "true") return;
+    confirm.dataset.pairReady = "true";
+    const validate = () => {
+      confirm.setCustomValidity(email.value.trim().toLowerCase() === confirm.value.trim().toLowerCase() ? "" : "Los correos electrónicos no coinciden.");
+    };
+    email.addEventListener("input", validate);
+    confirm.addEventListener("input", validate);
+    validate();
+  }
+
   function monthLabel(value) {
     if (!/^\d{4}-\d{2}$/.test(value)) return value;
     const [year, month] = value.split("-").map(Number);
@@ -232,10 +191,7 @@
     const max = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
     const minDate = new Date(now.getFullYear(), now.getMonth()-5, 1);
     const min = `${minDate.getFullYear()}-${String(minDate.getMonth()+1).padStart(2,"0")}`;
-    from.value = min;
-    to.value = max;
-    from.min = min; from.max = max;
-    to.min = min; to.max = max;
+    from.value = min; to.value = max; from.min = min; from.max = max; to.min = min; to.max = max;
     const fromField = from.closest(".field");
     const toField = to.closest(".field");
     if (fromField) fromField.hidden = true;
@@ -247,6 +203,59 @@
       note.innerHTML = `<strong>Período automático:</strong> ${monthLabel(min)} a ${monthLabel(max)}. No tenés que elegir fechas.`;
       formGrid.insertAdjacentElement("afterbegin", note);
     }
+  }
+
+  function markOfficialFeeIncluded() {
+    document.querySelectorAll(".service-summary-row").forEach((row) => {
+      const label = row.querySelector("span");
+      const value = row.querySelector("strong");
+      if (label && value && /costo oficial/i.test(label.textContent || "")) {
+        label.textContent = "Tasas oficiales";
+        value.textContent = "Incluidas";
+      }
+    });
+  }
+
+  function enhancePaymentStage() {
+    const form = document.getElementById("payment-form");
+    if (!form) return;
+    const panel = form.closest(".panel");
+    if (!panel || panel.querySelector(".payment-access-v2")) return;
+
+    panel.querySelectorAll(".notice").forEach((notice) => {
+      if (/datos de pago:/i.test(notice.textContent || "")) notice.remove();
+    });
+
+    const config = window.TRAMI_CONFIG || {};
+    const wrap = document.createElement("div");
+    wrap.className = "payment-access-v2";
+    wrap.innerHTML = `
+      <section class="payment-method-card">
+        <h3>Pago con QR</h3>
+        <img class="payment-qr-image" src="${config.paymentQr || ""}" alt="QR de transferencia TramiPago" />
+        <small>Escaneá el QR desde tu banco o billetera.</small>
+      </section>
+      <section class="payment-method-card">
+        <h3>Transferencia</h3>
+        <div class="payment-data-row"><span>Alias</span><strong>${config.alias || "—"}</strong><button class="payment-copy" type="button" data-copy-payment="${config.alias || ""}">Copiar</button></div>
+        <div class="payment-data-row"><span>CBU / CVU</span><strong>${config.paymentCvu || "—"}</strong><button class="payment-copy" type="button" data-copy-payment="${config.paymentCvu || ""}">Copiar</button></div>
+        <div class="payment-data-row"><span>Titular</span><strong>${config.paymentHolder || "—"}</strong></div>
+        <small>${config.paymentNote || "Transferí el total indicado y cargá el comprobante."}</small>
+      </section>`;
+    form.insertAdjacentElement("beforebegin", wrap);
+  }
+
+  function enhanceFileHints() {
+    document.querySelectorAll('input[type="file"]').forEach((input) => {
+      const field = input.closest(".field");
+      if (!field || field.querySelector(".upload-optimizer-note")) return;
+      const note = document.createElement("small");
+      note.className = "upload-optimizer-note";
+      note.textContent = input.accept?.includes("image")
+        ? "Las imágenes grandes se optimizan automáticamente antes de guardarse."
+        : `Archivo máximo: ${(MAX_LOCAL_FILE_BYTES/1000000).toFixed(1)} MB.`;
+      field.appendChild(note);
+    });
   }
 
   function protectAuthorityDirectResult() {
@@ -263,42 +272,132 @@
     result.appendChild(note);
   }
 
+  function enhanceConfirmation() {
+    const confirmation = document.querySelector(".confirmation");
+    if (!confirmation || confirmation.querySelector(".payment-review-note")) return;
+    const note = document.createElement("div");
+    note.className = "payment-review-note";
+    note.innerHTML = "<strong>Comprobante recibido.</strong> El pago queda en revisión. El plazo del trámite comienza cuando TramiPago confirma la acreditación.";
+    confirmation.appendChild(note);
+  }
+
   function enhanceTracking() {
     const form = document.getElementById("tracking-form");
-    if (!form) return;
-    const submit = form.querySelector('button[type="submit"], button[data-tracking-new-query]');
-    if (!submit) return;
-    const hasResult = Boolean(document.querySelector(".tracking-result .status-header"));
-    if (hasResult && !submit.hasAttribute("data-tracking-new-query")) {
-      submit.type = "button";
-      submit.textContent = "Consultar otro código";
-      submit.setAttribute("data-tracking-new-query", "true");
-      submit.classList.add("button-secondary", "tracking-new-query");
-      submit.classList.remove("button-primary");
-      return;
+    if (form) {
+      const submit = form.querySelector('button[type="submit"],button[data-tracking-new-query]');
+      if (submit) {
+        const hasResult = Boolean(document.querySelector(".tracking-result .status-header"));
+        if (hasResult && !submit.hasAttribute("data-tracking-new-query")) {
+          submit.type = "button";
+          submit.textContent = "Consultar otro código";
+          submit.setAttribute("data-tracking-new-query", "true");
+          submit.classList.add("button-secondary", "tracking-new-query");
+          submit.classList.remove("button-primary");
+        }
+      }
     }
-    if (!hasResult && submit.hasAttribute("data-tracking-new-query")) {
-      submit.type = "submit";
-      submit.textContent = "Consultar";
-      submit.removeAttribute("data-tracking-new-query");
-      submit.classList.add("button-primary");
-      submit.classList.remove("button-secondary", "tracking-new-query");
+
+    const result = document.querySelector(".tracking-result");
+    if (!result || result.querySelector(".final-opinion-cta")) return;
+    const text = result.textContent || "";
+    if (/finalizado/i.test(text)) {
+      const cta = document.createElement("div");
+      cta.className = "final-opinion-cta";
+      cta.innerHTML = '<strong>Trámite finalizado.</strong><br>Si querés, podés calificar tu experiencia.<br><a href="opiniones.html">Dejar una opinión</a>';
+      result.appendChild(cta);
+    }
+  }
+
+  async function compressImage(file) {
+    if (!file || !String(file.type || "").startsWith("image/") || file.size <= IMAGE_TARGET_BYTES) return file;
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error("No se pudo leer la imagen."));
+      reader.readAsDataURL(file);
+    });
+    const img = await new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error("No se pudo procesar la imagen."));
+      image.src = dataUrl;
+    });
+    const maxSide = 2000;
+    const scale = Math.min(1, maxSide / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round((img.naturalWidth || img.width) * scale));
+    canvas.height = Math.max(1, Math.round((img.naturalHeight || img.height) * scale));
+    const ctx = canvas.getContext("2d", { alpha:false });
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    let quality = .88;
+    let blob = null;
+    while (quality >= .5) {
+      blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
+      if (blob && blob.size <= IMAGE_TARGET_BYTES) break;
+      quality -= .08;
+    }
+    if (!blob) return file;
+    const base = String(file.name || "imagen").replace(/\.[^.]+$/, "");
+    return new File([blob], `${base}.jpg`, { type:"image/jpeg", lastModified:Date.now() });
+  }
+
+  async function optimizeSelectedImage(input) {
+    const file = input.files?.[0];
+    if (!file || !String(file.type || "").startsWith("image/") || file.size <= MAX_LOCAL_FILE_BYTES) return;
+    const field = input.closest(".field");
+    const note = field?.querySelector(".upload-optimizer-note");
+    const form = input.closest("form");
+    const buttons = Array.from(form?.querySelectorAll('button[type="submit"]') || []);
+    buttons.forEach((button) => button.disabled = true);
+    if (note) { note.textContent = "Optimizando imagen…"; note.className = "upload-optimizer-note is-working"; }
+    try {
+      const optimized = await compressImage(file);
+      if (optimized.size > MAX_LOCAL_FILE_BYTES) throw new Error("No pudimos reducir la imagen lo suficiente.");
+      const transfer = new DataTransfer();
+      transfer.items.add(optimized);
+      input.files = transfer.files;
+      if (note) { note.textContent = `Imagen optimizada: ${(optimized.size/1000000).toFixed(1)} MB.`; note.className = "upload-optimizer-note is-ready"; }
+    } catch (error) {
+      input.value = "";
+      if (note) { note.textContent = error.message || "No se pudo optimizar la imagen."; note.className = "upload-optimizer-note"; }
+    } finally {
+      buttons.forEach((button) => button.disabled = false);
     }
   }
 
   function enhance() {
-    fixAdminLink();
-    ensureConsumerLinks();
+    removeDemoNotice();
+    configureAdminLink();
     ensureFamilyAvailability();
     normalizeConsentCopy();
     normalizeInputs();
+    validateEmailPair();
     configureAnsesPeriod();
+    markOfficialFeeIncluded();
+    enhancePaymentStage();
+    enhanceFileHints();
     protectAuthorityDirectResult();
+    enhanceConfirmation();
     enhanceTracking();
   }
 
-  document.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-tracking-new-query]");
+  document.addEventListener("change", (event) => {
+    const input = event.target.closest?.('input[type="file"]');
+    if (input) optimizeSelectedImage(input);
+  });
+
+  document.addEventListener("click", async (event) => {
+    const copy = event.target.closest?.("[data-copy-payment]");
+    if (copy) {
+      event.preventDefault();
+      const value = copy.getAttribute("data-copy-payment") || "";
+      try { await navigator.clipboard.writeText(value); copy.textContent = "Copiado"; setTimeout(() => copy.textContent = "Copiar", 1200); }
+      catch (_) { window.prompt("Copiá este dato:", value); }
+      return;
+    }
+
+    const button = event.target.closest?.("[data-tracking-new-query]");
     if (!button) return;
     event.preventDefault();
     const form = document.getElementById("tracking-form");
