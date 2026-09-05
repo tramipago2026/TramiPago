@@ -8,7 +8,7 @@
 
   const authorizationField = {
     id: "authorization",
-    label: "Leí y acepto la Política de Privacidad. Autorizo a TramiPago a utilizar estos datos y documentos únicamente para gestionar el trámite solicitado.",
+    label: "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
     type: "checkbox",
     required: true
   };
@@ -25,26 +25,10 @@
   };
 
   window.TRAMI_DIRECTS = [
-    {
-      serviceId: "antecedentes-penales",
-      name: "Antecedentes Penales",
-      image: "assets/antecedentes-penales-v3.webp"
-    },
-    {
-      serviceId: "constancias-anses",
-      name: "ANSES",
-      image: "assets/anses-v3.webp"
-    },
-    {
-      serviceId: "informe-vehicular",
-      name: "Informe vehicular",
-      image: "assets/informe-vehicular-v3.webp"
-    },
-    {
-      serviceId: "arba-inmobiliario",
-      name: "ARBA / Inmobiliario",
-      image: "assets/arba-inmobiliario-v3.webp"
-    }
+    { serviceId: "antecedentes-penales", name: "Antecedentes Penales", image: "assets/antecedentes-penales-v3.webp" },
+    { serviceId: "constancias-anses", name: "ANSES", image: "assets/anses-v3.webp" },
+    { serviceId: "informe-vehicular", name: "Informe vehicular", image: "assets/informe-vehicular-v3.webp" },
+    { serviceId: "arba-inmobiliario", name: "ARBA / Inmobiliario", image: "assets/arba-inmobiliario-v3.webp" }
   ];
 
   window.TRAMI_FAMILIES = [
@@ -69,8 +53,8 @@
       id: "antecedentes-penales",
       codePrefix: "AP",
       name: "Antecedentes Penales",
-      shortDescription: "Solicitá tu certificado con seguimiento.",
-      description: "Gestionamos la solicitud. El organismo envía el certificado directamente al correo del titular.",
+      shortDescription: "Asistencia para solicitar el certificado y seguir el trámite.",
+      description: "Te asistimos durante la solicitud. Las validaciones personales las realiza el titular y el Registro Nacional de Reincidencia envía el certificado directamente a su correo.",
       resultDelivery: "authority-direct",
       active: true,
       eligibility: {
@@ -79,19 +63,23 @@
           { id: "adultEligibility", label: "¿Sos mayor de 18 años?" },
           { id: "argentineDniEligibility", label: "¿Tenés DNI argentino vigente?" }
         ],
-        failureMessage: "Este trámite requiere ser mayor de 18 años y contar con DNI argentino vigente."
+        failureMessage: "Este trámite en línea requiere ser mayor de 18 años y contar con DNI argentino vigente."
       },
       requirements: [
         "Ser mayor de 18 años.",
         "Tener DNI argentino vigente.",
-        "Tener correo electrónico y WhatsApp disponibles."
+        "Tener acceso al correo electrónico personal informado."
       ],
-      components: ["Solicitud del certificado", "Seguimiento de la gestión", "Envío directo al correo del titular"],
+      components: [
+        "Asistencia en la carga y seguimiento",
+        "Validaciones personales a cargo del titular cuando las exija el organismo",
+        "Envío directo del certificado al correo del titular"
+      ],
       officialFee: 0,
       priceField: "modality",
       priceOptions: [
-        { value: "one-hour", label: "1 hora", amount: 20000, duration: "Entrega estimada: 1 hora" },
-        { value: "six-hours", label: "6 horas", amount: 15000, duration: "Entrega estimada: 6 horas" }
+        { value: "one-hour", label: "1 hora", amount: 20000, duration: "Modalidad: 1 hora" },
+        { value: "six-hours", label: "6 horas", amount: 15000, duration: "Modalidad: 6 horas" }
       ],
       fields: [
         ...contactFields.slice(0, 1),
@@ -99,7 +87,7 @@
         { id: "dni", label: "DNI", type: "text", required: true, inputmode: "numeric" },
         { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-3" },
         { id: "dniTransaction", label: "Número de trámite del DNI", type: "text", required: false, inputmode: "numeric" },
-        { id: "dniFile", label: "Foto del DNI", type: "file", required: false, accept: "image/*" },
+        { id: "dniFile", label: "Foto del frente del DNI", type: "file", required: false, accept: "image/*" },
         ...contactFields.slice(1),
         { id: "modality", label: "Modalidad", type: "select", required: true, options: [
           { value: "one-hour", label: "1 hora — $20.000" },
@@ -107,17 +95,22 @@
         ] },
         authorizationField
       ],
-      rules: { anyOf: ["dniTransaction", "dniFile"], message: "Ingresá el número de trámite del DNI o cargá una foto." }
+      rules: { anyOf: ["dniTransaction", "dniFile"], message: "Ingresá el número de trámite del DNI o cargá una foto del frente." }
     },
     {
       id: "informe-vehicular",
       codePrefix: "IV",
       name: "Informe vehicular",
       shortDescription: "Dominio, infracciones y deuda de patentes en una gestión.",
-      description: "Elegí el tipo de vehículo e ingresá el dominio.",
+      description: "Elegí Automotor o Moto e ingresá el dominio. No pedimos datos personales que no sean necesarios para la consulta.",
       active: true,
-      requirements: ["Tipo de vehículo.", "Dominio o patente.", "WhatsApp de contacto."],
-      components: ["Informe oficial e histórico de dominio", "Inhibiciones y prendas, si existieran", "Infracciones de CABA y PBA", "Estado de deuda de patentes de CABA y PBA"],
+      requirements: ["Tipo de vehículo.", "Dominio o patente."],
+      components: [
+        "Informe de dominio oficial",
+        "Inhibiciones y prendas, si existieran",
+        "Infracciones de CABA y PBA",
+        "Estado de deuda de patentes de CABA y PBA"
+      ],
       officialFee: null,
       priceField: "serviceOption",
       priceOptions: [{ value: "complete", label: "Informe completo", amount: null, duration: "Plazo a confirmar" }],
@@ -127,7 +120,6 @@
           { value: "moto", label: "Moto" }
         ] },
         { id: "patent", label: "Dominio (patente)", type: "text", required: true, placeholder: "Ej.: AB 123 CD" },
-        { id: "whatsapp", label: "WhatsApp", type: "tel", required: true, placeholder: "Ej.: 11 6708-3232 (sin +54 9)", autocomplete: "tel" },
         authorizationField
       ]
     },
@@ -136,16 +128,17 @@
       codePrefix: "AN",
       name: "Constancias ANSES",
       shortDescription: "CODEM y Certificación Negativa en una misma gestión.",
-      description: "Ingresá el CUIL y un WhatsApp de contacto.",
+      description: "Ingresá el CUIL y el período de la Certificación Negativa. ANSES permite consultar períodos comprendidos dentro de los últimos seis meses.",
       active: true,
-      requirements: ["CUIL del titular.", "WhatsApp de contacto."],
+      requirements: ["CUIL del titular.", "Período desde y hasta para la Certificación Negativa."],
       components: ["CODEM", "Certificación Negativa"],
       officialFee: 0,
       priceField: "serviceOption",
       priceOptions: [{ value: "constancias", label: "CODEM + Certificación Negativa", amount: null, duration: "Plazo a confirmar" }],
       fields: [
         { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-3" },
-        { id: "whatsapp", label: "WhatsApp", type: "tel", required: true, placeholder: "Ej.: 11 6708-3232 (sin +54 9)", autocomplete: "tel" },
+        { id: "periodFrom", label: "Período desde", type: "month", required: true },
+        { id: "periodTo", label: "Período hasta", type: "month", required: true },
         authorizationField
       ]
     },
@@ -154,23 +147,22 @@
       codePrefix: "AI",
       name: "ARBA / Inmobiliario",
       shortDescription: "Estado de deuda inmobiliaria y plancheta catastral.",
-      description: "Subí una foto del documento o completá Localidad y número de Partida.",
+      description: "Subí una foto donde figure la identificación del inmueble o completá Partido y Partida.",
       active: true,
-      requirements: ["Foto del documento municipal o provincial, o Localidad y número de Partida.", "WhatsApp de contacto."],
+      requirements: ["Foto de una boleta o documento donde figure el inmueble, o número de Partido y Partida."],
       components: ["Estado de deuda inmobiliaria", "Plancheta catastral"],
       officialFee: null,
       priceField: "serviceOption",
       priceOptions: [{ value: "debt-plan", label: "Deuda + plancheta", amount: null, duration: "Plazo a confirmar" }],
       fields: [
-        { id: "propertyDocument", label: "Foto del documento municipal o provincial", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
-        { id: "locality", label: "Localidad", type: "text", required: false, autocomplete: "address-level2" },
-        { id: "propertyNumber", label: "Número de Partida", type: "text", required: false, inputmode: "numeric" },
-        { id: "whatsapp", label: "WhatsApp", type: "tel", required: true, placeholder: "Ej.: 11 6708-3232 (sin +54 9)", autocomplete: "tel" },
+        { id: "propertyDocument", label: "Foto de boleta o documento del inmueble", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
+        { id: "propertyDistrict", label: "Partido", type: "text", required: false },
+        { id: "propertyNumber", label: "Partida", type: "text", required: false, inputmode: "numeric" },
         authorizationField
       ],
       rules: {
-        oneOfGroups: [["propertyDocument"], ["locality", "propertyNumber"]],
-        message: "Subí una foto del documento o completá Localidad y número de Partida."
+        oneOfGroups: [["propertyDocument"], ["propertyDistrict", "propertyNumber"]],
+        message: "Subí una foto donde figure el inmueble o completá Partido y Partida."
       }
     },
     {
@@ -255,7 +247,7 @@
       document.head.appendChild(script);
     };
 
-    loadScript("flow-ui.js?v=20260903-1305", "data-tramipago-flow-ui");
-    loadScript("site-fixes.js?v=20260903-1400", "data-tramipago-site-fixes");
+    loadScript("flow-ui.js?v=20260905-review1", "data-tramipago-flow-ui");
+    loadScript("site-fixes.js?v=20260905-review1", "data-tramipago-site-fixes");
   }
 })();
