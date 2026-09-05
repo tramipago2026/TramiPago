@@ -638,7 +638,8 @@
       return renderStage(service);
     }
     const pricing = request.pricing;
-    const demoWarning = window.TRAMI_CONFIG?.demoMode
+    const demoMode = Boolean(window.TRAMI_CONFIG?.demoMode);
+    const demoWarning = demoMode
       ? `<div class="notice notice-danger"><strong>MODO PRUEBA:</strong> no realices una transferencia real desde esta versión.</div>`
       : "";
 
@@ -651,15 +652,16 @@
           <div class="summary-item"><small>Total</small><strong>${formatARS(pricing.total)}</strong></div>
         </div>
         ${demoWarning}
-        <div class="notice"><strong>Datos de pago:</strong> alias ${escapeHTML(window.TRAMI_CONFIG.alias)} · titular ${escapeHTML(window.TRAMI_CONFIG.paymentHolder)}.</div>
+        ${demoMode ? "" : `<div class="notice"><strong>Datos de pago:</strong> alias ${escapeHTML(window.TRAMI_CONFIG.alias)} · titular ${escapeHTML(window.TRAMI_CONFIG.paymentHolder)}.</div>`}
         <form id="payment-form">
-          <div class="field field-full payment-file">
-            <label for="receipt">Comprobante de pago *</label>
-            <input class="form-control" type="file" id="receipt" name="receipt" accept="image/*,.pdf" required />
-            <small>Archivo máximo: ${Math.round(MAX_LOCAL_FILE_BYTES / 100000) / 10} MB.</small>
-          </div>
+          ${demoMode ? `<input type="hidden" name="demoPayment" value="true" />` : `
+            <div class="field field-full payment-file">
+              <label for="receipt">Comprobante de pago *</label>
+              <input class="form-control" type="file" id="receipt" name="receipt" accept="image/*,.pdf" required />
+              <small>Archivo máximo: ${Math.round(MAX_LOCAL_FILE_BYTES / 100000) / 10} MB.</small>
+            </div>`}
           <div class="form-error" role="alert"></div>
-          ${renderActionBar("Revisar datos", "Informar pago")}
+          ${renderActionBar("Revisar datos", demoMode ? "Simular pago" : "Informar pago")}
         </form>
       </div>
     `;
@@ -1096,23 +1098,29 @@
     }
 
     if (form.id === "payment-form") {
+      const demoMode = Boolean(window.TRAMI_CONFIG?.demoMode);
       if (!form.checkValidity()) {
-        setFormError(form, "Cargá el comprobante para continuar.");
+        setFormError(form, demoMode ? "No se pudo completar la simulación." : "Cargá el comprobante para continuar.");
         form.reportValidity();
         return;
       }
 
       try {
         const input = form.elements.namedItem("receipt");
-        const stored = await fileToStoredFile(input.files?.[0]);
+        const stored = demoMode ? null : await fileToStoredFile(input?.files?.[0]);
         const updated = updateRequest(state.requestId, {
           status: "payment_review",
-          payment: stored ? {
+          payment: demoMode ? {
+            receiptName: "Simulación de pago",
+            size: 0,
+            type: "demo",
+            dataUrl: null
+          } : (stored ? {
             receiptName: stored.name,
             size: stored.size,
             type: stored.type,
             dataUrl: stored.dataUrl
-          } : null
+          } : null)
         });
         clearActiveRequest();
         state.trackingResult = updated;
@@ -1120,7 +1128,7 @@
         render();
         window.scrollTo(0, 0);
       } catch (error) {
-        setFormError(form, error.message || "No se pudo cargar el comprobante.");
+        setFormError(form, error.message || (demoMode ? "No se pudo completar la simulación." : "No se pudo cargar el comprobante."));
       }
       return;
     }
