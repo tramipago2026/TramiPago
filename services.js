@@ -113,7 +113,7 @@
       ],
       officialFee: 0,
       priceField: "serviceOption",
-      priceOptions: [{ value: "complete", label: "Informe completo", amount: 15000, duration: "Hasta 24 horas" }],
+      priceOptions: [{ value: "complete", label: "Informe completo", amount: 15000, duration: "Gestión online" }],
       fields: [
         { id: "vehicleType", label: "Tipo de vehículo", type: "choice", required: true, options: [
           { value: "automotor", label: "Automotor" },
@@ -134,7 +134,7 @@
       components: ["CODEM", "Certificación Negativa por el período máximo disponible"],
       officialFee: 0,
       priceField: "serviceOption",
-      priceOptions: [{ value: "constancias", label: "CODEM + Certificación Negativa", amount: 3000, duration: "Mismo día" }],
+      priceOptions: [{ value: "constancias", label: "CODEM + Certificación Negativa", amount: 3000, duration: "Gestión online" }],
       fields: [
         { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-3" },
         { id: "periodFrom", label: "Período desde", type: "month", required: true },
@@ -151,9 +151,9 @@
       active: true,
       requirements: ["Foto de una boleta o documento donde figure el inmueble, o número de Partido y Partida."],
       components: ["Estado de deuda inmobiliaria", "Copia de plancheta catastral"],
-      officialFee: null,
+      officialFee: 0,
       priceField: "serviceOption",
-      priceOptions: [{ value: "debt-plan", label: "Deuda + plancheta", amount: 25000, duration: "Plazo sujeto a ARBA" }],
+      priceOptions: [{ value: "debt-plan", label: "Deuda + plancheta", amount: 25000, duration: "Sujeto a disponibilidad de ARBA" }],
       fields: [
         { id: "propertyDocument", label: "Foto de boleta o documento del inmueble", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
         { id: "propertyDistrict", label: "Partido", type: "text", required: false },
@@ -249,5 +249,6 @@
 
     loadScript("flow-ui.js?v=20260905-review1", "data-tramipago-flow-ui");
     loadScript("site-fixes.js?v=20260905-review2", "data-tramipago-site-fixes");
+    loadScript("footer-menu.js?v=20260905-1", "data-tramipago-footer-menu");
   }
 })();
