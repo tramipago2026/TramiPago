@@ -44,9 +44,9 @@
   function tidyPayment(){
     if(window.TRAMI_CONFIG&&!window.TRAMI_CONFIG.demoMode) window.TRAMI_CONFIG.alias='TRAMIPAGO';
     const payment=document.querySelector('.payment-access-v2');if(!payment) return;const cards=payment.querySelectorAll('.payment-method-card');
-    if(cards[0]){const title=cards[0].querySelector('h3');if(title) title.textContent='Pago por QR';const small=cards[0].querySelector('small');if(small) small.textContent='Escaneá el QR desde tu banco o billetera.';}
-    if(cards[1]){const title=cards[1].querySelector('h3');if(title) title.textContent='Pago por transferencia';cards[1].querySelectorAll('.payment-data-row').forEach(row=>{const label=row.querySelector('span');const value=row.querySelector('strong');if(label&&/alias/i.test(label.textContent||'')){if(value)value.textContent='TRAMIPAGO';const button=row.querySelector('[data-copy-payment]');if(button)button.setAttribute('data-copy-payment','TRAMIPAGO');}});}
-    const back=document.querySelector('#payment-form [data-action="back-step"]');if(back)back.textContent='Volver a datos';
+    if(cards[0]){const title=cards[0].querySelector('h3');if(title&&title.textContent!=='Pago por QR') title.textContent='Pago por QR';const small=cards[0].querySelector('small');if(small&&small.textContent!=='Escaneá el QR desde tu banco o billetera.') small.textContent='Escaneá el QR desde tu banco o billetera.';}
+    if(cards[1]){const title=cards[1].querySelector('h3');if(title&&title.textContent!=='Pago por transferencia') title.textContent='Pago por transferencia';cards[1].querySelectorAll('.payment-data-row').forEach(row=>{const label=row.querySelector('span');const value=row.querySelector('strong');if(label&&/alias/i.test(label.textContent||'')){if(value&&value.textContent!=='TRAMIPAGO')value.textContent='TRAMIPAGO';const button=row.querySelector('[data-copy-payment]');if(button&&button.getAttribute('data-copy-payment')!=='TRAMIPAGO')button.setAttribute('data-copy-payment','TRAMIPAGO');}});}
+    const back=document.querySelector('#payment-form [data-action="back-step"]');if(back&&back.textContent!=='Volver a datos')back.textContent='Volver a datos';
   }
 
   function linkOpinion(){
@@ -101,6 +101,6 @@
   document.addEventListener('input',event=>{const input=event.target.closest?.('#data-form input,#data-form select,#data-form textarea');if(input){input.classList.add('user-touched');validateField(input);saveDraft(input.form);}});
   document.addEventListener('change',event=>{const input=event.target.closest?.('#data-form input,#data-form select,#data-form textarea');if(input){input.classList.add('user-touched');validateField(input);saveDraft(input.form);}});
   document.addEventListener('submit',event=>{const form=event.target;if(!validateFormBasics(form)){event.preventDefault();event.stopImmediatePropagation();const error=form.querySelector('.form-error');if(error){error.textContent='Revisá los datos marcados antes de continuar.';error.classList.add('visible');}form.querySelector(':invalid')?.focus();return;}const submit=form.querySelector('button[type="submit"]');if(submit&&!submit.disabled){setTimeout(()=>{submit.disabled=true;},0);setTimeout(()=>{if(document.body.contains(submit))submit.disabled=false;},3500);}},true);
-  new MutationObserver(()=>requestAnimationFrame(enhance)).observe(document.body,{childList:true,subtree:true});
+  let enhanceQueued=false;new MutationObserver(()=>{if(enhanceQueued)return;enhanceQueued=true;requestAnimationFrame(()=>{enhanceQueued=false;enhance();});}).observe(document.body,{childList:true,subtree:true});
   window.addEventListener('error',event=>{if(event?.error) showSafeError();});window.addEventListener('unhandledrejection',()=>showSafeError());enhance();
 })();
