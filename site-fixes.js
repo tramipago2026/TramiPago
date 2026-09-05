@@ -3,6 +3,8 @@
 
   const app = document.getElementById("app");
   if (!app) return;
+  const REQUESTS_KEY = "tramipago_requests_v1";
+  const RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
 
   function injectStyles() {
     if (document.getElementById("tramipago-site-review-styles")) return;
@@ -145,6 +147,46 @@
       }
     `;
     document.head.appendChild(style);
+  }
+
+  function stripStoredFile(file) {
+    if (!file || typeof file !== "object" || !file.dataUrl) return file;
+    return { ...file, dataUrl:null, removedAt:new Date().toISOString() };
+  }
+
+  function cleanupExpiredFiles() {
+    try {
+      const requests = JSON.parse(localStorage.getItem(REQUESTS_KEY) || "[]");
+      if (!Array.isArray(requests) || !requests.length) return;
+      let changed = false;
+      const now = Date.now();
+      const next = requests.map((request) => {
+        if (!["finalized", "cancelled"].includes(request.status)) return request;
+        const closedAt = Date.parse(request.updatedAt || request.createdAt || "");
+        if (!Number.isFinite(closedAt) || now - closedAt < RETENTION_MS) return request;
+        const copy = { ...request };
+        if (copy.payment?.dataUrl) {
+          copy.payment = stripStoredFile(copy.payment);
+          changed = true;
+        }
+        if (copy.resultFile?.dataUrl) {
+          copy.resultFile = stripStoredFile(copy.resultFile);
+          changed = true;
+        }
+        if (copy.answers && typeof copy.answers === "object") {
+          const answers = { ...copy.answers };
+          Object.keys(answers).forEach((key) => {
+            if (answers[key]?.dataUrl) {
+              answers[key] = stripStoredFile(answers[key]);
+              changed = true;
+            }
+          });
+          copy.answers = answers;
+        }
+        return copy;
+      });
+      if (changed) localStorage.setItem(REQUESTS_KEY, JSON.stringify(next));
+    } catch (_) {}
   }
 
   function fixAdminLink() {
@@ -308,6 +350,7 @@
     input.focus();
   });
 
+  cleanupExpiredFiles();
   injectStyles();
   new MutationObserver(() => window.requestAnimationFrame(enhance)).observe(document.body, { childList:true, subtree:true });
   enhance();
