@@ -95,7 +95,7 @@
     if(document.querySelector('.tramipago-error-box')) return;const box=document.createElement('div');box.className='tramipago-error-box';box.innerHTML=`<div class="tramipago-error-card" role="alert"><h2>No pudimos completar esta acción</h2><p>Los datos que ya guardaste no se modificaron. Podés volver a intentar o regresar al inicio.</p><div class="tramipago-error-actions"><button class="button button-primary" type="button" data-error-retry>Reintentar</button><a class="button button-secondary" href="#/">Volver al inicio</a></div></div>`;document.body.appendChild(box);box.querySelector('[data-error-retry]')?.addEventListener('click',()=>location.reload());
   }
 
-  function enhance(){buildFooter();pairEmails();tidyPayment();linkOpinion();simplifyProcessStepper();simplifyTrackingTimeline();restoreDraft();clearDraftOnPayment();friendlyErrors();}
+  function enhance(){buildFooter();pairEmails();tidyPayment();linkOpinion();simplifyTrackingTimeline();restoreDraft();clearDraftOnPayment();friendlyErrors();}
 
   addStyles();buildFooter();
   document.addEventListener('input',event=>{const input=event.target.closest?.('#data-form input,#data-form select,#data-form textarea');if(input){input.classList.add('user-touched');validateField(input);saveDraft(input.form);}});
