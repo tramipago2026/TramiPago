@@ -16,7 +16,7 @@
       <div class="footer-menu-grid">
         <section class="footer-menu-col"><h3>TRAMIPAGO</h3><a href="tramites.html#como-funciona">Cómo funciona</a><a href="tramites.html">Todos los trámites</a><a href="opiniones.html">Opiniones</a></section>
         <section class="footer-menu-col"><h3>TRÁMITES</h3><a href="#/tramite/antecedentes-penales">Antecedentes Penales</a><a href="#/tramite/constancias-anses">ANSES</a><a href="#/tramite/informe-vehicular">Informe vehicular</a><a href="#/tramite/arba-inmobiliario">ARBA / Inmobiliario</a></section>
-        <section class="footer-menu-col"><h3>ATENCIÓN</h3><a href="contacto.html">Contacto</a><a href="#/seguimiento">Estado del trámite</a><a href="https://wa.me/5491167083232" target="_blank" rel="noopener noreferrer">WhatsApp 11 6708-3232</a></section>
+        <section class="footer-menu-col"><h3>ATENCIÓN</h3><a href="contacto.html">Contacto</a><a href="#/seguimiento">Estado del trámite</a><a href="https://wa.me/5491167083232" target="_blank" rel="noopener noreferrer">WhatsApp</a></section>
         <section class="footer-menu-col"><h3>LEGAL</h3><a href="politica-privacidad.html">Política de Privacidad</a><a href="terminos-condiciones.html">Términos y Condiciones</a><a href="arrepentimiento.html">BOTÓN DE ARREPENTIMIENTO</a><a href="baja-servicio.html">BOTÓN DE BAJA DE SERVICIO</a><a href="https://autogestion.produccion.gob.ar/consumidores" target="_blank" rel="noopener noreferrer">Defensa del Consumidor</a></section>
       </div>
       <div class="footer-menu-bottom"><span>© 2026 TramiPago · Todos los derechos reservados</span><span>CUIT 20-25988733-0 · tramipago@gmail.com</span></div>`;
