@@ -35,7 +35,7 @@
     {
       id: "arca-monotributo",
       name: "ARCA / Monotributo",
-      description: "Gestiones vinculadas con inscripción, constancias y monotributo.",
+      description: "Inscripción al Monotributo, cambio de categoría y consulta de deuda.",
       image: "assets/arca-v3.webp",
       serviceIds: ["arca-monotributo"]
     },
@@ -102,7 +102,7 @@
       codePrefix: "IV",
       name: "Informe vehicular",
       shortDescription: "Dominio, infracciones y deuda de patentes en una gestión.",
-      description: "Elegí Automotor o Moto e ingresá el dominio. No pedimos datos personales que no sean necesarios para la consulta.",
+      description: "Ingresá el dominio y elegí Automotor o Moto. El paquete incluye informe de dominio, infracciones CABA/PBA y deuda de patentes CABA/PBA. Si un vehículo de PBA está municipalizado, la deuda se consulta en el municipio correspondiente.",
       active: true,
       requirements: ["Tipo de vehículo.", "Dominio o patente."],
       components: [
@@ -111,9 +111,9 @@
         "Infracciones de CABA y PBA",
         "Estado de deuda de patentes de CABA y PBA"
       ],
-      officialFee: null,
+      officialFee: 0,
       priceField: "serviceOption",
-      priceOptions: [{ value: "complete", label: "Informe completo", amount: null, duration: "Plazo a confirmar" }],
+      priceOptions: [{ value: "complete", label: "Informe completo", amount: 15000, duration: "Hasta 24 horas" }],
       fields: [
         { id: "vehicleType", label: "Tipo de vehículo", type: "choice", required: true, options: [
           { value: "automotor", label: "Automotor" },
@@ -127,14 +127,14 @@
       id: "constancias-anses",
       codePrefix: "AN",
       name: "Constancias ANSES",
-      shortDescription: "CODEM y Certificación Negativa en una misma gestión.",
-      description: "Ingresá el CUIL y el período de la Certificación Negativa. ANSES permite consultar períodos comprendidos dentro de los últimos seis meses.",
+      shortDescription: "CODEM + Certificación Negativa en un solo pedido.",
+      description: "Ingresá únicamente el CUIL. TramiPago toma automáticamente el período máximo disponible para la Certificación Negativa dentro de los últimos seis meses.",
       active: true,
-      requirements: ["CUIL del titular.", "Período desde y hasta para la Certificación Negativa."],
-      components: ["CODEM", "Certificación Negativa"],
+      requirements: ["CUIL del titular."],
+      components: ["CODEM", "Certificación Negativa por el período máximo disponible"],
       officialFee: 0,
       priceField: "serviceOption",
-      priceOptions: [{ value: "constancias", label: "CODEM + Certificación Negativa", amount: null, duration: "Plazo a confirmar" }],
+      priceOptions: [{ value: "constancias", label: "CODEM + Certificación Negativa", amount: 3000, duration: "Mismo día" }],
       fields: [
         { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-3" },
         { id: "periodFrom", label: "Período desde", type: "month", required: true },
@@ -146,14 +146,14 @@
       id: "arba-inmobiliario",
       codePrefix: "AI",
       name: "ARBA / Inmobiliario",
-      shortDescription: "Estado de deuda inmobiliaria y plancheta catastral.",
-      description: "Subí una foto donde figure la identificación del inmueble o completá Partido y Partida.",
+      shortDescription: "Estado de deuda inmobiliaria + plancheta catastral.",
+      description: "Paquete de estado de deuda inmobiliaria y copia de plancheta catastral. La plancheta requiere acceso de titular o representante habilitado en ARBA.",
       active: true,
       requirements: ["Foto de una boleta o documento donde figure el inmueble, o número de Partido y Partida."],
-      components: ["Estado de deuda inmobiliaria", "Plancheta catastral"],
+      components: ["Estado de deuda inmobiliaria", "Copia de plancheta catastral"],
       officialFee: null,
       priceField: "serviceOption",
-      priceOptions: [{ value: "debt-plan", label: "Deuda + plancheta", amount: null, duration: "Plazo a confirmar" }],
+      priceOptions: [{ value: "debt-plan", label: "Deuda + plancheta", amount: 25000, duration: "Plazo sujeto a ARBA" }],
       fields: [
         { id: "propertyDocument", label: "Foto de boleta o documento del inmueble", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
         { id: "propertyDistrict", label: "Partido", type: "text", required: false },
@@ -201,10 +201,10 @@
       id: "partidas",
       codePrefix: "PA",
       name: "Partidas",
-      shortDescription: "Nacimiento, convivencia, matrimonio y defunción.",
-      description: "Te ayudamos a solicitar la partida que necesitás y a realizar el seguimiento.",
+      shortDescription: "Nacimiento, convivencia, matrimonio y defunción en análisis para CABA y PBA.",
+      description: "Servicio en preparación mientras se validan tasas, plazos y requisitos por jurisdicción.",
       active: false,
-      requirements: ["Tipo de partida.", "Datos de la persona o vínculo que debe figurar."],
+      requirements: ["Tipo de partida.", "Jurisdicción y datos registrales disponibles."],
       components: ["Partida de nacimiento", "Unión convivencial", "Partida de matrimonio", "Partida de defunción"],
       officialFee: null,
       priceField: "serviceOption",
@@ -225,11 +225,11 @@
       id: "arca-monotributo",
       codePrefix: "AR",
       name: "ARCA / Monotributo",
-      shortDescription: "Orientación para trámites vinculados al monotributo.",
-      description: "Servicio en preparación.",
+      shortDescription: "Inscripción al Monotributo, cambio de categoría y consulta de deuda.",
+      description: "Servicio en preparación. Se definirán requisitos y precio por cada gestión antes de activarlo.",
       active: false,
       requirements: [],
-      components: [],
+      components: ["Inscripción al Monotributo", "Cambio de categoría", "Consulta de deuda"],
       officialFee: null,
       priceOptions: [],
       fields: []
@@ -248,6 +248,6 @@
     };
 
     loadScript("flow-ui.js?v=20260905-review1", "data-tramipago-flow-ui");
-    loadScript("site-fixes.js?v=20260905-review1", "data-tramipago-site-fixes");
+    loadScript("site-fixes.js?v=20260905-review2", "data-tramipago-site-fixes");
   }
 })();
