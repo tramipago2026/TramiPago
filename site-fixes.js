@@ -46,9 +46,50 @@
         padding: 6px 10px !important;
         border-radius: 999px !important;
       }
+      .site-footer .footer-inner {
+        align-items: flex-start !important;
+        gap: 14px !important;
+      }
+      .site-footer .legal-links {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-end !important;
+        gap: 3px 10px !important;
+        max-width: 760px;
+        margin-left: auto;
+        line-height: 1.25;
+        text-align: right;
+      }
+      .site-footer .legal-links a {
+        color: #fff !important;
+        font-size: 10px !important;
+        font-weight: 400 !important;
+        text-decoration-thickness: 1px !important;
+        text-underline-offset: 2px !important;
+        white-space: nowrap;
+      }
+      .site-footer .legal-links a:hover,
+      .site-footer .legal-links a:focus-visible {
+        color: #29B6F6 !important;
+      }
+      .site-footer .consumer-legal-note {
+        flex-basis: 100%;
+        color: rgba(255,255,255,.72);
+        font-size: 9px;
+        font-weight: 400;
+        line-height: 1.25;
+        text-align: right;
+      }
       @media (max-width: 620px) {
         .payment-access { grid-template-columns: 1fr !important; }
         .eligibility-list { grid-template-columns: 1fr !important; }
+        .site-footer .footer-inner { display: block !important; }
+        .site-footer .legal-links {
+          justify-content: flex-start !important;
+          margin: 7px 0 0 !important;
+          text-align: left !important;
+        }
+        .site-footer .consumer-legal-note { text-align: left !important; }
       }
     `;
     document.head.appendChild(style);
@@ -60,6 +101,32 @@
         link.setAttribute("href", "admin/index.html");
       }
     });
+  }
+
+  function ensureConsumerLinks() {
+    const legalLinks = document.querySelector(".site-footer .legal-links");
+    if (!legalLinks) return;
+
+    const links = [
+      { href: "arrepentimiento.html", text: "BOTÓN DE ARREPENTIMIENTO", key: "consumer-withdrawal" },
+      { href: "baja-servicio.html", text: "BOTÓN DE BAJA DE SERVICIO", key: "consumer-cancel" }
+    ];
+
+    links.forEach((item) => {
+      if (legalLinks.querySelector(`[data-legal-link="${item.key}"]`)) return;
+      const anchor = document.createElement("a");
+      anchor.href = item.href;
+      anchor.textContent = item.text;
+      anchor.setAttribute("data-legal-link", item.key);
+      legalLinks.appendChild(anchor);
+    });
+
+    if (!legalLinks.querySelector(".consumer-legal-note")) {
+      const note = document.createElement("span");
+      note.className = "consumer-legal-note";
+      note.textContent = "Revocación y baja por canal digital · sin registración previa · respuesta con código de solicitud dentro de 24 h.";
+      legalLinks.appendChild(note);
+    }
   }
 
   function enhanceTracking() {
@@ -89,6 +156,7 @@
 
   function enhance() {
     fixAdminLink();
+    ensureConsumerLinks();
     enhanceTracking();
   }
 
