@@ -15,12 +15,12 @@
 
   window.TRAMI_CONFIG = {
     whatsappNumber: "5491167083232",
-    alias: "MODO PRUEBA",
-    paymentCvu: "",
-    paymentHolder: "No realizar pagos",
-    paymentQr: "assets/qr-modo-prueba.svg",
-    paymentNote: "Versión de prueba: no realices transferencias.",
-    demoMode: true,
+    alias: "TRAMIPAGO.OK",
+    paymentCvu: "0000003100004971102062",
+    paymentHolder: "Christian Marcelo Adriano Montiel",
+    paymentQr: "assets/qr-tramipago-ok.svg",
+    paymentNote: "Transferí el total indicado y cargá el comprobante.",
+    demoMode: false,
     maxLocalFileBytes: 1500000
   };
 
@@ -68,7 +68,8 @@
       requirements: [
         "Ser mayor de 18 años.",
         "Tener DNI argentino vigente.",
-        "Tener acceso al correo electrónico personal informado."
+        "Tener acceso al correo electrónico personal informado.",
+        "Informar domicilio y datos de padre y madre para evitar interrupciones si el organismo los solicita."
       ],
       components: [
         "Asistencia en la carga y seguimiento",
@@ -88,7 +89,15 @@
         { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-3" },
         { id: "dniTransaction", label: "Número de trámite del DNI", type: "text", required: false, inputmode: "numeric" },
         { id: "dniFile", label: "Foto del frente del DNI", type: "file", required: false, accept: "image/*" },
-        ...contactFields.slice(1),
+        { id: "address", label: "Domicilio (calle y número)", type: "text", required: true, autocomplete: "street-address" },
+        { id: "locality", label: "Localidad", type: "text", required: true, autocomplete: "address-level2" },
+        { id: "district", label: "Partido / departamento (si corresponde)", type: "text", required: false },
+        { id: "fatherFullName", label: "Nombre y apellido del padre", type: "text", required: true },
+        { id: "motherFullName", label: "Nombre y apellido de la madre", type: "text", required: true },
+        { id: "email", label: "Correo electrónico", type: "email", required: true, autocomplete: "email" },
+        { id: "emailConfirm", label: "Repetí el correo electrónico", type: "email", required: true, autocomplete: "off" },
+        { id: "emailAccess", label: "Tengo acceso a este correo y puedo recibir allí los mensajes del organismo.", type: "checkbox", required: true },
+        ...contactFields.slice(2),
         { id: "modality", label: "Modalidad", type: "select", required: true, options: [
           { value: "one-hour", label: "1 hora — $20.000" },
           { value: "six-hours", label: "6 horas — $15.000" }
@@ -251,7 +260,7 @@
     };
 
     loadScript("flow-ui.js?v=20260905-review1", "data-tramipago-flow-ui");
-    loadScript("site-fixes.js?v=20260905-review2", "data-tramipago-site-fixes");
-    loadScript("footer-menu.js?v=20260905-1", "data-tramipago-footer-menu");
+    loadScript("site-fixes.js?v=20260905-review3", "data-tramipago-site-fixes");
+    loadScript("footer-menu.js?v=20260905-2", "data-tramipago-footer-menu");
   }
 })();
