@@ -14,10 +14,10 @@
     const style = document.createElement("style");
     style.id = "tramipago-site-review-styles";
     style.textContent = `
-      html,body{background:#edf4f8!important}
-      .site-main{background:#edf4f8!important}
-      .home-hero-clean{background:linear-gradient(180deg,#f8fbfd 0%,#edf4f8 100%)!important}
-      .home-catalog,.process-shell,.family-page,.tracking-page{background:#edf4f8!important}
+      html,body{background:radial-gradient(circle at 12% 8%,rgba(41,182,246,.12),transparent 28%),radial-gradient(circle at 88% 18%,rgba(35,168,93,.07),transparent 24%),linear-gradient(180deg,#f8fbfd 0%,#eaf3f8 100%) fixed!important}
+      .site-main{background:transparent!important}
+      .home-hero-clean{background:linear-gradient(180deg,rgba(255,255,255,.78) 0%,rgba(237,244,248,.30) 100%)!important}
+      .home-catalog,.process-shell,.family-page,.tracking-page{background:transparent!important}
       .panel,.family-heading,.family-service-card{background:#fff!important}
       .home-catalog .home-tile{border:1px solid #d7e4ec!important}
 
@@ -63,7 +63,16 @@
       .eligibility-options{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
       .eligibility-options .choice-option{justify-content:center;min-height:38px!important;padding:6px 10px!important;border-radius:999px!important}
       .authority-direct-note{margin:14px 0 0;padding:11px 13px;color:#103b68;background:#eef8ff;border:1px solid #b8dbef;border-radius:9px;font-size:.88rem;line-height:1.45}
+      .step-actions{position:static!important;margin-top:18px!important}
+      .service-quick-summary{display:flex;justify-content:space-between;gap:14px;align-items:center;margin:0 0 16px;padding:10px 12px;color:#103b68;background:#eef8ff;border:1px solid #b8dbef;border-radius:9px}
+      .service-quick-summary strong{font-size:.93rem}
+      .service-quick-summary span{color:#607789;font-size:.82rem;text-align:right}
+      .demo-global-banner{padding:7px 14px;text-align:center;color:#6b2a00;background:#fff2d9;border-bottom:1px solid #e8b65d;font-size:.86rem;font-weight:800}
+      .payment-demo-card{grid-column:1/-1;text-align:center;background:#fff8e8!important;border-color:#e8b65d!important}
+      .site-footer{padding:18px 0!important}
+      .home-catalog .catalog-card-badge{color:#fff!important;background:#607789!important;border-color:#31516a!important}
 
+      @media(max-width:760px){.service-quick-summary{display:block}.service-quick-summary span{display:block;margin-top:4px;text-align:left}}
       @media(max-width:760px){.service-summary,.form-grid{grid-template-columns:1fr!important}.form-grid .field-full,.anses-period-note{grid-column:auto!important}.payment-access-v2{grid-template-columns:1fr}}
       @media(max-width:620px){.payment-access{grid-template-columns:1fr!important}.eligibility-list{grid-template-columns:1fr!important}.payment-data-row{grid-template-columns:72px minmax(0,1fr)}.payment-data-row .payment-copy{grid-column:2;justify-self:start}}
     `;
@@ -101,10 +110,17 @@
     } catch (_) {}
   }
 
-  function removeDemoNotice() {
-    document.querySelectorAll(".notice.notice-danger").forEach((notice) => {
-      if (/versión de prueba|modo prueba/i.test(notice.textContent || "")) notice.remove();
-    });
+  function enhanceDemoMode() {
+    if (!window.TRAMI_CONFIG?.demoMode) return;
+    if (!document.querySelector(".demo-global-banner")) {
+      const banner = document.createElement("div");
+      banner.className = "demo-global-banner";
+      banner.setAttribute("role", "status");
+      banner.textContent = "Versión de prueba · No realices pagos ni cargues documentación real.";
+      document.querySelector(".site-header")?.insertAdjacentElement("afterend", banner);
+    }
+    const receiptLabel = document.querySelector('#payment-form label[for="receipt"]');
+    if (receiptLabel) receiptLabel.textContent = "Comprobante de prueba *";
   }
 
   function configureAdminLink() {
@@ -229,19 +245,25 @@
     const config = window.TRAMI_CONFIG || {};
     const wrap = document.createElement("div");
     wrap.className = "payment-access-v2";
-    wrap.innerHTML = `
-      <section class="payment-method-card">
-        <h3>Pago con QR</h3>
-        <img class="payment-qr-image" src="${config.paymentQr || ""}" alt="QR de transferencia TramiPago" />
-        <small>Escaneá el QR desde tu banco o billetera.</small>
-      </section>
-      <section class="payment-method-card">
-        <h3>Transferencia</h3>
-        <div class="payment-data-row"><span>Alias</span><strong>${config.alias || "—"}</strong><button class="payment-copy" type="button" data-copy-payment="${config.alias || ""}">Copiar</button></div>
-        <div class="payment-data-row"><span>CBU / CVU</span><strong>${config.paymentCvu || "—"}</strong><button class="payment-copy" type="button" data-copy-payment="${config.paymentCvu || ""}">Copiar</button></div>
-        <div class="payment-data-row"><span>Titular</span><strong>${config.paymentHolder || "—"}</strong></div>
-        <small>${config.paymentNote || "Transferí el total indicado y cargá el comprobante."}</small>
-      </section>`;
+    wrap.innerHTML = config.demoMode
+      ? `<section class="payment-method-card payment-demo-card">
+          <h3>Simulación de pago</h3>
+          <p>Esta versión permite probar el recorrido, pero no recibe pagos reales.</p>
+          <small>Usá solamente un archivo de prueba, sin datos personales.</small>
+        </section>`
+      : `
+        <section class="payment-method-card">
+          <h3>Pago con QR</h3>
+          <img class="payment-qr-image" src="${config.paymentQr || ""}" alt="QR de transferencia TramiPago" />
+          <small>Escaneá el QR desde tu banco o billetera.</small>
+        </section>
+        <section class="payment-method-card">
+          <h3>Transferencia</h3>
+          <div class="payment-data-row"><span>Alias</span><strong>${config.alias || "—"}</strong><button class="payment-copy" type="button" data-copy-payment="${config.alias || ""}">Copiar</button></div>
+          <div class="payment-data-row"><span>CBU / CVU</span><strong>${config.paymentCvu || "—"}</strong><button class="payment-copy" type="button" data-copy-payment="${config.paymentCvu || ""}">Copiar</button></div>
+          <div class="payment-data-row"><span>Titular</span><strong>${config.paymentHolder || "—"}</strong></div>
+          <small>${config.paymentNote || "Transferí el total indicado y cargá el comprobante."}</small>
+        </section>`;
     form.insertAdjacentElement("beforebegin", wrap);
   }
 
@@ -367,14 +389,12 @@
   }
 
   function enhance() {
-    removeDemoNotice();
+    enhanceDemoMode();
     configureAdminLink();
     ensureFamilyAvailability();
     normalizeConsentCopy();
     normalizeInputs();
     validateEmailPair();
-    configureAnsesPeriod();
-    markOfficialFeeIncluded();
     enhancePaymentStage();
     enhanceFileHints();
     protectAuthorityDirectResult();
