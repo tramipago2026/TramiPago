@@ -1,0 +1,64 @@
+name: Apply TramiPago 3 fixes
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-tramipago-3-fixes.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-fixes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply agreed content fixes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if old in text:
+                  text = text.replace(old, new)
+                  p.write_text(text, encoding='utf-8')
+
+          replace(
+              'services.js',
+              'Ingresá el dominio y elegí Automotor o Moto. El paquete incluye informe de dominio, infracciones CABA/PBA y deuda de patentes CABA/PBA. Si un vehículo de PBA está municipalizado, la deuda se consulta en el municipio correspondiente.',
+              'Ingresá el dominio y elegí Automotor o Moto. El paquete incluye informe de dominio, infracciones CABA/PBA y deuda de patentes CABA/PBA.'
+          )
+          replace(
+              'arca-family.js',
+              'Entiendo y acepto que el importe abonado corresponde al servicio de gestión, asistencia, acompañamiento y, cuando corresponda, entrega brindado por TramiPago.',
+              'Entiendo y acepto que el importe abonado corresponde al servicio prestado por TramiPago, que puede incluir gestión, asistencia, acompañamiento y, cuando corresponda, entrega.'
+          )
+          replace(
+              'arca-family.js',
+              'Monotributo, VEP, pagos, constancias y actualización de datos.',
+              'Monotributo, VEP, constancias y actualización de datos.'
+          )
+          replace(
+              'arca-family.js',
+              '.arca-family-page .service-card-mini{margin-top:auto!important}',
+              '.arca-family-page .service-card-mini{display:none!important}'
+          )
+          replace(
+              'index.html',
+              'subtitle:"Monotributo, VEP y pagos"',
+              'subtitle:"Monotributo y VEP"'
+          )
+          replace('index.html', '20260906-1425', '20260906-1518')
+          PY
+
+          rm -f .github/workflows/apply-tramipago-3-fixes.yml
+          git config user.name 'tramipago2026'
+          git config user.email 'tramipago@gmail.com'
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m 'Aplica correcciones de contenido TramiPago 3'
+            git push
+          fi
