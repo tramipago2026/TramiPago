@@ -74,8 +74,6 @@
       .service-quick-summary{display:flex;justify-content:space-between;gap:14px;align-items:center;margin:0 0 16px;padding:10px 12px;color:#103b68;background:#eef8ff;border:1px solid #b8dbef;border-radius:9px}
       .service-quick-summary strong{font-size:.93rem}
       .service-quick-summary span{color:#607789;font-size:.82rem;text-align:right}
-      .demo-global-banner{padding:7px 14px;text-align:center;color:#6b2a00;background:#fff2d9;border-bottom:1px solid #e8b65d;font-size:.86rem;font-weight:800}
-      .payment-demo-card{grid-column:1/-1;text-align:center;background:#fff8e8!important;border-color:#e8b65d!important}
       .site-footer{padding:18px 0!important}
       .home-catalog .catalog-card-badge{color:#fff!important;background:#607789!important;border-color:#31516a!important}
 
@@ -119,19 +117,6 @@
 
   function removeConsumerTopLinks() {
     document.querySelectorAll(".consumer-top-links").forEach((element) => element.remove());
-  }
-
-  function enhanceDemoMode() {
-    if (!window.TRAMI_CONFIG?.demoMode) return;
-    if (!document.querySelector(".demo-global-banner")) {
-      const banner = document.createElement("div");
-      banner.className = "demo-global-banner";
-      banner.setAttribute("role", "status");
-      banner.textContent = "Versión de prueba · No realices pagos ni cargues documentación real.";
-      document.querySelector(".site-header")?.insertAdjacentElement("afterend", banner);
-    }
-    const receiptLabel = document.querySelector('#payment-form label[for="receipt"]');
-    if (receiptLabel && receiptLabel.textContent !== "Comprobante de prueba *") receiptLabel.textContent = "Comprobante de prueba *";
   }
 
   function configureAdminLink() {
@@ -257,13 +242,7 @@
     const config = window.TRAMI_CONFIG || {};
     const wrap = document.createElement("div");
     wrap.className = "payment-access-v2";
-    wrap.innerHTML = config.demoMode
-      ? `<section class="payment-method-card payment-demo-card">
-          <h3>Simulación de pago</h3>
-          <p>Esta versión permite probar el recorrido, pero no recibe pagos reales.</p>
-          <small>Usá solamente un archivo de prueba, sin datos personales.</small>
-        </section>`
-      : `
+    wrap.innerHTML = `
         <section class="payment-method-card">
           <h3>Pago con QR</h3>
           <img class="payment-qr-image" src="${config.paymentQr || ""}" alt="QR de transferencia TramiPago" />
@@ -312,9 +291,7 @@
     if (!confirmation || confirmation.querySelector(".payment-review-note")) return;
     const note = document.createElement("div");
     note.className = "payment-review-note";
-    note.innerHTML = window.TRAMI_CONFIG?.demoMode
-      ? "<strong>Prueba completada.</strong> No se registró un pago real ni se envió documentación."
-      : "<strong>Comprobante recibido.</strong> El pago queda en revisión. El plazo del trámite comienza cuando TramiPago confirma la acreditación.";
+    note.innerHTML = "<strong>Comprobante recibido.</strong> El pago queda en revisión. El plazo del trámite comienza cuando TramiPago confirma la acreditación.";
     confirmation.appendChild(note);
   }
 
@@ -405,7 +382,6 @@
 
   function enhance() {
     removeConsumerTopLinks();
-    enhanceDemoMode();
     configureAdminLink();
     ensureFamilyAvailability();
     normalizeConsentCopy();
