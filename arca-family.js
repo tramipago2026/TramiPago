@@ -4,7 +4,7 @@
 
   const FREE_SERVICE_ACCEPTANCE = Object.freeze({
     id: "serviceFeeAcceptance",
-    label: "Entiendo y acepto que el importe abonado corresponde al servicio de gestión, asistencia, acompañamiento y, cuando corresponda, entrega brindado por TramiPago.",
+    label: "Entiendo y acepto que el importe abonado corresponde al servicio prestado por TramiPago, que puede incluir gestión, asistencia, acompañamiento y, cuando corresponda, entrega.",
     type: "checkbox",
     required: true
   });
@@ -363,7 +363,7 @@
   const arcaFamily = {
     id: "arca-monotributo",
     name: "ARCA",
-    description: "Monotributo, VEP, pagos, constancias y actualización de datos.",
+    description: "Monotributo, VEP, constancias y actualización de datos.",
     image: "assets/arca-familia.svg",
     serviceIds: [
       "arca-constancia",
@@ -421,7 +421,7 @@
       .arca-family-page .family-service-card .service-tag{display:none!important}
       .arca-family-page .family-service-card h2{margin:0 0 5px!important;color:#082A47!important;font-size:.98rem!important;line-height:1.16!important}
       .arca-family-page .family-service-card p{margin:0 0 7px!important;color:#607789!important;font-size:.76rem!important;line-height:1.35!important}
-      .arca-family-page .service-card-mini{margin-top:auto!important}
+      .arca-family-page .service-card-mini{display:none!important}
       .arca-family-page .service-summary-option{display:block!important;padding:4px 0!important;border:0!important}
       .arca-family-page .service-summary-option>div small{display:none!important}
       .arca-family-page .service-summary-option>strong{color:#126B3A!important;font-size:.88rem!important}

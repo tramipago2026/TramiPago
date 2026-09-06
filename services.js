@@ -104,7 +104,7 @@
       codePrefix: "IV",
       name: "Informe vehicular",
       shortDescription: "Dominio, infracciones y deuda de patentes en una gestión.",
-      description: "Ingresá el dominio y elegí Automotor o Moto. El paquete incluye informe de dominio, infracciones CABA/PBA y deuda de patentes CABA/PBA. Si un vehículo de PBA está municipalizado, la deuda se consulta en el municipio correspondiente.",
+      description: "Ingresá el dominio y elegí Automotor o Moto. El paquete incluye informe de dominio, infracciones CABA/PBA y deuda de patentes CABA/PBA.",
       active: true,
       requirements: ["Tipo de vehículo.", "Dominio o patente.", "WhatsApp de contacto."],
       components: [

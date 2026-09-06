@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="TramiPago: trámites online con seguimiento." />
   <title>TramiPago | Inicio</title>
-  <link rel="stylesheet" href="site.css?v=20260906-1425" />
-  <link rel="stylesheet" href="ui.css?v=20260906-1425" />
+  <link rel="stylesheet" href="site.css?v=20260906-1518" />
+  <link rel="stylesheet" href="ui.css?v=20260906-1518" />
 
   <style>
     :root {
@@ -129,17 +129,17 @@
 
   <footer class="site-footer"><div class="container footer-inner"><span>© 2026 TramiPago · Todos los derechos reservados</span><span class="legal-links"><a href="politica-privacidad.html">Política de Privacidad</a><a href="terminos-condiciones.html">Términos y Condiciones</a></span></div></footer>
 
-  <script src="services.js?v=20260906-1425"></script>
-  <script src="arca-family.js?v=20260906-1425"></script>
-  <script src="flow-ui.js?v=20260906-1425"></script>
-  <script src="site-fixes.js?v=20260906-1425"></script>
-  <script src="footer-menu.js?v=20260906-1425"></script>
-  <script src="app.js?v=20260906-1425"></script>
+  <script src="services.js?v=20260906-1518"></script>
+  <script src="arca-family.js?v=20260906-1518"></script>
+  <script src="flow-ui.js?v=20260906-1518"></script>
+  <script src="site-fixes.js?v=20260906-1518"></script>
+  <script src="footer-menu.js?v=20260906-1518"></script>
+  <script src="app.js?v=20260906-1518"></script>
   <script>
     (function(){
       "use strict";
       const REQUESTS_KEY="tramipago_requests_v1";
-      const cardMeta={"antecedentes-penales":{title:"Antecedentes Penales",subtitle:"Certificado online"},"constancias-anses":{title:"ANSES",subtitle:"CODEM + Negativa"},"arca-monotributo":{title:"ARCA",subtitle:"Monotributo, VEP y pagos"},"informe-vehicular":{title:"Informe vehicular",subtitle:"Dominio + deudas"},"partidas-pba":{title:"Partidas",subtitle:"Registro Civil PBA"},"arba-inmobiliario":{title:"ARBA / Inmobiliario",subtitle:"Deuda + plancheta"}};
+      const cardMeta={"antecedentes-penales":{title:"Antecedentes Penales",subtitle:"Certificado online"},"constancias-anses":{title:"ANSES",subtitle:"CODEM + Negativa"},"arca-monotributo":{title:"ARCA",subtitle:"Monotributo y VEP"},"informe-vehicular":{title:"Informe vehicular",subtitle:"Dominio + deudas"},"partidas-pba":{title:"Partidas",subtitle:"Registro Civil PBA"},"arba-inmobiliario":{title:"ARBA / Inmobiliario",subtitle:"Deuda + plancheta"}};
       function normalize(value){return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();}
       function readRequests(){try{return JSON.parse(localStorage.getItem(REQUESTS_KEY)||"[]");}catch(_){return[];}}
       function getRequestByCode(code){const normalized=String(code||"").trim().toUpperCase();return readRequests().find(item=>String(item.code||"").toUpperCase()===normalized)||null;}
