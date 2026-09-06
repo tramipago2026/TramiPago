@@ -674,7 +674,7 @@
       <div class="panel confirmation">
         <div class="confirmation-icon" aria-hidden="true">✓</div>
         <h2>Solicitud recibida</h2>
-        <p>Guardá este código para consultar las actualizaciones.</p>
+        <p>${window.TRAMI_CONFIG?.demoMode ? "Prueba completada. Guardá el código para probar el seguimiento." : "Guardá este código para consultar las actualizaciones."}</p>
         <div class="request-code">${escapeHTML(request.code)}</div>
         <p><strong>${escapeHTML(service.name)}</strong><br />${escapeHTML(statusLabel(request.status))}</p>
         <div class="hero-actions confirmation-actions">
