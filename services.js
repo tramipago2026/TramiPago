@@ -20,7 +20,6 @@
     paymentHolder: "Christian Marcelo Adriano Montiel",
     paymentQr: "assets/qr-tramipago-ok.svg",
     paymentNote: "Transferí el total indicado y cargá el comprobante.",
-    demoMode: false,
     maxLocalFileBytes: 1500000
   };
 
