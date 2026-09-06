@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="TramiPago: trámites online con seguimiento." />
   <title>TramiPago | Inicio</title>
-  <link rel="stylesheet" href="site.css?v=20260906-0001" />
-  <link rel="stylesheet" href="ui.css?v=20260906-0001" />
+  <link rel="stylesheet" href="site.css?v=20260906-0002" />
+  <link rel="stylesheet" href="ui.css?v=20260906-0002" />
 
   <style>
     :root {
@@ -119,11 +119,11 @@
 
   <footer class="site-footer"><div class="container footer-inner"><span>© 2026 TramiPago · Todos los derechos reservados</span><span class="legal-links"><a href="politica-privacidad.html">Política de Privacidad</a><a href="terminos-condiciones.html">Términos y Condiciones</a></span></div></footer>
 
-  <script src="services.js?v=20260906-0001"></script>
-  <script src="flow-ui.js?v=20260906-0001"></script>
-  <script src="site-fixes.js?v=20260906-0001"></script>
-  <script src="footer-menu.js?v=20260906-0001"></script>
-  <script src="app.js?v=20260906-0001"></script>
+  <script src="services.js?v=20260906-0002"></script>
+  <script src="flow-ui.js?v=20260906-0002"></script>
+  <script src="site-fixes.js?v=20260906-0002"></script>
+  <script src="footer-menu.js?v=20260906-0002"></script>
+  <script src="app.js?v=20260906-0002"></script>
   <script>
     (function(){
       "use strict";
@@ -141,7 +141,7 @@
       function bindSearch(){const input=document.querySelector(".catalog-search"),catalog=document.querySelector(".home-catalog .container");if(!input||!catalog||input.dataset.bound==="true")return;input.dataset.bound="true";input.addEventListener("input",function(){const query=normalize(input.value);catalog.querySelectorAll(".home-tile").forEach(card=>{card.hidden=Boolean(query)&&!String(card.dataset.search||"").includes(query);});[".home-direct-row",".home-family-row"].forEach(selector=>{const row=catalog.querySelector(selector);if(!row)return;const title=row.previousElementSibling;if(title?.classList.contains("home-section-title"))title.hidden=![...row.querySelectorAll(".home-tile")].some(card=>!card.hidden);});});}
       function removeRedundantButtons(){document.querySelectorAll('.process-top [data-action="back-home"], .ineligible-panel [data-action="back-home"], .family-page .family-back[data-action="back-home"]').forEach(button=>button.remove());}
       function normalizeButtonLabels(){
-        const replacements={"Crear solicitud":"Continuar","Guardar y continuar":"Continuar","Siguiente":"Continuar","Guardar cambios":"Guardá cambios","Volver":"Atrás","Consultar":"Consultá estado","Consultar estado":"Consultá estado","Revisar datos":"Modificar datos","Volver a datos":"Modificar datos","Informá pago":"Informar pago","Revisar requisitos":"Revisá requisitos","Copiar código":"Copiá código","Enviar corrección":"Enviá corrección","Corregir información":"Corregí información","Continuar con el pago":"Continuá con el pago","Descargar resultado":"Descargá resultado","Elegir trámite":"Elegí trámite","Ver mi trámite":"Ver estado"};
+        const replacements={"Crear solicitud":"Siguiente","Guardar y continuar":"Siguiente","Guardar cambios":"Guardá cambios","Volver":"Atrás","Consultar":"Consultá estado","Consultar estado":"Consultá estado","Revisar datos":"Modificar datos","Volver a datos":"Modificar datos","Informá pago":"Informar pago","Revisar requisitos":"Revisá requisitos","Copiar código":"Copiá código","Enviar corrección":"Enviá corrección","Corregir información":"Corregí información","Continuar con el pago":"Continuá con el pago","Descargar resultado":"Descargá resultado","Elegir trámite":"Elegí trámite","Ver mi trámite":"Ver estado"};
         document.querySelectorAll(".button").forEach(function(button){const label=button.textContent.trim();const next=replacements[label];if(next&&next!==label)button.textContent=next;});
       }
       function enhanceConfirmation(){const panel=document.querySelector(".confirmation");if(!panel||panel.dataset.detailsReady==="true")return;const codeNode=panel.querySelector(".request-code"),code=codeNode?codeNode.textContent.trim():"",request=getRequestByCode(code);if(!request)return;const timestamp=dateParts(request.updatedAt||request.createdAt),status=request.status==="payment_review"?"Pago en revisión":String(request.status||"Pendiente");const intro=panel.querySelector("h2 + p");if(intro)intro.textContent="Recibimos tu comprobante. Guardá estos datos para consultar el estado.";const summary=document.createElement("div");summary.className="confirmation-summary";summary.innerHTML='<div class="confirmation-summary-item"><small>Código</small><strong>'+escapeText(request.code)+'</strong></div><div class="confirmation-summary-item"><small>Servicio</small><strong>'+escapeText(request.serviceName)+'</strong></div><div class="confirmation-summary-item"><small>Fecha</small><strong>'+escapeText(timestamp.date)+'</strong></div><div class="confirmation-summary-item"><small>Hora</small><strong>'+escapeText(timestamp.time)+'</strong></div><div class="confirmation-summary-item"><small>Estado</small><strong>'+escapeText(status)+'</strong></div>';const oldServiceStatus=codeNode.nextElementSibling;if(oldServiceStatus&&oldServiceStatus.tagName==="P")oldServiceStatus.remove();codeNode.insertAdjacentElement("afterend",summary);const actions=panel.querySelector(".confirmation-actions");if(actions){const trackingButton=actions.querySelector('[data-action="track-request"]');if(trackingButton)trackingButton.textContent="Ver estado";const copyButton=actions.querySelector('[data-action="copy-code"]');if(copyButton)copyButton.textContent="Copiá código";}panel.dataset.detailsReady="true";}
