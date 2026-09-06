@@ -139,7 +139,7 @@
     (function(){
       "use strict";
       const REQUESTS_KEY="tramipago_requests_v1";
-      const cardMeta={"antecedentes-penales":{title:"Antecedentes Penales",subtitle:"Certificado online"},"constancias-anses":{title:"ANSES",subtitle:"CODEM + Negativa"},"arca-monotributo":{title:"ARCA",subtitle:"Monotributo y VEP"},"informe-vehicular":{title:"Informe vehicular",subtitle:"Dominio + deudas"},"partidas-pba":{title:"Partidas",subtitle:"Registro Civil PBA"},"arba-inmobiliario":{title:"ARBA / Inmobiliario",subtitle:"Deuda + plancheta"}};
+      const cardMeta={"antecedentes-penales":{title:"Antecedentes Penales",subtitle:"Certificado online"},"constancias-anses":{title:"ANSES",subtitle:"CODEM + Negativa"},"arca-monotributo":{title:"ARCA",subtitle:"Monotributo y VEP"},"informe-vehicular":{title:"Informe vehicular",subtitle:"Dominio + deudas"},"partidas-pba":{title:"Partidas",subtitle:"Registro Civil"},"arba-inmobiliario":{title:"ARBA / Inmobiliario",subtitle:"Deuda + plancheta"}};
       function normalize(value){return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();}
       function readRequests(){try{return JSON.parse(localStorage.getItem(REQUESTS_KEY)||"[]");}catch(_){return[];}}
       function getRequestByCode(code){const normalized=String(code||"").trim().toUpperCase();return readRequests().find(item=>String(item.code||"").toUpperCase()===normalized)||null;}

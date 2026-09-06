@@ -41,7 +41,7 @@
       id: "partidas-pba",
       name: "Partidas",
       description: "Nacimiento, matrimonio, unión convivencial y defunción de la Provincia de Buenos Aires.",
-      image: "assets/partidas-pba-v4.svg",
+      image: "assets/partidas-familia-final.webp",
       serviceIds: ["partidas"],
       directServiceId: "partidas"
     }
