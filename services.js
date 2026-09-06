@@ -39,10 +39,11 @@
     },
     {
       id: "partidas-pba",
-      name: "Partidas PBA",
-      description: "Partidas de nacimiento, matrimonio, unión convivencial y defunción de la Provincia de Buenos Aires.",
+      name: "Partidas",
+      description: "Nacimiento, matrimonio, unión convivencial y defunción de la Provincia de Buenos Aires.",
       image: "assets/partidas-pba-v4.svg",
-      serviceIds: ["partidas"]
+      serviceIds: ["partidas"],
+      directServiceId: "partidas"
     }
   ];
 
@@ -171,51 +172,68 @@
     {
       id: "partidas",
       codePrefix: "PA",
-      name: "Partidas PBA",
-      shortDescription: "Nacimiento, matrimonio, unión convivencial y defunción de la Provincia de Buenos Aires.",
-      description: "Gestión TramiPago: $15.000. Los importes oficiales del organismo no están incluidos y se informan solo si corresponden. Con datos, el plazo oficial es de hasta 10 días hábiles. Si requiere búsqueda, el plazo oficial es de hasta 20 días hábiles; la búsqueda se abona antes de iniciarla y puede resultar negativa.",
+      name: "Partidas",
+      shortDescription: "Nacimiento, matrimonio, unión convivencial o defunción de la Provincia de Buenos Aires.",
+      description: "Elegí el tipo de partida y si contás con los datos. Después completá únicamente la información necesaria para tu caso.",
+      resultDelivery: "whatsapp-pdf",
       active: true,
       requirements: [
         "La partida debe estar inscripta en la Provincia de Buenos Aires.",
-        "Nombre y apellido del titular.",
-        "Partido y año exacto o aproximado de inscripción.",
-        "Si conocés DNI, LC o LE, ingresalo. Si no lo tenés, la solicitud puede requerir búsqueda."
+        "La solicitud corresponde a una partida común."
       ],
       components: ["Nacimiento", "Matrimonio", "Unión convivencial", "Defunción"],
       officialFee: 0,
-      priceField: "serviceOption",
-      priceOptions: [{ value: "partida", label: "Gestión de partida", amount: 15000, duration: "Hasta 10 días hábiles; con búsqueda, hasta 20" }],
+      priceField: "dataMode",
+      priceOptions: [
+        { value: "with-data", label: "Tengo los datos", amount: 15000, duration: "Hasta 10 días hábiles" },
+        { value: "without-data", label: "No tengo los datos", amount: 20000, duration: "Hasta 20 días hábiles" }
+      ],
       fields: [
-        { id: "partType", label: "Tipo de partida", type: "select", required: true, options: [
+        { id: "partType", label: "¿Qué partida necesitás?", type: "choice", required: true, options: [
           { value: "birth", label: "Nacimiento" },
           { value: "marriage", label: "Matrimonio" },
           { value: "cohabitation", label: "Unión convivencial" },
           { value: "death", label: "Defunción" }
         ] },
-        { id: "recordHolderFullName", label: "Nombre y apellido del titular de la partida", type: "text", required: true },
-        { id: "documentType", label: "Tipo de documento del titular (si lo conocés)", type: "select", required: false, options: [
-          { value: "dni", label: "DNI" },
-          { value: "lc", label: "Libreta Cívica" },
-          { value: "le", label: "Libreta de Enrolamiento" }
+        { id: "dataMode", label: "¿Tenés los datos de la partida?", type: "select", required: true, options: [
+          { value: "with-data", label: "Tengo los datos — $15.000" },
+          { value: "without-data", label: "No tengo los datos — $20.000" }
         ] },
-        { id: "documentNumber", label: "Número de documento del titular (si lo conocés)", type: "text", required: false, inputmode: "numeric" },
-        { id: "gender", label: "Sexo / género del titular", type: "select", required: true, options: [
+
+        { id: "recordHolderFullName", label: "Nombre y apellido del titular", type: "text", required: false },
+        { id: "gender", label: "Sexo / género del titular", type: "select", required: false, options: [
           { value: "female", label: "Femenino" },
           { value: "male", label: "Masculino" },
           { value: "x", label: "X / no binario" }
         ] },
-        { id: "registrationDistrict", label: "Partido donde fue inscripta", type: "text", required: true },
-        { id: "registrationYear", label: "Año exacto o aproximado", type: "text", required: true, placeholder: "Ej.: 1985 o 1984-1986" },
-        { id: "actNumber", label: "Número de acta (si lo conocés)", type: "text", required: false, inputmode: "numeric" },
+
+        { id: "documentType", label: "Tipo de documento", type: "select", required: false, options: [
+          { value: "dni", label: "DNI" },
+          { value: "lc", label: "Libreta Cívica" },
+          { value: "le", label: "Libreta de Enrolamiento" }
+        ] },
+        { id: "documentNumber", label: "Número de documento", type: "text", required: false, inputmode: "numeric" },
+        { id: "registrationYearExact", label: "Año de inscripción", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 1985" },
+        { id: "delegation", label: "Delegación donde fue inscripta", type: "text", required: false },
+        { id: "actNumber", label: "Número de acta", type: "text", required: false, inputmode: "numeric" },
+
+        { id: "registrationDistrict", label: "Partido donde fue inscripta", type: "text", required: false },
+        { id: "registrationYearApprox", label: "Año exacto o aproximado", type: "text", required: false, placeholder: "Ej.: 1985 o 1984-1986" },
         { id: "bookNumber", label: "Número de tomo (si lo conocés)", type: "text", required: false },
+        { id: "secondPersonName", label: "Nombre y apellido de la otra persona (opcional)", type: "text", required: false },
         { id: "parentOne", label: "Nombre y apellido de un progenitor (opcional)", type: "text", required: false },
         { id: "parentTwo", label: "Nombre y apellido del otro progenitor (opcional)", type: "text", required: false },
-        { id: "purpose", label: "¿Para qué trámite necesitás la partida?", type: "text", required: true },
         { id: "previousAct", label: "Copia de una partida anterior (opcional)", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
-        { id: "observations", label: "Observaciones (opcional)", type: "textarea", required: false },
-        { id: "fullName", label: "Nombre y apellido de quien solicita", type: "text", required: true, autocomplete: "name" },
-        { id: "email", label: "Correo electrónico", type: "email", required: true, autocomplete: "email" },
-        { id: "whatsapp", label: "WhatsApp", type: "tel", required: true, placeholder: "Ej.: 11 1234-5678 (sin +54 9)", autocomplete: "tel" },
+
+        { id: "purpose", label: "¿Para qué trámite necesitás la partida?", type: "text", required: false },
+        { id: "fullName", label: "Tu nombre y apellido", type: "text", required: false, autocomplete: "name" },
+        { id: "whatsapp", label: "WhatsApp", type: "tel", required: false, placeholder: "Ej.: 11 1234-5678 (sin +54 9)", autocomplete: "tel" },
+        {
+          id: "partidasEligibility",
+          label: "Confirmo que soy mayor de 18 años y que la partida es propia o tengo interés legítimo para solicitarla.",
+          type: "checkbox",
+          required: false
+        },
         authorizationField
       ]
     },
@@ -233,4 +251,232 @@
       fields: []
     }
   ];
+
+  /* Flujo progresivo y visual de Partidas */
+  const PARTIDAS_REQUESTS_KEY = "tramipago_requests_v1";
+  const PARTIDAS_ACTIVE_KEY = "tramipago_active_request_v1";
+
+  const partidasIcons = {
+    birth: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="17" r="7"></circle><path d="M14 37c1-8 5-12 10-12s9 4 10 12"></path><path d="M18 11c3-4 9-4 12 0"></path></svg>',
+    marriage: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="19" cy="25" r="10"></circle><circle cx="29" cy="25" r="10"></circle></svg>',
+    cohabitation: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 23 24 10l16 13"></path><path d="M13 21v17h22V21"></path><circle cx="20" cy="27" r="3"></circle><circle cx="28" cy="27" r="3"></circle><path d="M17 35c1-4 3-6 6-6M31 35c-1-4-3-6-6-6"></path></svg>',
+    death: '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="12" y="7" width="24" height="34" rx="3"></rect><path d="M18 16h12M18 22h12M18 28h8"></path><path d="M29 31c4 0 6 2 6 5-3 0-6-1-7-4-1 3-4 4-7 4 0-3 2-5 6-5"></path></svg>'
+  };
+
+  function getPartidasActiveRequest() {
+    try {
+      const ref = JSON.parse(sessionStorage.getItem(PARTIDAS_ACTIVE_KEY) || "null");
+      if (!ref || ref.serviceId !== "partidas") return null;
+      const requests = JSON.parse(localStorage.getItem(PARTIDAS_REQUESTS_KEY) || "[]");
+      return requests.find((item) => item.id === ref.id || item.code === ref.code) || null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function injectPartidasStyles() {
+    if (document.getElementById("partidas-dynamic-styles")) return;
+    const style = document.createElement("style");
+    style.id = "partidas-dynamic-styles";
+    style.textContent = `
+      #data-form .partidas-type-choice .choice-grid{
+        grid-template-columns:repeat(4,minmax(0,1fr));
+        gap:10px;
+      }
+      #data-form .partidas-type-choice .choice-option{
+        min-height:92px;
+        padding:12px 8px;
+      }
+      #data-form .partidas-type-choice .choice-option>span{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        gap:7px;
+        text-align:center;
+      }
+      #data-form .partidas-choice-icon{
+        display:inline-flex;
+        width:36px;
+        height:36px;
+        align-items:center;
+        justify-content:center;
+      }
+      #data-form .partidas-choice-icon svg{
+        width:34px;
+        height:34px;
+        fill:none;
+        stroke:currentColor;
+        stroke-width:2.4;
+        stroke-linecap:round;
+        stroke-linejoin:round;
+      }
+      #data-form .partidas-mode-note{
+        margin:8px 0 2px;
+        padding:10px 12px;
+        border-radius:8px;
+        background:#f6fafc;
+        border:1px solid var(--ui-border,#0B3D66);
+        font-size:.9rem;
+        font-weight:700;
+        line-height:1.35;
+      }
+      #data-form .field[hidden],#data-form .step-actions[hidden]{display:none!important;}
+      @media(max-width:680px){
+        #data-form .partidas-type-choice .choice-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function fieldControl(form, name) {
+    const named = form.elements.namedItem(name);
+    if (!named) return { nodes: [], wrapper: null };
+    const nodes = named.length && !named.tagName ? Array.from(named) : [named];
+    return { nodes, wrapper: nodes[0]?.closest(".field") || null };
+  }
+
+  function setPartidasField(form, name, visible, required) {
+    const { nodes, wrapper } = fieldControl(form, name);
+    if (!wrapper) return;
+    wrapper.hidden = !visible;
+    nodes.forEach((node) => {
+      node.required = Boolean(visible && required);
+      node.disabled = !visible;
+    });
+  }
+
+  function setPartidasLabel(form, name, text, required) {
+    const { nodes, wrapper } = fieldControl(form, name);
+    if (!wrapper || !nodes.length) return;
+    const label = wrapper.querySelector(`label[for="${name}"]`);
+    if (label) label.textContent = `${text}${required ? " *" : ""}`;
+  }
+
+  function decoratePartType(form) {
+    const { wrapper } = fieldControl(form, "partType");
+    if (!wrapper) return;
+    wrapper.classList.add("partidas-type-choice");
+    wrapper.querySelectorAll('input[name="partType"]').forEach((input) => {
+      const span = input.closest("label")?.querySelector("span");
+      if (!span || span.querySelector(".partidas-choice-icon")) return;
+      const icon = document.createElement("span");
+      icon.className = "partidas-choice-icon";
+      icon.innerHTML = partidasIcons[input.value] || "";
+      span.prepend(icon);
+    });
+  }
+
+  function clearAutomaticSelections(form) {
+    if (form.dataset.partidasSelectionReady === "true") return;
+    const active = getPartidasActiveRequest();
+    if (!active) {
+      form.querySelectorAll('input[name="partType"],input[name="dataMode"]').forEach((input) => {
+        input.checked = false;
+      });
+    }
+    form.dataset.partidasSelectionReady = "true";
+  }
+
+  function syncPartidasForm(form) {
+    if (!form) return;
+    injectPartidasStyles();
+    decoratePartType(form);
+    clearAutomaticSelections(form);
+
+    const partType = form.querySelector('input[name="partType"]:checked')?.value || "";
+    const dataMode = form.querySelector('input[name="dataMode"]:checked')?.value || "";
+    const ready = Boolean(partType && dataMode);
+    const withData = dataMode === "with-data";
+    const withoutData = dataMode === "without-data";
+
+    setPartidasField(form, "dataMode", Boolean(partType), Boolean(partType));
+
+    [
+      "recordHolderFullName", "gender", "purpose", "fullName",
+      "whatsapp", "partidasEligibility", "authorization"
+    ].forEach((name) => setPartidasField(form, name, ready, ready));
+
+    setPartidasField(form, "documentType", withData, withData);
+    setPartidasField(form, "documentNumber", withData, withData);
+    setPartidasField(form, "registrationYearExact", withData, withData);
+    setPartidasField(form, "delegation", withData, withData);
+    setPartidasField(form, "actNumber", ready, withData);
+
+    setPartidasField(form, "registrationDistrict", withoutData, withoutData);
+    setPartidasField(form, "registrationYearApprox", withoutData, withoutData);
+    setPartidasField(form, "bookNumber", withoutData, false);
+    setPartidasField(form, "previousAct", withoutData, false);
+
+    setPartidasField(form, "parentOne", withoutData && partType === "birth", false);
+    setPartidasField(form, "parentTwo", withoutData && partType === "birth", false);
+    setPartidasField(form, "secondPersonName", withoutData && ["marriage", "cohabitation"].includes(partType), false);
+
+    const holderLabels = {
+      birth: "Nombre y apellido de la persona nacida",
+      marriage: "Nombre y apellido de uno de los cónyuges",
+      cohabitation: "Nombre y apellido de una de las personas convivientes",
+      death: "Nombre y apellido de la persona fallecida"
+    };
+    setPartidasLabel(form, "recordHolderFullName", holderLabels[partType] || "Nombre y apellido del titular", ready);
+
+    const secondLabels = {
+      marriage: "Nombre y apellido del otro cónyuge (opcional)",
+      cohabitation: "Nombre y apellido de la otra persona conviviente (opcional)"
+    };
+    if (secondLabels[partType]) setPartidasLabel(form, "secondPersonName", secondLabels[partType], false);
+
+    const noteAnchor = fieldControl(form, "dataMode").wrapper;
+    let note = form.querySelector(".partidas-mode-note");
+    if (dataMode && noteAnchor) {
+      if (!note) {
+        note = document.createElement("div");
+        note.className = "partidas-mode-note";
+        noteAnchor.insertAdjacentElement("afterend", note);
+      }
+      note.textContent = withData
+        ? "Tengo los datos: $15.000 · plazo oficial hasta 10 días hábiles."
+        : "No tengo los datos: $20.000 · plazo oficial hasta 20 días hábiles. La búsqueda puede resultar negativa.";
+      note.hidden = false;
+    } else if (note) {
+      note.hidden = true;
+    }
+
+    const actions = form.querySelector(".step-actions");
+    if (actions) actions.hidden = !ready;
+  }
+
+  function enhancePartidas() {
+    if (location.hash !== "#/tramite/partidas") return;
+    const form = document.getElementById("data-form");
+    if (!form) return;
+    if (form.dataset.partidasBound !== "true") {
+      form.dataset.partidasBound = "true";
+      form.addEventListener("change", () => syncPartidasForm(form));
+    }
+    syncPartidasForm(form);
+  }
+
+  document.addEventListener("click", function (event) {
+    const tile = event.target.closest('[data-action="select-family"][data-family-id="partidas-pba"]');
+    if (!tile) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    location.hash = "#/tramite/partidas";
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, true);
+
+  const partidasApp = document.getElementById("app");
+  if (partidasApp) {
+    let queued = false;
+    new MutationObserver(() => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        enhancePartidas();
+      });
+    }).observe(partidasApp, { childList: true, subtree: true });
+  }
+  window.addEventListener("hashchange", () => setTimeout(enhancePartidas, 0));
+  setTimeout(enhancePartidas, 0);
 })();
