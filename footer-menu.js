@@ -83,7 +83,7 @@
   function normalizeButtons(){
     const form=document.querySelector("#data-form");
     form?.querySelector('[data-action="back-step"]')?.remove();
-    setTextIfDifferent(form?.querySelector('button[type="submit"]'),"Continuar");
+    setTextIfDifferent(form?.querySelector('button[type="submit"]'),"Siguiente");
     const eligibility=document.querySelector("#eligibility-form");
     eligibility?.querySelector('[data-action="back-step"]')?.remove();
     const pay=document.querySelector("#payment-form");
