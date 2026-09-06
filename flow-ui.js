@@ -164,14 +164,13 @@
     panel.querySelectorAll(".notice").forEach(function (notice) {
       const text = notice.textContent || "";
       if (/datos de pago:/i.test(text)) notice.remove();
-      if (!config.demoMode && /modo prueba:/i.test(text)) notice.remove();
     });
 
     const box = document.createElement("div");
     box.className = "payment-access";
     box.innerHTML = `
       <div class="payment-qr-wrap">
-        <img class="payment-qr" src="${String(config.paymentQr || "assets/qr-modo-prueba.svg")}" alt="QR con datos de transferencia" />
+        <img class="payment-qr" src="${String(config.paymentQr || "assets/qr-tramipago-ok.svg")}" alt="QR con datos de transferencia" />
         <small>QR de transferencia</small>
       </div>
       <div class="payment-transfer">
