@@ -374,6 +374,37 @@
 .site-footer .legal-links a { font-weight: 500 !important; }
 .whatsapp-float { display: none !important; }
 
+/* Antecedentes Penales: menos scroll y agrupación lógica de campos. */
+#data-form .form-grid:has(input[name="adultEligibility"]) {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+#data-form .form-grid:has(input[name="adultEligibility"]) > .field {
+  grid-column: span 2;
+}
+#data-form .form-grid:has(input[name="adultEligibility"]) > .field.field-full {
+  grid-column: 1 / -1;
+}
+#data-form .form-grid:has(input[name="adultEligibility"]) > .field:has(input[name="adultEligibility"]),
+#data-form .form-grid:has(input[name="adultEligibility"]) > .field:has(input[name="argentineDniEligibility"]),
+#data-form .form-grid:has(input[name="adultEligibility"]) > .field:has(input[name="dniFile"]) {
+  grid-column: span 2;
+}
+#data-form .form-grid:has(input[name="adultEligibility"]) > .field:has(input[name="locality"]),
+#data-form .form-grid:has(input[name="adultEligibility"]) > .field:has(input[name="district"]) {
+  grid-column: span 1;
+}
+.field:has(input[type="file"]) > small:not(.existing-file):not(.existing-file-note) {
+  display: inline;
+  margin-top: 4px;
+  margin-right: 8px;
+}
+.field:has(input[type="file"]) > .upload-optimizer-note {
+  display: inline !important;
+  margin-left: 0 !important;
+}
+.existing-file,
+.existing-file-note { display: block !important; }
+
 @media (max-width: 980px) {
   :root { --home-tile-size: clamp(155px, 24vw, 190px); }
   .home-family-row { grid-template-columns: repeat(2, var(--home-tile-size)); }
@@ -398,6 +429,18 @@
   .service-summary { grid-template-columns: 1fr; }
   .requested-fields-grid,
   .config-main-grid { grid-template-columns: 1fr; }
+  #data-form .form-grid:has(input[name="adultEligibility"]) {
+    grid-template-columns: 1fr !important;
+  }
+  #data-form .form-grid:has(input[name="adultEligibility"]) > .field,
+  #data-form .form-grid:has(input[name="adultEligibility"]) > .field.field-full,
+  #data-form .form-grid:has(input[name="adultEligibility"]) > .field:has(input[name="adultEligibility"]),
+  #data-form .form-grid:has(input[name="adultEligibility"]) > .field:has(input[name="argentineDniEligibility"]),
+  #data-form .form-grid:has(input[name="adultEligibility"]) > .field:has(input[name="dniFile"]),
+  #data-form .form-grid:has(input[name="adultEligibility"]) > .field:has(input[name="locality"]),
+  #data-form .form-grid:has(input[name="adultEligibility"]) > .field:has(input[name="district"]) {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 520px) {
@@ -420,4 +463,3 @@
 @media (max-width: 340px) {
   .home-family-row { grid-template-columns: var(--home-tile-size); }
 }
-
