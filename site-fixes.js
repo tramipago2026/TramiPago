@@ -286,7 +286,7 @@
     if (!confirmation || confirmation.querySelector(".payment-review-note")) return;
     const note = document.createElement("div");
     note.className = "payment-review-note";
-    note.innerHTML = "<strong>Comprobante recibido.</strong> El pago queda en revisión. El plazo del trámite comienza cuando TramiPago confirma la acreditación.";
+    note.innerHTML = "<strong>Comprobante recibido.</strong> Pago en revisión. El plazo comienza cuando TramiPago confirma la acreditación.";
     confirmation.appendChild(note);
   }
 
