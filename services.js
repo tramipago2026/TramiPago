@@ -38,11 +38,11 @@
       serviceIds: ["arca-monotributo"]
     },
     {
-      id: "partidas-turnos",
-      name: "Partidas y Turnos",
-      description: "Solicitudes de partidas y gestión de turnos de licencia.",
-      image: "assets/partidas-turnos-v3.webp",
-      serviceIds: ["partidas", "turnos-licencia"]
+      id: "partidas-pba",
+      name: "Partidas PBA",
+      description: "Partidas de nacimiento, matrimonio, unión convivencial y defunción de la Provincia de Buenos Aires.",
+      image: "assets/partidas-pba-v4.svg",
+      serviceIds: ["partidas"]
     }
   ];
 
@@ -169,58 +169,53 @@
       }
     },
     {
-      id: "turnos-licencia",
-      codePrefix: "TL",
-      name: "Turnos de licencia",
-      shortDescription: "Gestión del turno según municipio y tipo de licencia.",
-      description: "Indicamos los datos necesarios y buscamos la opción correspondiente.",
-      active: false,
-      requirements: ["DNI del solicitante.", "Municipio y tipo de licencia."],
-      components: ["Revisión de requisitos", "Búsqueda de turno", "Confirmación"],
-      officialFee: null,
-      priceField: "serviceOption",
-      priceOptions: [{ value: "turno", label: "Gestión de turno", amount: null, duration: "Plazo a confirmar" }],
-      fields: [
-        ...contactFields.slice(0, 1),
-        { id: "dni", label: "DNI", type: "text", required: true, inputmode: "numeric" },
-        { id: "municipality", label: "Municipio", type: "select", required: true, options: [
-          { value: "jose-c-paz", label: "José C. Paz" },
-          { value: "san-miguel", label: "San Miguel" },
-          { value: "malvinas", label: "Malvinas Argentinas" },
-          { value: "moreno", label: "Moreno" },
-          { value: "lujan", label: "Luján" },
-          { value: "otro", label: "Otro municipio" }
-        ] },
-        { id: "licenseType", label: "Tipo de licencia", type: "select", required: true, options: [
-          { value: "first-time", label: "Primera licencia" },
-          { value: "renewal", label: "Renovación" },
-          { value: "upgrade", label: "Ampliación" }
-        ] },
-        ...contactFields.slice(1),
-        authorizationField
-      ]
-    },
-    {
       id: "partidas",
       codePrefix: "PA",
-      name: "Partidas",
-      shortDescription: "Nacimiento, convivencia, matrimonio y defunción en análisis para CABA y PBA.",
-      description: "Servicio en preparación mientras se validan tasas, plazos y requisitos por jurisdicción.",
-      active: false,
-      requirements: ["Tipo de partida.", "Jurisdicción y datos registrales disponibles."],
-      components: ["Partida de nacimiento", "Unión convivencial", "Partida de matrimonio", "Partida de defunción"],
-      officialFee: null,
+      name: "Partidas PBA",
+      shortDescription: "Nacimiento, matrimonio, unión convivencial y defunción de la Provincia de Buenos Aires.",
+      description: "Gestión TramiPago: $15.000. Los importes oficiales del organismo no están incluidos y se informan solo si corresponden. Con datos, el plazo oficial es de hasta 10 días hábiles. Si requiere búsqueda, el plazo oficial es de hasta 20 días hábiles; la búsqueda se abona antes de iniciarla y puede resultar negativa.",
+      active: true,
+      requirements: [
+        "La partida debe estar inscripta en la Provincia de Buenos Aires.",
+        "Nombre y apellido del titular.",
+        "Partido y año exacto o aproximado de inscripción.",
+        "Si conocés DNI, LC o LE, ingresalo. Si no lo tenés, la solicitud puede requerir búsqueda."
+      ],
+      components: ["Nacimiento", "Matrimonio", "Unión convivencial", "Defunción"],
+      officialFee: 0,
       priceField: "serviceOption",
-      priceOptions: [{ value: "partida", label: "Solicitud de partida", amount: null, duration: "Plazo a confirmar" }],
+      priceOptions: [{ value: "partida", label: "Gestión de partida", amount: 15000, duration: "Hasta 10 días hábiles; con búsqueda, hasta 20" }],
       fields: [
         { id: "partType", label: "Tipo de partida", type: "select", required: true, options: [
           { value: "birth", label: "Nacimiento" },
-          { value: "cohabitation", label: "Unión convivencial" },
           { value: "marriage", label: "Matrimonio" },
+          { value: "cohabitation", label: "Unión convivencial" },
           { value: "death", label: "Defunción" }
         ] },
-        { id: "details", label: "Datos que conozcas sobre la partida", type: "textarea", required: true, placeholder: "Localidad, fecha aproximada y nombres completos..." },
-        ...contactFields,
+        { id: "recordHolderFullName", label: "Nombre y apellido del titular de la partida", type: "text", required: true },
+        { id: "documentType", label: "Tipo de documento del titular (si lo conocés)", type: "select", required: false, options: [
+          { value: "dni", label: "DNI" },
+          { value: "lc", label: "Libreta Cívica" },
+          { value: "le", label: "Libreta de Enrolamiento" }
+        ] },
+        { id: "documentNumber", label: "Número de documento del titular (si lo conocés)", type: "text", required: false, inputmode: "numeric" },
+        { id: "gender", label: "Sexo / género del titular", type: "select", required: true, options: [
+          { value: "female", label: "Femenino" },
+          { value: "male", label: "Masculino" },
+          { value: "x", label: "X / no binario" }
+        ] },
+        { id: "registrationDistrict", label: "Partido donde fue inscripta", type: "text", required: true },
+        { id: "registrationYear", label: "Año exacto o aproximado", type: "text", required: true, placeholder: "Ej.: 1985 o 1984-1986" },
+        { id: "actNumber", label: "Número de acta (si lo conocés)", type: "text", required: false, inputmode: "numeric" },
+        { id: "bookNumber", label: "Número de tomo (si lo conocés)", type: "text", required: false },
+        { id: "parentOne", label: "Nombre y apellido de un progenitor (opcional)", type: "text", required: false },
+        { id: "parentTwo", label: "Nombre y apellido del otro progenitor (opcional)", type: "text", required: false },
+        { id: "purpose", label: "¿Para qué trámite necesitás la partida?", type: "text", required: true },
+        { id: "previousAct", label: "Copia de una partida anterior (opcional)", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
+        { id: "observations", label: "Observaciones (opcional)", type: "textarea", required: false },
+        { id: "fullName", label: "Nombre y apellido de quien solicita", type: "text", required: true, autocomplete: "name" },
+        { id: "email", label: "Correo electrónico", type: "email", required: true, autocomplete: "email" },
+        { id: "whatsapp", label: "WhatsApp", type: "tel", required: true, placeholder: "Ej.: 11 1234-5678 (sin +54 9)", autocomplete: "tel" },
         authorizationField
       ]
     },
