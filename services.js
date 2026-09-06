@@ -15,12 +15,12 @@
 
   window.TRAMI_CONFIG = {
     whatsappNumber: "5491167083232",
-    alias: "MODO PRUEBA",
-    paymentCvu: "",
-    paymentHolder: "No realizar pagos",
-    paymentQr: "",
-    paymentNote: "Versión de prueba: no realices transferencias.",
-    demoMode: true,
+    alias: "TRAMIPAGO",
+    paymentCvu: "0000003100004971102062",
+    paymentHolder: "Christian Marcelo Adriano Montiel",
+    paymentQr: "assets/qr-tramipago-ok.svg",
+    paymentNote: "Transferí el total indicado y cargá el comprobante.",
+    demoMode: false,
     maxLocalFileBytes: 1500000
   };
 
@@ -132,13 +132,14 @@
       codePrefix: "AN",
       name: "Constancias ANSES",
       shortDescription: "CODEM + Certificación Negativa en un solo pedido.",
-      description: "Ingresá el CUIL y un WhatsApp de contacto.",
+      description: "Ingresá el CUIL y un WhatsApp de contacto. Recibirás CODEM y Certificación Negativa en PDF por WhatsApp.",
+      resultDelivery: "whatsapp-pdf",
       active: true,
       requirements: ["CUIL del titular.", "WhatsApp de contacto."],
       components: ["CODEM", "Certificación Negativa por el período máximo disponible"],
       officialFee: 0,
       priceField: "serviceOption",
-      priceOptions: [{ value: "constancias", label: "CODEM + Certificación Negativa", amount: 3000, duration: "Gestión online" }],
+      priceOptions: [{ value: "constancias", label: "CODEM + Certificación Negativa", amount: 2000, duration: "Entrega en PDF por WhatsApp" }],
       fields: [
         { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-3" },
         ...contactFields.slice(2),
@@ -156,7 +157,7 @@
       components: ["Estado de deuda inmobiliaria", "Copia de plancheta catastral"],
       officialFee: 0,
       priceField: "serviceOption",
-      priceOptions: [{ value: "debt-plan", label: "Deuda + plancheta", amount: 25000, duration: "Sujeto a disponibilidad de ARBA" }],
+      priceOptions: [{ value: "debt-plan", label: "Deuda + plancheta", amount: 15000, duration: "Sujeto a disponibilidad de ARBA" }],
       fields: [
         { id: "propertyDocument", label: "Foto de boleta o documento del inmueble", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
         { id: "propertyDistrict", label: "Partido", type: "text", required: false },
