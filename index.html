@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="TramiPago: trámites online con seguimiento." />
   <title>TramiPago | Inicio</title>
-  <link rel="stylesheet" href="site.css?v=20260903-1024" />
-  <link rel="stylesheet" href="ui.css?v=20260903-1024" />
+  <link rel="stylesheet" href="site.css?v=20260905-2226" />
+  <link rel="stylesheet" href="ui.css?v=20260905-2226" />
 
   <style>
     :root {
@@ -140,7 +140,7 @@
     .button.button-primary,
     .family-service-card .button.button-primary {
       color: var(--white);
-      background: var(--blue-mid);
+      background: var(--green-action);
       border-color: var(--black);
       box-shadow: 0 4px 9px var(--shadow-black);
     }
@@ -150,9 +150,9 @@
     .family-service-card .button.button-primary:hover,
     .family-service-card .button.button-primary:focus-visible {
       color: var(--white);
-      background: #12537e;
+      background: var(--green-action-hover);
       border-color: var(--white);
-      box-shadow: 0 0 0 3px var(--focus-ring), 0 5px 11px var(--shadow-black);
+      box-shadow: 0 0 0 3px var(--green-ring), 0 5px 11px var(--shadow-black);
       outline: none;
       transform: translateY(-1px);
     }
@@ -523,11 +523,11 @@
     </div>
   </footer>
 
-  <script src="services.js?v=20260905-1603"></script>
-  <script src="flow-ui.js?v=20260905-1603"></script>
-  <script src="site-fixes.js?v=20260905-1603"></script>
-  <script src="footer-menu.js?v=20260905-1603"></script>
-  <script src="app.js?v=20260905-1603"></script>
+  <script src="services.js?v=20260905-2226"></script>
+  <script src="flow-ui.js?v=20260905-2226"></script>
+  <script src="site-fixes.js?v=20260905-2226"></script>
+  <script src="footer-menu.js?v=20260905-2226"></script>
+  <script src="app.js?v=20260905-2226"></script>
   <script>
     (function () {
       "use strict";
@@ -652,14 +652,17 @@
 
       function normalizeButtonLabels() {
         const replacements = {
-          "Crear solicitud": "Siguiente",
-          "Guardar y continuar": "Siguiente",
+          "Crear solicitud": "Continuar",
+          "Guardar y continuar": "Continuar",
+          "Siguiente": "Continuar",
           "Guardar cambios": "Guardá cambios",
           "Volver": "Atrás",
           "Consultar": "Consultá estado",
           "Consultar estado": "Consultá estado",
-          "Revisar datos": "Volver a datos",
-          "Informar pago": "Informá pago",
+          "Revisar datos": "Modificar datos",
+          "Volver a datos": "Modificar datos",
+          "Informar pago": "Informar pago",
+          "Informá pago": "Informar pago",
           "Revisar requisitos": "Revisá requisitos",
           "Copiar código": "Copiá código",
           "Enviar corrección": "Enviá corrección",
