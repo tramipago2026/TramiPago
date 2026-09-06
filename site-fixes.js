@@ -45,7 +45,7 @@
       .payment-access-v2{display:grid;grid-template-columns:1fr;gap:14px;margin:14px 0 16px}
       .payment-method-card{min-width:0;padding:14px;background:#f7fbfd;border:1px solid #c9dce8;border-radius:10px}
       .payment-method-card h3{margin:0 0 10px;color:#082A47;font-size:1rem}
-      .payment-qr-image{display:block;width:172px;height:172px;max-width:100%;margin:2px auto 8px;padding:7px;background:#fff;border:1px solid #d5e2ea;border-radius:8px}
+      
       .payment-method-card small{display:block;color:#607789;line-height:1.35}
       .payment-data-row{display:grid;grid-template-columns:78px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #e2ebf0}
       .payment-data-row:last-of-type{border-bottom:0}
@@ -61,8 +61,8 @@
       .final-opinion-cta{background:#effaf4;border:1px solid #a8dfbd;color:#124c2d}
       .final-opinion-cta a{display:inline-block;margin-top:7px;font-weight:700}
 
-      .payment-access{grid-template-columns:190px minmax(0,1fr)!important}
-      .payment-qr{width:166px!important;height:166px!important}
+      
+      
       .tracking-new-query{margin-top:16px;color:#103b68!important;background:#fff!important}
       .eligibility-list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
       .eligibility-question{min-width:0;margin:0!important;padding:13px 16px!important;border:2px solid #a8cde9!important;border-radius:999px!important}
@@ -79,7 +79,7 @@
 
       @media(max-width:760px){.service-quick-summary{display:block}.service-quick-summary span{display:block;margin-top:4px;text-align:left}}
       @media(max-width:760px){.service-summary,.form-grid{grid-template-columns:1fr!important}.form-grid .field-full,.anses-period-note{grid-column:auto!important}.payment-access-v2{grid-template-columns:1fr}}
-      @media(max-width:620px){.payment-access{grid-template-columns:1fr!important}.eligibility-list{grid-template-columns:1fr!important}.payment-data-row{grid-template-columns:72px minmax(0,1fr)}.payment-data-row .payment-copy{grid-column:2;justify-self:start}}
+      @media(max-width:620px){.eligibility-list{grid-template-columns:1fr!important}.payment-data-row{grid-template-columns:72px minmax(0,1fr)}.payment-data-row .payment-copy{grid-column:2;justify-self:start}}
     `;
     document.head.appendChild(style);
   }
