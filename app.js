@@ -85,7 +85,7 @@
 
     return {
       ...merged,
-      active: Boolean(merged.active && (window.TRAMI_CONFIG?.demoMode || hasCommercialData(merged)))
+      active: Boolean(merged.active && hasCommercialData(merged))
     };
   }
 
@@ -638,11 +638,6 @@
       return renderStage(service);
     }
     const pricing = request.pricing;
-    const demoMode = Boolean(window.TRAMI_CONFIG?.demoMode);
-    const demoWarning = demoMode
-      ? `<div class="notice notice-danger"><strong>MODO PRUEBA:</strong> no realices una transferencia real desde esta versión.</div>`
-      : "";
-
     return `
       <div class="panel">
         <div class="panel-header"><h2>Pago</h2><p>Tu solicitud ya existe. Guardá el código para consultar el estado.</p></div>
@@ -651,17 +646,15 @@
           <div class="summary-item"><small>Servicio</small><strong>${escapeHTML(service.name)}</strong></div>
           <div class="summary-item"><small>Total</small><strong>${formatARS(pricing.total)}</strong></div>
         </div>
-        ${demoWarning}
-        ${demoMode ? "" : `<div class="notice"><strong>Datos de pago:</strong> alias ${escapeHTML(window.TRAMI_CONFIG.alias)} · titular ${escapeHTML(window.TRAMI_CONFIG.paymentHolder)}.</div>`}
+        <div class="notice"><strong>Datos de pago:</strong> alias ${escapeHTML(window.TRAMI_CONFIG.alias)} · titular ${escapeHTML(window.TRAMI_CONFIG.paymentHolder)}.</div>
         <form id="payment-form">
-          ${demoMode ? `<input type="hidden" name="demoPayment" value="true" />` : `
-            <div class="field field-full payment-file">
-              <label for="receipt">Comprobante de pago *</label>
-              <input class="form-control" type="file" id="receipt" name="receipt" accept="image/*,.pdf" required />
-              <small>Archivo máximo: ${Math.round(MAX_LOCAL_FILE_BYTES / 100000) / 10} MB.</small>
-            </div>`}
+          <div class="field field-full payment-file">
+            <label for="receipt">Comprobante de pago *</label>
+            <input class="form-control" type="file" id="receipt" name="receipt" accept="image/*,.pdf" required />
+            <small>Archivo máximo: ${Math.round(MAX_LOCAL_FILE_BYTES / 100000) / 10} MB.</small>
+          </div>
           <div class="form-error" role="alert"></div>
-          ${renderActionBar("Revisar datos", demoMode ? "Simular pago" : "Informar pago")}
+          ${renderActionBar("Revisar datos", "Informar pago")}
         </form>
       </div>
     `;
@@ -674,7 +667,7 @@
       <div class="panel confirmation">
         <div class="confirmation-icon" aria-hidden="true">✓</div>
         <h2>Solicitud recibida</h2>
-        <p>${window.TRAMI_CONFIG?.demoMode ? "Prueba completada. Guardá el código para probar el seguimiento." : "Guardá este código para consultar las actualizaciones."}</p>
+        <p>Guardá este código para consultar las actualizaciones.</p>
         <div class="request-code">${escapeHTML(request.code)}</div>
         <p><strong>${escapeHTML(service.name)}</strong><br />${escapeHTML(statusLabel(request.status))}</p>
         <div class="hero-actions confirmation-actions">
@@ -1098,29 +1091,23 @@
     }
 
     if (form.id === "payment-form") {
-      const demoMode = Boolean(window.TRAMI_CONFIG?.demoMode);
       if (!form.checkValidity()) {
-        setFormError(form, demoMode ? "No se pudo completar la simulación." : "Cargá el comprobante para continuar.");
+        setFormError(form, "Cargá el comprobante para continuar.");
         form.reportValidity();
         return;
       }
 
       try {
         const input = form.elements.namedItem("receipt");
-        const stored = demoMode ? null : await fileToStoredFile(input?.files?.[0]);
+        const stored = await fileToStoredFile(input?.files?.[0]);
         const updated = updateRequest(state.requestId, {
           status: "payment_review",
-          payment: demoMode ? {
-            receiptName: "Simulación de pago",
-            size: 0,
-            type: "demo",
-            dataUrl: null
-          } : (stored ? {
+          payment: stored ? {
             receiptName: stored.name,
             size: stored.size,
             type: stored.type,
             dataUrl: stored.dataUrl
-          } : null)
+          } : null
         });
         clearActiveRequest();
         state.trackingResult = updated;
@@ -1128,7 +1115,7 @@
         render();
         window.scrollTo(0, 0);
       } catch (error) {
-        setFormError(form, error.message || (demoMode ? "No se pudo completar la simulación." : "No se pudo cargar el comprobante."));
+        setFormError(form, error.message || "No se pudo cargar el comprobante.");
       }
       return;
     }
