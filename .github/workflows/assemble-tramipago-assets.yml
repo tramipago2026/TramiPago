@@ -1,0 +1,124 @@
+name: Assemble TramiPago assets
+
+on:
+  push:
+    paths:
+      - 'tmp-assets/**'
+      - '.github/workflows/assemble-tramipago-assets.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble assets and update frontend
+        shell: bash
+        run: |
+          if [ ! -f tmp-assets/vehicle/00.b64 ] || [ ! -f tmp-assets/arca/00.b64 ]; then
+            echo "Temporary asset chunks already processed."
+            exit 0
+          fi
+
+          mkdir -p assets
+          cat tmp-assets/vehicle/*.b64 | base64 -d > assets/informe-vehicular-publicidad-v1.webp
+          cat tmp-assets/arca/*.b64 | base64 -d > assets/arca-familia-v4.webp
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('arca-family.js')
+          text = p.read_text(encoding='utf-8')
+          text = text.replace('image: "assets/arca-familia.svg"', 'image: "assets/arca-familia-v4.webp"')
+          p.write_text(text, encoding='utf-8')
+
+          js = Path('site-fixes.js')
+          text = js.read_text(encoding='utf-8')
+          marker = 'tramipago-vehicle-form-ad-v1'
+          if marker not in text:
+              text += r'''
+
+          /* tramipago-vehicle-form-ad-v1 */
+          (function () {
+            function syncVehicleFormAd() {
+              const content = document.querySelector('.process-content');
+              const isVehicle = location.hash === '#/tramite/informe-vehicular';
+              const existing = document.getElementById('tramipago-vehicle-form-ad-v1');
+
+              if (!isVehicle || !content) {
+                if (existing) existing.remove();
+                document.querySelectorAll('.process-content.vehicle-form-content').forEach((node) => node.classList.remove('vehicle-form-content'));
+                return;
+              }
+
+              const panel = content.querySelector(':scope > .panel');
+              if (!panel) return;
+              content.classList.add('vehicle-form-content');
+              if (existing) return;
+
+              const aside = document.createElement('aside');
+              aside.id = 'tramipago-vehicle-form-ad-v1';
+              aside.className = 'vehicle-form-ad';
+              aside.setAttribute('aria-label', 'Información del Informe vehicular');
+              aside.innerHTML = '<img src="assets/informe-vehicular-publicidad-v1.webp" alt="Información sobre el Informe vehicular de TramiPago" loading="lazy">';
+              content.appendChild(aside);
+            }
+
+            const observer = new MutationObserver(() => window.requestAnimationFrame(syncVehicleFormAd));
+            observer.observe(document.body, { childList: true, subtree: true });
+            window.addEventListener('hashchange', () => window.requestAnimationFrame(syncVehicleFormAd));
+            window.requestAnimationFrame(syncVehicleFormAd);
+          })();
+          '''
+              js.write_text(text, encoding='utf-8')
+
+          css = Path('site.css')
+          text = css.read_text(encoding='utf-8')
+          marker = 'tramipago-vehicle-form-ad-v1'
+          if marker not in text:
+              text += r'''
+
+          /* tramipago-vehicle-form-ad-v1 */
+          .process-content.vehicle-form-content {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) 300px !important;
+            gap: 20px !important;
+            align-items: start !important;
+          }
+          .vehicle-form-content > .panel { min-width: 0 !important; }
+          .vehicle-form-ad {
+            position: sticky;
+            top: 92px;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+          }
+          .vehicle-form-ad img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 10px 28px rgba(8, 42, 71, .16);
+          }
+          @media (max-width: 980px) {
+            .process-content.vehicle-form-content { grid-template-columns: 1fr !important; }
+            .vehicle-form-ad { position: static; max-width: 420px; }
+          }
+          '''
+              css.write_text(text, encoding='utf-8')
+
+          index = Path('index.html')
+          text = index.read_text(encoding='utf-8')
+          text = re.sub(r'\?v=20260906-\d{4}', '?v=20260906-1618', text)
+          index.write_text(text, encoding='utf-8')
+          PY
+
+          rm -rf tmp-assets
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/arca-familia-v4.webp assets/informe-vehicular-publicidad-v1.webp arca-family.js site-fixes.js site.css index.html tmp-assets
+          git commit -m "Actualiza imágenes ARCA y publicidad vehicular" || exit 0
+          git push
