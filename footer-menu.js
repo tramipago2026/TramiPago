@@ -87,8 +87,9 @@
     const eligibility=document.querySelector("#eligibility-form");
     eligibility?.querySelector('[data-action="back-step"]')?.remove();
     const pay=document.querySelector("#payment-form");
+    const demoMode=Boolean(window.TRAMI_CONFIG?.demoMode);
     setTextIfDifferent(pay?.querySelector('[data-action="back-step"]'),"Modificar datos");
-    setTextIfDifferent(pay?.querySelector('button[type="submit"]'),"Informar pago");
+    setTextIfDifferent(pay?.querySelector('button[type="submit"]'),demoMode?"Simular pago":"Informar pago");
     document.querySelectorAll('.process-top [data-action="back-home"],.family-page .family-back[data-action="back-home"],.ineligible-panel [data-action="back-home"]').forEach(el=>el.remove());
   }
 
@@ -96,8 +97,9 @@
     const payment=document.querySelector(".payment-access-v2");
     if(!payment)return;
     const cards=payment.querySelectorAll(".payment-method-card");
-    setTextIfDifferent(cards[0]?.querySelector("h3"),"Pago por QR");
-    setTextIfDifferent(cards[1]?.querySelector("h3"),"Pago por transferencia");
+    const demoMode=Boolean(window.TRAMI_CONFIG?.demoMode);
+    setTextIfDifferent(cards[0]?.querySelector("h3"),demoMode?"Simulación de pago":"Pago por QR");
+    if(!demoMode)setTextIfDifferent(cards[1]?.querySelector("h3"),"Pago por transferencia");
   }
 
   function showExistingFiles(){
