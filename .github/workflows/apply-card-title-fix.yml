@@ -1,0 +1,42 @@
+name: Apply card title fix
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-card-title-fix.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Ajustar títulos de tarjetas y quitar encabezados
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          index = Path('index.html')
+          s = index.read_text(encoding='utf-8')
+          replacement = '.catalog-card-title { color:var(--white);font-size:.78rem;font-weight:600;line-height:1.18;letter-spacing:.01em;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2; }'
+          s, n = re.subn(r'\.catalog-card-title\s*\{[^}]*\}', replacement, s, count=1)
+          if n != 1:
+              raise SystemExit('No se encontró la regla .catalog-card-title en index.html')
+          index.write_text(s, encoding='utf-8')
+
+          app = Path('app.js')
+          a = app.read_text(encoding='utf-8')
+          a = a.replace('          <h2 class="home-section-title">Trámites directos</h2>\n', '')
+          a = a.replace('          <h2 class="home-section-title">Familias de trámites</h2>\n', '')
+          app.write_text(a, encoding='utf-8')
+          PY
+
+          rm -f .github/workflows/apply-card-title-fix.yml
+          git config user.name 'tramipago2026'
+          git config user.email 'tramipago@gmail.com'
+          git add -A
+          git commit -m 'Reduce títulos blancos y elimina encabezados del inicio'
+          git push origin HEAD:main
