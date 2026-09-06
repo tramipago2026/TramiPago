@@ -282,9 +282,7 @@
 
       <section class="home-catalog" aria-label="Trámites y categorías">
         <div class="container">
-          <h2 class="home-section-title">Trámites directos</h2>
           <div class="home-direct-row">${directs}</div>
-          <h2 class="home-section-title">Familias de trámites</h2>
           <div class="home-family-row">${families}</div>
         </div>
       </section>
