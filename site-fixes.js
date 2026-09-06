@@ -42,7 +42,7 @@
       .form-grid .field-full{grid-column:1/-1!important}
 
       .anses-period-note{grid-column:1/-1!important;margin:0 0 2px;padding:10px 12px;border:1px solid #b8dbef;border-radius:9px;background:#eef8ff;color:#103b68;font-size:.9rem;line-height:1.4}
-      .payment-access-v2{display:grid;grid-template-columns:minmax(210px,.8fr) minmax(280px,1.4fr);gap:14px;margin:14px 0 16px}
+      .payment-access-v2{display:grid;grid-template-columns:1fr;gap:14px;margin:14px 0 16px}
       .payment-method-card{min-width:0;padding:14px;background:#f7fbfd;border:1px solid #c9dce8;border-radius:10px}
       .payment-method-card h3{margin:0 0 10px;color:#082A47;font-size:1rem}
       .payment-qr-image{display:block;width:172px;height:172px;max-width:100%;margin:2px auto 8px;padding:7px;background:#fff;border:1px solid #d5e2ea;border-radius:8px}
@@ -243,11 +243,6 @@
     const wrap = document.createElement("div");
     wrap.className = "payment-access-v2";
     wrap.innerHTML = `
-        <section class="payment-method-card">
-          <h3>Pago con QR</h3>
-          <img class="payment-qr-image" src="${config.paymentQr || ""}" alt="QR de transferencia TramiPago" />
-          <small>Escaneá el QR desde tu banco o billetera.</small>
-        </section>
         <section class="payment-method-card">
           <h3>Transferencia</h3>
           <div class="payment-data-row"><span>Alias</span><strong>${config.alias || "—"}</strong><button class="payment-copy" type="button" data-copy-payment="${config.alias || ""}">Copiar</button></div>
