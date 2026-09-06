@@ -364,7 +364,7 @@
     id: "arca-monotributo",
     name: "ARCA",
     description: "Monotributo, VEP, constancias y actualización de datos.",
-    image: "assets/arca-familia.svg",
+    image: "assets/arca-familia-final.webp",
     serviceIds: [
       "arca-constancia",
       "arca-vep",
