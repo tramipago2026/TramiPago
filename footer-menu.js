@@ -32,9 +32,9 @@
     inner.innerHTML=`
       <div class="footer-menu-grid">
         <section class="footer-menu-col"><h3>TRAMIPAGO</h3><a href="tramites.html#como-funciona">Cómo funciona</a><a href="tramites.html">Todos los trámites</a><a href="opiniones.html">Opiniones</a></section>
-        <section class="footer-menu-col"><h3>TRÁMITES</h3><a href="#/tramite/antecedentes-penales">Antecedentes Penales</a><a href="#/tramite/constancias-anses">ANSES</a><a href="#/tramite/informe-vehicular">Informe vehicular</a><a href="#/tramite/arba-inmobiliario">ARBA / Inmobiliario</a></section>
+        <section class="footer-menu-col"><h3>TRÁMITES</h3><a href="#/tramite/antecedentes-penales">Antecedentes Penales</a><a href="#/tramite/constancias-anses">ANSES</a><a href="#/familia/arca-monotributo">ARCA</a><a href="#/tramite/informe-vehicular">Informe vehicular</a><a href="#/tramite/arba-inmobiliario">ARBA / Inmobiliario</a><a href="#/tramite/partidas">Partidas PBA</a></section>
         <section class="footer-menu-col"><h3>ATENCIÓN</h3><a href="contacto.html">Contacto</a><a href="#/seguimiento">Estado del trámite</a><a href="https://wa.me/5491167083232" target="_blank" rel="noopener noreferrer">WhatsApp</a></section>
-        <section class="footer-menu-col"><h3>LEGAL</h3><a href="politica-privacidad.html">Política de Privacidad</a><a href="terminos-condiciones.html">Términos y Condiciones</a><a href="arrepentimiento.html">BOTÓN DE ARREPENTIMIENTO</a><a href="baja-servicio.html">BOTÓN DE BAJA DE SERVICIO</a><a href="https://www.argentina.gob.ar/node/41160" target="_blank" rel="noopener noreferrer">Defensa del Consumidor</a></section>
+        <section class="footer-menu-col"><h3>LEGAL</h3><a href="politica-privacidad.html">Política de Privacidad</a><a href="terminos-condiciones.html">Términos y Condiciones</a><a href="arrepentimiento.html">BOTÓN DE ARREPENTIMIENTO</a><a href="baja-servicio.html">BOTÓN DE BAJA DE SERVICIO</a><a href="https://www.argentina.gob.ar/servicio/iniciar-un-reclamo-ante-defensa-del-consumidor" target="_blank" rel="noopener noreferrer">Defensa del Consumidor</a></section>
       </div>
       <div class="footer-menu-bottom"><span>© 2026 TramiPago · Todos los derechos reservados</span><span>CUIT 20-25988733-0 · tramipago@gmail.com</span></div>`;
   }
@@ -53,6 +53,7 @@
       .button.button-primary:hover,.button.button-primary:focus-visible,.family-service-card .button.button-primary:hover,.family-service-card .button.button-primary:focus-visible{color:#fff!important;background:#126B3A!important;border-color:#fff!important;box-shadow:0 0 0 3px rgba(35,168,93,.24),0 5px 11px rgba(5,5,5,.28)!important;outline:none!important;transform:translateY(-1px)!important}
       .button.button-secondary{color:#082A47!important;background:#dceef8!important;border:2px solid #050505!important;box-shadow:0 4px 9px rgba(5,5,5,.22)!important;cursor:pointer!important}
       .button.button-secondary:hover,.button.button-secondary:focus-visible{color:#fff!important;background:#082A47!important;border-color:#29B6F6!important;box-shadow:0 0 0 3px rgba(41,182,246,.24),0 5px 11px rgba(5,5,5,.28)!important;outline:none!important;transform:translateY(-1px)!important}
+      .button[aria-busy="true"]{cursor:progress!important;opacity:.78!important;transform:none!important}
       .process-container{max-width:1040px!important}.process-top{margin-bottom:10px!important}.process-title h1{font-size:clamp(1.45rem,2.5vw,2rem)!important}.process-title p{font-size:.88rem!important;line-height:1.4!important}.process-content>.panel{padding:16px 18px!important}.panel-header{margin-bottom:10px!important}.panel-header h2{font-size:1.15rem!important}.panel-header p{font-size:.86rem!important}.service-summary{gap:8px!important;margin:10px 0!important}.service-summary-block{padding:9px 11px!important}.service-summary-block h3{font-size:.85rem!important;margin-bottom:5px!important}.service-summary-block li,.service-summary-option,.service-summary-row{font-size:.78rem!important;line-height:1.35!important}.form-grid{gap:9px 14px!important}.field label,.choice-field legend{font-size:.82rem!important}.form-control,.form-select{min-height:39px!important;padding:7px 9px!important;font-size:.88rem!important}.form-check{padding:7px 9px!important}.form-check-label,.privacy-help{font-size:.78rem!important;line-height:1.35!important}.step-actions{position:relative!important;z-index:2!important;margin-top:12px!important}.step-actions .button{min-height:40px!important}.stepper{margin:8px 0 12px!important}
       .payment-access{display:none!important}.payment-access-v2{grid-template-columns:minmax(210px,.78fr) minmax(300px,1.22fr)!important;gap:13px!important;margin:10px 0 12px!important}.payment-method-card{padding:12px!important;background:#f6fafc!important}.payment-method-card h3{margin-bottom:7px!important;font-size:.95rem!important}.payment-data-row{grid-template-columns:78px minmax(0,1fr) auto!important;padding:6px 0!important}.payment-data-row span{font-size:.75rem!important}.payment-data-row strong{font-size:.86rem!important}.payment-copy{min-height:28px!important;padding:3px 7px!important;box-shadow:none!important}
       .email-pair{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 14px}.email-pair>.field{min-width:0}.existing-file-note,.draft-restored-note,.payment-back-warning{display:block;margin-top:5px;padding:6px 8px;border-radius:7px;background:#eef8ff;border:1px solid #b8dbef;color:#103b68;font-size:.72rem;line-height:1.35}.existing-file-note strong{overflow-wrap:anywhere}.field input:invalid.user-touched,.field select:invalid.user-touched,.field textarea:invalid.user-touched{border-color:#b42318!important;box-shadow:0 0 0 2px rgba(180,35,24,.12)!important}.form-error.visible{display:block!important}
@@ -169,6 +170,7 @@
     const raw=String(input.value||"").trim(),digits=raw.replace(/\D/g,"");
     let message="";
     if(input.name==="cuil"&&raw&&digits.length!==11)message="Ingresá un CUIL de 11 dígitos.";
+    if(input.name==="cuit"&&raw&&digits.length!==11)message="Ingresá un CUIT de 11 dígitos.";
     if(input.name==="dni"&&raw&&(digits.length<7||digits.length>9))message="Revisá el DNI.";
     if(input.name==="whatsapp"&&raw&&(digits.length<10||digits.length>11))message="Ingresá código de área y número, sin +54 9.";
     if(["fullName","fatherFullName","motherFullName"].includes(input.name)&&raw&&!/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]{2}/.test(raw))message="Revisá este nombre.";
@@ -206,6 +208,30 @@
         form.reportValidity();
       },120);
     }else form.reportValidity();
+    return true;
+  }
+
+  function lockSubmit(form){
+    if(!form||!["eligibility-form","data-form","correction-form","payment-form","tracking-form"].includes(form.id))return true;
+    if(form.dataset.submitting==="true")return false;
+    form.dataset.submitting="true";
+    const buttons=[...form.querySelectorAll('button[type="submit"]')];
+    buttons.forEach(button=>{button.disabled=true;button.setAttribute("aria-busy","true");});
+    let observer=null;
+    const unlock=()=>{
+      if(observer){observer.disconnect();observer=null;}
+      if(!form.isConnected)return;
+      form.dataset.submitting="false";
+      buttons.forEach(button=>{button.disabled=false;button.removeAttribute("aria-busy");});
+    };
+    const error=form.querySelector(".form-error");
+    if(error){
+      observer=new MutationObserver(()=>{
+        if(error.classList.contains("visible")&&error.textContent.trim())unlock();
+      });
+      observer.observe(error,{attributes:true,childList:true,subtree:true,characterData:true});
+    }
+    window.setTimeout(unlock,10000);
     return true;
   }
 
@@ -285,6 +311,11 @@
       e.preventDefault();
       e.stopImmediatePropagation();
       showInvalidSubmit(form);
+      return;
+    }
+    if(!lockSubmit(form)){
+      e.preventDefault();
+      e.stopImmediatePropagation();
     }
   },true);
 
