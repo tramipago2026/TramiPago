@@ -463,3 +463,50 @@
 @media (max-width: 340px) {
   .home-family-row { grid-template-columns: var(--home-tile-size); }
 }
+
+/* Sistema compacto de títulos y fondo común para todas las pantallas dinámicas. */
+.site-main {
+  background:
+    radial-gradient(circle at 88% 10%, rgba(41, 182, 246, .10), transparent 24%),
+    linear-gradient(180deg, #e7f2f8 0%, #f2f7fa 54%, #eaf3f8 100%);
+}
+
+.tracking-page {
+  padding: 26px 0 52px;
+  background: transparent;
+}
+
+.family-page { padding-top: 26px; }
+.process-shell { padding-top: 22px; }
+
+.site-main .section-heading h1,
+.site-main .family-heading h1,
+.site-main .process-title h1 {
+  max-width: none;
+  margin-bottom: 6px;
+  font-size: clamp(1.65rem, 2.8vw, 2.2rem);
+  line-height: 1.08;
+  letter-spacing: -.025em;
+}
+
+.tracking-page .section-heading {
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.tracking-page .section-heading p {
+  margin: 0;
+  font-size: .95rem;
+}
+
+@media (max-width: 680px) {
+  .tracking-page { padding: 20px 0 40px; }
+  .family-page,
+  .process-shell { padding-top: 18px; }
+  .site-main .section-heading h1,
+  .site-main .family-heading h1,
+  .site-main .process-title h1 {
+    font-size: clamp(1.5rem, 7vw, 1.85rem);
+  }
+}
+
