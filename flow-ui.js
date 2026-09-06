@@ -169,10 +169,6 @@
     const box = document.createElement("div");
     box.className = "payment-access";
     box.innerHTML = `
-      <div class="payment-qr-wrap">
-        <img class="payment-qr" src="${String(config.paymentQr || "assets/qr-tramipago-ok.svg")}" alt="QR con datos de transferencia" />
-        <small>QR de transferencia</small>
-      </div>
       <div class="payment-transfer">
         <strong class="payment-transfer-title">Transferencia</strong>
         <div class="payment-data-list">
