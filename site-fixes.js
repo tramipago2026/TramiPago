@@ -308,8 +308,8 @@
 
     const result = document.querySelector(".tracking-result");
     if (!result || result.querySelector(".final-opinion-cta")) return;
-    const text = result.textContent || "";
-    if (/finalizado/i.test(text)) {
+    const currentStatus = result.querySelector(".status-badge")?.textContent || "";
+    if (/^\s*finalizado\s*$/i.test(currentStatus)) {
       const cta = document.createElement("div");
       cta.className = "final-opinion-cta";
       cta.innerHTML = '<strong>Trámite finalizado.</strong><br>Si querés, podés calificar tu experiencia.<br><a href="opiniones.html">Dejar una opinión</a>';
