@@ -96,8 +96,7 @@
     const payment=document.querySelector(".payment-access-v2");
     if(!payment)return;
     const cards=payment.querySelectorAll(".payment-method-card");
-    setTextIfDifferent(cards[0]?.querySelector("h3"),"Pago por QR");
-    setTextIfDifferent(cards[1]?.querySelector("h3"),"Pago por transferencia");
+    setTextIfDifferent(cards[0]?.querySelector("h3"),"Pago por transferencia");
   }
 
   function showExistingFiles(){
