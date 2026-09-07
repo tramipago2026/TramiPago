@@ -48,7 +48,7 @@
       id: "asistencia-digital",
       name: "Asistencia Digital",
       description: "Asistencia online para generar o recuperar accesos de ANSES, ARCA y Mi Argentina.",
-      image: "assets/asistencia-digital-v1.webp",
+      image: "assets/asistencia-digital-v2.webp",
       serviceIds: ["asistencia-digital"]
     }
   ];
