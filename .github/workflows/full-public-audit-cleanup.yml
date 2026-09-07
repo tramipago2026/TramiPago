@@ -1,0 +1,41 @@
+name: Full public audit cleanup
+on:
+  push:
+    paths:
+      - '.github/workflows/full-public-audit-cleanup.yml'
+permissions:
+  contents: write
+jobs:
+  audit-and-clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar dependencia de imagen
+        run: python -m pip install --disable-pip-version-check pillow
+      - name: Auditar, corregir y limpiar
+        run: python scripts/full_public_audit_cleanup.py
+      - name: Validar sintaxis JavaScript
+        run: |
+          node --check services.js
+          node --check arca-family.js
+          node --check flow-ui.js
+          node --check site-fixes.js
+          node --check footer-menu.js
+          node --check app.js
+          git diff --check
+      - name: Publicar cambios auditados
+        run: |
+          git config user.name 'tramipago2026'
+          git config user.email 'tramipago@gmail.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No hay cambios para publicar'
+            exit 0
+          fi
+          git commit -m 'Audita y limpia integralmente el sitio público'
+          git push origin HEAD:main
