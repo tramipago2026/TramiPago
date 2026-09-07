@@ -25,7 +25,7 @@
   window.TRAMI_DIRECTS = [
     { serviceId: "antecedentes-penales", name: "Antecedentes Penales", image: "assets/antecedentes-penales-v3.webp" },
     { serviceId: "constancias-anses", name: "ANSES", image: "assets/anses-v3.webp" },
-    { serviceId: "informe-vehicular", name: "Informe vehicular", image: "assets/informe-vehicular-v3.webp" },
+    { serviceId: "informe-vehicular", name: "Informe Vehicular", image: "assets/informe-vehicular-v3.webp" },
     { serviceId: "arba-inmobiliario", name: "ARBA / Inmobiliario", image: "assets/arba-inmobiliario-v3.webp" }
   ];
 
@@ -40,10 +40,16 @@
     {
       id: "partidas-pba",
       name: "Partidas",
-      description: "Nacimiento, matrimonio, unión convivencial y defunción de la Provincia de Buenos Aires.",
+      description: "Partidas de la Provincia de Buenos Aires y Ciudad de Buenos Aires.",
       image: "assets/partidas-familia-final.webp",
-      serviceIds: ["partidas"],
-      directServiceId: "partidas"
+      serviceIds: ["partidas", "partidas-caba"]
+    }
+    ,{
+      id: "asistencia-digital",
+      name: "Asistencia Digital",
+      description: "Asistencia online para generar o recuperar accesos de ANSES, ARCA y Mi Argentina.",
+      image: "assets/asistencia-digital-v1.webp",
+      serviceIds: ["asistencia-digital"]
     }
   ];
 
@@ -102,7 +108,7 @@
     {
       id: "informe-vehicular",
       codePrefix: "IV",
-      name: "Informe vehicular",
+      name: "Informe Vehicular",
       shortDescription: "Dominio, infracciones y deuda de patentes en una gestión.",
       description: "Ingresá el dominio y elegí Automotor o Moto. El paquete incluye informe de dominio, infracciones CABA/PBA y deuda de patentes CABA/PBA.",
       active: true,
@@ -172,7 +178,7 @@
     {
       id: "partidas",
       codePrefix: "PA",
-      name: "Partidas",
+      name: "Partidas PBA",
       shortDescription: "Nacimiento, matrimonio, unión convivencial o defunción de la Provincia de Buenos Aires.",
       description: "Elegí el tipo de partida y si contás con los datos. Después completá únicamente la información necesaria para tu caso.",
       resultDelivery: "whatsapp-pdf",
@@ -250,6 +256,49 @@
       priceOptions: [],
       fields: []
     }
+    ,{
+      id: "partidas-caba",
+      codePrefix: "PC",
+      name: "Partidas CABA",
+      shortDescription: "Partidas del Registro Civil de CABA.",
+      description: "Servicio en preparación. Requisitos, precio y plazo todavía no publicados.",
+      active: false,
+      requirements: [],
+      components: [],
+      officialFee: null,
+      priceField: "serviceOption",
+      priceOptions: [],
+      fields: []
+    }
+
+    ,{
+      id: "asistencia-digital",
+      codePrefix: "AD",
+      name: "Asistencia Digital",
+      shortDescription: "Generación o recuperación de accesos de ANSES, ARCA y Mi Argentina.",
+      description: "Elegí el acceso y el tipo de ayuda. TramiPago te acompaña en la gestión remota. Las validaciones de identidad, códigos y claves las realiza siempre el titular.",
+      active: true,
+      requirements: ["Ser titular del acceso.", "Tener disponibles tus medios de contacto para realizar las validaciones que correspondan.", "No compartir contraseñas con TramiPago."],
+      components: ["Asistencia online para ANSES, ARCA o Mi Argentina", "Generación o recuperación del acceso", "Reintegro del servicio si, agotadas las vías remotas, el organismo exige una instancia presencial"],
+      officialFee: 0,
+      priceField: "serviceOption",
+      priceOptions: [{ value: "assistance", label: "Asistencia Digital", amount: 5000, duration: "Asistencia online" }],
+      fields: [
+        { id: "platform", label: "¿Con qué acceso necesitás ayuda?", type: "choice", required: true, options: [
+          { value: "anses", label: "ANSES" },
+          { value: "arca", label: "ARCA" },
+          { value: "miargentina", label: "Mi Argentina" }
+        ] },
+        { id: "assistanceType", label: "¿Qué necesitás hacer?", type: "choice", required: true, options: [
+          { value: "generate", label: "Generar acceso" },
+          { value: "recover", label: "Recuperar acceso" }
+        ] },
+        ...contactFields,
+        { id: "serviceFeeAcceptance", label: "Entiendo y acepto que el importe abonado corresponde al servicio de gestión, asistencia, acompañamiento y/o entrega, según corresponda, brindado por TramiPago.", type: "checkbox", required: true },
+        authorizationField
+      ]
+    }
+
   ];
 
   /* Flujo progresivo y visual de Partidas */
@@ -456,12 +505,14 @@
     syncPartidasForm(form);
   }
 
+
+
   document.addEventListener("click", function (event) {
-    const tile = event.target.closest('[data-action="select-family"][data-family-id="partidas-pba"]');
+    const tile = event.target.closest('[data-action="select-family"][data-family-id="asistencia-digital"]');
     if (!tile) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    location.hash = "#/tramite/partidas";
+    location.hash = "#/tramite/asistencia-digital";
     window.scrollTo({ top: 0, behavior: "auto" });
   }, true);
 

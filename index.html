@@ -75,7 +75,7 @@
     .home-catalog { padding:4px 0 22px;background:#edf4f8; }
     .home-section-title { margin:10px 0 8px;color:var(--navy-deep);font-size:1.25rem;text-align:center; }
     .home-direct-row,.home-family-row { display:grid;grid-template-columns:repeat(4,154px);justify-content:center;gap:14px;align-items:stretch; }
-    .home-family-row { grid-template-columns: repeat(2, 154px); }
+    .home-family-row { grid-template-columns: repeat(3, 154px); }
     .home-catalog .home-tile { position:relative;display:flex;flex-direction:column;width:154px;height:auto;aspect-ratio:4/5;padding:0;overflow:hidden;background:var(--surface);border:0;border-radius:9px;box-shadow:0 5px 16px var(--shadow-soft); }
     .home-catalog .home-tile:hover,.home-catalog .home-tile:focus-visible { box-shadow:0 0 0 3px var(--focus-ring),0 8px 20px var(--shadow-strong);transform:translateY(-3px);outline:none; }
     .home-catalog .card-photo,.home-catalog .home-primary-logo { position:relative;display:block;width:100%;height:66%!important;flex:0 0 66%!important;overflow:hidden;border-radius:0;background-position:center;background-size:cover; }
@@ -139,7 +139,7 @@
     (function(){
       "use strict";
       const REQUESTS_KEY="tramipago_requests_v1";
-      const cardMeta={"antecedentes-penales":{title:"Antecedentes Penales",subtitle:"Certificado online"},"constancias-anses":{title:"ANSES",subtitle:"CODEM + Negativa"},"arca-monotributo":{title:"ARCA",subtitle:"Monotributo y VEP"},"informe-vehicular":{title:"Informe vehicular",subtitle:"Dominio + deudas"},"partidas-pba":{title:"Partidas",subtitle:"Registro Civil"},"arba-inmobiliario":{title:"ARBA / Inmobiliario",subtitle:"Deuda + plancheta"}};
+      const cardMeta={"antecedentes-penales":{title:"Antecedentes Penales",subtitle:"Certificado Online"},"constancias-anses":{title:"ANSES",subtitle:"CODEM + Negativa"},"arca-monotributo":{title:"ARCA",subtitle:"Monotributo / VEP"},"informe-vehicular":{title:"Informe Vehicular",subtitle:"Dominio + Infracciones + Patentes"},"partidas-pba":{title:"Partidas",subtitle:"PBA / CABA"},"arba-inmobiliario":{title:"ARBA / Inmobiliario",subtitle:"Deuda + Plancheta"},"asistencia-digital":{title:"Asistencia Digital",subtitle:"ANSES / ARCA / Mi Argentina"}};
       function normalize(value){return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();}
       function readRequests(){try{return JSON.parse(localStorage.getItem(REQUESTS_KEY)||"[]");}catch(_){return[];}}
       function getRequestByCode(code){const normalized=String(code||"").trim().toUpperCase();return readRequests().find(item=>String(item.code||"").toUpperCase()===normalized)||null;}
