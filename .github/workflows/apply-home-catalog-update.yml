@@ -1,8 +1,8 @@
-name: Apply home catalog update
+name: Apply catalog update
 on:
   push:
-    paths:
-      - '.github/workflows/apply-home-catalog-update.yml'
+    branches:
+      - main
 permissions:
   contents: write
 jobs:
@@ -12,122 +12,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Aplicar textos y nuevo botón
-        shell: bash
+      - name: Aplicar actualización
+        run: python3 scripts/apply-home-catalog-update.py
+      - name: Guardar y limpiar
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-
-          # ----- index.html -----
-          index = Path('index.html')
-          s = index.read_text(encoding='utf-8')
-
-          s = s.replace('.home-family-row { grid-template-columns: repeat(2, 154px); }',
-                        '.home-family-row { grid-template-columns: repeat(3, 154px); }')
-
-          new_meta = 'const cardMeta={"antecedentes-penales":{title:"Antecedentes Penales",subtitle:"Certificado Online"},"constancias-anses":{title:"ANSES",subtitle:"CODEM + Negativa"},"arca-monotributo":{title:"ARCA",subtitle:"Monotributo / VEP"},"informe-vehicular":{title:"Informe Vehicular",subtitle:"Dominio + Infracciones + Patentes"},"partidas-pba":{title:"Partidas",subtitle:"PBA / CABA"},"arba-inmobiliario":{title:"ARBA / Inmobiliario",subtitle:"Deuda + Plancheta"},"asistencia-digital":{title:"Asistencia Digital",subtitle:"ANSES / ARCA / Mi Argentina"}};'
-          s, n = re.subn(r'const cardMeta=\{.*?\};', new_meta, s, count=1)
-          if n != 1:
-              raise SystemExit('No se encontró cardMeta en index.html')
-          index.write_text(s, encoding='utf-8')
-
-          # ----- services.js -----
-          services = Path('services.js')
-          t = services.read_text(encoding='utf-8')
-
-          t = t.replace('{ serviceId: "informe-vehicular", name: "Informe vehicular", image: "assets/informe-vehicular-v3.webp" }',
-                        '{ serviceId: "informe-vehicular", name: "Informe Vehicular", image: "assets/informe-vehicular-v3.webp" }')
-
-          # Actualizar familia Partidas para PBA / CABA.
-          t = t.replace('description: "Nacimiento, matrimonio, unión convivencial y defunción de la Provincia de Buenos Aires.",\n      image: "assets/partidas-familia-final.webp",\n      serviceIds: ["partidas"],',
-                        'description: "Partidas de la Provincia de Buenos Aires y Ciudad de Buenos Aires.",\n      image: "assets/partidas-familia-final.webp",\n      serviceIds: ["partidas", "partidas-caba"],')
-
-          # Agregar familia Asistencia Digital antes del cierre de TRAMI_FAMILIES.
-          family_marker = '  ];\n\n  window.TRAMI_SERVICES = ['
-          if 'id: "asistencia-digital"' not in t.split('window.TRAMI_SERVICES = [', 1)[0]:
-              family_block = '''    ,{
-      id: "asistencia-digital",
-      name: "Asistencia Digital",
-      description: "Asistencia online para generar o recuperar accesos de ANSES, ARCA y Mi Argentina.",
-      image: "assets/asistencia-digital-v1.webp",
-      serviceIds: ["asistencia-digital"]
-    }
-'''
-              if family_marker not in t:
-                  raise SystemExit('No se encontró cierre de TRAMI_FAMILIES')
-              t = t.replace(family_marker, family_block + '  ];\n\n  window.TRAMI_SERVICES = [', 1)
-
-          # Uniformar nombre del servicio vehicular.
-          t = re.sub(r'(id: "informe-vehicular",\s*\n\s*codePrefix: "IV",\s*\n\s*name: )"Informe vehicular"', r'\1"Informe Vehicular"', t, count=1)
-
-          # Hacer explícito que el servicio existente de Partidas es PBA.
-          t = re.sub(r'(id: "partidas",\s*\n\s*codePrefix: "PA",\s*\n\s*name: )"Partidas"', r'\1"Partidas PBA"', t, count=1)
-
-          # Agregar Partidas CABA como opción visible pero todavía no habilitada,
-          # evitando publicar requisitos/precios no confirmados.
-          if 'id: "partidas-caba"' not in t:
-              caba_service = '''
-    ,{
-      id: "partidas-caba",
-      codePrefix: "PC",
-      name: "Partidas CABA",
-      shortDescription: "Partidas del Registro Civil de CABA.",
-      description: "Servicio en preparación. Requisitos, precio y plazo todavía no publicados.",
-      active: false,
-      requirements: [],
-      components: [],
-      officialFee: null,
-      priceField: "serviceOption",
-      priceOptions: [],
-      fields: []
-    }
-'''
-              pos = t.rfind('\n  ];\n})();')
-              if pos == -1:
-                  raise SystemExit('No se encontró cierre de TRAMI_SERVICES')
-              t = t[:pos] + caba_service + t[pos:]
-
-          # Agregar servicio Asistencia Digital.
-          if re.search(r'\bid: "asistencia-digital"', t.split('window.TRAMI_SERVICES = [', 1)[1]) is None:
-              assistance_service = '''
-    ,{
-      id: "asistencia-digital",
-      codePrefix: "AD",
-      name: "Asistencia Digital",
-      shortDescription: "Asistencia para generar o recuperar accesos de ANSES, ARCA y Mi Argentina.",
-      description: "Elegí el acceso y el tipo de ayuda. TramiPago te acompaña en la gestión remota. Las validaciones de identidad, códigos y claves las realiza el titular.",
-      active: true,
-      requirements: ["Ser titular del acceso.", "Tener disponibles tus medios de contacto para realizar las validaciones que correspondan."],
-      components: ["ANSES", "ARCA", "Mi Argentina"],
-      officialFee: 0,
-      priceField: "serviceOption",
-      priceOptions: [{ value: "assistance", label: "Asistencia Digital", amount: 5000, duration: "Asistencia online" }],
-      fields: [
-        { id: "platform", label: "¿Con qué acceso necesitás ayuda?", type: "choice", required: true, options: [
-          { value: "anses", label: "ANSES" },
-          { value: "arca", label: "ARCA" },
-          { value: "miargentina", label: "Mi Argentina" }
-        ] },
-        { id: "assistanceType", label: "¿Qué necesitás hacer?", type: "choice", required: true, options: [
-          { value: "generate", label: "Generar acceso" },
-          { value: "recover", label: "Recuperar acceso" }
-        ] },
-        ...contactFields,
-        { id: "serviceFeeAcceptance", label: "Entiendo y acepto que el importe abonado corresponde al servicio de gestión y asistencia brindado por TramiPago.", type: "checkbox", required: true },
-        authorizationField
-      ]
-    }
-'''
-              pos = t.rfind('\n  ];\n})();')
-              if pos == -1:
-                  raise SystemExit('No se encontró cierre final de TRAMI_SERVICES')
-              t = t[:pos] + assistance_service + t[pos:]
-
-          services.write_text(t, encoding='utf-8')
-          PY
-
           rm -f .github/workflows/apply-home-catalog-update.yml
+          rm -f .github/workflows/apply-home-catalog-update-v2.yml
+          rm -f scripts/apply-home-catalog-update.py
           git config user.name 'tramipago2026'
           git config user.email 'tramipago@gmail.com'
           git add -A
