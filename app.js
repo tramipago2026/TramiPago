@@ -25,6 +25,7 @@
   const state = {
     route: "home",
     familyId: null,
+    partidasJurisdiction: null,
     serviceId: null,
     step: null,
     draft: {},
@@ -328,7 +329,84 @@
     `;
   }
 
+  const PARTIDAS_TYPE_CARDS = Object.freeze([
+    { value: "birth", title: "Partida de Nacimiento", subtitle: "Registro Civil", icon: "assets/partida-nacimiento.svg", tone: "birth" },
+    { value: "marriage", title: "Partida de Matrimonio", subtitle: "Registro Civil", icon: "assets/partida-matrimonio.svg", tone: "marriage" },
+    { value: "cohabitation", title: "Partida de Unión Convivencial", subtitle: "Registro Civil", icon: "assets/partida-union-convivencial.svg", tone: "cohabitation" },
+    { value: "death", title: "Partida de Defunción", subtitle: "Registro Civil", icon: "assets/partida-defuncion.svg", tone: "death" }
+  ]);
+
+  function renderPartidasJurisdictionCard(id, title, fullName) {
+    const selected = state.partidasJurisdiction === id;
+    return `
+      <button class="partidas-jurisdiction-card${selected ? " is-selected" : ""}" type="button"
+        data-action="select-partidas-jurisdiction" data-jurisdiction="${escapeHTML(id)}"
+        aria-pressed="${selected ? "true" : "false"}" aria-label="${escapeHTML(fullName)}">
+        <span class="partidas-jurisdiction-media partidas-jurisdiction-media-${escapeHTML(id)}" aria-hidden="true">
+          <span>${escapeHTML(fullName)}</span>
+        </span>
+        <span class="catalog-card-info">
+          <span class="catalog-card-title">${escapeHTML(title)}</span>
+          <span class="catalog-card-subtitle">Jurisdicción</span>
+        </span>
+      </button>
+    `;
+  }
+
+  function renderPartidaTypeCard(item, jurisdiction) {
+    const available = jurisdiction === "pba";
+    return `
+      <button class="partidas-type-card partidas-type-${escapeHTML(item.tone)}${available ? "" : " is-unavailable"}" type="button"
+        ${available ? `data-action="select-partida-type" data-part-type="${escapeHTML(item.value)}"` : 'disabled aria-disabled="true"'}
+        aria-label="${escapeHTML(item.title)}${available ? "" : ", próximamente en CABA"}">
+        <span class="partidas-type-media" aria-hidden="true"><img src="${escapeHTML(item.icon)}" alt="" /></span>
+        <span class="catalog-card-info">
+          <span class="catalog-card-title">${escapeHTML(item.title)}</span>
+          <span class="catalog-card-subtitle">Registro Civil</span>
+        </span>
+        ${available ? "" : '<span class="catalog-card-badge">Próximamente</span>'}
+      </button>
+    `;
+  }
+
+  function renderPartidasFamily() {
+    const jurisdiction = state.partidasJurisdiction;
+    const jurisdictionName = jurisdiction === "pba"
+      ? "Provincia de Buenos Aires"
+      : jurisdiction === "caba"
+        ? "Ciudad Autónoma de Buenos Aires"
+        : "";
+
+    app.innerHTML = `
+      <section class="family-page partidas-family-page">
+        <div class="container partidas-selector-shell">
+          <button class="button button-secondary family-back" type="button" data-action="back-home">Volver</button>
+          <div class="partidas-selector-heading">
+            <h1>Elegí la jurisdicción</h1>
+          </div>
+          <div class="partidas-jurisdiction-grid">
+            ${renderPartidasJurisdictionCard("pba", "PBA", "Provincia de Buenos Aires")}
+            ${renderPartidasJurisdictionCard("caba", "CABA", "Ciudad Autónoma de Buenos Aires")}
+          </div>
+          ${jurisdiction ? `
+            <div class="partidas-type-section">
+              <div class="partidas-type-heading">
+                <h2>${escapeHTML(jurisdictionName)}</h2>
+                <p>Elegí el tipo de partida.</p>
+              </div>
+              ${jurisdiction === "caba" ? '<div class="partidas-caba-note">La estructura queda preparada. Los trámites de CABA se habilitarán cuando estén confirmados requisitos, precio y plazo.</div>' : ""}
+              <div class="partidas-type-grid">
+                ${PARTIDAS_TYPE_CARDS.map((item) => renderPartidaTypeCard(item, jurisdiction)).join("")}
+              </div>
+            </div>
+          ` : ""}
+        </div>
+      </section>
+    `;
+  }
+
   function renderFamily() {
+    if (state.familyId === "partidas-pba") return renderPartidasFamily();
     const family = getFamily(state.familyId);
     if (!family) return navigate("#/");
 
@@ -917,6 +995,18 @@
     if (!trigger) return;
     const action = trigger.dataset.action;
     if (action === "whatsapp") return;
+
+    if (action === "select-partidas-jurisdiction") {
+      state.partidasJurisdiction = trigger.dataset.jurisdiction || null;
+      return render();
+    }
+
+    if (action === "select-partida-type") {
+      const partType = trigger.dataset.partType || "";
+      if (!partType || state.partidasJurisdiction !== "pba") return;
+      sessionStorage.setItem("tramipago_partidas_prefill_v1", partType);
+      return startService("partidas");
+    }
 
     if (action === "select-family") {
       state.familyId = trigger.dataset.familyId;

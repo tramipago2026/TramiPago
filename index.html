@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="TramiPago: trámites online con seguimiento." />
   <title>TramiPago | Inicio</title>
-  <link rel="stylesheet" href="site.css?v=20260906-2215" />
-  <link rel="stylesheet" href="ui.css?v=20260906-2215" />
+  <link rel="stylesheet" href="site.css?v=20260907-0505" />
+  <link rel="stylesheet" href="ui.css?v=20260907-0505" />
 
   <style>
     :root {
@@ -87,6 +87,35 @@
     .home-catalog .home-tile[hidden],.home-catalog .home-section-title[hidden] { display:none; }
     .home-catalog .home-tile.is-unavailable { cursor:default;filter:saturate(.75);opacity:.78; }
     .home-catalog .home-tile.is-unavailable:hover,.home-catalog .home-tile.is-unavailable:focus-visible { box-shadow:0 5px 16px var(--shadow-soft);transform:none; }
+    .partidas-selector-shell { max-width:980px;padding-top:14px;padding-bottom:34px; }
+    .partidas-selector-heading { margin:0 0 16px;text-align:center; }
+    .partidas-selector-heading h1 { margin:0;color:var(--navy-deep);font-size:1.35rem;line-height:1.15; }
+    .partidas-jurisdiction-grid { display:grid;grid-template-columns:repeat(2,154px);justify-content:center;gap:18px;align-items:stretch; }
+    .partidas-jurisdiction-card,.partidas-type-card { position:relative;display:flex;flex-direction:column;width:154px;aspect-ratio:4/5;padding:0;overflow:hidden;background:var(--surface);border:0;border-radius:9px;box-shadow:0 5px 16px var(--shadow-soft);cursor:pointer;transition:box-shadow .16s ease,transform .16s ease; }
+    .partidas-jurisdiction-card:hover,.partidas-jurisdiction-card:focus-visible,.partidas-type-card:hover,.partidas-type-card:focus-visible { box-shadow:0 0 0 3px var(--focus-ring),0 8px 20px var(--shadow-strong);transform:translateY(-3px);outline:none; }
+    .partidas-jurisdiction-card.is-selected { box-shadow:0 0 0 4px var(--cyan),0 8px 20px var(--shadow-strong); }
+    .partidas-jurisdiction-media,.partidas-type-media { position:relative;display:flex;width:100%;height:66%;flex:0 0 66%;align-items:center;justify-content:center;overflow:hidden; }
+    .partidas-jurisdiction-media { padding:14px;text-align:center;font-weight:750;line-height:1.12; }
+    .partidas-jurisdiction-media span { max-width:120px;padding:8px 9px;color:#fff;background:rgba(8,42,71,.52);border:1px solid rgba(255,255,255,.72);border-radius:8px;text-shadow:0 1px 3px rgba(0,0,0,.28); }
+    .partidas-jurisdiction-media-pba { background:linear-gradient(145deg,#1d8fe1 0%,#40bdf5 48%,#0b5c98 100%); }
+    .partidas-jurisdiction-media-caba { background:linear-gradient(145deg,#08a9b7 0%,#3ccfd0 45%,#176a91 100%); }
+    .partidas-jurisdiction-card .catalog-card-info,.partidas-type-card .catalog-card-info { position:relative;z-index:3;display:flex;flex:0 0 34%;flex-direction:column;justify-content:center;min-height:0;padding:8px 10px;overflow:hidden;text-align:left;background:var(--navy-deep); }
+    .partidas-type-section { margin-top:30px; }
+    .partidas-type-heading { margin:0 0 13px;text-align:center; }
+    .partidas-type-heading h2 { margin:0 0 3px;color:var(--navy-deep);font-size:1.1rem; }
+    .partidas-type-heading p { margin:0;color:var(--text-muted);font-size:.9rem; }
+    .partidas-type-grid { display:grid;grid-template-columns:repeat(4,154px);justify-content:center;gap:14px;align-items:stretch; }
+    .partidas-type-media { padding:20px; }
+    .partidas-type-media img { display:block;width:72px;height:72px;object-fit:contain; }
+    .partidas-type-birth .partidas-type-media { background:linear-gradient(145deg,#e7f6ff,#bde8ff); }
+    .partidas-type-marriage .partidas-type-media { background:linear-gradient(145deg,#fff1f3,#ffd6dd); }
+    .partidas-type-cohabitation .partidas-type-media { background:linear-gradient(145deg,#eefaf2,#ccefd7); }
+    .partidas-type-death .partidas-type-media { background:linear-gradient(145deg,#f4efff,#dfd2fb); }
+    .partidas-type-card.is-unavailable { cursor:default;filter:saturate(.65);opacity:.68; }
+    .partidas-type-card.is-unavailable:hover,.partidas-type-card.is-unavailable:focus-visible { box-shadow:0 5px 16px var(--shadow-soft);transform:none; }
+    .partidas-caba-note { max-width:650px;margin:0 auto 14px;padding:9px 12px;color:var(--navy-deep);background:#fff7eb;border:1px solid #efc57c;border-radius:8px;font-size:.82rem;line-height:1.35;text-align:center; }
+    @media(max-width:760px){.partidas-type-grid{grid-template-columns:repeat(2,minmax(0,154px))}.partidas-jurisdiction-grid{grid-template-columns:repeat(2,minmax(0,154px))}}
+    @media(max-width:390px){.partidas-jurisdiction-grid,.partidas-type-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.partidas-jurisdiction-card,.partidas-type-card{width:100%}}
     .confirmation { max-width:760px;margin:18px auto 42px;padding:20px 22px; }
     .confirmation .confirmation-icon { width:46px;height:46px;margin:0 auto 9px;font-size:1.45rem; }
     .confirmation h2 { margin-bottom:5px;font-size:1.45rem; }
@@ -129,12 +158,12 @@
 
   <footer class="site-footer"><div class="container footer-inner"><span>© 2026 TramiPago · Todos los derechos reservados</span><span class="legal-links"><a href="politica-privacidad.html">Política de Privacidad</a><a href="terminos-condiciones.html">Términos y Condiciones</a></span></div></footer>
 
-  <script src="services.js?v=20260906-2215"></script>
-  <script src="arca-family.js?v=20260906-2215"></script>
-  <script src="flow-ui.js?v=20260906-2215"></script>
-  <script src="site-fixes.js?v=20260906-2215"></script>
-  <script src="footer-menu.js?v=20260906-2215"></script>
-  <script src="app.js?v=20260906-2215"></script>
+  <script src="services.js?v=20260907-0505"></script>
+  <script src="arca-family.js?v=20260907-0505"></script>
+  <script src="flow-ui.js?v=20260907-0505"></script>
+  <script src="site-fixes.js?v=20260907-0505"></script>
+  <script src="footer-menu.js?v=20260907-0505"></script>
+  <script src="app.js?v=20260907-0505"></script>
   <script>
     (function(){
       "use strict";

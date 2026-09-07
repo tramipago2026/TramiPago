@@ -418,11 +418,16 @@
   function clearAutomaticSelections(form) {
     if (form.dataset.partidasSelectionReady === "true") return;
     const active = getPartidasActiveRequest();
+    const preset = sessionStorage.getItem("tramipago_partidas_prefill_v1") || "";
     if (!active) {
-      form.querySelectorAll('input[name="partType"],input[name="dataMode"]').forEach((input) => {
+      form.querySelectorAll('input[name="partType"]').forEach((input) => {
+        input.checked = Boolean(preset && input.value === preset);
+      });
+      form.querySelectorAll('input[name="dataMode"]').forEach((input) => {
         input.checked = false;
       });
     }
+    if (preset) sessionStorage.removeItem("tramipago_partidas_prefill_v1");
     form.dataset.partidasSelectionReady = "true";
   }
 
