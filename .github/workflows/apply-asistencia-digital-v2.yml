@@ -1,0 +1,38 @@
+name: Apply Asistencia Digital v2
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-asistencia-digital-v2.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Aplicar imagen y referencia
+        run: |
+          base64 -d assets/asistencia-digital-v2-base64.txt > assets/asistencia-digital-v2.webp
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('services.js')
+          s=p.read_text(encoding='utf-8')
+          old='image: "assets/asistencia-digital-v1.webp"'
+          new='image: "assets/asistencia-digital-v2.webp"'
+          if old not in s and new not in s:
+              raise SystemExit('No se encontró la referencia de Asistencia Digital')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          rm -f assets/asistencia-digital-v2-base64.txt
+          rm -f assets/asistencia-digital-v2-source.txt
+          rm -f .github/workflows/apply-asistencia-digital-v2.yml
+      - name: Guardar cambios
+        run: |
+          git config user.name 'tramipago2026'
+          git config user.email 'tramipago@gmail.com'
+          git add -A
+          git commit -m 'Ajusta imagen de Asistencia Digital al diseño del inicio'
+          git push origin HEAD:main
