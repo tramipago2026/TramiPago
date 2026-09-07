@@ -32,8 +32,8 @@
     inner.innerHTML=`
       <div class="footer-menu-grid">
         <section class="footer-menu-col"><h3>TRAMIPAGO</h3><a href="tramites.html#como-funciona">Cómo funciona</a><a href="tramites.html">Todos los trámites</a><a href="opiniones.html">Opiniones</a></section>
-        <section class="footer-menu-col"><h3>TRÁMITES</h3><a href="#/tramite/antecedentes-penales">Antecedentes Penales</a><a href="#/tramite/constancias-anses">ANSES</a><a href="#/familia/arca-monotributo">ARCA</a><a href="#/tramite/informe-vehicular">Informe Vehicular</a><a href="#/tramite/arba-inmobiliario">ARBA / Inmobiliario</a><a href="#/familia/partidas-pba">Partidas</a><a href="#/tramite/asistencia-digital">Asistencia Digital</a></section>
-        <section class="footer-menu-col"><h3>ATENCIÓN</h3><a href="contacto.html">Contacto</a><a href="#/seguimiento">Estado del trámite</a><a href="https://wa.me/5491167083232" target="_blank" rel="noopener noreferrer">WhatsApp</a></section>
+        <section class="footer-menu-col"><h3>TRÁMITES</h3><a href="index.html#/tramite/antecedentes-penales">Antecedentes Penales</a><a href="index.html#/tramite/constancias-anses">ANSES</a><a href="index.html#/familia/arca-monotributo">ARCA</a><a href="index.html#/tramite/informe-vehicular">Informe Vehicular</a><a href="index.html#/tramite/arba-inmobiliario">ARBA / Inmobiliario</a><a href="index.html#/familia/partidas-pba">Partidas</a><a href="index.html#/tramite/asistencia-digital">Asistencia Digital</a></section>
+        <section class="footer-menu-col"><h3>ATENCIÓN</h3><a href="contacto.html">Contacto</a><a href="index.html#/seguimiento">Estado del trámite</a><a href="https://wa.me/5491167083232" target="_blank" rel="noopener noreferrer">WhatsApp</a></section>
         <section class="footer-menu-col"><h3>LEGAL</h3><a href="politica-privacidad.html">Política de Privacidad</a><a href="terminos-condiciones.html">Términos y Condiciones</a><a href="arrepentimiento.html">BOTÓN DE ARREPENTIMIENTO</a><a href="baja-servicio.html">BOTÓN DE BAJA DE SERVICIO</a><a href="https://www.argentina.gob.ar/servicio/iniciar-un-reclamo-ante-defensa-del-consumidor" target="_blank" rel="noopener noreferrer">Defensa del Consumidor</a></section>
       </div>
       <div class="footer-menu-bottom"><span>© 2026 TramiPago · Todos los derechos reservados</span><span>CUIT 20-25988733-0 · tramipago@gmail.com</span></div>`;
@@ -277,7 +277,7 @@
     if(document.querySelector(".tramipago-error-box"))return;
     const box=document.createElement("div");
     box.className="tramipago-error-box";
-    box.innerHTML='<div class="tramipago-error-card" role="alert"><h2>No pudimos completar esta acción</h2><p>Lo que ya fue guardado no se modificó. Podés volver a intentar o regresar al inicio.</p><div class="tramipago-error-actions"><button class="button button-primary" type="button" data-error-retry>Reintentar</button><a class="button button-secondary" href="#/">Ir al inicio</a></div></div>';
+    box.innerHTML='<div class="tramipago-error-card" role="alert"><h2>No pudimos completar esta acción</h2><p>Lo que ya fue guardado no se modificó. Podés volver a intentar o regresar al inicio.</p><div class="tramipago-error-actions"><button class="button button-primary" type="button" data-error-retry>Reintentar</button><a class="button button-secondary" href="index.html#/">Ir al inicio</a></div></div>';
     document.body.appendChild(box);
   }
 

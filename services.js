@@ -34,7 +34,7 @@
       id: "arca-monotributo",
       name: "ARCA / Monotributo",
       description: "Alta de Monotributo, constancia de inscripción, consulta de deuda y gestión de VEP.",
-      image: "assets/arca-v3.webp",
+      image: "assets/arca-familia-final.webp",
       serviceIds: ["arca-monotributo"]
     },
     {
@@ -48,7 +48,7 @@
       id: "asistencia-digital",
       name: "Asistencia Digital",
       description: "Asistencia online para generar o recuperar accesos de ANSES, ARCA y Mi Argentina.",
-      image: "assets/asistencia-digital-v2.webp",
+      image: "assets/asistencia-digital-v3.webp",
       serviceIds: ["asistencia-digital"]
     }
   ];
