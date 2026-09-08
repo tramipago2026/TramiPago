@@ -383,10 +383,18 @@
           <button class="button button-secondary family-back" type="button" data-action="back-home">Volver</button>
           <div class="partidas-selector-heading">
             <h1>Elegí la jurisdicción</h1>
+            <p>Seleccioná dónde está inscripta la partida.</p>
           </div>
           <div class="partidas-jurisdiction-grid">
             ${renderPartidasJurisdictionCard("pba", "PBA", "Provincia de Buenos Aires")}
             ${renderPartidasJurisdictionCard("caba", "CABA", "Ciudad Autónoma de Buenos Aires")}
+          </div>
+          <div class="partidas-flow-steps" aria-label="Pasos del trámite">
+            <span><strong>1.</strong> Jurisdicción</span>
+            <span class="partidas-flow-arrow" aria-hidden="true">→</span>
+            <span><strong>2.</strong> Tipo de partida</span>
+            <span class="partidas-flow-arrow" aria-hidden="true">→</span>
+            <span><strong>3.</strong> Datos</span>
           </div>
           ${jurisdiction ? `
             <div class="partidas-type-section">
