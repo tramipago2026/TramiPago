@@ -1,0 +1,67 @@
+name: Finalizar botones de Partidas
+on:
+  push:
+    paths:
+      - '.github/workflows/partidas-finalize.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Aplicar imágenes y textos aprobados
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          app = Path('app.js')
+          s = app.read_text(encoding='utf-8')
+
+          old_cards = '''  const PARTIDAS_TYPE_CARDS = Object.freeze([\n    { value: "birth", title: "Partida de Nacimiento", subtitle: "Registro Civil", icon: "assets/partida-nacimiento.svg", tone: "birth" },\n    { value: "marriage", title: "Partida de Matrimonio", subtitle: "Registro Civil", icon: "assets/partida-matrimonio.svg", tone: "marriage" },\n    { value: "cohabitation", title: "Partida de Unión Convivencial", subtitle: "Registro Civil", icon: "assets/partida-union-convivencial.svg", tone: "cohabitation" },\n    { value: "death", title: "Partida de Defunción", subtitle: "Registro Civil", icon: "assets/partida-defuncion.svg", tone: "death" }\n  ]);'''
+          new_cards = '''  const PARTIDAS_TYPE_CARDS = Object.freeze([\n    { value: "birth", title: "Nacimiento", subtitle: "Partida de nacimiento", icon: "assets/partida-nacimiento-v2.webp", tone: "birth" },\n    { value: "marriage", title: "Matrimonio", subtitle: "Partida de matrimonio", icon: "assets/partida-matrimonio-v2.webp", tone: "marriage" },\n    { value: "cohabitation", title: "Unión convivencial", subtitle: "Constancia de unión convivencial", icon: "assets/partida-union-convivencial-v2.webp", tone: "cohabitation" },\n    { value: "death", title: "Defunción", subtitle: "Partida de defunción", icon: "assets/partida-defuncion-v2.webp", tone: "death" }\n  ]);'''
+          if old_cards not in s:
+              raise SystemExit('No se encontró el bloque de tarjetas de Partidas esperado')
+          s = s.replace(old_cards, new_cards, 1)
+
+          old_subtitle = '<span class="catalog-card-subtitle">Registro Civil</span>'
+          new_subtitle = '<span class="catalog-card-subtitle">${escapeHTML(item.subtitle)}</span>'
+          if old_subtitle not in s:
+              raise SystemExit('No se encontró el subtítulo Registro Civil esperado')
+          s = s.replace(old_subtitle, new_subtitle, 1)
+          app.write_text(s, encoding='utf-8')
+
+          index = Path('index.html')
+          h = index.read_text(encoding='utf-8')
+          old_css = '''    .partidas-type-media { padding:20px; }\n    .partidas-type-media img { display:block;width:72px;height:72px;object-fit:contain; }'''
+          new_css = '''    .partidas-type-media { padding:0; }\n    .partidas-type-media img { display:block;width:100%;height:100%;object-fit:cover;object-position:center; }'''
+          if old_css not in h:
+              raise SystemExit('No se encontró el CSS anterior de imágenes de Partidas')
+          h = h.replace(old_css, new_css, 1)
+          h = h.replace('v=20260907-2125', 'v=20260907-2225')
+          index.write_text(h, encoding='utf-8')
+          PY
+      - name: Validar
+        run: |
+          node --check app.js
+          test -s assets/partida-nacimiento-v2.webp
+          test -s assets/partida-matrimonio-v2.webp
+          test -s assets/partida-union-convivencial-v2.webp
+          test -s assets/partida-defuncion-v2.webp
+          grep -q 'subtitle: "Partida de nacimiento"' app.js
+          grep -q 'subtitle: "Partida de matrimonio"' app.js
+          grep -q 'subtitle: "Constancia de unión convivencial"' app.js
+          grep -q 'subtitle: "Partida de defunción"' app.js
+          grep -q 'partida-nacimiento-v2.webp' app.js
+          grep -q 'object-fit:cover' index.html
+          git diff --check
+      - name: Publicar y limpiar workflow temporal
+        run: |
+          rm -f .github/workflows/partidas-finalize.yml
+          git config user.name 'tramipago2026'
+          git config user.email 'tramipago@gmail.com'
+          git add -A
+          git commit -m 'Integra imágenes aprobadas y textos de Partidas'
+          git push origin HEAD:main
