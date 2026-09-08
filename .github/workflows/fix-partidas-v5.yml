@@ -1,0 +1,37 @@
+name: Fix Partidas PBA CABA v5
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-partidas-v5.yml'
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Aplicar assets válidos PBA y CABA
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('assets/partidas-pba-jurisdiccion-v2.webp','assets/partidas-pba-jurisdiccion-v5.webp')
+          s = s.replace('assets/partidas-caba-jurisdiccion-v2.webp','assets/partidas-caba-jurisdiccion-v5.webp')
+          p.write_text(s, encoding='utf-8')
+          PY
+          test -s assets/partidas-pba-jurisdiccion-v5.webp
+          test -s assets/partidas-caba-jurisdiccion-v5.webp
+          grep -q 'partidas-pba-jurisdiccion-v5.webp' index.html
+          grep -q 'partidas-caba-jurisdiccion-v5.webp' index.html
+          rm -f .github/workflows/fix-partidas-v5.yml
+          git diff --check
+      - name: Publicar corrección
+        run: |
+          git config user.name 'tramipago2026'
+          git config user.email 'tramipago@gmail.com'
+          git add -A
+          git commit -m 'Corrige carga simultánea PBA y CABA'
+          git push origin HEAD:main
