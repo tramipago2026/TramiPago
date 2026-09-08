@@ -330,10 +330,10 @@
   }
 
   const PARTIDAS_TYPE_CARDS = Object.freeze([
-    { value: "birth", title: "Partida de Nacimiento", subtitle: "Registro Civil", icon: "assets/partida-nacimiento.svg", tone: "birth" },
-    { value: "marriage", title: "Partida de Matrimonio", subtitle: "Registro Civil", icon: "assets/partida-matrimonio.svg", tone: "marriage" },
-    { value: "cohabitation", title: "Partida de Unión Convivencial", subtitle: "Registro Civil", icon: "assets/partida-union-convivencial.svg", tone: "cohabitation" },
-    { value: "death", title: "Partida de Defunción", subtitle: "Registro Civil", icon: "assets/partida-defuncion.svg", tone: "death" }
+    { value: "birth", title: "Nacimiento", subtitle: "Partida de nacimiento", icon: "assets/partida-nacimiento-v2.webp", tone: "birth" },
+    { value: "marriage", title: "Matrimonio", subtitle: "Partida de matrimonio", icon: "assets/partida-matrimonio-v2.webp", tone: "marriage" },
+    { value: "cohabitation", title: "Unión convivencial", subtitle: "Constancia de unión convivencial", icon: "assets/partida-union-convivencial-v2.webp", tone: "cohabitation" },
+    { value: "death", title: "Defunción", subtitle: "Partida de defunción", icon: "assets/partida-defuncion-v2.webp", tone: "death" }
   ]);
 
   function renderPartidasJurisdictionCard(id, title, fullName) {
@@ -362,7 +362,7 @@
         <span class="partidas-type-media" aria-hidden="true"><img src="${escapeHTML(item.icon)}" alt="" /></span>
         <span class="catalog-card-info">
           <span class="catalog-card-title">${escapeHTML(item.title)}</span>
-          <span class="catalog-card-subtitle">Registro Civil</span>
+          <span class="catalog-card-subtitle">${escapeHTML(item.subtitle)}</span>
         </span>
         ${available ? "" : '<span class="catalog-card-badge">Próximamente</span>'}
       </button>
