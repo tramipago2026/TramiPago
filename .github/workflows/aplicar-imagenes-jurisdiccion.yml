@@ -1,0 +1,53 @@
+name: Aplicar imágenes jurisdicción Partidas
+on:
+  push:
+    paths:
+      - 'assets/partidas-pba-jurisdiccion-v1.webp'
+      - 'assets/partidas-caba-jurisdiccion-v1.webp'
+      - '.github/workflows/aplicar-imagenes-jurisdiccion.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Integrar imágenes en los botones PBA y CABA
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          old_pba='.partidas-jurisdiction-media-pba { background:linear-gradient(145deg,#1d8fe1 0%,#40bdf5 48%,#0b5c98 100%); }'
+          old_caba='.partidas-jurisdiction-media-caba { background:linear-gradient(145deg,#08a9b7 0%,#3ccfd0 45%,#176a91 100%); }'
+          new_pba='.partidas-jurisdiction-media-pba { background:url("assets/partidas-pba-jurisdiccion-v1.webp") center/cover no-repeat !important; }'
+          new_caba='.partidas-jurisdiction-media-caba { background:url("assets/partidas-caba-jurisdiccion-v1.webp") center/cover no-repeat !important; }'
+          if old_pba in s:
+              s=s.replace(old_pba,new_pba)
+          elif new_pba not in s:
+              raise SystemExit('No se encontró regla PBA esperada')
+          if old_caba in s:
+              s=s.replace(old_caba,new_caba)
+          elif new_caba not in s:
+              raise SystemExit('No se encontró regla CABA esperada')
+          marker=new_caba
+          extra='''\n    .partidas-jurisdiction-media { padding:0 !important; }\n    .partidas-jurisdiction-media > span { display:none !important; }\n    .partidas-jurisdiction-card .catalog-card-subtitle { font-size:0; }\n    .partidas-jurisdiction-card[data-jurisdiction="pba"] .catalog-card-subtitle::after { content:"Provincia de Buenos Aires"; font-size:.68rem; }\n    .partidas-jurisdiction-card[data-jurisdiction="caba"] .catalog-card-subtitle::after { content:"Ciudad Autónoma de Buenos Aires"; font-size:.62rem; }\n'''
+          if 'partidas-jurisdiction-card[data-jurisdiction="pba"]' not in s:
+              s=s.replace(marker, marker+extra)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Validar y limpiar workflow temporal
+        run: |
+          grep -q 'partidas-pba-jurisdiccion-v1.webp' index.html
+          grep -q 'partidas-caba-jurisdiccion-v1.webp' index.html
+          rm -f .github/workflows/aplicar-imagenes-jurisdiccion.yml
+          git diff --check
+      - name: Publicar cambios
+        run: |
+          git config user.name 'tramipago2026'
+          git config user.email 'tramipago@gmail.com'
+          git add -A
+          git commit -m 'Integra imágenes PBA y CABA en Partidas'
+          git push origin HEAD:main
