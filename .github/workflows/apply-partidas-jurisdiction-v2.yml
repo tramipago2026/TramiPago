@@ -1,0 +1,43 @@
+name: Activar imágenes corregidas de jurisdicción
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-partidas-jurisdiction-v2.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reemplazar imágenes PBA y CABA
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old_pba = 'assets/partidas-pba-jurisdiccion-v1.webp'
+          old_caba = 'assets/partidas-caba-jurisdiccion-v1.webp'
+          new_pba = 'assets/partidas-pba-jurisdiccion-v2.webp'
+          new_caba = 'assets/partidas-caba-jurisdiccion-v2.webp'
+          if old_pba not in s and new_pba not in s:
+              raise SystemExit('No se encontró referencia PBA')
+          if old_caba not in s and new_caba not in s:
+              raise SystemExit('No se encontró referencia CABA')
+          s = s.replace(old_pba, new_pba).replace(old_caba, new_caba)
+          p.write_text(s, encoding='utf-8')
+          PY
+          git diff --check
+      - name: Publicar ajuste
+        run: |
+          git config user.name 'tramipago2026'
+          git config user.email 'tramipago@gmail.com'
+          git add index.html
+          if git diff --cached --quiet; then
+            echo 'Sin cambios'
+            exit 0
+          fi
+          git commit -m 'Corrige imágenes PBA y CABA en Partidas'
+          git push origin HEAD:main
