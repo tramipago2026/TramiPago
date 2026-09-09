@@ -330,10 +330,10 @@
   }
 
   const PARTIDAS_TYPE_CARDS = Object.freeze([
-    { value: "birth", title: "Nacimiento", subtitle: "Partida de nacimiento", icon: "assets/partida-nacimiento-v2.webp", tone: "birth" },
-    { value: "marriage", title: "Matrimonio", subtitle: "Partida de matrimonio", icon: "assets/partida-matrimonio-v2.webp", tone: "marriage" },
-    { value: "cohabitation", title: "Unión convivencial", subtitle: "Constancia de unión convivencial", icon: "assets/partida-union-convivencial-v2.webp", tone: "cohabitation" },
-    { value: "death", title: "Defunción", subtitle: "Partida de defunción", icon: "assets/partida-defuncion-v2.webp", tone: "death" }
+    { value: "birth", title: "Nacimiento", subtitle: "Partida de nacimiento", icon: "assets/partida-nacimiento-v3.webp", tone: "birth" },
+    { value: "marriage", title: "Matrimonio", subtitle: "Partida de matrimonio", icon: "assets/partida-matrimonio-v3.webp", tone: "marriage" },
+    { value: "cohabitation", title: "Unión convivencial", subtitle: "Constancia de unión convivencial", icon: "assets/partida-union-convivencial-v3.webp", tone: "cohabitation" },
+    { value: "death", title: "Defunción", subtitle: "Partida de defunción", icon: "assets/partida-defuncion-v3.webp", tone: "death" }
   ]);
 
   function renderPartidasJurisdictionCard(id, title, fullName) {
