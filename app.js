@@ -356,7 +356,7 @@
   function renderPartidaTypeCard(item, jurisdiction) {
     const available = jurisdiction === "pba";
     return `
-      <button class="partidas-type-card partidas-type-${escapeHTML(item.tone)}${available ? "" : " is-unavailable"}" type="button"
+      <button class="partidas-type-card partidas-type-${escapeHTML(item.tone)}" type="button"
         ${available ? `data-action="select-partida-type" data-part-type="${escapeHTML(item.value)}"` : 'disabled aria-disabled="true"'}
         aria-label="${escapeHTML(item.title)}${available ? "" : ", próximamente en CABA"}">
         <span class="partidas-type-media" aria-hidden="true"><img src="${escapeHTML(item.icon)}" alt="" /></span>
@@ -364,7 +364,6 @@
           <span class="catalog-card-title">${escapeHTML(item.title)}</span>
           <span class="catalog-card-subtitle">${escapeHTML(item.subtitle)}</span>
         </span>
-        ${available ? "" : '<span class="catalog-card-badge">Próximamente</span>'}
       </button>
     `;
   }
