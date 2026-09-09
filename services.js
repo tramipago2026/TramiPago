@@ -90,7 +90,7 @@
         { id: "dniFile", label: "Frente del DNI (alternativa al N.º de trámite)", type: "file", required: false, accept: "image/*" },
         { id: "address", label: "Domicilio (calle y número)", type: "text", required: true, autocomplete: "street-address" },
         { id: "locality", label: "Localidad", type: "text", required: true, autocomplete: "address-level2" },
-        { id: "district", label: "Partido / departamento", type: "text", required: false, placeholder: "Si corresponde" },
+        { id: "district", label: "Partido o departamento", type: "text", required: false, placeholder: "Si corresponde" },
         { id: "fatherFullName", label: "Nombre y apellido del padre", type: "text", required: true },
         { id: "motherFullName", label: "Nombre y apellido de la madre", type: "text", required: true },
         { id: "email", label: "Correo electrónico", type: "email", required: true, autocomplete: "email" },
@@ -110,7 +110,7 @@
       codePrefix: "IV",
       name: "Informe Vehicular",
       shortDescription: "Dominio, infracciones y deuda de patentes en una gestión.",
-      description: "Ingresá el dominio y elegí Automotor o Moto. El paquete incluye informe de dominio, infracciones CABA/PBA y deuda de patentes CABA/PBA.",
+      description: "Ingresá el dominio y elegí automotor o moto. El paquete incluye informe de dominio, infracciones CABA/PBA y deuda de patentes CABA/PBA.",
       active: true,
       requirements: ["Tipo de vehículo.", "Dominio o patente.", "WhatsApp de contacto."],
       components: [

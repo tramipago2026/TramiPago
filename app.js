@@ -986,11 +986,22 @@
     window.open(`https://wa.me/${number}?text=${encodeURIComponent(message)}`, "_blank", "noopener");
   }
 
+  function updateDocumentTitle(route) {
+    let section = "Inicio";
+
+    if (route.name === "tracking") section = "Estado del trámite";
+    if (route.name === "family") section = getFamily(route.familyId)?.name || "Trámites";
+    if (route.name === "process") section = getService(route.serviceId)?.name || "Trámite";
+
+    document.title = `${section} | TramiPago`;
+  }
+
   function render() {
     const route = parseRoute();
     const previousRoute = state.route;
     const previousService = state.serviceId;
     state.route = route.name;
+    updateDocumentTitle(route);
 
     if (route.name === "process") {
       state.serviceId = route.serviceId;
