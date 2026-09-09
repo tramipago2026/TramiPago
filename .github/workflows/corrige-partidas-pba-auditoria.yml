@@ -14,30 +14,9 @@ jobs:
           fetch-depth: 0
       - name: Corregir lectura de modalidad
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('services.js')
-          s=p.read_text(encoding='utf-8')
-          old='''      form.querySelectorAll('input[name="dataMode"]').forEach((input) => {
-        input.checked = false;
-      });'''
-          new='''      const dataModeControl = form.querySelector('[name="dataMode"]');
-      if (dataModeControl) dataModeControl.value = "";'''
-          if old not in s:
-              raise SystemExit('No se encontró clearAutomaticSelections/dataMode')
-          s=s.replace(old,new,1)
-          old2='''    const dataMode = form.querySelector('input[name="dataMode"]:checked')?.value || "";'''
-          new2='''    const dataMode = form.querySelector('[name="dataMode"]')?.value || "";'''
-          if old2 not in s:
-              raise SystemExit('No se encontró lectura dataMode')
-          s=s.replace(old2,new2,1)
-          p.write_text(s,encoding='utf-8')
-
-          i=Path('index.html')
-          h=i.read_text(encoding='utf-8')
-          h=h.replace('services.js?v=20260909-audit2','services.js?v=20260909-audit3')
-          i.write_text(h,encoding='utf-8')
-          PY
+          sed -i "s|form.querySelector('input\[name=\"dataMode\"\]:checked')?.value|form.querySelector('[name=\"dataMode\"]')?.value|" services.js
+          sed -i "s|services.js?v=20260909-audit2|services.js?v=20260909-audit3|" index.html
+          grep -F "form.querySelector('[name=\"dataMode\"]')?.value" services.js
           node --check services.js
           git diff --check
       - name: Publicar
