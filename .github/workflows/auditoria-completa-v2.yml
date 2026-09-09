@@ -20,20 +20,21 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
           sed -i "s/chromium.launch({headless:true})/chromium.launch({headless:true,channel:'chrome'})/" scripts/audit-site-v2.mjs
+          sed -i "s|await page.goto(BASE+hash,{waitUntil:'networkidle'}); await page.waitForTimeout(100);|await page.goto(BASE+'#/',{waitUntil:'networkidle'}); await page.goto(BASE+hash,{waitUntil:'networkidle'}); await page.waitForTimeout(100);|" scripts/audit-site-v2.mjs
           google-chrome --version || google-chrome-stable --version
       - name: Iniciar sitio
         run: |
           python3 -m http.server 4173 >/tmp/tp-server-v2.log 2>&1 &
           sleep 2
           curl -fsS http://127.0.0.1:4173/ >/dev/null
-      - name: Segunda pasada integral
+      - name: Segunda pasada integral final
         id: audit
         continue-on-error: true
         run: node scripts/audit-site-v2.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: auditoria-tramipago-pasada-2
+          name: auditoria-tramipago-pasada-2-final
           path: audit-output-v2/
       - name: Marcar errores reales
         if: steps.audit.outcome == 'failure'
