@@ -1,0 +1,124 @@
+name: Finaliza diseño ARCA
+on:
+  push:
+    paths:
+      - '.github/workflows/finaliza-arca.yml'
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Aplicar imágenes, textos y diseño de tarjetas ARCA
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('arca-family.js')
+          s = p.read_text(encoding='utf-8')
+
+          image_map = {
+            'assets/arca-constancia.svg': 'assets/arca-constancia-v2.webp',
+            'assets/arca-vep.svg': 'assets/arca-vep-v2.webp',
+            'assets/arca-ccma.svg': 'assets/arca-ccma-v2.webp',
+            'assets/arca-reimputacion.svg': 'assets/arca-reimputacion-v2.webp',
+            'assets/arca-informe-reimputacion.svg': 'assets/arca-informe-reimputacion-v2.webp',
+            'assets/arca-alta-monotributo.svg': 'assets/arca-alta-monotributo-v2.webp',
+            'assets/arca-baja-monotributo.svg': 'assets/arca-baja-monotributo-v2.webp',
+            'assets/arca-recategorizacion.svg': 'assets/arca-recategorizacion-v2.webp',
+            'assets/arca-dfe.svg': 'assets/arca-dfe-v2.webp',
+            'assets/arca-actualizacion.svg': 'assets/arca-actualizacion-v2.webp',
+          }
+          for old, new in image_map.items():
+              if old not in s:
+                  raise SystemExit(f'No se encontró {old}')
+              s = s.replace(old, new)
+
+          desc_map = {
+            'Obtención de constancias y credenciales disponibles en ARCA.': 'Constancia y credenciales',
+            'Generación de Volante Electrónico de Pago para una obligación.': 'Volante electrónico de pago',
+            'Consulta de pagos, deuda, intereses y saldos a favor en CCMA.': 'Consulta de deuda e intereses',
+            'Corrección de pagos mal aplicados o utilización de saldos a favor.': 'Corrección de pagos',
+            'Análisis de CCMA y posterior reimputación cuando corresponde.': 'Análisis y corrección',
+            'Alta de Monotributo con datos de actividad y parámetros de categorización.': 'Inscripción online',
+            'Baja del Monotributo por el motivo correspondiente.': 'Cese de actividad',
+            'Evaluación de los últimos 12 meses y recategorización de Monotributo.': 'Cambio de categoría',
+            'Constitución o actualización del canal oficial de comunicaciones de ARCA.': 'Activación y adhesión',
+            'Corrección o actualización de datos registrales y datos de actividad.': 'Modificación de datos fiscales',
+          }
+          for old, new in desc_map.items():
+              s = s.replace(old, new)
+
+          css = r'''
+      .arca-family-page .family-shell{max-width:980px!important}
+      .arca-family-page .family-heading{margin-bottom:22px!important}
+      .arca-family-page .family-heading img{width:118px!important;height:92px!important;object-fit:cover!important}
+      .arca-family-page .family-service-grid{display:block!important}
+      .arca-family-page .arca-service-group{margin:0 0 28px!important}
+      .arca-family-page .arca-service-group-title{margin:0 0 12px!important;color:#082A47!important;font-size:.96rem!important;font-weight:700!important;text-align:left!important}
+      .arca-family-page .arca-service-row{display:grid!important;grid-template-columns:repeat(5,154px)!important;gap:16px!important;justify-content:center!important;align-items:stretch!important}
+      .arca-family-page .family-service-card{position:relative!important;display:flex!important;flex-direction:column!important;width:154px!important;min-width:154px!important;padding:0!important;overflow:hidden!important;border:0!important;border-radius:10px!important;background:#082f4f!important;box-shadow:0 7px 18px rgba(8,47,79,.16)!important;transition:transform .16s ease,box-shadow .16s ease!important}
+      .arca-family-page .family-service-card:hover{transform:translateY(-2px)!important;box-shadow:0 10px 22px rgba(8,47,79,.22)!important}
+      .arca-family-page .arca-service-thumb{display:block!important;width:154px!important;height:123px!important;aspect-ratio:auto!important;object-fit:cover!important;object-position:center!important;border:0!important;background:#eaf2f7!important}
+      .arca-family-page .family-service-card>div{display:flex!important;flex:1 1 auto!important;flex-direction:column!important;min-width:0!important;min-height:76px!important;padding:10px 10px 11px!important;background:#082f4f!important}
+      .arca-family-page .family-service-card .service-tag,.arca-family-page .service-card-mini,.arca-family-page .family-unavailable{display:none!important}
+      .arca-family-page .family-service-card h2{margin:0 0 4px!important;color:#fff!important;font-size:.79rem!important;line-height:1.16!important;font-weight:650!important;text-align:left!important}
+      .arca-family-page .family-service-card p{margin:0!important;color:#11b9f4!important;font-size:.69rem!important;line-height:1.25!important;font-weight:600!important;text-align:left!important}
+      .arca-family-page .family-service-card>.button{position:absolute!important;inset:0!important;z-index:5!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;opacity:0!important;cursor:pointer!important}
+      @media(max-width:900px){.arca-family-page .arca-service-row{grid-template-columns:repeat(3,154px)!important}}
+      @media(max-width:560px){.arca-family-page .arca-service-row{grid-template-columns:repeat(2,154px)!important;gap:12px!important}}
+      @media(max-width:350px){.arca-family-page .arca-service-row{grid-template-columns:154px!important}}
+          '''
+          pattern = r'style\.textContent = `.*?`;\n    document\.head\.appendChild\(style\);'
+          replacement = 'style.textContent = `' + css + '`;\n    document.head.appendChild(style);'
+          s2, n = re.subn(pattern, replacement, s, count=1, flags=re.S)
+          if n != 1:
+              raise SystemExit('No se pudo reemplazar el CSS de ARCA')
+          p.write_text(s2, encoding='utf-8')
+
+          index = Path('index.html')
+          h = index.read_text(encoding='utf-8')
+          h2, n = re.subn(r'arca-family\.js(?:\?v=[^"\']+)?', 'arca-family.js?v=20260909-arca2', h)
+          if n == 0:
+              raise SystemExit('No se encontró referencia a arca-family.js en index.html')
+          index.write_text(h2, encoding='utf-8')
+          PY
+
+      - name: Validar
+        shell: bash
+        run: |
+          node --check arca-family.js
+          for f in \
+            assets/arca-constancia-v2.webp \
+            assets/arca-vep-v2.webp \
+            assets/arca-ccma-v2.webp \
+            assets/arca-reimputacion-v2.webp \
+            assets/arca-informe-reimputacion-v2.webp \
+            assets/arca-alta-monotributo-v2.webp \
+            assets/arca-baja-monotributo-v2.webp \
+            assets/arca-recategorizacion-v2.webp \
+            assets/arca-dfe-v2.webp \
+            assets/arca-actualizacion-v2.webp; do
+              test -s "$f"
+          done
+          test "$(grep -o 'assets/arca-[a-z-]*-v2.webp' arca-family.js | sort -u | wc -l)" -eq 10
+          grep -q 'grid-template-columns:repeat(5,154px)' arca-family.js
+          grep -q 'service-card-mini.*display:none' arca-family.js
+          git diff --check
+
+      - name: Publicar cambios
+        shell: bash
+        run: |
+          rm -f .github/workflows/finaliza-arca.yml
+          git config user.name 'tramipago2026'
+          git config user.email 'tramipago@gmail.com'
+          git add -A
+          git commit -m 'Integra diseño final de ARCA con imágenes aprobadas'
+          git push origin HEAD:main
