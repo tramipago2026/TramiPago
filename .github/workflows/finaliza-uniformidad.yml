@@ -1,0 +1,42 @@
+name: Finaliza uniformidad visual
+on:
+  push:
+    paths:
+      - '.github/workflows/finaliza-uniformidad.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Forzar actualización de estilos y validar estructura
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          import re
+          s,n=re.subn(r'ui\.css\?v=[^"\']+', 'ui.css?v=20260909-uniformidad2', s, count=1)
+          if n!=1:
+              raise SystemExit('No se encontró referencia versionada a ui.css')
+          p.write_text(s, encoding='utf-8')
+          PY
+          grep -q 'Directiva visual permanente de TramiPago' ui.css
+          grep -q 'family-page .family-heading' ui.css
+          grep -q 'process-shell .process-title' ui.css
+          grep -q 'body .arca-family-page .arca-service-group-title' ui.css
+          grep -q 'partidas-type-heading' ui.css
+          grep -q 'ui.css?v=20260909-uniformidad2' index.html
+          git diff --check
+      - name: Publicar
+        run: |
+          rm -f .github/workflows/finaliza-uniformidad.yml
+          git config user.name tramipago2026
+          git config user.email tramipago@gmail.com
+          git add -A
+          git commit -m 'Finaliza uniformidad visual y actualiza cache'
+          git push origin HEAD:main
