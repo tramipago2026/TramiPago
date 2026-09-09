@@ -40,7 +40,7 @@
     {
       id: "partidas-pba",
       name: "Partidas",
-      description: "Partidas de la Provincia de Buenos Aires y Ciudad de Buenos Aires.",
+      description: "Partidas de la Provincia de Buenos Aires y Ciudad Autónoma de Buenos Aires.",
       image: "assets/partidas-familia-final.webp",
       serviceIds: ["partidas", "partidas-caba"]
     }
