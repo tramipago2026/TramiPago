@@ -1,10 +1,16 @@
-name: Auditoria final
+name: Auditoria final 3x
 on:
   push:
     paths:
       - .github/workflows/auditoria-final-3x.yml
+permissions:
+  contents: write
 jobs:
-  test:
+  audit:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - run: echo OK
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: bash scripts/final-cleanup.sh
