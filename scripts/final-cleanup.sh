@@ -67,7 +67,8 @@ s = s.replace("const tag=await el.evaluate(e=>e.tagName.toLowerCase()); const ty
 s = s.replace("if(tag==='select'){const vals=await el.locator('option:not([disabled])').evaluateAll(os=>os.map(o=>o.value).filter(Boolean));if(vals.length)await el.selectOption(vals[0]);continue;}", "if(tag==='select'){const vals=await el.locator('option:not([disabled])').evaluateAll(os=>os.map(o=>o.value).filter(Boolean));if(vals.length)await el.selectOption(vals[0]);await page.waitForTimeout(40);continue;}")
 s = s.replace("else if(/actNumber/i.test(name))v='1';\n      await el.fill(v);", "else if(/actNumber/i.test(name))v='1';\n      if(inputmode==='numeric'&&v==='Dato de prueba')v='1234';\n      await el.fill(v);")
 s = s.replace("await page.goto(BASE+hash,{waitUntil:'networkidle'}); await page.waitForTimeout(100); await inspect(page,hash);", "await page.goto(BASE+'#/',{waitUntil:'networkidle'}); await page.goto(BASE+hash,{waitUntil:'networkidle'}); await page.waitForTimeout(120); await inspect(page,hash);")
-s = s.replace("await fillForm(page,opts);\n  const submit=", "await fillForm(page,opts);\n  await page.waitForTimeout(120);\n  const submit=")
+s = s.replace("await fillForm(page,opts);\n  const submit=", "for(let progressiveRound=0;progressiveRound<4;progressiveRound++){\n    await fillForm(page,opts);\n    await page.waitForTimeout(120);\n    const probe=form.locator('button[type=submit],input[type=submit]').first();\n    if(await probe.isVisible().catch(()=>false))break;\n  }\n  const submit=")
+s = s.replace("await submit.click(); await page.waitForTimeout(180);", "if(!(await submit.isVisible().catch(()=>false))){issue('submit-oculto','El botón de avance sigue oculto después de completar los campos visibles',hash);return;}\n  await submit.click(); await page.waitForTimeout(180);", 1)
 p.write_text(s, encoding='utf-8')
 PY
 
