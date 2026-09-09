@@ -86,7 +86,7 @@
 
     return {
       ...merged,
-      active: Boolean(merged.active && hasCommercialData(merged))
+      active: Boolean(merged.active && (merged.intakeOnly || hasCommercialData(merged)))
     };
   }
 
@@ -181,7 +181,7 @@
       clientName: values.fullName || "",
       answers: values,
       pricing: getPricing(service, values),
-      status: "payment_pending",
+      status: service.intakeOnly ? "in_progress" : "payment_pending",
       observations: [],
       requestedFields: [],
       result: "",
@@ -354,7 +354,7 @@
   }
 
   function renderPartidaTypeCard(item, jurisdiction) {
-    const available = jurisdiction === "pba";
+    const available = jurisdiction === "pba" || jurisdiction === "caba";
     return `
       <button class="partidas-type-card partidas-type-${escapeHTML(item.tone)}" type="button"
         ${available ? `data-action="select-partida-type" data-part-type="${escapeHTML(item.value)}"` : 'disabled aria-disabled="true"'}
@@ -401,7 +401,6 @@
                 <h2>${escapeHTML(jurisdictionName)}</h2>
                 <p>Elegí el tipo de partida.</p>
               </div>
-              ${jurisdiction === "caba" ? '<div class="partidas-caba-note">La estructura queda preparada. Los trámites de CABA se habilitarán cuando estén confirmados requisitos, precio y plazo.</div>' : ""}
               <div class="partidas-type-grid">
                 ${PARTIDAS_TYPE_CARDS.map((item) => renderPartidaTypeCard(item, jurisdiction)).join("")}
               </div>
@@ -896,6 +895,32 @@
         return service.rules.message || "Completá una de las alternativas requeridas.";
       }
     }
+    if (service.id === "partidas-caba") {
+      const type = values.partType;
+      const mode = values.requestMode;
+      if (["birth", "death"].includes(type) && !hasValue(values.eventDate)) {
+        return "Para nacimiento o defunción, indicá la fecha exacta o aproximada del acontecimiento.";
+      }
+      if (["marriage", "cohabitation"].includes(type) && !hasValue(values.secondPersonName)) {
+        return "Para matrimonio o unión convivencial, indicá el nombre y apellido de la otra persona.";
+      }
+      if (type === "cohabitation" && mode !== "union-review") {
+        return "Para Unión Convivencial elegí la opción de revisión del canal oficial.";
+      }
+      if (type !== "cohabitation" && mode === "union-review") {
+        return "La revisión de canal de Unión Convivencial corresponde solo a ese tipo de partida.";
+      }
+      if (mode === "urgent") {
+        const exact = ["eventDate", "sectionCirc", "bookNumber", "actNumber", "registrationYear"];
+        if (!exact.every((id) => hasValue(values[id]))) {
+          return "Para una solicitud urgente de CABA necesitás fecha exacta, Circunscripción/Sección, Tomo, Acta y Año.";
+        }
+        if (!values.creditCardAvailable) {
+          return "Para una solicitud urgente de CABA confirmá que contás con tarjeta de crédito para el pago oficial.";
+        }
+      }
+    }
+
     return "";
   }
 
@@ -939,6 +964,14 @@
     }
     state.requestId = null;
     state.draft = {};
+    if (serviceId === "partidas-caba") {
+      const preset = sessionStorage.getItem("tramipago_partidas_caba_prefill_v1") || "";
+      if (preset) {
+        state.draft.partType = preset;
+        state.draft.requestMode = preset === "cohabitation" ? "union-review" : "regular";
+        sessionStorage.removeItem("tramipago_partidas_caba_prefill_v1");
+      }
+    }
     state.step = service.eligibility?.required ? "eligibility" : "data";
   }
 
@@ -1010,9 +1043,14 @@
 
     if (action === "select-partida-type") {
       const partType = trigger.dataset.partType || "";
-      if (!partType || state.partidasJurisdiction !== "pba") return;
-      sessionStorage.setItem("tramipago_partidas_prefill_v1", partType);
-      return startService("partidas");
+      const jurisdiction = state.partidasJurisdiction;
+      if (!partType || !["pba", "caba"].includes(jurisdiction)) return;
+      if (jurisdiction === "pba") {
+        sessionStorage.setItem("tramipago_partidas_prefill_v1", partType);
+        return startService("partidas");
+      }
+      sessionStorage.setItem("tramipago_partidas_caba_prefill_v1", partType);
+      return startService("partidas-caba");
     }
 
     if (action === "select-family") {
@@ -1138,8 +1176,14 @@
           : createRequest(service, values);
 
         state.requestId = request.id;
-        rememberActiveRequest(request);
-        state.step = "payment";
+        if (service.intakeOnly) {
+          clearActiveRequest();
+          state.trackingResult = request;
+          state.step = "confirmation";
+        } else {
+          rememberActiveRequest(request);
+          state.step = "payment";
+        }
         render();
         window.scrollTo(0, 0);
       } catch (error) {

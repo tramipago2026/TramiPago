@@ -260,15 +260,56 @@
       id: "partidas-caba",
       codePrefix: "PC",
       name: "Partidas CABA",
-      shortDescription: "Partidas del Registro Civil de CABA.",
-      description: "Servicio en preparación. Requisitos, precio y plazo todavía no publicados.",
-      active: false,
-      requirements: [],
-      components: [],
+      shortDescription: "Nacimiento, matrimonio, unión civil/convivencial o defunción inscriptos en CABA.",
+      description: "Completá los datos para preparar la gestión. CABA tramita nacimiento, matrimonio y defunción por TAD con miBA. La copia de Unión Civil/Convivencial se revisa por un canal específico antes de iniciar.",
+      resultDelivery: "authority-platform",
+      active: true,
+      intakeOnly: true,
+      officialInfoDate: "2026-09-09",
+      requirements: [
+        "La partida debe estar inscripta en la Ciudad Autónoma de Buenos Aires.",
+        "Contar con usuario y clave miBA.",
+        "Contar con una casilla de correo Gmail, Hotmail o Yahoo.",
+        "Nacimiento y defunción: nombre y apellido completo del titular y fecha aproximada del acontecimiento.",
+        "Matrimonio: nombre y apellido completo de ambos titulares."
+      ],
+      components: [
+        "Solicitud regular: 15 días hábiles.",
+        "Partida regular: trámite oficial gratuito cuando se conocen los datos registrales.",
+        "Si faltan datos registrales, CABA informa un costo oficial adicional de $10.950.",
+        "Solicitud urgente: 3 días hábiles; costo oficial $16.140 y exige todos los datos exactos.",
+        "Unión Civil/Convivencial: la partida existe, pero su solicitud no figura en el trámite general de partidas; se revisa el canal oficial específico antes de iniciar."
+      ],
       officialFee: null,
-      priceField: "serviceOption",
       priceOptions: [],
-      fields: []
+      fields: [
+        { id: "partType", label: "¿Qué partida necesitás?", type: "choice", required: true, options: [
+          { value: "birth", label: "Nacimiento" },
+          { value: "marriage", label: "Matrimonio" },
+          { value: "cohabitation", label: "Unión convivencial" },
+          { value: "death", label: "Defunción" }
+        ] },
+        { id: "requestMode", label: "Modalidad / canal", type: "choice", required: true, options: [
+          { value: "regular", label: "Regular — nacimiento, matrimonio o defunción" },
+          { value: "urgent", label: "Urgente — nacimiento, matrimonio o defunción" },
+          { value: "union-review", label: "Unión convivencial — revisión de canal oficial" }
+        ] },
+        { id: "adultEligibility", label: "Confirmo que soy mayor de 18 años.", type: "checkbox", required: true },
+        { id: "mibaAccess", label: "Tengo usuario y clave miBA.", type: "checkbox", required: true },
+        { id: "officialEmailProvider", label: "Tengo acceso a un correo Gmail, Hotmail o Yahoo para recibir comunicaciones del organismo.", type: "checkbox", required: true },
+        { id: "recordHolderFullName", label: "Nombre y apellido del titular", type: "text", required: true },
+        { id: "secondPersonName", label: "Nombre y apellido de la otra persona (matrimonio / unión convivencial)", type: "text", required: false },
+        { id: "eventDate", label: "Fecha del acontecimiento", type: "text", required: false, placeholder: "Ej.: 15/08/1985 o agosto de 1985" },
+        { id: "sectionCirc", label: "Circunscripción / Sección (si la conocés)", type: "text", required: false },
+        { id: "bookNumber", label: "Tomo (si lo conocés)", type: "text", required: false },
+        { id: "actNumber", label: "Acta (si la conocés)", type: "text", required: false },
+        { id: "registrationYear", label: "Año de inscripción (si lo conocés)", type: "text", required: false, inputmode: "numeric" },
+        { id: "creditCardAvailable", label: "Si elegí urgente, cuento con tarjeta de crédito para abonar el costo oficial.", type: "checkbox", required: false },
+        { id: "previousAct", label: "Copia de una partida anterior (opcional)", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
+        { id: "purpose", label: "¿Para qué trámite necesitás la partida? (opcional)", type: "text", required: false },
+        ...contactFields,
+        authorizationField
+      ]
     }
 
     ,{
