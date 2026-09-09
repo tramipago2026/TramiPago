@@ -1,4 +1,4 @@
-name: Activar imágenes corregidas de jurisdicción
+name: Partidas CABA formularios verificados
 on:
   push:
     paths:
@@ -12,32 +12,190 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Reemplazar imágenes PBA y CABA
+      - name: Actualizar formularios CABA
+        shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          p = Path('index.html')
+          import re
+
+          # services.js
+          p = Path('services.js')
           s = p.read_text(encoding='utf-8')
-          old_pba = 'assets/partidas-pba-jurisdiccion-v1.webp'
-          old_caba = 'assets/partidas-caba-jurisdiccion-v1.webp'
-          new_pba = 'assets/partidas-pba-jurisdiccion-v2.webp'
-          new_caba = 'assets/partidas-caba-jurisdiccion-v2.webp'
-          if old_pba not in s and new_pba not in s:
-              raise SystemExit('No se encontró referencia PBA')
-          if old_caba not in s and new_caba not in s:
-              raise SystemExit('No se encontró referencia CABA')
-          s = s.replace(old_pba, new_pba).replace(old_caba, new_caba)
+          needle = '      id: "partidas-caba",'
+          pos = s.find(needle)
+          if pos < 0:
+              raise SystemExit('No se encontró partidas-caba')
+          start = s.rfind('    ,{', 0, pos)
+          if start < 0:
+              start = s.rfind('    {', 0, pos)
+          end = s.find('\n    }', pos)
+          if start < 0 or end < 0:
+              raise SystemExit('No se pudo delimitar partidas-caba')
+          end += len('\n    }')
+          new_service = '''    ,{
+      id: "partidas-caba",
+      codePrefix: "PC",
+      name: "Partidas CABA",
+      shortDescription: "Nacimiento, matrimonio, unión civil/convivencial o defunción inscriptos en CABA.",
+      description: "Completá los datos para preparar la gestión. CABA tramita nacimiento, matrimonio y defunción por TAD con miBA. Para Unión Civil/Convivencial se revisa el canal específico del Registro Civil antes de iniciar.",
+      resultDelivery: "authority-platform",
+      active: true,
+      intakeOnly: true,
+      officialInfoDate: "2026-09-09",
+      requirements: [
+        "La partida debe estar inscripta en la Ciudad Autónoma de Buenos Aires.",
+        "Contar con usuario y clave miBA.",
+        "Contar con una casilla de correo Gmail, Hotmail o Yahoo.",
+        "Nacimiento y defunción: nombre y apellido completo del titular y fecha aproximada del acontecimiento.",
+        "Matrimonio: nombre y apellido completo de ambos titulares."
+      ],
+      components: [
+        "Solicitud regular: 15 días hábiles.",
+        "Partida regular: trámite oficial gratuito cuando se cuentan con los datos registrales.",
+        "Si faltan Circunscripción/Sección, Tomo, Acta y Año, CABA informa un costo oficial adicional de $10.950.",
+        "Solicitud urgente: 3 días hábiles; costo oficial $16.140 y exige todos los datos exactos.",
+        "Unión Civil/Convivencial: la partida existe, pero su canal se revisa por separado porque no figura dentro de la solicitud general de partidas."
+      ],
+      officialFee: null,
+      priceOptions: [],
+      fields: [
+        { id: "partType", label: "¿Qué partida necesitás?", type: "choice", required: true, options: [
+          { value: "birth", label: "Nacimiento" },
+          { value: "marriage", label: "Matrimonio" },
+          { value: "cohabitation", label: "Unión convivencial" },
+          { value: "death", label: "Defunción" }
+        ] },
+        { id: "mibaAccess", label: "Tengo usuario y clave miBA.", type: "checkbox", required: true },
+        { id: "officialEmailProvider", label: "Tengo acceso a un correo Gmail, Hotmail o Yahoo para recibir comunicaciones del organismo.", type: "checkbox", required: true },
+        { id: "urgentRequest", label: "Necesito solicitud urgente (solo nacimiento, matrimonio o defunción).", type: "checkbox", required: false },
+        { id: "recordHolderFullName", label: "Nombre y apellido del titular", type: "text", required: true },
+        { id: "secondPersonName", label: "Nombre y apellido de la otra persona (matrimonio / unión convivencial)", type: "text", required: false },
+        { id: "eventDate", label: "Fecha del acontecimiento (exacta si pedís urgente; aproximada para regular)", type: "text", required: false, placeholder: "Ej.: 15/08/1985 o agosto de 1985" },
+        { id: "sectionCirc", label: "Circunscripción / Sección (si la conocés)", type: "text", required: false },
+        { id: "bookNumber", label: "Tomo (si lo conocés)", type: "text", required: false },
+        { id: "actNumber", label: "Acta (si la conocés)", type: "text", required: false },
+        { id: "registrationYear", label: "Año de inscripción (si lo conocés)", type: "text", required: false, inputmode: "numeric" },
+        { id: "creditCardAvailable", label: "Para modalidad urgente, cuento con tarjeta de crédito para abonar el costo oficial.", type: "checkbox", required: false },
+        { id: "previousAct", label: "Copia de una partida anterior (opcional)", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
+        { id: "purpose", label: "¿Para qué trámite necesitás la partida? (opcional)", type: "text", required: false },
+        ...contactFields,
+        authorizationField
+      ]
+    }'''
+          s = s[:start] + new_service + s[end:]
           p.write_text(s, encoding='utf-8')
+
+          # app.js
+          p = Path('app.js')
+          a = p.read_text(encoding='utf-8')
+          if 'const PARTIDAS_PREFILL_KEY = "tramipago_partidas_prefill_v2";' not in a:
+              a = a.replace('  const ACTIVE_REQUEST_KEY = "tramipago_active_request_v1";', '  const ACTIVE_REQUEST_KEY = "tramipago_active_request_v1";\n  const PARTIDAS_PREFILL_KEY = "tramipago_partidas_prefill_v2";')
+          a = a.replace('      active: Boolean(merged.active && hasCommercialData(merged))', '      active: Boolean(merged.active && (merged.intakeOnly || hasCommercialData(merged)))')
+          a = a.replace('    const available = jurisdiction === "pba";', '    const available = jurisdiction === "pba" || jurisdiction === "caba";')
+          a = a.replace('              ${jurisdiction === "caba" ? \'<div class="partidas-caba-note">La estructura queda preparada. Los trámites de CABA se habilitarán cuando estén confirmados requisitos, precio y plazo.</div>\' : ""}', '')
+
+          old_click = '''    if (action === "select-partida-type") {
+      const partType = trigger.dataset.partType || "";
+      if (!partType || state.partidasJurisdiction !== "pba") return;
+      sessionStorage.setItem("tramipago_partidas_prefill_v1", partType);
+      return startService("partidas");
+    }'''
+          new_click = '''    if (action === "select-partida-type") {
+      const partType = trigger.dataset.partType || "";
+      const jurisdiction = state.partidasJurisdiction;
+      if (!partType || !["pba", "caba"].includes(jurisdiction)) return;
+      const serviceId = jurisdiction === "caba" ? "partidas-caba" : "partidas";
+      sessionStorage.setItem(PARTIDAS_PREFILL_KEY, JSON.stringify({ serviceId, partType, jurisdiction }));
+      return startService(serviceId);
+    }'''
+          if old_click not in a:
+              raise SystemExit('No se encontró handler select-partida-type')
+          a = a.replace(old_click, new_click, 1)
+
+          old_restore = '''    state.requestId = null;
+    state.draft = {};
+    state.step = service.eligibility?.required ? "eligibility" : "data";'''
+          new_restore = '''    state.requestId = null;
+    state.draft = {};
+    try {
+      const prefill = JSON.parse(sessionStorage.getItem(PARTIDAS_PREFILL_KEY) || "null");
+      if (prefill?.serviceId === serviceId && prefill?.partType) {
+        state.draft.partType = prefill.partType;
+        sessionStorage.removeItem(PARTIDAS_PREFILL_KEY);
+      }
+    } catch (_) {
+      sessionStorage.removeItem(PARTIDAS_PREFILL_KEY);
+    }
+    state.step = service.eligibility?.required ? "eligibility" : "data";'''
+          if old_restore not in a:
+              raise SystemExit('No se encontró restoreProcessState')
+          a = a.replace(old_restore, new_restore, 1)
+
+          # validaciones específicas CABA
+          fstart = a.find('  function validateRules(service, values) {')
+          fend = a.find('\n  function setFormError', fstart)
+          if fstart < 0 or fend < 0:
+              raise SystemExit('No se encontró validateRules')
+          block = a[fstart:fend]
+          marker = '    return "";\n  }\n'
+          mpos = block.rfind(marker)
+          if mpos < 0:
+              raise SystemExit('No se encontró cierre validateRules')
+          extra = '''    if (service.id === "partidas-caba") {
+      const type = values.partType;
+      if (["birth", "death"].includes(type) && !hasValue(values.eventDate)) return "Para nacimiento o defunción, indicá la fecha exacta o aproximada del acontecimiento.";
+      if (["marriage", "cohabitation"].includes(type) && !hasValue(values.secondPersonName)) return "Para matrimonio o unión convivencial, indicá el nombre y apellido de la otra persona.";
+      if (values.urgentRequest) {
+        if (type === "cohabitation") return "La modalidad urgente publicada por CABA corresponde a nacimiento, matrimonio o defunción.";
+        const exact = ["eventDate", "sectionCirc", "bookNumber", "actNumber", "registrationYear"];
+        if (!exact.every((id) => hasValue(values[id]))) return "Para una solicitud urgente de CABA necesitás fecha exacta, Circunscripción/Sección, Tomo, Acta y Año.";
+        if (!values.creditCardAvailable) return "Para una solicitud urgente de CABA confirmá que contás con tarjeta de crédito para el pago oficial.";
+      }
+    }
+
+'''
+          block = block[:mpos] + extra + block[mpos:]
+          a = a[:fstart] + block + a[fend:]
+
+          a = a.replace('      status: "payment_pending",', '      status: service.intakeOnly ? "in_progress" : "payment_pending",', 1)
+          old_submit = '''        state.requestId = request.id;
+        rememberActiveRequest(request);
+        state.step = "payment";
+        render();
+        window.scrollTo(0, 0);'''
+          new_submit = '''        state.requestId = request.id;
+        if (service.intakeOnly) {
+          clearActiveRequest();
+          state.trackingResult = request;
+          state.step = "confirmation";
+        } else {
+          rememberActiveRequest(request);
+          state.step = "payment";
+        }
+        render();
+        window.scrollTo(0, 0);'''
+          if old_submit not in a:
+              raise SystemExit('No se encontró flujo posterior al formulario')
+          a = a.replace(old_submit, new_submit, 1)
+          p.write_text(a, encoding='utf-8')
+
+          # cache bust
+          p = Path('index.html')
+          h = p.read_text(encoding='utf-8')
+          h = re.sub(r'(services\.js\?v=)[^"\']+', r'\g<1>20260909-0215', h)
+          h = re.sub(r'(app\.js\?v=)[^"\']+', r'\g<1>20260909-0215', h)
+          p.write_text(h, encoding='utf-8')
           PY
+          node --check services.js
+          node --check app.js
           git diff --check
-      - name: Publicar ajuste
+      - name: Publicar
+        shell: bash
         run: |
+          rm -f .github/workflows/apply-partidas-jurisdiction-v2.yml
           git config user.name 'tramipago2026'
           git config user.email 'tramipago@gmail.com'
-          git add index.html
-          if git diff --cached --quiet; then
-            echo 'Sin cambios'
-            exit 0
-          fi
-          git commit -m 'Corrige imágenes PBA y CABA en Partidas'
+          git add -A
+          git commit -m 'Habilita formularios verificados de Partidas CABA'
           git push origin HEAD:main
