@@ -1,0 +1,34 @@
+name: Apply ARCA final
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-arca-final.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply
+        run: python scripts/apply-arca-final.py
+      - name: Validate
+        run: |
+          node --check arca-family.js
+          test "$(grep -o 'assets/arca-[a-z-]*-v2.webp' arca-family.js | sort -u | wc -l)" -eq 10
+          grep -q 'grid-template-columns:repeat(5,154px)' arca-family.js
+          git diff --check
+      - name: Publish
+        run: |
+          rm -f scripts/apply-arca-final.py
+          rm -f .github/workflows/apply-arca-final.yml
+          rm -f .github/workflows/finaliza-arca.yml
+          rm -f tmp_test_should_delete.txt
+          rm -rf .tmp-arca
+          git config user.name tramipago2026
+          git config user.email tramipago@gmail.com
+          git add -A
+          git commit -m 'Integra diseño final de ARCA con imágenes aprobadas'
+          git push origin HEAD:main
