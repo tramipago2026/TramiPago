@@ -8,6 +8,170 @@
   letter-spacing: .005em;
 }
 
+/*
+  Directiva visual permanente de TramiPago:
+  - Los encabezados de familias y trámites se centran como bloque.
+  - Los títulos de secciones se centran sobre su grupo de tarjetas.
+  - Las filas de tarjetas se centran dentro del contenido.
+  - Los textos de las tarjetas conservan su alineación izquierda.
+  - Los campos y etiquetas de formularios conservan alineación izquierda por legibilidad.
+*/
+
+/* Encabezados generales de familias. */
+.family-page .family-heading {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 138px !important;
+  padding: 22px 150px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+.family-page .family-heading > div {
+  width: 100% !important;
+  max-width: 720px !important;
+  margin: 0 auto !important;
+  text-align: center !important;
+}
+
+.family-page .family-heading .eyebrow,
+.family-page .family-heading h1,
+.family-page .family-heading p {
+  max-width: none !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+.family-page .family-heading img {
+  position: absolute !important;
+  left: 22px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+/* Filas y títulos internos de cada familia. */
+.family-page .family-service-grid,
+.family-page .family-service-row,
+.partidas-jurisdiction-grid,
+.partidas-type-grid {
+  justify-content: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+body .arca-family-page .arca-service-group-title,
+.partidas-selector-heading,
+.partidas-type-heading,
+.family-page .family-section-title {
+  width: 100% !important;
+  text-align: center !important;
+}
+
+body .arca-family-page .arca-service-group-title {
+  text-align: center !important;
+}
+
+/* Encabezados de todos los trámites y formularios. */
+.process-shell .process-top {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+.process-shell .process-title {
+  width: 100% !important;
+  max-width: 840px !important;
+  margin: 0 auto !important;
+  text-align: center !important;
+}
+
+.process-shell .process-title .eyebrow,
+.process-shell .process-title h1,
+.process-shell .process-title p {
+  max-width: none !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+.process-shell .process-title p:last-child {
+  max-width: 760px !important;
+}
+
+/* Títulos de paneles y pasos: misma jerarquía, sin tocar campos. */
+.process-shell .panel-header,
+.tracking-page .panel-header,
+.confirmation,
+.partidas-selector-heading,
+.partidas-type-heading {
+  text-align: center !important;
+}
+
+.process-shell .panel-header h2,
+.process-shell .panel-header h3,
+.process-shell .panel-header p,
+.tracking-page .panel-header h2,
+.tracking-page .panel-header h3,
+.tracking-page .panel-header p {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+/* Los títulos de tarjetas permanecen a la izquierda: patrón del Inicio. */
+.catalog-card-info,
+.family-service-card > div,
+.family-service-card h2,
+.family-service-card p {
+  text-align: left !important;
+}
+
+/* Formularios: contenedor centrado, campos legibles a la izquierda. */
+.process-content,
+.process-grid,
+.panel {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.form-grid,
+.field,
+.field label,
+.form-check,
+.form-check-label,
+.choice-field,
+.choice-option {
+  text-align: left !important;
+}
+
+@media (max-width: 760px) {
+  .family-page .family-heading {
+    flex-direction: column !important;
+    min-height: 0 !important;
+    padding: 18px 16px !important;
+    gap: 12px !important;
+  }
+
+  .family-page .family-heading img {
+    position: static !important;
+    transform: none !important;
+    margin: 0 auto !important;
+  }
+
+  .family-page .family-heading > div,
+  .process-shell .process-title {
+    max-width: 100% !important;
+  }
+}
+
 @media (max-width: 680px) {
   .catalog-card-title {
     font-size: .75rem !important;
