@@ -8,22 +8,33 @@ import re
 
 p = Path('app.js')
 s = p.read_text(encoding='utf-8')
-original = s
-for old in (r'[0-9\\s\\-]*', r'[0-9\s\-]*'):
-    s = s.replace(old, '[0-9 -]*')
-if s == original:
-    raise SystemExit('No se encontró el patrón numérico viejo en app.js')
+desired = r'[0-9\\s\\x2D]*'
+changed = False
+for old in (r'[0-9\\s\\-]*', r'[0-9\s\-]*', '[0-9 -]*'):
+    if old in s:
+        s = s.replace(old, desired)
+        changed = True
+if not changed and desired not in s:
+    raise SystemExit('No se encontró el patrón numérico para corregir en app.js')
 p.write_text(s, encoding='utf-8')
 
 p = Path('services.js')
 s = p.read_text(encoding='utf-8')
-old = '''      form.querySelectorAll('input[name="dataMode"]').forEach((input) => {
+wrong_clear = '''      const dataModeControl = form.querySelector('[name="dataMode"]');
+      if (dataModeControl) dataModeControl.value = "";'''
+right_clear = '''      form.querySelectorAll('input[name="dataMode"]').forEach((input) => {
         input.checked = false;
       });'''
-new = '''      const dataModeControl = form.querySelector('[name="dataMode"]');
-      if (dataModeControl) dataModeControl.value = "";'''
-if old in s:
-    s = s.replace(old, new, 1)
+if wrong_clear in s:
+    s = s.replace(wrong_clear, right_clear, 1)
+old_read = '''    const dataMode = form.querySelector('[name="dataMode"]')?.value || "";'''
+new_read = '''    const dataMode = form.querySelector('input[name="dataMode"]:checked')?.value
+      || form.querySelector('select[name="dataMode"]')?.value
+      || "";'''
+if old_read in s:
+    s = s.replace(old_read, new_read, 1)
+elif new_read not in s:
+    raise SystemExit('No se encontró la lectura de dataMode en services.js')
 p.write_text(s, encoding='utf-8')
 
 p = Path('index.html')
