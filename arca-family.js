@@ -43,9 +43,9 @@
       id: "arca-constancia",
       codePrefix: "AC",
       name: "Constancia ARCA",
-      shortDescription: "Obtención de constancias y credenciales disponibles en ARCA.",
+      shortDescription: "Constancia y credenciales",
       description: "Indicá qué constancia necesitás. TramiPago realiza la gestión online y te entrega el documento correspondiente cuando aplique.",
-      image: "assets/arca-constancia.svg",
+      image: "assets/arca-constancia-v2.webp",
       active: true,
       officialFee: 0,
       requirements: ["CUIT del contribuyente.", DELEGATION_NOTICE],
@@ -73,9 +73,9 @@
       id: "arca-vep",
       codePrefix: "AV",
       name: "Generar VEP",
-      shortDescription: "Generación de Volante Electrónico de Pago para una obligación.",
+      shortDescription: "Volante electrónico de pago",
       description: "Completá los datos de la obligación. Si algún concepto no lo conocés, indicá lo que tengas y TramiPago revisará la información antes de generar el VEP.",
-      image: "assets/arca-vep.svg",
+      image: "assets/arca-vep-v2.webp",
       active: true,
       officialFee: 0,
       requirements: ["CUIT del contribuyente.", "Datos de la obligación a cancelar.", DELEGATION_NOTICE],
@@ -97,9 +97,9 @@
       id: "arca-ccma",
       codePrefix: "CC",
       name: "Informe deuda/saldos CCMA",
-      shortDescription: "Consulta de pagos, deuda, intereses y saldos a favor en CCMA.",
+      shortDescription: "Consulta de deuda e intereses",
       description: "Indicá el período que querés revisar y qué necesitás conocer. Podés adjuntar un comprobante si hay un pago puntual para verificar.",
-      image: "assets/arca-ccma.svg",
+      image: "assets/arca-ccma-v2.webp",
       active: true,
       officialFee: 0,
       requirements: ["CUIT del contribuyente.", "Período a consultar.", DELEGATION_NOTICE],
@@ -131,9 +131,9 @@
       id: "arca-reimputacion",
       codePrefix: "RP",
       name: "Reimputación de pagos",
-      shortDescription: "Corrección de pagos mal aplicados o utilización de saldos a favor.",
+      shortDescription: "Corrección de pagos",
       description: "Indicá el pago o saldo de origen y la obligación a la que querés aplicarlo. TramiPago revisa la viabilidad antes de ejecutar la reimputación.",
-      image: "assets/arca-reimputacion.svg",
+      image: "assets/arca-reimputacion-v2.webp",
       active: true,
       officialFee: 0,
       requirements: ["CUIT del contribuyente.", "Datos del pago o saldo de origen.", "Destino de la reimputación.", DELEGATION_NOTICE],
@@ -157,9 +157,9 @@
       id: "arca-informe-reimputacion",
       codePrefix: "IR",
       name: "Informe + reimputación",
-      shortDescription: "Análisis de CCMA y posterior reimputación cuando corresponde.",
+      shortDescription: "Análisis y corrección",
       description: "Primero se identifica la deuda o saldo correcto y luego se realiza la reimputación correspondiente si el sistema la permite.",
-      image: "assets/arca-informe-reimputacion.svg",
+      image: "assets/arca-informe-reimputacion-v2.webp",
       active: true,
       officialFee: 0,
       requirements: ["CUIT del contribuyente.", "Período a revisar.", "Datos disponibles del pago o saldo.", DELEGATION_NOTICE],
@@ -183,9 +183,9 @@
       id: "arca-alta-monotributo",
       codePrefix: "AM",
       name: "Alta Monotributo",
-      shortDescription: "Alta de Monotributo con datos de actividad y parámetros de categorización.",
+      shortDescription: "Inscripción online",
       description: "Completá los datos de la actividad. TramiPago revisa la información necesaria para el alta y la categoría aplicable antes de gestionar la adhesión.",
-      image: "assets/arca-alta-monotributo.svg",
+      image: "assets/arca-alta-monotributo-v2.webp",
       active: true,
       officialFee: 0,
       requirements: ["CUIT del contribuyente.", "Datos de la actividad y fecha de inicio.", "Parámetros de categorización cuando correspondan.", DELEGATION_NOTICE],
@@ -233,9 +233,9 @@
       id: "arca-baja-monotributo",
       codePrefix: "BM",
       name: "Baja Monotributo",
-      shortDescription: "Baja del Monotributo por el motivo correspondiente.",
+      shortDescription: "Cese de actividad",
       description: "Indicá el motivo y el mes desde el que dejás de realizar la actividad. No se exige libre deuda general; el mes en que se solicita la baja debe quedar pago para evitar generar deuda.",
-      image: "assets/arca-baja-monotributo.svg",
+      image: "assets/arca-baja-monotributo-v2.webp",
       active: true,
       officialFee: 0,
       requirements: ["CUIT del contribuyente.", "Motivo de la baja.", "Mes desde el que deja de realizarse la actividad.", DELEGATION_NOTICE],
@@ -275,9 +275,9 @@
       id: "arca-recategorizacion",
       codePrefix: "RC",
       name: "Recategorización",
-      shortDescription: "Evaluación de los últimos 12 meses y recategorización de Monotributo.",
+      shortDescription: "Cambio de categoría",
       description: "Completá los parámetros de los últimos 12 meses. TramiPago revisa si corresponde mantener o modificar la categoría y gestiona la recategorización cuando aplica.",
-      image: "assets/arca-recategorizacion.svg",
+      image: "assets/arca-recategorizacion-v2.webp",
       active: true,
       officialFee: 0,
       requirements: ["CUIT del contribuyente.", "Actividad con antigüedad suficiente para recategorizar.", "Parámetros de los últimos 12 meses.", DELEGATION_NOTICE],
@@ -300,9 +300,9 @@
       id: "arca-dfe",
       codePrefix: "DF",
       name: "Domicilio Fiscal Electrónico",
-      shortDescription: "Constitución o actualización del canal oficial de comunicaciones de ARCA.",
+      shortDescription: "Activación y adhesión",
       description: "El Domicilio Fiscal Electrónico es distinto del domicilio fiscal físico. Para constituirlo o actualizarlo se utilizan un correo electrónico y un teléfono celular.",
-      image: "assets/arca-dfe.svg",
+      image: "assets/arca-dfe-v2.webp",
       active: true,
       officialFee: 0,
       requirements: ["Correo electrónico.", "Teléfono celular.", DELEGATION_NOTICE],
@@ -328,9 +328,9 @@
       id: "arca-actualizacion",
       codePrefix: "AD",
       name: "Actualización de datos ARCA",
-      shortDescription: "Corrección o actualización de datos registrales y datos de actividad.",
+      shortDescription: "Modificación de datos fiscales",
       description: "Indicá qué dato necesitás modificar, el dato actual y el dato nuevo. La documentación respaldatoria depende del tipo de modificación.",
-      image: "assets/arca-actualizacion.svg",
+      image: "assets/arca-actualizacion-v2.webp",
       active: true,
       officialFee: 0,
       requirements: ["CUIT del contribuyente.", "Detalle del dato a modificar.", "Documentación respaldatoria cuando corresponda.", DELEGATION_NOTICE],
@@ -408,28 +408,25 @@
     const style = document.createElement("style");
     style.id = "tramipago-arca-family-styles";
     style.textContent = `
-      .arca-family-page .family-shell{max-width:1180px!important}
-      .arca-family-page .family-heading{margin-bottom:14px!important}
+      .arca-family-page .family-shell{max-width:980px!important}
+      .arca-family-page .family-heading{margin-bottom:22px!important}
       .arca-family-page .family-heading img{width:118px!important;height:92px!important;object-fit:cover!important}
       .arca-family-page .family-service-grid{display:block!important}
-      .arca-family-page .arca-service-group{margin:0 0 16px!important}
-      .arca-family-page .arca-service-group-title{margin:0 0 8px!important;color:#082A47!important;font-size:.96rem!important;font-weight:800!important;text-align:left!important}
-      .arca-family-page .arca-service-row{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:12px!important;align-items:stretch!important}
-      .arca-family-page .family-service-card{display:flex!important;flex-direction:column!important;min-width:0!important;padding:0 0 10px!important;overflow:hidden!important;background:#fbfdff!important}
-      .arca-family-page .arca-service-thumb{display:block!important;width:100%!important;aspect-ratio:1.25/1!important;object-fit:cover!important;border:0!important;border-bottom:1px solid #d5e2ea!important;background:#eaf2f7!important}
-      .arca-family-page .family-service-card>div{display:flex!important;flex:1 1 auto!important;flex-direction:column!important;min-width:0!important;padding:10px 10px 4px!important}
-      .arca-family-page .family-service-card .service-tag{display:none!important}
-      .arca-family-page .family-service-card h2{margin:0 0 5px!important;color:#082A47!important;font-size:.98rem!important;line-height:1.16!important}
-      .arca-family-page .family-service-card p{margin:0 0 7px!important;color:#607789!important;font-size:.76rem!important;line-height:1.35!important}
-      .arca-family-page .service-card-mini{display:none!important}
-      .arca-family-page .service-summary-option{display:block!important;padding:4px 0!important;border:0!important}
-      .arca-family-page .service-summary-option>div small{display:none!important}
-      .arca-family-page .service-summary-option>strong{color:#126B3A!important;font-size:.88rem!important}
-      .arca-family-page .family-service-card>.button{width:calc(100% - 20px)!important;min-width:0!important;min-height:38px!important;margin:5px 10px 0!important;padding:6px 8px!important;font-size:.78rem!important}
-      @media(max-width:1100px){.arca-family-page .arca-service-row{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
-      @media(max-width:760px){.arca-family-page .arca-service-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
-      @media(max-width:480px){.arca-family-page .arca-service-row{grid-template-columns:1fr!important}}
-    `;
+      .arca-family-page .arca-service-group{margin:0 0 28px!important}
+      .arca-family-page .arca-service-group-title{margin:0 0 12px!important;color:#082A47!important;font-size:.96rem!important;font-weight:700!important;text-align:left!important}
+      .arca-family-page .arca-service-row{display:grid!important;grid-template-columns:repeat(5,154px)!important;gap:16px!important;justify-content:center!important;align-items:stretch!important}
+      .arca-family-page .family-service-card{position:relative!important;display:flex!important;flex-direction:column!important;width:154px!important;min-width:154px!important;padding:0!important;overflow:hidden!important;border:0!important;border-radius:10px!important;background:#082f4f!important;box-shadow:0 7px 18px rgba(8,47,79,.16)!important;transition:transform .16s ease,box-shadow .16s ease!important}
+      .arca-family-page .family-service-card:hover{transform:translateY(-2px)!important;box-shadow:0 10px 22px rgba(8,47,79,.22)!important}
+      .arca-family-page .arca-service-thumb{display:block!important;width:154px!important;height:123px!important;aspect-ratio:auto!important;object-fit:cover!important;object-position:center!important;border:0!important;background:#eaf2f7!important}
+      .arca-family-page .family-service-card>div{display:flex!important;flex:1 1 auto!important;flex-direction:column!important;min-width:0!important;min-height:76px!important;padding:10px 10px 11px!important;background:#082f4f!important}
+      .arca-family-page .family-service-card .service-tag,.arca-family-page .service-card-mini,.arca-family-page .family-unavailable{display:none!important}
+      .arca-family-page .family-service-card h2{margin:0 0 4px!important;color:#fff!important;font-size:.79rem!important;line-height:1.16!important;font-weight:650!important;text-align:left!important}
+      .arca-family-page .family-service-card p{margin:0!important;color:#11b9f4!important;font-size:.69rem!important;line-height:1.25!important;font-weight:600!important;text-align:left!important}
+      .arca-family-page .family-service-card>.button{position:absolute!important;inset:0!important;z-index:5!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;opacity:0!important;cursor:pointer!important}
+      @media(max-width:900px){.arca-family-page .arca-service-row{grid-template-columns:repeat(3,154px)!important}}
+      @media(max-width:560px){.arca-family-page .arca-service-row{grid-template-columns:repeat(2,154px)!important;gap:12px!important}}
+      @media(max-width:350px){.arca-family-page .arca-service-row{grid-template-columns:154px!important}}
+`;
     document.head.appendChild(style);
   }
 
