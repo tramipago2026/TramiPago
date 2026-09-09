@@ -15,39 +15,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Preparar auditoría con Chrome del runner
+      - name: Preparar Chrome y Playwright
         run: |
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('scripts/audit-site-v2.mjs')
-          s=p.read_text(encoding='utf-8')
-          s=s.replace("chromium.launch({headless:true})", "chromium.launch({headless:true,channel:'chrome'})")
-          old='''  const radios=await page.locator('input[type=radio]:visible').evaluateAll(els=>uniqNames(els.map(e=>e.name))); // helper injected below
-  for(const name of radios){
-    const checked=page.locator(`input[type=radio][name="${name}"]:checked`);
-    if(!(await checked.count())){const first=page.locator(`input[type=radio][name="${name}"]:visible`).first();if(await first.count())await first.check({force:true});}
-  }'''
-          new='''  for(let round=0;round<3;round++){
-    const radios=await page.locator('input[type=radio]:visible').evaluateAll(els=>uniqNames(els.map(e=>e.name)));
-    for(const name of radios){
-      const checked=page.locator(`input[type=radio][name="${name}"]:checked`);
-      if(!(await checked.count())){const first=page.locator(`input[type=radio][name="${name}"]:visible`).first();if(await first.count())await first.check({force:true});}
-    }
-    await page.waitForTimeout(60);
-  }'''
-          if old not in s:
-              raise SystemExit('No se encontró bloque de radios para parchear')
-          s=s.replace(old,new,1)
-          old2='''  await submit.click(); await page.waitForTimeout(180);'''
-          new2='''  if(!(await submit.isVisible().catch(()=>false))){issue('submit-oculto','El botón de avance sigue oculto después de completar los campos visibles',hash);return;}
-  await submit.click(); await page.waitForTimeout(180);'''
-          if old2 not in s:
-              raise SystemExit('No se encontró click de submit para parchear')
-          s=s.replace(old2,new2,1)
-          p.write_text(s,encoding='utf-8')
-          PY
+          sed -i "s/chromium.launch({headless:true})/chromium.launch({headless:true,channel:'chrome'})/" scripts/audit-site-v2.mjs
           google-chrome --version || google-chrome-stable --version
       - name: Iniciar sitio
         run: |
