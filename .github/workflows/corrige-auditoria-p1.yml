@@ -1,0 +1,40 @@
+name: Corrige hallazgos auditoría P1
+on:
+  push:
+    paths:
+      - '.github/workflows/corrige-auditoria-p1.yml'
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Corregir texto y validar
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('services.js')
+          s=p.read_text(encoding='utf-8')
+          old='Partidas de la Provincia de Buenos Aires y Ciudad de Buenos Aires.'
+          new='Partidas de la Provincia de Buenos Aires y Ciudad Autónoma de Buenos Aires.'
+          if old not in s:
+              raise SystemExit('No se encontró el texto esperado')
+          p.write_text(s.replace(old,new,1),encoding='utf-8')
+          i=Path('index.html')
+          h=i.read_text(encoding='utf-8')
+          h=h.replace('services.js?v=20260909-audit1','services.js?v=20260909-audit2')
+          i.write_text(h,encoding='utf-8')
+          PY
+          node --check services.js
+          git diff --check
+      - name: Publicar corrección
+        run: |
+          rm -f .github/workflows/corrige-auditoria-p1.yml
+          git config user.name tramipago2026
+          git config user.email tramipago@gmail.com
+          git add -A
+          git commit -m 'Corrige nomenclatura CABA detectada en auditoría'
+          git push origin HEAD:main
