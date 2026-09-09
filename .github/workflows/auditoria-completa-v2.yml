@@ -15,11 +15,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Instalar Playwright
+      - name: Preparar auditoría con Chrome del runner
         run: |
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
+          sed -i "s/chromium.launch({headless:true})/chromium.launch({headless:true,channel:'chrome'})/" scripts/audit-site-v2.mjs
+          google-chrome --version || google-chrome-stable --version
       - name: Iniciar sitio
         run: |
           python3 -m http.server 4173 >/tmp/tp-server-v2.log 2>&1 &
