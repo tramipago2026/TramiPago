@@ -698,7 +698,7 @@
     }
 
     const numericPattern = field.inputmode === "numeric"
-      ? `pattern="[0-9\\s\\-]*" title="Usá solamente números, espacios o guiones."`
+      ? `pattern="[0-9\\s\\x2D]*" title="Usá solamente números, espacios o guiones."`
       : "";
 
     return `
