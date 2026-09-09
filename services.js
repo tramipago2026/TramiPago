@@ -479,7 +479,7 @@
     clearAutomaticSelections(form);
 
     const partType = form.querySelector('input[name="partType"]:checked')?.value || "";
-    const dataMode = form.querySelector('input[name="dataMode"]:checked')?.value || "";
+    const dataMode = form.querySelector('[name="dataMode"]')?.value || "";
     const ready = Boolean(partType && dataMode);
     const withData = dataMode === "with-data";
     const withoutData = dataMode === "without-data";
