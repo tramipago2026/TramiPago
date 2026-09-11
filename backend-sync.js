@@ -6,6 +6,8 @@
   const SDK_URL="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.0/+esm";
   const REQUESTS_KEY="tramipago_requests_v1";
   const TOKENS_KEY="tramipago_request_tokens_v1";
+  const START_KEY="tramipago_backend_started_at_v1";
+  const CORRECTION_KEY="tramipago_backend_correction_request_v1";
   const STORAGE_BUCKET="request-files";
   const MAX_FILE_BYTES=10*1024*1024;
 
@@ -13,6 +15,7 @@
   let syncing=false;
   let syncQueued=false;
   let internalWrite=false;
+  let activationMs=0;
 
   const DB_TO_UI={
     awaiting_payment:"payment_pending",
@@ -45,6 +48,23 @@
   function tokens(){return readJSON(TOKENS_KEY,{});}
   function saveTokens(value){writeJSON(TOKENS_KEY,value);}
   function saveRequests(value){writeJSON(REQUESTS_KEY,value);}
+
+  function ensureActivationTime(){
+    let value=localStorage.getItem(START_KEY);
+    if(!value){
+      value=new Date().toISOString();
+      internalWrite=true;
+      try{localStorage.setItem(START_KEY,value);}finally{internalWrite=false;}
+    }
+    const parsed=Date.parse(value);
+    activationMs=Number.isFinite(parsed)?parsed:Date.now();
+  }
+
+  function isEligibleForBackend(request,tokenMap){
+    if(tokenMap[request.id])return true;
+    const created=Date.parse(request.createdAt||"");
+    return Number.isFinite(created)&&created>=activationMs-1000;
+  }
 
   function randomToken(){
     const bytes=new Uint8Array(32);
@@ -224,7 +244,7 @@
   }
 
   async function syncOne(request,tokenMap){
-    if(!request?.id||!request?.serviceId)return;
+    if(!request?.id||!request?.serviceId||!isEligibleForBackend(request,tokenMap))return;
     const meta=await ensureServerRecord(request,tokenMap);
     await syncAnswerFiles(request,meta);
     if(request.status==="payment_pending")await updateServerDraft(request,meta);
@@ -278,6 +298,7 @@
     return requests().find(item=>String(item.code||"").toUpperCase()===normalized)||null;
   }
 
+  function findLocalById(id){return requests().find(item=>item.id===id)||null;}
   function localTokenMeta(request){return request?tokens()[request.id]||null:null;}
 
   function formatDate(value){
@@ -359,11 +380,17 @@
   }
 
   function installCorrectionInterceptor(){
+    document.addEventListener("click",event=>{
+      const button=event.target.closest('[data-action="correct-request"]');
+      if(button?.dataset.requestId)sessionStorage.setItem(CORRECTION_KEY,button.dataset.requestId);
+    },true);
+
     document.addEventListener("submit",async event=>{
       const form=event.target;
       if(!(form instanceof HTMLFormElement)||form.id!=="correction-form"||!client)return;
-      const local=requests().find(item=>item.status==="needs_info"&&localTokenMeta(item));
-      if(!local)return;
+      const correctionId=sessionStorage.getItem(CORRECTION_KEY)||"";
+      const local=findLocalById(correctionId);
+      if(!local||local.status!=="needs_info"||!localTokenMeta(local))return;
       const meta=localTokenMeta(local);
       const service=(window.TRAMI_SERVICES||[]).find(item=>item.id===local.serviceId);
       if(!service)return;
@@ -375,8 +402,18 @@
         for(const field of service.fields||[]){
           const element=form.elements.namedItem(field.id);
           if(!element)continue;
-          if(field.type==="checkbox")patch[field.id]=Boolean(element.checked);
-          else if(field.type!=="file")patch[field.id]=String(element.value||"").trim();
+          if(field.type==="checkbox"){
+            patch[field.id]=Boolean(element.checked);
+          }else if(field.type==="file"){
+            const file=element.files?.[0];
+            if(file){
+              const kind=/dni|documento/i.test(field.id)?"dni":"supporting_document";
+              const path=await uploadBlob(meta,kind,{name:file.name,type:file.type},file,field.id);
+              patch[field.id]={name:file.name,size:file.size,type:file.type,storagePath:path};
+            }
+          }else{
+            patch[field.id]=String(element.value||"").trim();
+          }
         }
         const tokenHash=await sha256Hex(meta.raw);
         await rpc("submit_public_request_correction",{
@@ -384,6 +421,10 @@
           p_public_token_hash:tokenHash,
           p_patch:patch
         });
+        const list=requests();
+        const target=list.find(item=>item.id===local.id);
+        if(target){target.answers={...(target.answers||{}),...patch};target.status="in_progress";saveRequests(list);}
+        sessionStorage.removeItem(CORRECTION_KEY);
         const row=await lookupStatus(meta.code);
         if(row){updateLocalFromStatus(row);location.hash="#/seguimiento";setTimeout(()=>renderServerStatus(row,findLocalByCode(meta.code)),50);}
       }catch(error){
@@ -407,6 +448,7 @@
   }
 
   async function init(){
+    ensureActivationTime();
     patchStorage();
     installTrackingInterceptor();
     installCorrectionInterceptor();
