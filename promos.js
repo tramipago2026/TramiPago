@@ -46,6 +46,10 @@
       body.promo-rail-layout>.site-footer{grid-column:1/-1;grid-row:3;min-width:0}
       .home-main-heading{margin:0 0 15px;color:#082a47;font-size:clamp(1.15rem,2.2vw,1.45rem);font-weight:800;line-height:1.2;text-align:center}
       .button.button-primary,.family-service-card .button.button-primary{background:#198754!important;color:#fff!important}
+      .main-nav button.nav-help{background:#198754!important;color:#fff!important}
+      .site-footer .footer-menu-col h3{font-size:12px!important;line-height:1.35!important}
+      .site-footer .footer-menu-col a{font-size:12px!important;line-height:1.45!important}
+      .site-footer .footer-menu-bottom{font-size:11px!important;line-height:1.4!important}
       .promo-side-rail{position:relative;z-index:12;min-width:0;background:linear-gradient(180deg,#f8fbfd 0%,#edf4f8 100%);border-right:1px solid #bdcfdb}
       .promo-rail-inner{position:sticky;top:0;display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px}
       .promo-rail-card{display:block;overflow:hidden;width:100%;max-width:428px;aspect-ratio:1;color:#fff;background:#fff;border:0;border-radius:14px;box-shadow:0 8px 24px rgba(8,42,71,.22);text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
@@ -53,7 +57,7 @@
       .promo-rail-media{display:block;width:100%;height:100%;overflow:hidden;background:#fff}
       .promo-rail-media img{display:block;width:100%;height:100%;object-fit:cover}
       .promo-rail-controls{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:428px}
-      .promo-rail-arrow{display:grid;place-items:center;width:36px;height:34px;min-height:34px;padding:0;color:#fff;background:#082a47;border:0;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,.22);font:800 1.15rem/1 system-ui;cursor:pointer}
+      .promo-rail-arrow{display:grid;place-items:center;width:42px;height:42px;min-height:42px;padding:0;color:#fff;background:#082a47;border:0;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,.22);font:800 1.15rem/1 system-ui;cursor:pointer}
       .promo-rail-arrow:hover,.promo-rail-arrow:focus-visible{background:#1b6fa8;outline:3px solid rgba(41,182,246,.28)}
       .promo-rail-dots{display:flex;gap:6px}
       .promo-rail-dot{width:7px;height:7px;background:#aac0ce;border-radius:50%}
@@ -63,6 +67,7 @@
       .promo-side-rail.is-mobile .promo-rail-card{width:min(390px,100%)}
       .promo-side-rail.is-mobile .promo-rail-controls{width:min(390px,100%)}
       @media(max-width:1119px){body.promo-rail-layout{display:block!important}.promo-side-rail{width:min(460px,100%)}}
+      @media(max-width:680px){.main-nav a,.main-nav button{height:44px!important;min-height:44px!important}.promo-rail-arrow{width:44px;height:44px;min-height:44px}}
       @media(max-width:520px){.home-main-heading{margin-bottom:12px;font-size:1.12rem}}
       @media(prefers-reduced-motion:reduce){.promo-rail-card{transition:none!important}}
     `;
@@ -114,6 +119,7 @@
   }
 
   function mount(){
+    injectStyle();
     const current=document.getElementById("tramipago-promos");
     if(!isHome()){
       current?.remove();
@@ -123,7 +129,6 @@
     const main=document.getElementById("app");
     const catalog=document.querySelector(".home-catalog");
     if(!main||!catalog)return;
-    injectStyle();
     ensureHomeHeading();
     const rail=current||createRail();
     if(isDesktop()){
