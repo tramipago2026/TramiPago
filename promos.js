@@ -27,7 +27,7 @@
     const style=document.createElement("style");
     style.id="tramipago-promo-rail-style";
     style.textContent=`
-      body.promo-rail-layout{display:grid!important;grid-template-columns:clamp(300px,23vw,340px) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;min-height:100vh}
+      body.promo-rail-layout{display:grid!important;grid-template-columns:clamp(340px,26vw,380px) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;min-height:100vh}
       body.promo-rail-layout>.site-header{grid-column:1/-1;grid-row:1}
       body.promo-rail-layout>.promo-side-rail{grid-column:1;grid-row:2/4}
       body.promo-rail-layout>.site-main{grid-column:2;grid-row:2;min-width:0}
@@ -35,11 +35,11 @@
       .promo-side-rail{position:relative;z-index:12;min-width:0;background:linear-gradient(180deg,#f8fbfd 0%,#edf4f8 100%);border-right:1px solid #bdcfdb}
       .promo-rail-inner{position:sticky;top:0;display:flex;flex-direction:column;align-items:center;gap:11px;padding:18px 20px 22px}
       .promo-rail-title{align-self:stretch;margin:0;color:#082a47;font:800 1rem/1.2 system-ui,sans-serif;text-align:left}
-      .promo-rail-card{display:block;overflow:hidden;width:100%;max-width:310px;aspect-ratio:1/1;background:#fff;border:0;border-radius:12px;box-shadow:0 8px 24px rgba(8,42,71,.22);transition:opacity .18s ease,transform .18s ease,box-shadow .18s ease}
+      .promo-rail-card{display:block;overflow:hidden;width:100%;max-width:330px;aspect-ratio:1/1;background:#fff;border:0;border-radius:12px;box-shadow:0 8px 24px rgba(8,42,71,.22);transition:opacity .18s ease,transform .18s ease,box-shadow .18s ease}
       .promo-rail-card:hover,.promo-rail-card:focus-visible{box-shadow:0 11px 28px rgba(8,42,71,.32);transform:translateY(-2px);outline:3px solid rgba(41,182,246,.35)}
       .promo-rail-card.is-changing{opacity:.18}
       .promo-rail-card img{display:block;width:100%;height:100%;object-fit:cover}
-      .promo-rail-controls{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:310px}
+      .promo-rail-controls{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:330px}
       .promo-rail-arrow{display:grid;place-items:center;width:36px;height:34px;min-height:34px;padding:0;color:#fff;background:#082a47;border:0;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,.22);font:800 1.15rem/1 system-ui;cursor:pointer}
       .promo-rail-arrow:hover,.promo-rail-arrow:focus-visible{background:#1b6fa8;outline:3px solid rgba(41,182,246,.28)}
       .promo-rail-dots{display:flex;gap:6px}
