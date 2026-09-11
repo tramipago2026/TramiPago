@@ -1,0 +1,44 @@
+name: Actualizar carrusel lateral
+
+on:
+  push:
+    paths:
+      - ".github/workflows/update-promos-version.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Actualizar versión de promos
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          text=p.read_text(encoding='utf-8')
+          old='promos.js?v=20260910-carousel'
+          new='promos.js?v=20260911-side-rail'
+          if old not in text and new not in text:
+              raise SystemExit('No se encontró promos.js en index.html')
+          text=text.replace(old,new)
+          p.write_text(text,encoding='utf-8')
+          PY
+      - name: Verificar sintaxis
+        run: |
+          node --check promos.js
+          grep -q 'promos.js?v=20260911-side-rail' index.html
+      - name: Guardar
+        run: |
+          git config user.name "TramiPago Bot"
+          git config user.email "tramipago@gmail.com"
+          git add index.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Activa carrusel lateral y renueva caché"
+          git push origin HEAD:main
