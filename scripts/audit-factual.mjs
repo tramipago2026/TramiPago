@@ -61,6 +61,21 @@ async function goto(page,url){
   await page.waitForTimeout(300);
 }
 
+async function overflowDetails(page){
+  return page.evaluate(()=>{
+    const vw=document.documentElement.clientWidth;
+    return [...document.querySelectorAll('body *')].map(el=>{
+      const r=el.getBoundingClientRect();
+      const right=Math.max(0,r.right-vw);
+      const left=Math.max(0,-r.left);
+      if(right<=2&&left<=2)return null;
+      const id=el.id?`#${el.id}`:'';
+      const cls=typeof el.className==='string'&&el.className.trim()?'.'+el.className.trim().split(/\s+/).slice(0,3).join('.'):'';
+      return {el:`${el.tagName.toLowerCase()}${id}${cls}`,left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width),excess:Math.round(Math.max(right,left))};
+    }).filter(Boolean).sort((a,b)=>b.excess-a.excess).slice(0,8);
+  });
+}
+
 async function inspect(page,label,{home=false}={}){
   const runtime=[];
   const onConsole=m=>{if(m.type()==='error')runtime.push('console: '+m.text())};
@@ -75,7 +90,7 @@ async function inspect(page,label,{home=false}={}){
   else add(ok,'heading',label,h1.trim());
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
-  if(overflow>2)add(errors,'overflow',label,`Desborde horizontal ${overflow}px`);else add(ok,'responsive',label,'Sin desborde horizontal');
+  if(overflow>2)add(errors,'overflow',label,`Desborde horizontal ${overflow}px :: ${JSON.stringify(await overflowDetails(page))}`);else add(ok,'responsive',label,'Sin desborde horizontal');
 
   const dup=await page.evaluate(()=>{const ids=[...document.querySelectorAll('[id]')].map(e=>e.id).filter(Boolean);return[...new Set(ids.filter((id,i)=>ids.indexOf(id)!==i))]});
   for(const id of dup)add(errors,'duplicate-id',label,id);
@@ -182,7 +197,11 @@ async function browserAudit(){
   }
 
   await page.setViewportSize({width:390,height:844});
-  for(const r of routes){await goto(page,BASE+'index.html'+r);const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);if(overflow>2)add(errors,'mobile-overflow',r,`${overflow}px`);else add(ok,'mobile',r,'OK');}
+  for(const r of routes){
+    await goto(page,BASE+'index.html'+r);
+    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+    if(overflow>2)add(errors,'mobile-overflow',r,`${overflow}px :: ${JSON.stringify(await overflowDetails(page))}`);else add(ok,'mobile',r,'OK');
+  }
   await browser.close();
 }
 
