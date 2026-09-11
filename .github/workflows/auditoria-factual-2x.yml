@@ -2,8 +2,12 @@ name: Auditoria factual 2x
 on:
   push:
     paths:
+      - '*.html'
+      - '*.js'
+      - '*.css'
+      - 'assets/**'
+      - 'scripts/**'
       - '.github/workflows/auditoria-factual-2x.yml'
-      - 'scripts/audit-factual.mjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,7 +22,7 @@ jobs:
           node-version: '22'
       - name: Sintaxis JavaScript
         run: |
-          for f in *.js; do node --check "$f"; done
+          for f in *.js scripts/*.mjs; do node --check "$f"; done
       - name: Instalar Playwright
         run: |
           npm init -y >/dev/null 2>&1
