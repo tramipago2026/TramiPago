@@ -1,0 +1,50 @@
+name: Integrar carrusel de destacados
+
+on:
+  push:
+    paths:
+      - ".github/workflows/apply-promos.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  integrar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Conservar index anterior e integrar carrusel
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          text=p.read_text(encoding='utf-8')
+          Path('index-viejo.html').write_text(text,encoding='utf-8')
+          marker='  <script src="app.js?v=20260909-clean-final"></script>'
+          loader='  <script src="promos.js?v=20260910-carousel"></script>'
+          if loader not in text:
+              if marker not in text:
+                  raise SystemExit('No se encontró el punto seguro para integrar promos.js')
+              text=text.replace(marker,marker+'\n'+loader,1)
+          p.write_text(text,encoding='utf-8')
+          PY
+      - name: Verificar integración
+        run: |
+          test -f assets/promo-antecedentes.webp
+          test -f assets/promo-vehicular.webp
+          test -f assets/promo-municipal.webp
+          test -f assets/promo-art.webp
+          grep -q 'promos.js?v=20260910-carousel' index.html
+          node --check promos.js
+      - name: Guardar cambio
+        run: |
+          git config user.name "TramiPago Bot"
+          git config user.email "tramipago@gmail.com"
+          git add index.html index-viejo.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Activa carrusel de destacados en portada"
+          git push origin HEAD:main
