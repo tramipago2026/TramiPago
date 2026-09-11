@@ -45,6 +45,7 @@
       body.promo-rail-layout>.site-main{grid-column:2;grid-row:2;min-width:0}
       body.promo-rail-layout>.site-footer{grid-column:1/-1;grid-row:3;min-width:0}
       .home-main-heading{margin:0 0 15px;color:#082a47;font-size:clamp(1.15rem,2.2vw,1.45rem);font-weight:800;line-height:1.2;text-align:center}
+      .button.button-primary,.family-service-card .button.button-primary{background:#198754!important;color:#fff!important}
       .promo-side-rail{position:relative;z-index:12;min-width:0;background:linear-gradient(180deg,#f8fbfd 0%,#edf4f8 100%);border-right:1px solid #bdcfdb}
       .promo-rail-inner{position:sticky;top:0;display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px}
       .promo-rail-card{display:block;overflow:hidden;width:100%;max-width:428px;aspect-ratio:1;color:#fff;background:#fff;border:0;border-radius:14px;box-shadow:0 8px 24px rgba(8,42,71,.22);text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
