@@ -275,12 +275,6 @@
     })).join("");
 
     app.innerHTML = `
-      <section class="home-hero home-hero-clean">
-        <div class="container home-hero-inner">
-          <div class="home-hero-copy"><h1>¿Qué trámite necesitás?</h1></div>
-        </div>
-      </section>
-
       <section class="home-catalog" aria-label="Trámites y categorías">
         <div class="container">
           <div class="home-direct-row">${directs}</div>
