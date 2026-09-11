@@ -31,9 +31,9 @@
     style.textContent=`
       body.promo-rail-layout{display:grid!important;grid-template-columns:clamp(410px,31vw,460px) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;min-height:100vh}
       body.promo-rail-layout>.site-header{grid-column:1/-1;grid-row:1}
-      body.promo-rail-layout>.promo-side-rail{grid-column:1;grid-row:2/4}
+      body.promo-rail-layout>.promo-side-rail{grid-column:1;grid-row:2}
       body.promo-rail-layout>.site-main{grid-column:2;grid-row:2;min-width:0}
-      body.promo-rail-layout>.site-footer{grid-column:2;grid-row:3;min-width:0}
+      body.promo-rail-layout>.site-footer{grid-column:1/-1;grid-row:3;min-width:0}
       .promo-side-rail{position:relative;z-index:12;min-width:0;background:linear-gradient(180deg,#f8fbfd 0%,#edf4f8 100%);border-right:1px solid #bdcfdb}
       .promo-rail-inner{position:sticky;top:0;display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px}
       .promo-rail-card{display:block;overflow:hidden;width:100%;max-width:428px;aspect-ratio:1;color:#fff;background:#fff;border:0;border-radius:14px;box-shadow:0 8px 24px rgba(8,42,71,.22);text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
