@@ -1,5 +1,15 @@
 (function(){
   "use strict";
+  if(document.querySelector('script[data-tramipago-backend="supabase"]'))return;
+  const script=document.createElement("script");
+  script.src="backend-sync.js?v=20260911-supabase-v1";
+  script.defer=true;
+  script.dataset.tramipagoBackend="supabase";
+  document.head.appendChild(script);
+})();
+
+(function(){
+  "use strict";
 
   const INTERVAL_MS=4000;
   const DESKTOP_BREAKPOINT=1120;
@@ -34,6 +44,7 @@
       body.promo-rail-layout>.promo-side-rail{grid-column:1;grid-row:2}
       body.promo-rail-layout>.site-main{grid-column:2;grid-row:2;min-width:0}
       body.promo-rail-layout>.site-footer{grid-column:1/-1;grid-row:3;min-width:0}
+      .home-main-heading{margin:0 0 15px;color:#082a47;font-size:clamp(1.15rem,2.2vw,1.45rem);font-weight:800;line-height:1.2;text-align:center}
       .promo-side-rail{position:relative;z-index:12;min-width:0;background:linear-gradient(180deg,#f8fbfd 0%,#edf4f8 100%);border-right:1px solid #bdcfdb}
       .promo-rail-inner{position:sticky;top:0;display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px}
       .promo-rail-card{display:block;overflow:hidden;width:100%;max-width:428px;aspect-ratio:1;color:#fff;background:#fff;border:0;border-radius:14px;box-shadow:0 8px 24px rgba(8,42,71,.22);text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
@@ -51,9 +62,19 @@
       .promo-side-rail.is-mobile .promo-rail-card{width:min(390px,100%)}
       .promo-side-rail.is-mobile .promo-rail-controls{width:min(390px,100%)}
       @media(max-width:1119px){body.promo-rail-layout{display:block!important}.promo-side-rail{width:min(460px,100%)}}
+      @media(max-width:520px){.home-main-heading{margin-bottom:12px;font-size:1.12rem}}
       @media(prefers-reduced-motion:reduce){.promo-rail-card{transition:none!important}}
     `;
     document.head.appendChild(style);
+  }
+
+  function ensureHomeHeading(){
+    const container=document.querySelector(".home-catalog > .container");
+    if(!container||container.querySelector(".home-main-heading"))return;
+    const heading=document.createElement("h1");
+    heading.className="home-main-heading";
+    heading.textContent="Elegí el trámite que necesitás";
+    container.insertBefore(heading,container.firstChild);
   }
 
   function createRail(){
@@ -102,6 +123,7 @@
     const catalog=document.querySelector(".home-catalog");
     if(!main||!catalog)return;
     injectStyle();
+    ensureHomeHeading();
     const rail=current||createRail();
     if(isDesktop()){
       document.body.classList.add("promo-rail-layout");
@@ -112,7 +134,7 @@
       rail.classList.add("is-mobile");
       if(rail.parentElement!==catalog)catalog.insertBefore(rail,catalog.firstChild);
     }
-    setContent(false);
+    setContent();
   }
 
   function move(direction){index=(index+direction+promos.length)%promos.length;setContent();}
@@ -139,14 +161,4 @@
 
   mount();
   start();
-})();
-
-(function(){
-  "use strict";
-  if(document.querySelector('script[data-tramipago-backend="supabase"]'))return;
-  const script=document.createElement("script");
-  script.src="backend-sync.js?v=20260911-supabase-v1";
-  script.defer=true;
-  script.dataset.tramipagoBackend="supabase";
-  document.head.appendChild(script);
 })();
