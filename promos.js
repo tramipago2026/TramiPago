@@ -35,9 +35,8 @@
       .promo-side-rail{position:relative;z-index:12;min-width:0;background:linear-gradient(180deg,#f8fbfd 0%,#edf4f8 100%);border-right:1px solid #bdcfdb}
       .promo-rail-inner{position:sticky;top:0;display:flex;flex-direction:column;align-items:center;gap:11px;padding:18px}
       .promo-rail-title{align-self:stretch;margin:0;color:#082a47;font:800 1rem/1.2 system-ui,sans-serif;text-align:left}
-      .promo-rail-card{display:flex;flex-direction:column;overflow:hidden;width:100%;max-width:380px;height:clamp(420px,calc(100vh - 310px),500px);color:#fff;background:#0b3d66;border:0;border-radius:14px;box-shadow:0 8px 24px rgba(8,42,71,.22);text-decoration:none;transition:opacity .18s ease,transform .18s ease,box-shadow .18s ease}
+      .promo-rail-card{display:flex;flex-direction:column;overflow:hidden;width:100%;max-width:380px;height:clamp(420px,calc(100vh - 310px),500px);color:#fff;background:#0b3d66;border:0;border-radius:14px;box-shadow:0 8px 24px rgba(8,42,71,.22);text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
       .promo-rail-card:hover,.promo-rail-card:focus-visible{box-shadow:0 11px 28px rgba(8,42,71,.32);transform:translateY(-2px);outline:3px solid rgba(41,182,246,.35)}
-      .promo-rail-card.is-changing{opacity:.18}
       .promo-rail-media{display:flex;flex:1 1 auto;min-height:0;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(145deg,#dff4ff,#b7deef)}
       .promo-rail-media img{display:block;width:100%;height:100%;object-fit:cover}
       .promo-rail-card.is-low-resolution .promo-rail-media{padding:16px;background:linear-gradient(145deg,#dff4ff,#eef7fb)}
@@ -86,26 +85,22 @@
     return rail;
   }
 
-  function setContent(animate=true){
+  function setContent(){
     const rail=document.getElementById("tramipago-promos");
     if(!rail)return;
     const item=promos[index];
     const card=rail.querySelector(".promo-rail-card");
-    const apply=()=>{
-      card.href=hrefFor(item);
-      card.setAttribute("aria-label",item.alt);
-      card.classList.toggle("is-low-resolution",Boolean(item.lowResolution));
-      if(item.message){card.target="_blank";card.rel="noopener noreferrer";}else{card.removeAttribute("target");card.removeAttribute("rel");}
-      const image=card.querySelector("img");
-      image.src=item.image;
-      image.alt=item.alt;
-      card.querySelector(".promo-rail-eyebrow").textContent=item.eyebrow;
-      card.querySelector(".promo-rail-heading").textContent=item.title;
-      card.querySelector(".promo-rail-subtitle").textContent=item.subtitle;
-      rail.querySelector(".promo-rail-dots").innerHTML=promos.map((_,i)=>`<span class="promo-rail-dot${i===index?" is-active":""}"></span>`).join("");
-      card.classList.remove("is-changing");
-    };
-    if(animate&&!reduceMotion.matches){card.classList.add("is-changing");window.setTimeout(apply,110);}else{apply();}
+    card.href=hrefFor(item);
+    card.setAttribute("aria-label",item.alt);
+    card.classList.toggle("is-low-resolution",Boolean(item.lowResolution));
+    if(item.message){card.target="_blank";card.rel="noopener noreferrer";}else{card.removeAttribute("target");card.removeAttribute("rel");}
+    const image=card.querySelector("img");
+    image.src=item.image;
+    image.alt=item.alt;
+    card.querySelector(".promo-rail-eyebrow").textContent=item.eyebrow;
+    card.querySelector(".promo-rail-heading").textContent=item.title;
+    card.querySelector(".promo-rail-subtitle").textContent=item.subtitle;
+    rail.querySelector(".promo-rail-dots").innerHTML=promos.map((_,i)=>`<span class="promo-rail-dot${i===index?" is-active":""}"></span>`).join("");
   }
 
   function mount(){
@@ -132,7 +127,7 @@
     setContent(false);
   }
 
-  function move(direction){index=(index+direction+promos.length)%promos.length;setContent(true);}
+  function move(direction){index=(index+direction+promos.length)%promos.length;setContent();}
   function stop(){if(timer){clearInterval(timer);timer=null;}}
   function start(){
     stop();
