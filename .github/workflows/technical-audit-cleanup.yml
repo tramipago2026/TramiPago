@@ -1,0 +1,20 @@
+name: Endurecimiento tecnico y auditoria final
+on:
+  push:
+    paths:
+      - '.github/workflows/technical-audit-cleanup.yml'
+permissions:
+  contents: write
+jobs:
+  harden-and-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Aplicar correcciones, auditar tres veces y limpiar
+        run: bash scripts/technical-audit-cleanup.sh
