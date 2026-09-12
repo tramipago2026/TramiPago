@@ -15,7 +15,7 @@
 
   window.TRAMI_CONFIG = {
     whatsappNumber: "5491167083232",
-    alias: "TRAMIPAGO",
+    alias: "tramipago",
     paymentCvu: "0000003100004971102062",
     paymentHolder: "Christian Marcelo Adriano Montiel",
     paymentNote: "Transferí el total indicado y cargá el comprobante.",
