@@ -739,17 +739,27 @@
   function renderConfirmationStage(service) {
     const request = getRequest(state.requestId);
     if (!request) return "";
+    const serverReady = Boolean(request.serverId);
+    const syncError = String(request.backendSyncError || "");
     return `
       <div class="panel confirmation">
         <div class="confirmation-icon" aria-hidden="true">✓</div>
-        <h2>Solicitud recibida</h2>
-        <p>Guardá este código para consultar las actualizaciones.</p>
-        <div class="request-code">${escapeHTML(request.code)}</div>
+        <h2>${serverReady ? "Solicitud recibida" : "Registrando solicitud"}</h2>
+        <p>${serverReady
+          ? "Guardá este código para consultar las actualizaciones."
+          : syncError
+            ? "Todavía no pudimos registrar la solicitud en la base. No cierres esta página y reintentá."
+            : "Estamos generando tu código definitivo."}</p>
+        <div class="request-code">${serverReady ? escapeHTML(request.code) : "Generando código…"}</div>
         <p><strong>${escapeHTML(service.name)}</strong><br />${escapeHTML(statusLabel(request.status))}</p>
-        <div class="hero-actions confirmation-actions">
-          <button class="button button-primary" type="button" data-action="track-request">Ver estado</button>
-          <button class="button button-secondary" type="button" data-action="copy-code">Copiar código</button>
-        </div>
+        ${serverReady ? `
+          <div class="hero-actions confirmation-actions">
+            <button class="button button-primary" type="button" data-action="track-request">Ver estado</button>
+            <button class="button button-secondary" type="button" data-action="copy-code">Copiar código</button>
+          </div>` : `
+          <div class="hero-actions confirmation-actions">
+            <button class="button button-primary" type="button" data-action="retry-backend-sync">Reintentar registro</button>
+          </div>`}
       </div>
     `;
   }

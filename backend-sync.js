@@ -249,6 +249,7 @@
     await syncAnswerFiles(request,meta);
     if(request.status==="payment_pending")await updateServerDraft(request,meta);
     if(request.status==="payment_review")await syncPayment(request,meta);
+    delete request.backendSyncError;
     request.backendSyncedAt=new Date().toISOString();
   }
 
@@ -379,6 +380,20 @@
     },true);
   }
 
+  function installRetryInterceptor(){
+    document.addEventListener("click",event=>{
+      const button=event.target.closest('[data-action="retry-backend-sync"]');
+      if(!button)return;
+      event.preventDefault();
+      if(client){
+        button.disabled=true;
+        syncAll().finally(()=>{button.disabled=false;});
+      }else{
+        location.reload();
+      }
+    },true);
+  }
+
   function installCorrectionInterceptor(){
     document.addEventListener("click",event=>{
       const button=event.target.closest('[data-action="correct-request"]');
@@ -436,7 +451,7 @@
 
   function normalizeTrackingPlaceholder(){
     const input=document.getElementById("tracking-code");
-    if(input)input.placeholder="AP-000001";
+    if(input)input.placeholder="AP-000012-A1B2";
   }
 
   function observeUI(){
@@ -451,6 +466,7 @@
     ensureActivationTime();
     patchStorage();
     installTrackingInterceptor();
+    installRetryInterceptor();
     installCorrectionInterceptor();
     observeUI();
     try{

@@ -13,7 +13,7 @@
     needs_info:"Falta información",
     finalized:"Finalizado"
   };
-  const EDITABLE_STATUSES=["awaiting_payment","payment_review","in_progress","needs_info","finalized"];
+  const EDITABLE_STATUSES=["payment_confirmed","in_progress","needs_info","finalized"];
   const FILE_KIND_LABELS={payment_receipt:"Comprobante de pago",dni:"Documento / DNI",supporting_document:"Documento adjunto"};
   const FALLBACK_LABELS={
     fullName:"Nombre y apellido",name:"Nombre",email:"Correo electrónico",emailConfirm:"Confirmación de correo",whatsapp:"WhatsApp",
