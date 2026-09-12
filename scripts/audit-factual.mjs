@@ -19,6 +19,16 @@ function walkText(dir='.'){
   return out;
 }
 
+function isExternal(ref){return !ref||/^https?:|^mailto:|^tel:|^javascript:|^data:|^\/\//i.test(ref)||ref.startsWith('#');}
+function cleanRef(ref){return decodeURIComponent(String(ref).split(/[?#]/)[0]);}
+function checkLocalRef(owner,ref){
+  if(isExternal(ref))return;
+  const clean=cleanRef(ref);
+  const target=clean.startsWith('/')?clean.slice(1):path.normalize(path.join(path.dirname(owner),clean));
+  if(!fs.existsSync(target))add(errors,'broken-local-ref',owner,`${ref} -> ${target}`);
+  else add(ok,'local-ref',owner,target);
+}
+
 function staticAudit(){
   const textFiles=walkText();
   const texts=new Map(textFiles.map(p=>[p,fs.readFileSync(p,'utf8')]));
@@ -31,12 +41,25 @@ function staticAudit(){
 
   for(const file of staticPages.filter(fs.existsSync)){
     const s=texts.get(file)||'';
-    const refs=[...s.matchAll(/(?:href|src)=["']([^"'#?]+)(?:[?#][^"']*)?["']/gi)]
-      .map(m=>m[1]).filter(v=>!/^https?:|^mailto:|^tel:|^javascript:|^data:|^\//i.test(v));
-    for(const ref of refs){
-      const clean=decodeURIComponent(ref);
-      if(!fs.existsSync(clean))add(errors,'broken-local-ref',file,clean);
-    }
+    for(const match of s.matchAll(/(?:href|src)=["']([^"']+)["']/gi))checkLocalRef(file,match[1]);
+  }
+
+  for(const [file,s] of texts.entries()){
+    if(!/\.css$/i.test(file))continue;
+    for(const match of s.matchAll(/@import\s+(?:url\()?\s*["']?([^"')\s;]+)["']?\s*\)?/gi))checkLocalRef(file,match[1]);
+    for(const match of s.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/gi))checkLocalRef(file,match[1]);
+  }
+
+  const adminJs=texts.get('admin.js')||'';
+  const adminHtml=texts.get('admin.html')||'';
+  const adminRequired=['request_data','request_files','request_events','createSignedUrl','status-choice','payloadFor(row)'];
+  for(const token of adminRequired){
+    if(!adminJs.includes(token))add(errors,'admin-full-record','admin.js',`Falta ${token}`);
+    else add(ok,'admin-full-record','admin.js',token);
+  }
+  for(const token of ['services.js','arca-family.js','admin.js']){
+    if(!adminHtml.includes(token))add(errors,'admin-config','admin.html',`No carga ${token}`);
+    else add(ok,'admin-config','admin.html',token);
   }
 
   if(fs.existsSync('assets')){
@@ -166,6 +189,12 @@ async function fillVisibleForm(page){
   }
 }
 
+async function mobileOverflow(page,label,url){
+  await goto(page,url);
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  if(overflow>2)add(errors,'mobile-overflow',label,`${overflow}px :: ${JSON.stringify(await overflowDetails(page))}`);else add(ok,'mobile',label,'OK');
+}
+
 async function browserAudit(){
   const browser=await chromium.launch({headless:true});
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
@@ -197,11 +226,8 @@ async function browserAudit(){
   }
 
   await page.setViewportSize({width:390,height:844});
-  for(const r of routes){
-    await goto(page,BASE+'index.html'+r);
-    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
-    if(overflow>2)add(errors,'mobile-overflow',r,`${overflow}px :: ${JSON.stringify(await overflowDetails(page))}`);else add(ok,'mobile',r,'OK');
-  }
+  for(const p of staticPages)await mobileOverflow(page,p,BASE+p);
+  for(const r of routes)await mobileOverflow(page,r,BASE+'index.html'+r);
   await browser.close();
 }
 
