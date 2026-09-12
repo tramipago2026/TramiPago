@@ -1,0 +1,37 @@
+name: Actualiza alias de pago
+on:
+  push:
+    paths:
+      - '.github/workflows/update-payment-alias.yml'
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Ajustar alias visible
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('services.js')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('alias: "TRAMIPAGO"', 'alias: "tramipago"')
+          p.write_text(s, encoding='utf-8')
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('services.js?v=20260909-clean-final', 'services.js?v=20260912-payment1')
+          p.write_text(s, encoding='utf-8')
+          PY
+          git diff --check
+      - name: Publicar y limpiar workflow temporal
+        run: |
+          rm -f .github/workflows/update-payment-alias.yml
+          git config user.name tramipago2026
+          git config user.email tramipago@gmail.com
+          git add services.js index.html .github/workflows/update-payment-alias.yml
+          git diff --cached --check
+          git commit -m 'Actualiza alias de pago'
+          git push origin HEAD:main
