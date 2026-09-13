@@ -1,0 +1,29 @@
+name: Backend final check
+on:
+  push:
+    paths:
+      - '.github/workflows/backend-final-check.yml'
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validar JavaScript
+        run: |
+          node --check admin.js
+          node --check backend-sync.js
+          node --check app.js
+          node --check services.js
+          node --check arca-family.js
+      - name: Validar archivos principales
+        run: |
+          test -s admin.html
+          test -s index.html
+          grep -q 'admin.js?v=20260913-backend-compact' admin.html
+          grep -q 'backend-sync.js' index.html
