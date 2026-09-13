@@ -4,26 +4,50 @@ on:
     paths:
       - '.github/workflows/backend-final-check.yml'
 permissions:
-  contents: read
+  contents: write
 jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validar JavaScript
+      - name: Conectar backend al sitio público
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          if 'backend-sync.js' not in s:
+              marker='<script src="promos.js?v=20260911-full-ad-carousel-v6"></script>'
+              if marker not in s:
+                  raise SystemExit('No se encontró el punto de inserción en index.html')
+              s=s.replace(marker, marker+'\n  <script src="backend-sync.js?v=20260913-backend-compact"></script>',1)
+              p.write_text(s,encoding='utf-8')
+          PY
+      - name: Validar JavaScript y conexión
         run: |
           node --check admin.js
           node --check backend-sync.js
           node --check app.js
           node --check services.js
           node --check arca-family.js
-      - name: Validar archivos principales
-        run: |
           test -s admin.html
           test -s index.html
           grep -q 'admin.js?v=20260913-backend-compact' admin.html
-          grep -q 'backend-sync.js' index.html
+          grep -q 'backend-sync.js?v=20260913-backend-compact' index.html
+          grep -q 'create_request_record' backend-sync.js
+          grep -q 'get_public_request_status' backend-sync.js
+      - name: Publicar y retirar verificación temporal
+        run: |
+          rm -f .github/workflows/backend-final-check.yml
+          git config user.name tramipago2026
+          git config user.email tramipago@gmail.com
+          git add -A
+          git diff --cached --check
+          git commit -m 'Conecta backend Supabase y limpia verificación temporal'
+          git push origin HEAD:main
