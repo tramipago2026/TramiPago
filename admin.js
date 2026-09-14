@@ -37,9 +37,36 @@
   const searchInput=$("#search");
   const statusFilter=$("#status-filter");
 
+  const mfaPanel=document.createElement("section");
+  mfaPanel.id="mfa-panel";
+  mfaPanel.className="panel login";
+  mfaPanel.hidden=true;
+  mfaPanel.innerHTML=`
+    <h1 id="mfa-title">Verificación en dos pasos</h1>
+    <p id="mfa-copy" class="muted">Protección adicional para el panel administrativo.</p>
+    <div id="mfa-enroll" hidden>
+      <p class="muted">Escaneá este QR con una app autenticadora. También podés cargar manualmente la clave.</p>
+      <img id="mfa-qr" alt="Código QR para configurar la verificación en dos pasos" style="display:block;width:min(240px,100%);margin:14px auto;border-radius:10px;background:#fff" />
+      <div class="field"><label>Clave manual</label><input id="mfa-secret" type="text" readonly /></div>
+    </div>
+    <form id="mfa-form" style="margin-top:14px">
+      <div class="field"><label for="mfa-code">Código de 6 dígitos</label><input id="mfa-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required /></div>
+      <button class="btn primary" style="margin-top:14px" type="submit">Verificar</button>
+      <div id="mfa-message" class="message" role="alert"></div>
+    </form>`;
+  loginPanel.insertAdjacentElement("afterend",mfaPanel);
+  const mfaForm=$("#mfa-form");
+  const mfaMessage=$("#mfa-message");
+  const mfaEnroll=$("#mfa-enroll");
+  const mfaQr=$("#mfa-qr");
+  const mfaSecret=$("#mfa-secret");
+  const mfaTitle=$("#mfa-title");
+  const mfaCopy=$("#mfa-copy");
+
   let supabase=null;
   let rows=[];
   let currentUser=null;
+  let mfaState={factorId:"",challengeId:"",mode:""};
   const detailCache=new Map();
 
   const escapeHTML=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]));
@@ -119,9 +146,52 @@
     return Boolean(data?.user_id);
   }
 
+  async function prepareMfa(){
+    loginPanel.hidden=true;dashboard.hidden=true;mfaPanel.hidden=false;logoutButton.hidden=false;
+    sessionLabel.textContent=currentUser?.email||"Administrador";
+    setMessage(mfaMessage,"Preparando verificación…");
+    mfaEnroll.hidden=true;mfaQr.removeAttribute("src");mfaSecret.value="";
+    const {data:factors,error:factorsError}=await supabase.auth.mfa.listFactors();
+    if(factorsError)throw factorsError;
+    const totp=Array.isArray(factors?.totp)?factors.totp:[];
+    const verified=totp.find(factor=>factor.status==="verified");
+    let factorId="";
+    if(verified){
+      factorId=verified.id;
+      mfaState.mode="challenge";
+      mfaTitle.textContent="Verificación en dos pasos";
+      mfaCopy.textContent="Ingresá el código de tu app autenticadora para abrir el panel.";
+    }else{
+      for(const factor of totp.filter(item=>item.status!=="verified")){
+        try{await supabase.auth.mfa.unenroll({factorId:factor.id});}catch(_){}
+      }
+      const {data:enrolled,error:enrollError}=await supabase.auth.mfa.enroll({factorType:"totp",friendlyName:"TramiPago Admin"});
+      if(enrollError)throw enrollError;
+      factorId=enrolled.id;
+      mfaState.mode="enroll";
+      mfaTitle.textContent="Activá la verificación en dos pasos";
+      mfaCopy.textContent="Este paso se hace una sola vez. Guardá el factor en tu app autenticadora y verificá el código.";
+      mfaEnroll.hidden=false;
+      if(enrolled.totp?.qr_code)mfaQr.src=enrolled.totp.qr_code;
+      mfaSecret.value=enrolled.totp?.secret||"";
+    }
+    const {data:challenge,error:challengeError}=await supabase.auth.mfa.challenge({factorId});
+    if(challengeError)throw challengeError;
+    mfaState={...mfaState,factorId,challengeId:challenge.id};
+    setMessage(mfaMessage,"");
+    $("#mfa-code")?.focus();
+  }
+
   async function showSession(session){
     currentUser=session?.user||null;
-    if(!currentUser){loginPanel.hidden=false;dashboard.hidden=true;logoutButton.hidden=true;sessionLabel.textContent="";return;}
+    if(!currentUser){loginPanel.hidden=false;mfaPanel.hidden=true;dashboard.hidden=true;logoutButton.hidden=true;sessionLabel.textContent="";return;}
+    const {data:aal,error:aalError}=await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if(aalError){console.error(aalError);setMessage(loginMessage,"No se pudo verificar el nivel de seguridad de la sesión.","error");return;}
+    if(aal?.currentLevel!=="aal2"){
+      try{await prepareMfa();}catch(error){console.error(error);setMessage(loginMessage,"No se pudo iniciar la verificación en dos pasos.","error");loginPanel.hidden=false;mfaPanel.hidden=true;dashboard.hidden=true;}
+      return;
+    }
+    mfaPanel.hidden=true;
     let allowed=false;
     try{allowed=await isAdmin();}catch(error){console.error(error);}
     if(!allowed){await supabase.auth.signOut();setMessage(loginMessage,"La cuenta no está habilitada como administradora.","error");loginPanel.hidden=false;dashboard.hidden=true;logoutButton.hidden=true;return;}
@@ -161,7 +231,10 @@
   }
 
   function card(row){
-    return `<article class="card" data-request-id="${escapeHTML(row.id)}"><div class="card-head"><div><div class="code">${escapeHTML(row.tracking_code)}</div><div class="service">${escapeHTML(serviceName(row))}</div></div><span class="badge">${escapeHTML(STATUS_LABELS[row.status]||row.status)}</span></div><div class="meta"><div><strong>Cliente</strong>${escapeHTML(row.client_name||"—")}</div><div><strong>Correo</strong>${escapeHTML(row.email||"—")}</div><div><strong>WhatsApp</strong>${escapeHTML(row.whatsapp||"—")}</div><div><strong>Importe</strong>${escapeHTML(money(row.quoted_amount))}</div><div><strong>Creado</strong>${escapeHTML(dateTime(row.created_at))}</div><div><strong>Actualizado</strong>${escapeHTML(dateTime(row.updated_at))}</div></div>${row.status_note?`<div class="notice"><strong>Observación visible:</strong> ${escapeHTML(row.status_note)}</div>`:""}<div class="card-actions"><button class="btn secondary" type="button" data-action="load-detail">Ver ficha completa</button><button class="btn primary" type="button" data-action="edit">Gestionar estado</button></div><div class="full-record lazy-detail" hidden></div><form class="editor" hidden><h3>Estado del trámite</h3>${statusButtons(row.status)}<div class="grid editor-grid"><div class="field"><label>Estado seleccionado</label><select name="status">${statusOptions(row.status)}</select></div><div class="field"><label>Fecha estimada</label><input name="estimated" type="datetime-local" value="${row.estimated_completion_at?escapeHTML(new Date(row.estimated_completion_at).toISOString().slice(0,16)):""}" /></div><div class="field full"><label>Observación visible para el cliente</label><textarea name="note" maxlength="1000">${escapeHTML(row.status_note||"")}</textarea></div></div><div class="card-actions"><button class="btn success" type="submit">Guardar cambios</button><button class="btn secondary" type="button" data-action="close">Cancelar</button></div><div class="message" role="status"></div></form></article>`;
+    const finalized=row.status==="finalized";
+    const alreadyPurged=finalized&&!row.client_name&&!row.email&&!row.whatsapp;
+    const privacyAction=finalized?`<button class="btn secondary" type="button" data-action="purge-sensitive" ${alreadyPurged?"disabled":""}>${alreadyPurged?"Datos sensibles eliminados":"Eliminar datos sensibles"}</button>`:"";
+    return `<article class="card" data-request-id="${escapeHTML(row.id)}"><div class="card-head"><div><div class="code">${escapeHTML(row.tracking_code)}</div><div class="service">${escapeHTML(serviceName(row))}</div></div><span class="badge">${escapeHTML(STATUS_LABELS[row.status]||row.status)}</span></div><div class="meta"><div><strong>Cliente</strong>${escapeHTML(row.client_name||"—")}</div><div><strong>Correo</strong>${escapeHTML(row.email||"—")}</div><div><strong>WhatsApp</strong>${escapeHTML(row.whatsapp||"—")}</div><div><strong>Importe</strong>${escapeHTML(money(row.quoted_amount))}</div><div><strong>Creado</strong>${escapeHTML(dateTime(row.created_at))}</div><div><strong>Actualizado</strong>${escapeHTML(dateTime(row.updated_at))}</div></div>${row.status_note?`<div class="notice"><strong>Observación visible:</strong> ${escapeHTML(row.status_note)}</div>`:""}<div class="card-actions"><button class="btn secondary" type="button" data-action="load-detail">Ver ficha completa</button><button class="btn primary" type="button" data-action="edit">Gestionar estado</button>${privacyAction}</div><div class="full-record lazy-detail" hidden></div><form class="editor" hidden><h3>Estado del trámite</h3>${statusButtons(row.status)}<div class="grid editor-grid"><div class="field"><label>Estado seleccionado</label><select name="status">${statusOptions(row.status)}</select></div><div class="field"><label>Fecha estimada</label><input name="estimated" type="datetime-local" value="${row.estimated_completion_at?escapeHTML(new Date(row.estimated_completion_at).toISOString().slice(0,16)):""}" /></div><div class="field full"><label>Observación visible para el cliente</label><textarea name="note" maxlength="1000">${escapeHTML(row.status_note||"")}</textarea></div></div><div class="card-actions"><button class="btn success" type="submit">Guardar cambios</button><button class="btn secondary" type="button" data-action="close">Cancelar</button></div><div class="message" role="status"></div></form></article>`;
   }
 
   function render(){
@@ -208,8 +281,48 @@
     finally{button.disabled=false;button.textContent=original;}
   }
 
-  loginForm.addEventListener("submit",async event=>{event.preventDefault();setMessage(loginMessage,"Ingresando…");const email=String(loginForm.elements.email.value||"").trim();const password=loginForm.elements.password.value;const {data,error}=await supabase.auth.signInWithPassword({email,password});if(error){console.error(error);setMessage(loginMessage,"No se pudo iniciar sesión. Revisá correo y contraseña.","error");return;}setMessage(loginMessage,"");await showSession(data.session);});
-  logoutButton.addEventListener("click",async()=>{await supabase.auth.signOut();await showSession(null);});
+  async function purgeSensitive(requestId,button){
+    const row=rows.find(item=>item.id===requestId);
+    if(!row||row.status!=="finalized")return;
+    const confirmed=window.confirm("Esto elimina documentos, datos del formulario y datos de contacto de este trámite finalizado. El código, estado, fechas e importe se conservan. ¿Continuar?");
+    if(!confirmed)return;
+    const original=button.textContent;button.disabled=true;button.textContent="Eliminando…";
+    try{
+      const {data:files,error:filesError}=await supabase.from("request_files").select("storage_path").eq("request_id",requestId);
+      if(filesError)throw filesError;
+      const paths=(files||[]).map(file=>file.storage_path).filter(Boolean);
+      if(paths.length){const {error:storageError}=await supabase.storage.from(STORAGE_BUCKET).remove(paths);if(storageError)throw storageError;}
+      const {error:fileRowsError}=await supabase.from("request_files").delete().eq("request_id",requestId);if(fileRowsError)throw fileRowsError;
+      const {error:dataError}=await supabase.from("request_data").update({payload:{}}).eq("request_id",requestId);if(dataError)throw dataError;
+      const {error:requestError}=await supabase.from("requests").update({client_name:null,email:null,whatsapp:null,status_note:null}).eq("id",requestId).eq("status","finalized");if(requestError)throw requestError;
+      detailCache.delete(requestId);
+      await loadRequests();
+      alert("Datos sensibles eliminados. Se conservaron el código, el estado, las fechas y el importe.");
+    }catch(error){console.error(error);alert("No se pudieron eliminar todos los datos sensibles. No se continuará automáticamente; revisá el trámite antes de reintentar.");button.disabled=false;button.textContent=original;}
+  }
+
+  loginForm.addEventListener("submit",async event=>{
+    event.preventDefault();setMessage(loginMessage,"Ingresando…");
+    const email=String(loginForm.elements.email.value||"").trim();
+    const password=loginForm.elements.password.value;
+    const {data,error}=await supabase.auth.signInWithPassword({email,password});
+    if(error){console.error(error);setMessage(loginMessage,"No se pudo iniciar sesión. Revisá correo y contraseña.","error");return;}
+    setMessage(loginMessage,"");await showSession(data.session);
+  });
+
+  mfaForm.addEventListener("submit",async event=>{
+    event.preventDefault();
+    const code=String(mfaForm.elements.code.value||"").replace(/\D/g,"").slice(0,6);
+    if(code.length!==6){setMessage(mfaMessage,"Ingresá el código de 6 dígitos.","error");return;}
+    setMessage(mfaMessage,"Verificando…");
+    const {error}=await supabase.auth.mfa.verify({factorId:mfaState.factorId,challengeId:mfaState.challengeId,code});
+    if(error){console.error(error);setMessage(mfaMessage,"El código no es válido o venció. Volvé a intentarlo.","error");return;}
+    mfaForm.reset();setMessage(mfaMessage,"");
+    const {data:{session}}=await supabase.auth.getSession();
+    await showSession(session);
+  });
+
+  logoutButton.addEventListener("click",async()=>{await supabase.auth.signOut();mfaState={factorId:"",challengeId:"",mode:""};await showSession(null);});
   refreshButton.addEventListener("click",loadRequests);
   searchInput.addEventListener("input",render);
   statusFilter.addEventListener("change",render);
@@ -220,6 +333,7 @@
     const cardNode=button.closest(".card");if(!cardNode)return;
     const requestId=cardNode.dataset.requestId;
     const editor=cardNode.querySelector(".editor");
+    if(button.dataset.action==="purge-sensitive"){await purgeSensitive(requestId,button);return;}
     if(button.dataset.action==="load-detail"){await loadDetail(requestId,cardNode,button);return;}
     if(button.dataset.action==="hide-detail"){cardNode.querySelector(".lazy-detail").hidden=true;button.textContent="Ver ficha completa";button.dataset.action="load-detail";return;}
     if(button.dataset.action==="edit"){editor.hidden=false;editor.scrollIntoView({behavior:"smooth",block:"nearest"});return;}
@@ -231,9 +345,12 @@
 
   try{
     const module=await import(SDK_URL);
-    supabase=module.createClient(PROJECT_URL,PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+    supabase=module.createClient(PROJECT_URL,PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
     const {data:{session}}=await supabase.auth.getSession();
     await showSession(session);
-    supabase.auth.onAuthStateChange((_event,nextSession)=>{if(nextSession?.user?.id!==currentUser?.id)showSession(nextSession);});
+    supabase.auth.onAuthStateChange((event,nextSession)=>{
+      if(event==="SIGNED_OUT")showSession(null);
+      else if(nextSession?.user?.id!==currentUser?.id)showSession(nextSession);
+    });
   }catch(error){console.error(error);setMessage(loginMessage,"No se pudo conectar el panel con la base de datos.","error");}
 })();
