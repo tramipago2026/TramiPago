@@ -75,39 +75,161 @@ body .arca-family-page .arca-service-group-title {
   text-align: center !important;
 }
 
-/* Encabezados de todos los trámites y formularios. */
-.process-shell .process-top {
+/*
+  Flujo común de TODOS los trámites.
+  Título, progreso y formulario usan el mismo eje y el mismo ancho útil.
+  El texto conserva salto natural según el ancho disponible: no se fuerza cantidad de líneas.
+*/
+body .process-shell {
+  padding-top: 16px !important;
+  padding-bottom: 34px !important;
+}
+
+body .process-shell .process-container {
+  width: min(1040px, calc(100% - 32px)) !important;
+  max-width: 1040px !important;
+  margin: 0 auto !important;
+}
+
+body .process-shell .process-top,
+body .process-shell .stepper,
+body .process-shell .process-content {
+  width: 100% !important;
+  max-width: 1000px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+body .process-shell .process-top {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 100% !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+  margin-bottom: 10px !important;
+  padding: 11px 18px !important;
   text-align: center !important;
+  border-radius: 12px !important;
 }
 
-.process-shell .process-title {
+body .process-shell .process-title {
   width: 100% !important;
-  max-width: 840px !important;
+  max-width: none !important;
   margin: 0 auto !important;
   text-align: center !important;
 }
 
-.process-shell .process-title .eyebrow,
-.process-shell .process-title h1,
-.process-shell .process-title p {
+body .process-shell .process-title .eyebrow {
+  display: none !important;
+}
+
+body .site-main .process-shell .process-title h1 {
   max-width: none !important;
+  margin: 0 0 4px !important;
+  font-size: clamp(1.45rem, 2.15vw, 1.85rem) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -.02em !important;
+  text-align: center !important;
+}
+
+body .site-main .process-shell .process-title > p:not(.eyebrow) {
+  max-width: none !important;
+  margin: 0 auto !important;
+  color: var(--text-muted) !important;
+  font-size: clamp(.84rem, 1.05vw, .92rem) !important;
+  line-height: 1.35 !important;
+  text-align: center !important;
+}
+
+body .process-shell .stepper {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+  overflow: visible !important;
+  padding-bottom: 0 !important;
+}
+
+body .process-shell .step {
+  justify-content: center !important;
+  min-width: 0 !important;
+  padding: 8px 10px !important;
+  font-size: .86rem !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  border-bottom-width: 2px !important;
+}
+
+body .process-shell .step-number {
+  flex-basis: 27px !important;
+  width: 27px !important;
+  height: 27px !important;
+}
+
+body .process-shell .process-content > .panel {
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding: 18px 20px !important;
+  border-radius: 12px !important;
+}
+
+body .process-shell .panel-header {
+  margin-bottom: 10px !important;
+  text-align: center !important;
+}
+
+body .process-shell .panel-header h2,
+body .process-shell .panel-header h3,
+body .process-shell .panel-header p {
   margin-left: auto !important;
   margin-right: auto !important;
   text-align: center !important;
 }
 
-.process-shell .process-title p:last-child {
-  max-width: 760px !important;
+body .process-shell .panel-header h2 {
+  margin-bottom: 3px !important;
+  font-size: 1.15rem !important;
+  line-height: 1.2 !important;
 }
 
-/* Títulos de paneles y pasos: misma jerarquía, sin tocar campos. */
-.process-shell .panel-header,
+body .process-shell .panel-header p {
+  margin-bottom: 0 !important;
+  font-size: .88rem !important;
+  line-height: 1.35 !important;
+}
+
+/* El resumen repetía lo que ya explica el encabezado y alargaba todos los formularios. */
+body .process-shell .service-quick-summary {
+  display: none !important;
+}
+
+body .process-shell .form-grid {
+  gap: 12px 14px !important;
+}
+
+body .process-shell .field {
+  gap: 5px !important;
+}
+
+body .process-shell .form-control {
+  min-height: 43px !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+body .process-shell .form-check {
+  padding: 10px 11px !important;
+}
+
+body .process-shell .step-actions {
+  margin-top: 14px !important;
+  margin-left: -20px !important;
+  margin-right: -20px !important;
+  margin-bottom: -18px !important;
+  padding: 12px 20px !important;
+  border-radius: 0 0 12px 12px !important;
+}
+
+/* Títulos de seguimiento y otros paneles: misma jerarquía, sin tocar campos. */
 .tracking-page .panel-header,
 .confirmation,
 .partidas-selector-heading,
@@ -115,9 +237,6 @@ body .arca-family-page .arca-service-group-title {
   text-align: center !important;
 }
 
-.process-shell .panel-header h2,
-.process-shell .panel-header h3,
-.process-shell .panel-header p,
 .tracking-page .panel-header h2,
 .tracking-page .panel-header h3,
 .tracking-page .panel-header p {
@@ -134,14 +253,7 @@ body .arca-family-page .arca-service-group-title {
   text-align: left !important;
 }
 
-/* Formularios: contenedor centrado, campos legibles a la izquierda. */
-.process-content,
-.process-grid,
-.panel {
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
+/* Formularios: campos y etiquetas a la izquierda por legibilidad. */
 .form-grid,
 .field,
 .field label,
@@ -166,9 +278,72 @@ body .arca-family-page .arca-service-group-title {
     margin: 0 auto !important;
   }
 
-  .family-page .family-heading > div,
-  .process-shell .process-title {
+  .family-page .family-heading > div {
     max-width: 100% !important;
+  }
+
+  body .process-shell {
+    padding-top: 12px !important;
+    padding-bottom: 28px !important;
+  }
+
+  body .process-shell .process-container {
+    width: min(100% - 24px, 680px) !important;
+  }
+
+  body .process-shell .process-top {
+    padding: 10px 12px !important;
+    margin-bottom: 8px !important;
+  }
+
+  body .site-main .process-shell .process-title h1 {
+    font-size: clamp(1.28rem, 5.8vw, 1.55rem) !important;
+  }
+
+  body .site-main .process-shell .process-title > p:not(.eyebrow) {
+    font-size: .82rem !important;
+    line-height: 1.32 !important;
+  }
+
+  body .process-shell .stepper {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+    margin-bottom: 9px !important;
+    overflow: visible !important;
+  }
+
+  body .process-shell .step {
+    gap: 5px !important;
+    padding: 7px 3px !important;
+    font-size: .74rem !important;
+  }
+
+  body .process-shell .step-number {
+    flex-basis: 23px !important;
+    width: 23px !important;
+    height: 23px !important;
+    font-size: .7rem !important;
+  }
+
+  body .process-shell .process-content > .panel {
+    padding: 15px 14px !important;
+  }
+
+  body .process-shell .panel-header {
+    margin-bottom: 8px !important;
+  }
+
+  body .process-shell .panel-header h2 {
+    font-size: 1.05rem !important;
+  }
+
+  body .process-shell .form-control {
+    min-height: 44px !important;
+  }
+
+  body .process-shell .step-actions {
+    margin: 14px -14px -15px !important;
+    padding: 11px 14px !important;
   }
 }
 
