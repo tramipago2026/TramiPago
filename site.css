@@ -3,8 +3,8 @@
 /* Ajuste visual aprobado: radio y sombra consistentes en tarjetas de servicios. */
 :root{
   --radius-card:12px;
-  --shadow-card:0 4px 14px rgba(8,42,71,.08);
-  --shadow-card-hover:0 10px 26px rgba(8,42,71,.10);
+  --shadow-card:0 7px 20px rgba(8,42,71,.16);
+  --shadow-card-hover:0 13px 30px rgba(8,42,71,.22);
 }
 
 .home-catalog .home-tile,
@@ -12,12 +12,14 @@
 .partidas-type-card{
   border-radius:var(--radius-card)!important;
   box-shadow:var(--shadow-card)!important;
+  transition:box-shadow .18s ease,transform .18s ease!important;
 }
 
 .home-catalog .home-tile:hover,
 .partidas-jurisdiction-card:hover,
 .partidas-type-card:hover{
   box-shadow:var(--shadow-card-hover)!important;
+  transform:translateY(-3px)!important;
 }
 
 .home-catalog .home-tile:focus-visible,
@@ -35,4 +37,5 @@
 .partidas-type-card.is-unavailable:hover,
 .partidas-type-card.is-unavailable:focus-visible{
   box-shadow:var(--shadow-card)!important;
+  transform:none!important;
 }
