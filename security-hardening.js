@@ -93,6 +93,8 @@
       createdAt:row.created_at||request.createdAt,
       updatedAt:row.updated_at||request.updatedAt||new Date().toISOString(),
       verificationLast4,
+      result:request.result||"",
+      resultFile:request.resultFile||null,
       privacyRedactedAt:new Date().toISOString()
     };
   }
