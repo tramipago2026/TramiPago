@@ -281,8 +281,12 @@
     app.innerHTML = `
       <section class="home-catalog" aria-label="Trámites y categorías">
         <div class="container">
-          <div class="home-direct-row">${directs}</div>
-          <div class="home-family-row">${families}</div>
+          <div class="home-content-grid">
+            <div class="home-promo-slot" aria-label="Promociones destacadas"></div>
+            <div class="home-services-panel">
+              <div class="home-services-grid">${directs}${families}</div>
+            </div>
+          </div>
         </div>
       </section>
     `;
