@@ -46,7 +46,7 @@
     if(!form||form.querySelector('[name="trackingPhoneLast4"]'))return;
     const codeInput=form.elements.namedItem("trackingCode");
     if(!(codeInput instanceof HTMLInputElement))return;
-    codeInput.placeholder="AP-000012-A1B2C3D4";
+    codeInput.placeholder="AP-000012";
     codeInput.autocapitalize="characters";
     codeInput.spellcheck=false;
 

@@ -451,7 +451,7 @@
 
   function normalizeTrackingPlaceholder(){
     const input=document.getElementById("tracking-code");
-    if(input)input.placeholder="AP-000012-A1B2";
+    if(input)input.placeholder="AP-000012";
   }
 
   function observeUI(){

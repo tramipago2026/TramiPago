@@ -164,8 +164,7 @@
   function buildCode(prefix) {
     const current = Number(localStorage.getItem(COUNTER_KEY) || "0") + 1;
     localStorage.setItem(COUNTER_KEY, String(current));
-    const suffix = Math.random().toString(36).slice(2, 4).toUpperCase();
-    return `${prefix}-${String(current).padStart(5, "0")}-${suffix}`;
+    return `${prefix}-${String(current).padStart(6, "0")}`;
   }
 
   function createId() {
