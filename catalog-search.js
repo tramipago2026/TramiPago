@@ -143,4 +143,6 @@
   new MutationObserver(queue).observe(document.body,{childList:true,subtree:true});
   window.addEventListener("hashchange",queue);
   queue();
+
+  import("./commercial-display.js?v=20260915-prices1").catch(error=>console.error("TramiPago visual comercial:",error));
 })();
