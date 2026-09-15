@@ -446,7 +446,7 @@
     if (["correction", "ineligible"].includes(state.step)) return "";
     const steps = [["data", "Datos"], ["payment", "Pago"], ["confirmation", "Finalización"]];
     const visibleStep = state.step === "eligibility" ? "data" : state.step;
-    const currentIndex = steps.findIndex(([Gfd, label]) => Gfd === visibleStep);
+    const currentIndex = steps.findIndex(([id, label]) => id === visibleStep);
     if (currentIndex < 0) return "";
     const completedFlow = visibleStep === "confirmation";
 

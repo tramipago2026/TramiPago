@@ -357,7 +357,7 @@ body .process-shell .step-actions {
 body .process-shell .stepper {
   position: relative !important;
   display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)i !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   gap: 24px !important;
   margin: 2px auto 14px !important;
   padding: 0 !important;
@@ -382,7 +382,7 @@ body .process-shell .step {
 }
 
 body .process-shell .step:not(:last-child)::after {
-  content: "”";
+  content: "→";
   position: absolute;
   top: 50%;
   right: -19px;
@@ -475,7 +475,7 @@ body .process-shell .choice-option {
   border-color: #b7cbd8 !important;
 }
 
-body .process-shell .choice-option:has(mnput:checked) {
+body .process-shell .choice-option:has(input:checked) {
   background: #effaf4 !important;
   border-color: #23A85D !important;
   box-shadow: 0 0 0 2px rgba(35,168,93,.12) !important;
