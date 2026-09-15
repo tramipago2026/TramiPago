@@ -18,216 +18,28 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import base64
           import re
-
           app_path = Path('app.js')
           app = app_path.read_text(encoding='utf-8')
-
-          new_stepper = r'''  function renderStepper(service) {
-    if (["correction", "ineligible"].includes(state.step)) return "";
-    const steps = [["data", "Datos"], ["payment", "Pago"], ["confirmation", "Finalización"]];
-    const visibleStep = state.step === "eligibility" ? "data" : state.step;
-    const currentIndex = steps.findIndex(([id]) => id === visibleStep);
-    if (currentIndex < 0) return "";
-    const completedFlow = visibleStep === "confirmation";
-
-    return `
-      <div class="stepper${completedFlow ? " is-complete" : ""}" style="grid-template-columns:repeat(3,1fr)" aria-label="Progreso del trámite">
-        ${steps.map(([id, label], index) => {
-          const done = completedFlow ? index <= currentIndex : index < currentIndex;
-          const current = !completedFlow && index === currentIndex;
-          return `
-            <div class="step${current ? " current" : ""}${done ? " done" : ""}">
-              <span class="step-number">${done ? "✓" : index + 1}</span>
-              <span>${label}</span>
-            </div>
-          `;
-        }).join("")}
-      </div>
-    `;
-  }
-'''
-
+          stepper = base64.b64decode('ICBmdW5jdGlvbiByZW5kZXJTdGVwcGVyKHNlcnZpY2UpIHsKICAgIGlmIChbImNvcnJlY3Rpb24iLCAiaW5lbGlnaWJsZSJdLmluY2x1ZGVzKHN0YXRlLnN0ZXApKSByZXR1cm4gIiI7CiAgICBjb25zdCBzdGVwcyA9IFtbImRhdGEiLCAiRGF0b3MiXSwgWyJwYXltZW50IiwgIlBhZ28iXSwgWyJjb25maXJtYXRpb24iLCAiRmluYWxpemFjacOzbiJdXTsKICAgIGNvbnN0IHZpc2libGVTdGVwID0gc3RhdGUuc3RlcCA9PT0gImVsaWdpYmlsaXR5IiA/ICJkYXRhIiA6IHN0YXRlLnN0ZXA7CiAgICBjb25zdCBjdXJyZW50SW5kZXggPSBzdGVwcy5maW5kSW5kZXgoKFtHZmQsIGxhYmVsXSkgPT4gR2ZkID09PSB2aXNpYmxlU3RlcCk7CiAgICBpZiAoY3VycmVudEluZGV4IDwgMCkgcmV0dXJuICIiOwogICAgY29uc3QgY29tcGxldGVkRmxvdyA9IHZpc2libGVTdGVwID09PSAiY29uZmlybWF0aW9uIjsKCiAgICByZXR1cm4gYAogICAgICA8ZGl2IGNsYXNzPSJzdGVwcGVyJHtjb21wbGV0ZWRGbG93ID8gIiBpcy1jb21wbGV0ZSIgOiAiIn0iIHN0eWxlPSJncmlkLXRlbXBsYXRlLWNvbHVtbnM6cmVwZWF0KDMsMWZyKSIgYXJpYS1sYWJlbD0iUHJvZ3Jlc28gZGVsIHRyw6FtaXRlIj4KICAgICAgICAke3N0ZXBzLm1hcCgoW2lkLCBsYWJlbF0sIGluZGV4KSA9PiB7CiAgICAgICAgICBjb25zdCBkb25lID0gY29tcGxldGVkRmxvdyA/IGluZGV4IDw9IGN1cnJlbnRJbmRleCA6IGluZGV4IDwgY3VycmVudEluZGV4OwogICAgICAgICAgY29uc3QgY3VycmVudCA9ICFjb21wbGV0ZWRGbG93ICYmIGluZGV4ID09PSBjdXJyZW50SW5kZXg7CiAgICAgICAgICByZXR1cm4gYAogICAgICAgICAgICA8ZGl2IGNsYXNzPSJzdGVwJHtjdXJyZW50ID8gIiBjdXJyZW50IiA6ICIifSR7ZG9uZSA/ICIgZG9uZSIgOiAiIn0iPgogICAgICAgICAgICAgIDxzcGFuIGNsYXNzPSJzdGVwLW51bWJlciI+JHt k b25lID8gIuKckyIgOiBpbmRleCArIDF9PC9zcGFuPgogICAgICAgICAgICAgIDxzcGFuPiR7bGFiZWx9PC9zcGFuPgogICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgIGA7CiAgICAgICAgfSkuam9pbigiIil9CiAgICAgIDwvZGl2PgogICAgYDsKICB9Cg=='.replace(' ', '')).decode('utf-8')
           pattern = re.compile(r'  function renderStepper\(service\) \{.*?\n  \}\n\n(?=  function renderProcess\(\))', re.S)
-          app2, count = pattern.subn(new_stepper + '\n', app, count=1)
+          app2, count = pattern.subn(stepper + '\n', app, count=1)
           if count != 1:
-            raise SystemExit(f'No se pudo reemplazar renderStepper; coincidencias: {count}')
+              raise SystemExit(f'No se pudo reemplazar renderStepper; coincidencias: {count}')
           app_path.write_text(app2, encoding='utf-8')
-
           css_path = Path('ui.css')
           css = css_path.read_text(encoding='utf-8')
           marker = '/* TramiPago · progreso por óvalos + contraste de formularios · 2026-09-15 */'
-          block = r'''
-
-/* TramiPago · progreso por óvalos + contraste de formularios · 2026-09-15 */
-body .process-shell .stepper {
-  position: relative !important;
-  display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 24px !important;
-  margin: 2px auto 14px !important;
-  padding: 0 !important;
-  overflow: visible !important;
-}
-
-body .process-shell .step {
-  position: relative !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-  min-height: 44px !important;
-  padding: 8px 14px !important;
-  color: #476477 !important;
-  background: #edf4f8 !important;
-  border: 1px solid #c5d5df !important;
-  border-radius: 999px !important;
-  box-shadow: 0 2px 7px rgba(8,42,71,.08) !important;
-  font-weight: 750 !important;
-  line-height: 1.1 !important;
-}
-
-body .process-shell .step:not(:last-child)::after {
-  content: "→";
-  position: absolute;
-  top: 50%;
-  right: -19px;
-  z-index: 3;
-  transform: translateY(-52%);
-  color: #29B6F6;
-  font-size: 1.05rem;
-  font-weight: 900;
-  line-height: 1;
-}
-
-body .process-shell .step-number {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 0 0 27px !important;
-  width: 27px !important;
-  height: 27px !important;
-  color: #31576e !important;
-  background: #ffffff !important;
-  border: 1px solid #b9ccd8 !important;
-  border-radius: 50% !important;
-  box-shadow: none !important;
-  font-size: .78rem !important;
-  font-weight: 850 !important;
-}
-
-body .process-shell .step.current {
-  color: #ffffff !important;
-  background: #1B6FA8 !important;
-  border-color: #155b8b !important;
-  box-shadow: 0 4px 12px rgba(27,111,168,.22) !important;
-}
-
-body .process-shell .step.current .step-number {
-  color: #0B3D66 !important;
-  background: #dff4ff !important;
-  border-color: #ffffff !important;
-}
-
-body .process-shell .step.done,
-body .process-shell .stepper.is-complete .step {
-  color: #ffffff !important;
-  background: #23A85D !important;
-  border-color: #178347 !important;
-  box-shadow: 0 4px 12px rgba(35,168,93,.22) !important;
-}
-
-body .process-shell .step.done .step-number,
-body .process-shell .stepper.is-complete .step-number {
-  color: #126B3A !important;
-  background: #ffffff !important;
-  border-color: rgba(255,255,255,.95) !important;
-}
-
-body .process-shell .process-top {
-  background: linear-gradient(180deg,#ffffff 0%,#f4faff 100%) !important;
-  border: 1px solid #bfd4e2 !important;
-  box-shadow: 0 4px 12px rgba(8,42,71,.07) !important;
-}
-
-body .process-shell .process-content > .panel {
-  background: #f7fbfd !important;
-  border: 1px solid #bfd0dc !important;
-  box-shadow: 0 5px 16px rgba(8,42,71,.09) !important;
-}
-
-body .process-shell .panel-header {
-  padding: 10px 14px !important;
-  margin: -2px 0 13px !important;
-  background: #e7f2f8 !important;
-  border: 1px solid #c3d9e6 !important;
-  border-radius: 9px !important;
-}
-
-body .process-shell .panel-header h2,
-body .process-shell .panel-header h3 {
-  color: #082A47 !important;
-  font-weight: 800 !important;
-}
-
-body .process-shell .field > label,
-body .process-shell .choice-field > legend {
-  color: #0B3D66 !important;
-  font-weight: 750 !important;
-}
-
-body .process-shell .choice-option {
-  background: #ffffff !important;
-  border-color: #b7cbd8 !important;
-}
-
-body .process-shell .choice-option:has(input:checked) {
-  background: #effaf4 !important;
-  border-color: #23A85D !important;
-  box-shadow: 0 0 0 2px rgba(35,168,93,.12) !important;
-}
-
-@media (max-width: 760px) {
-  body .process-shell .stepper {
-    gap: 12px !important;
-    margin-bottom: 11px !important;
-  }
-
-  body .process-shell .step {
-    min-height: 40px !important;
-    gap: 5px !important;
-    padding: 7px 7px !important;
-    font-size: .72rem !important;
-  }
-
-  body .process-shell .step-number {
-    flex-basis: 23px !important;
-    width: 23px !important;
-    height: 23px !important;
-    font-size: .68rem !important;
-  }
-
-  body .process-shell .step:not(:last-child)::after {
-    right: -10px;
-    font-size: .8rem;
-  }
-
-  body .process-shell .panel-header {
-    padding: 9px 10px !important;
-    margin-bottom: 11px !important;
-  }
-}
-'''
+          css_block = base64.b64decode('CgovKiBUcmFtaVBhZ28gwrcgcHJvZ3Jlc28gcG9yIMOzdmFsb3MgKyBjb250cmFzdGUgZGUgZm9ybXVsYXJpb3MgwrcgMjAyNi0wOS0xNSAqLwpib2R5IC5wcm9jZXNzLXNoZWxsIC5zdGVwcGVyIHsKICBwb3NpdGlvbjogcmVsYXRpdmUgIWltcG9ydGFudDsKICBkaXNwbGF5OiBncmlkICFpbXBvcnRhbnQ7CiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiByZXBlYXQoMywgbWlubWF4KDAsIDFmcilpICFpbXBvcnRhbnQ7CiAgZ2FwOiAyNHB4ICFpbXBvcnRhbnQ7CiAgbWFyZ2luOiAycHggYXV0byAxNHB4ICFpbXBvcnRhbnQ7CiAgcGFkZGluZzogMCAhaW1wb3J0YW50OwogIG92ZXJmbG93OiB2aXNpYmxlICFpbXBvcnRhbnQ7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXAgewogIHBvc2l0aW9uOiByZWxhdGl2ZSAhaW1wb3J0YW50OwogIGRpc3BsYXk6IGZsZXggIWltcG9ydGFudDsKICBhbGlnbi1pdGVtczogY2VudGVyICFpbXBvcnRhbnQ7CiAganVzdGlmeS1jb250ZW50OiBjZW50ZXIgIWltcG9ydGFudDsKICBnYXA6IDhweCAhaW1wb3J0YW50OwogIG1pbi1oZWlnaHQ6IDQ0cHggIWltcG9ydGFudDsKICBwYWRkaW5nOiA4cHggMTRweCAhaW1wb3J0YW50OwogIGNvbG9yOiAjNDc2NDc3ICFpbXBvcnRhbnQ7CiAgYmFja2dyb3VuZDogI2VkZjRmOCAhaW1wb3J0YW50OwogIGJvcmRlcjogMXB4IHNvbGlkICNjNWQ1ZGYgIWltcG9ydGFudDsKICBib3JkZXItcmFkaXVzOiA5OTlweCAhaW1wb3J0YW50OwogIGJveC1zaGFkb3c6IDAgMnB4IDdweCByZ2JhKDgsNDIsNzEsLjA4KSAhaW1wb3J0YW50OwogIGZvbnQtd2VpZ2h0OiA3NTAgIWltcG9ydGFudDsKICBsaW5lLWhlaWdodDogMS4xICFpbXBvcnRhbnQ7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXA6bm90KDpsYXN0LWNoaWxkKTo6YWZ0ZXIgewogIGNvbnRlbnQ6ICLigJ0iOwogIHBvc2l0aW9uOiBhYnNvbHV0ZTsKICB0b3A6IDUwJTsKICByaWdodDogLTE5cHg7CiAgei1pbmRleDogMzsKICB0cmFuc2Zvcm06IHRyYW5zbGF0ZVkoLTUyJSk7CiAgY29sb3I6ICMyOUI2RjY7CiAgZm9udC1zaXplOiAxLjA1cmVtOwogIGZvbnQtd2VpZ2h0OiA5MDA7CiAgbGluZS1oZWlnaHQ6IDE7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXAtbnVtYmVyIHsKICBkaXNwbGF5OiBpbmxpbmUtZmxleCAhaW1wb3J0YW50OwogIGFsaWduLWl0ZW1zOiBjZW50ZXIgIWltcG9ydGFudDsKICBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlciAhaW1wb3J0YW50OwogIGZsZXg6IDAgMCAyN3B4ICFpbXBvcnRhbnQ7CiAgd2lkdGg6IDI3cHggIWltcG9ydGFudDsKICBoZWlnaHQ6IDI3cHggIWltcG9ydGFudDsKICBjb2xvcjogIzMxNTc2ZSAhaW1wb3J0YW50OwogIGJhY2tncm91bmQ6ICNmZmZmZmYgIWltcG9ydGFudDsKICBib3JkZXI6IDFweCBzb2xpZCAjYjljY2Q4ICFpbXBvcnRhbnQ7CiAgYm9yZGVyLXJhZGl1czogNTAlICFpbXBvcnRhbnQ7CiAgYm94LXNoYWRvdzogbm9uZSAhaW1wb3J0YW50OwogIGZvbnQtc2l6ZTogLjc4cmVtICFpbXBvcnRhbnQ7CiAgZm9udC13ZWlnaHQ6IDg1MCAhaW1wb3J0YW50Owp9Cgpib2R5IC5wcm9jZXNzLXNoZWxsIC5zdGVwLmN1cnJlbnQgewogIGNvbG9yOiAjZmZmZmZmICFpbXBvcnRhbnQ7CiAgYmFja2dyb3VuZDogIzFCNkZBOCAhaW1wb3J0YW50OwogIGJvcmRlci1jb2xvcjogIzE1NWI4YiAhaW1wb3J0YW50OwogIGJveC1zaGFkb3c6IDAgNHB4IDEycHggcmdiYSgyNywxMTEsMTY4LC4yMikgIWltcG9ydGFudDsKfQoKYm9keSAucHJvY2Vzcy1zaGVsbCAuc3RlcC5jdXJyZW50IC5zdGVwLW51bWJlciB7CiAgY29sb3I6ICMwQjNENjYgIWltcG9ydGFudDsKICBiYWNrZ3JvdW5kOiAjZGZmNGZmICFpbXBvcnRhbnQ7CiAgYm9yZGVyLWNvbG9yOiAjZmZmZmZmICFpbXBvcnRhbnQ7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXAuZG9uZSwKYm9keSAucHJvY2Vzcy1zaGVsbCAuc3RlcHBlci5pcy1jb21wbGV0ZSAuc3RlcCB7CiAgY29sb3I6ICNmZmZmZmYgIWltcG9ydGFudDsKICBiYWNrZ3JvdW5kOiAjMjNBODVEICFpbXBvcnRhbnQ7CiAgYm9yZGVyLWNvbG9yOiAjMTc4MzQ3ICFpbXBvcnRhbnQ7CiAgYm94LXNoYWRvdzogMCA0cHggMTJweCByZ2JhKDM1LDE2OCw5MywuMjIpICFpbXBvcnRhbnQ7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXAuZG9uZSAuc3RlcC1udW1iZXIsCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXBwZXIuaXMtY29tcGxldGUgLnN0ZXAtbnVtYmVyIHsKICBjb2xvcjogIzEyNkIzQSAhaW1wb3J0YW50OwogIGJhY2tncm91bmQ6ICNmZmZmZmYgIWltcG9ydGFudDsKICBib3JkZXItY29sb3I6IHJnYmEoMjU1LDI1NSwyNTUsLjk1KSAhaW1wb3J0YW50Owp9Cgpib2R5IC5wcm9jZXNzLXNoZWxsIC5wcm9jZXNzLXRvcCB7CiAgYmFja2dyb3VuZDogbGluZWFyLWdyYWRpZW50KDE4MGRlZywjZmZmZmZmIDAlLCNmNGZhZmYgMTAwJSkgIWltcG9ydGFudDsKICBib3JkZXI6IDFweCBzb2xpZCAjYmZkNGUyICFpbXBvcnRhbnQ7CiAgYm94LXNoYWRvdzogMCA0cHggMTJweCByZ2JhKDgsNDIsNzEsLjA3KSAhaW1wb3J0YW50Owp9Cgpib2R5IC5wcm9jZXNzLXNoZWxsIC5wcm9jZXNzLWNvbnRlbnQgPiAucGFuZWwgewogIGJhY2tncm91bmQ6ICNmN2ZiZmQgIWltcG9ydGFudDsKICBib3JkZXI6IDFweCBzb2xpZCAjYmZkMGRjICFpbXBvcnRhbnQ7CiAgYm94LXNoYWRvdzogMCA1cHggMTZweCByZ2JhKDgsNDIsNzEsLjA5KSAhaW1wb3J0YW50Owp9Cgpib2R5IC5wcm9jZXNzLXNoZWxsIC5wYW5lbC1oZWFkZXIgewogIHBhZGRpbmc6IDEwcHggMTRweCAhaW1wb3J0YW50OwogIG1hcmdpbjogLTJweCAwIDEzcHggIWltcG9ydGFudDsKICBiYWNrZ3JvdW5kOiAjZTdmMmY4ICFpbXBvcnRhbnQ7CiAgYm9yZGVyOiAxcHggc29saWQgI2MzZDllNiAhaW1wb3J0YW50OwogIGJvcmRlci1yYWRpdXM6IDlweCAhaW1wb3J0YW50Owp9Cgpib2R5IC5wcm9jZXNzLXNoZWxsIC5wYW5lbC1oZWFkZXIgaDIsCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnBhbmVsLWhlYWRlciBoMyB7CiAgY29sb3I6ICMwODJBNDcgIWltcG9ydGFudDsKICBmb250LXdlaWdodDogODAwICFpbXBvcnRhbnQ7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLmZpZWxkID4gbGFiZWwsCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLmNob2ljZS1maWVsZCA+IGxlZ2VuZCB7CiAgY29sb3I6ICMwQjNENjYgIWltcG9ydGFudDsKICBmb250LXdlaWdodDogNzUwICFpbXBvcnRhbnQ7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLmNob2ljZS1vcHRpb24gewogIGJhY2tncm91bmQ6ICNmZmZmZmYgIWltcG9ydGFudDsKICBib3JkZXItY29sb3I6ICNiN2NiZDggIWltcG9ydGFudDsKfQoKYm9keSAucHJvY2Vzcy1zaGVsbCAuY2hvaWNlLW9wdGlvbjp oYXMobW5wdXQ6Y2hlY2tlZCkgewogIGJhY2tncm91bmQ6ICNlZmZhZjQgIWltcG9ydGFudDsKICBib3JkZXItY29sb3I6ICMyM0E4NUQgIWltcG9ydGFudDsKICBib3gtc2hhZG93OiAwIDAgMCAycHggcmdiYSgzNSwxNjgsOTMsLjEyKSAhaW1wb3J0YW50Owp9CgpAbWVkaWEgKG1heC13aWR0aDogNzYwcHgpIHsKICBib2R5IC5wcm9jZXNzLXNoZWxsIC5zdGVwcGVyIHsKICAgIGdhcDogMTJweCAhaW1wb3J0YW50OwogICAgbWFyZ2luLWJvdHRvbTogMTFweCAhaW1wb3J0YW50OwogIH0KCiAgYm9keSAucHJvY2Vzcy1zaGVsbCAuc3RlcCB7CiAgICBtaW4taGVpZ2h0OiA0MHB4ICFpbXBvcnRhbnQ7CiAgICBnYXA6IDVweCAhaW1wb3J0YW50OwogICAgcGFkZGluZzogN3B4IDdweCAhaW1wb3J0YW50OwogICAgZm9udC1zaXplOiAuNzJyZW0gIWltcG9ydGFudDsKICB9CgogIGJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXAtbnVtYmVyIHsKICAgIGZsZXgtYmFzaXM6IDIzcHggIWltcG9ydGFudDsKICAgIHdpZHRoOiAyM3B4ICFpbXBvcnRhbnQ7CiAgICBoZWlnaHQ6IDIzcHggIWltcG9ydGFudDsKICAgIGZvbnQtc2l6ZTogLjY4cmVtICFpbXBvcnRhbnQ7CiAgfQoKICBib2R5IC5wcm9jZXNzLXNoZWxsIC5zdGVwOm5vdCg6bGFzdC1jaGlsZCk6OmFmdGVyIHsKICAgIHJpZ2h0OiAtMTBweDsKICAgIGZvbnQtc2l6ZTogLjhyZW07CiAgfQoKICBib2R5IC5wcm9jZXNzLXNoZWxsIC5wYW5lbC1oZWFkZXIgewogICAgcGFkZGluZzogOXB4IDEwcHggIWltcG9ydGFudDsKICAgIG1hcmdpbi1ib3R0b206IDExcHggIWltcG9ydGFudDsKICB9Cn0K'.replace(' ', '')).decode('utf-8')
           if marker not in css:
-            css_path.write_text(css.rstrip() + block + '\n', encoding='utf-8')
-
+              css_path.write_text(css.rstrip() + css_block + '\n', encoding='utf-8')
           index_path = Path('index.html')
           index = index_path.read_text(encoding='utf-8')
           index = re.sub(r'ui\.css\?v=[^"\']+', 'ui.css?v=20260915-progress-pills1', index)
           index = re.sub(r'app\.js\?v=[^"\']+', 'app.js?v=20260915-progress-pills1', index)
           index_path.write_text(index, encoding='utf-8')
           PY
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add app.js ui.css index.html
