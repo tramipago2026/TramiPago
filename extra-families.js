@@ -58,7 +58,6 @@
         {id:"documentFile",label:"Documento a revisar (PDF)",type:"file",required:true,accept:"application/pdf,.pdf"},
         {id:"notes",label:"Aclaración (opcional)",type:"textarea",required:false},
         ...contactFields,
-        {id:"serviceOption",label:"Servicio",type:"hidden",required:false,value:"gestion"},
         authorizationField
       ]
     },
@@ -98,7 +97,6 @@
         {id:"documentFile",label:"Documento a revisar (PDF)",type:"file",required:true,accept:"application/pdf,.pdf"},
         {id:"notes",label:"Aclaración (opcional)",type:"textarea",required:false},
         ...contactFields,
-        {id:"serviceOption",label:"Servicio",type:"hidden",required:false,value:"gestion"},
         authorizationField
       ]
     },
