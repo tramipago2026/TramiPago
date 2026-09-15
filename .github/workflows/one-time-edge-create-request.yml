@@ -1,79 +1,21 @@
-name: One-time Edge create-request bridge
-
+name: Edge create request patch
 on:
   push:
     paths:
-      - '.github/workflows/one-time-edge-create-request.yml'
-
+      - .github/workflows/one-time-edge-create-request.yml
 permissions:
   contents: write
-
 jobs:
   patch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Route request creation through Edge Function
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-
-          path=Path('backend-sync.js')
-          text=path.read_text(encoding='utf-8')
-          replacement=r'''  async function ensureServerRecord(request,tokenMap){
-    let meta=tokenMap[request.id]||null;
-    if(meta?.code&&meta?.raw){
-      if(request.code!==meta.code||request.serverId!==meta.serverId){
-        request.code=meta.code;
-        request.serverId=meta.serverId||request.serverId||null;
-      }
-      return meta;
-    }
-
-    const contact=contactFor(request);
-    const {data,error}=await client.functions.invoke("create-request",{
-      body:{
-        serviceId:request.serviceId,
-        clientName:contact.clientName||"",
-        email:contact.email||"",
-        whatsapp:contact.whatsapp||"",
-        formData:payloadFor(request)
-      }
-    });
-    if(error)throw error;
-    if(data?.error)throw new Error(data.error);
-    if(!data?.code||!data?.requestToken)throw new Error("El backend no devolvió los datos de la solicitud");
-
-    meta={raw:data.requestToken,code:data.code,serverId:null,lastSignature:"",paymentUploaded:false,files:{}};
-    tokenMap[request.id]=meta;
-    saveTokens(tokenMap);
-    request.code=data.code;
-    request.serverId=null;
-    request.status=DB_TO_UI[data.status]||request.status;
-    request.createdAt=data.createdAt||request.createdAt;
-    request.updatedAt=data.createdAt||request.updatedAt;
-    if(Number.isFinite(Number(data.amount))&&request.pricing){request.pricing.total=Number(data.amount);}
-    return meta;
-  }
-
-  async function updateServerDraft'''
-
-          text,n=re.subn(
-              r'  async function ensureServerRecord\(request,tokenMap\)\{.*?\n  \}\n\n  async function updateServerDraft',
-              replacement,
-              text,
-              count=1,
-              flags=re.S,
-          )
-          if n!=1:
-              raise SystemExit(f'ensureServerRecord replacement count={n}')
-          path.write_text(text,encoding='utf-8')
-          Path('.github/workflows/one-time-edge-create-request.yml').unlink()
-          PY
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add backend-sync.js .github/workflows/one-time-edge-create-request.yml
-          git commit -m 'Crea solicitudes mediante Edge Function'
+      - run: python scripts/patch-edge-create-request.py
+      - run: |
+          rm scripts/patch-edge-create-request.py
+          rm .github/workflows/one-time-edge-create-request.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend-sync.js scripts/patch-edge-create-request.py .github/workflows/one-time-edge-create-request.yml
+          git commit -m "Crea solicitudes mediante Edge Function"
           git push
