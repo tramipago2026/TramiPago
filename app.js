@@ -446,17 +446,22 @@
     if (["correction", "ineligible"].includes(state.step)) return "";
     const steps = [["data", "Datos"], ["payment", "Pago"], ["confirmation", "Finalización"]];
     const visibleStep = state.step === "eligibility" ? "data" : state.step;
-    const currentIndex = steps.findIndex(([id]) => id === visibleStep);
+    const currentIndex = steps.findIndex(([Gfd, label]) => Gfd === visibleStep);
     if (currentIndex < 0) return "";
+    const completedFlow = visibleStep === "confirmation";
 
     return `
-      <div class="stepper" style="grid-template-columns:repeat(3,1fr)" aria-label="Progreso del trámite">
-        ${steps.map(([id, label], index) => `
-          <div class="step ${index === currentIndex ? "current" : ""} ${index < currentIndex ? "done" : ""}">
-            <span class="step-number">${index < currentIndex ? "✓" : index + 1}</span>
-            <span>${label}</span>
-          </div>
-        `).join("")}
+      <div class="stepper${completedFlow ? " is-complete" : ""}" style="grid-template-columns:repeat(3,1fr)" aria-label="Progreso del trámite">
+        ${steps.map(([id, label], index) => {
+          const done = completedFlow ? index <= currentIndex : index < currentIndex;
+          const current = !completedFlow && index === currentIndex;
+          return `
+            <div class="step${current ? " current" : ""}${done ? " done" : ""}">
+              <span class="step-number">${done ? "✓" : index + 1}</span>
+              <span>${label}</span>
+            </div>
+          `;
+        }).join("")}
       </div>
     `;
   }
