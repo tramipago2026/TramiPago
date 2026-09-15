@@ -1,0 +1,36 @@
+name: One-time enable catalog search
+
+on:
+  push:
+    paths:
+      - '.github/workflows/one-time-enable-catalog-search.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable catalog search
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path=Path('index.html')
+          text=path.read_text(encoding='utf-8')
+          marker='  <script src="app.js?v=20260914-partidas-flow1"></script>\n'
+          addition=marker+'  <script src="catalog-search.js?v=20260915-search1"></script>\n'
+          if 'catalog-search.js' not in text:
+              if marker not in text:
+                  raise SystemExit('app.js marker not found')
+              text=text.replace(marker,addition,1)
+              path.write_text(text,encoding='utf-8')
+          Path('.github/workflows/one-time-enable-catalog-search.yml').unlink()
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html .github/workflows/one-time-enable-catalog-search.yml
+          git commit -m 'Activa buscador de trámites en inicio'
+          git push
