@@ -152,11 +152,11 @@
     if(data?.error)throw new Error(data.error);
     if(!data?.code||!data?.requestToken)throw new Error("El backend no devolvió los datos de la solicitud");
 
-    meta={raw:data.requestToken,code:data.code,serverId:null,lastSignature:"",paymentUploaded:false,files:{}};
+    meta={raw:data.requestToken,code:data.code,serverId:data.requestId||null,lastSignature:"",paymentUploaded:false,files:{}};
     tokenMap[request.id]=meta;
     saveTokens(tokenMap);
     request.code=data.code;
-    request.serverId=null;
+    request.serverId=data.requestId||null;
     request.status=DB_TO_UI[data.status]||request.status;
     request.createdAt=data.createdAt||request.createdAt;
     request.updatedAt=data.createdAt||request.updatedAt;

@@ -313,13 +313,17 @@
           <h3>Requisitos</h3>
           <ul class="requirements">${(service.requirements || []).map((item) => `<li>${escapeHTML(item)}</li>`).join("")}</ul>
         </div>
-        <div class="service-summary-block">
-          <h3>Precio y plazo</h3>
-          ${renderPriceOptions(service)}
-          ${service.officialFee !== null && service.officialFee !== undefined
-            ? `<div class="service-summary-row"><span>Costo oficial</span><strong>${formatARS(service.officialFee)}</strong></div>`
-            : ""}
-        </div>
+        ${service.intakeOnly
+          ? (service.officialFee !== null && service.officialFee !== undefined
+              ? `<div class="service-summary-block"><h3>Costo oficial</h3><div class="service-summary-row"><span>Arancel del organismo</span><strong>${formatARS(service.officialFee)}</strong></div></div>`
+              : "")
+          : `<div class="service-summary-block">
+              <h3>Precio y plazo</h3>
+              ${renderPriceOptions(service)}
+              ${service.officialFee !== null && service.officialFee !== undefined
+                ? `<div class="service-summary-row"><span>Costo oficial</span><strong>${formatARS(service.officialFee)}</strong></div>`
+                : ""}
+            </div>`}
       </div>
     `;
   }
@@ -433,7 +437,7 @@
           <span class="service-tag">${service.active ? "Disponible" : "Próximamente"}</span>
           <h2>${escapeHTML(service.name)}</h2>
           <p>${escapeHTML(service.shortDescription)}</p>
-          <div class="service-card-mini">${renderPriceOptions(service)}</div>
+          ${service.intakeOnly ? "" : `<div class="service-card-mini">${renderPriceOptions(service)}</div>`}
         </div>
         ${service.active
           ? `<button class="button button-primary" type="button" data-action="select-service" data-service-id="${escapeHTML(service.id)}">Elegir trámite</button>`
@@ -444,14 +448,16 @@
 
   function renderStepper(service) {
     if (["correction", "ineligible"].includes(state.step)) return "";
-    const steps = [["data", "Datos"], ["payment", "Pago"], ["confirmation", "Finalización"]];
+    const steps = service.intakeOnly
+      ? [["data", "Datos"], ["confirmation", "Consulta"]]
+      : [["data", "Datos"], ["payment", "Pago"], ["confirmation", "Finalización"]];
     const visibleStep = state.step === "eligibility" ? "data" : state.step;
     const currentIndex = steps.findIndex(([id, label]) => id === visibleStep);
     if (currentIndex < 0) return "";
     const completedFlow = visibleStep === "confirmation";
 
     return `
-      <div class="stepper${completedFlow ? " is-complete" : ""}" style="grid-template-columns:repeat(3,1fr)" aria-label="Progreso del trámite">
+      <div class="stepper${completedFlow ? " is-complete" : ""}" style="grid-template-columns:repeat(${steps.length},1fr)" aria-label="Progreso del trámite">
         ${steps.map(([id, label], index) => {
           const done = completedFlow ? index <= currentIndex : index < currentIndex;
           const current = !completedFlow && index === currentIndex;
