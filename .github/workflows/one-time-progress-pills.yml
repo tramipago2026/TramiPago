@@ -1,0 +1,239 @@
+name: One-time progress pills UI
+
+on:
+  push:
+    paths:
+      - '.github/workflows/one-time-progress-pills.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply progress pills and form contrast
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          app_path = Path('app.js')
+          app = app_path.read_text(encoding='utf-8')
+
+          new_stepper = r'''  function renderStepper(service) {
+    if (["correction", "ineligible"].includes(state.step)) return "";
+    const steps = [["data", "Datos"], ["payment", "Pago"], ["confirmation", "Finalización"]];
+    const visibleStep = state.step === "eligibility" ? "data" : state.step;
+    const currentIndex = steps.findIndex(([id]) => id === visibleStep);
+    if (currentIndex < 0) return "";
+    const completedFlow = visibleStep === "confirmation";
+
+    return `
+      <div class="stepper${completedFlow ? " is-complete" : ""}" style="grid-template-columns:repeat(3,1fr)" aria-label="Progreso del trámite">
+        ${steps.map(([id, label], index) => {
+          const done = completedFlow ? index <= currentIndex : index < currentIndex;
+          const current = !completedFlow && index === currentIndex;
+          return `
+            <div class="step${current ? " current" : ""}${done ? " done" : ""}">
+              <span class="step-number">${done ? "✓" : index + 1}</span>
+              <span>${label}</span>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+  }
+'''
+
+          pattern = re.compile(r'  function renderStepper\(service\) \{.*?\n  \}\n\n(?=  function renderProcess\(\))', re.S)
+          app2, count = pattern.subn(new_stepper + '\n', app, count=1)
+          if count != 1:
+            raise SystemExit(f'No se pudo reemplazar renderStepper; coincidencias: {count}')
+          app_path.write_text(app2, encoding='utf-8')
+
+          css_path = Path('ui.css')
+          css = css_path.read_text(encoding='utf-8')
+          marker = '/* TramiPago · progreso por óvalos + contraste de formularios · 2026-09-15 */'
+          block = r'''
+
+/* TramiPago · progreso por óvalos + contraste de formularios · 2026-09-15 */
+body .process-shell .stepper {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 24px !important;
+  margin: 2px auto 14px !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+body .process-shell .step {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  min-height: 44px !important;
+  padding: 8px 14px !important;
+  color: #476477 !important;
+  background: #edf4f8 !important;
+  border: 1px solid #c5d5df !important;
+  border-radius: 999px !important;
+  box-shadow: 0 2px 7px rgba(8,42,71,.08) !important;
+  font-weight: 750 !important;
+  line-height: 1.1 !important;
+}
+
+body .process-shell .step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  top: 50%;
+  right: -19px;
+  z-index: 3;
+  transform: translateY(-52%);
+  color: #29B6F6;
+  font-size: 1.05rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+body .process-shell .step-number {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 27px !important;
+  width: 27px !important;
+  height: 27px !important;
+  color: #31576e !important;
+  background: #ffffff !important;
+  border: 1px solid #b9ccd8 !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  font-size: .78rem !important;
+  font-weight: 850 !important;
+}
+
+body .process-shell .step.current {
+  color: #ffffff !important;
+  background: #1B6FA8 !important;
+  border-color: #155b8b !important;
+  box-shadow: 0 4px 12px rgba(27,111,168,.22) !important;
+}
+
+body .process-shell .step.current .step-number {
+  color: #0B3D66 !important;
+  background: #dff4ff !important;
+  border-color: #ffffff !important;
+}
+
+body .process-shell .step.done,
+body .process-shell .stepper.is-complete .step {
+  color: #ffffff !important;
+  background: #23A85D !important;
+  border-color: #178347 !important;
+  box-shadow: 0 4px 12px rgba(35,168,93,.22) !important;
+}
+
+body .process-shell .step.done .step-number,
+body .process-shell .stepper.is-complete .step-number {
+  color: #126B3A !important;
+  background: #ffffff !important;
+  border-color: rgba(255,255,255,.95) !important;
+}
+
+body .process-shell .process-top {
+  background: linear-gradient(180deg,#ffffff 0%,#f4faff 100%) !important;
+  border: 1px solid #bfd4e2 !important;
+  box-shadow: 0 4px 12px rgba(8,42,71,.07) !important;
+}
+
+body .process-shell .process-content > .panel {
+  background: #f7fbfd !important;
+  border: 1px solid #bfd0dc !important;
+  box-shadow: 0 5px 16px rgba(8,42,71,.09) !important;
+}
+
+body .process-shell .panel-header {
+  padding: 10px 14px !important;
+  margin: -2px 0 13px !important;
+  background: #e7f2f8 !important;
+  border: 1px solid #c3d9e6 !important;
+  border-radius: 9px !important;
+}
+
+body .process-shell .panel-header h2,
+body .process-shell .panel-header h3 {
+  color: #082A47 !important;
+  font-weight: 800 !important;
+}
+
+body .process-shell .field > label,
+body .process-shell .choice-field > legend {
+  color: #0B3D66 !important;
+  font-weight: 750 !important;
+}
+
+body .process-shell .choice-option {
+  background: #ffffff !important;
+  border-color: #b7cbd8 !important;
+}
+
+body .process-shell .choice-option:has(input:checked) {
+  background: #effaf4 !important;
+  border-color: #23A85D !important;
+  box-shadow: 0 0 0 2px rgba(35,168,93,.12) !important;
+}
+
+@media (max-width: 760px) {
+  body .process-shell .stepper {
+    gap: 12px !important;
+    margin-bottom: 11px !important;
+  }
+
+  body .process-shell .step {
+    min-height: 40px !important;
+    gap: 5px !important;
+    padding: 7px 7px !important;
+    font-size: .72rem !important;
+  }
+
+  body .process-shell .step-number {
+    flex-basis: 23px !important;
+    width: 23px !important;
+    height: 23px !important;
+    font-size: .68rem !important;
+  }
+
+  body .process-shell .step:not(:last-child)::after {
+    right: -10px;
+    font-size: .8rem;
+  }
+
+  body .process-shell .panel-header {
+    padding: 9px 10px !important;
+    margin-bottom: 11px !important;
+  }
+}
+'''
+          if marker not in css:
+            css_path.write_text(css.rstrip() + block + '\n', encoding='utf-8')
+
+          index_path = Path('index.html')
+          index = index_path.read_text(encoding='utf-8')
+          index = re.sub(r'ui\.css\?v=[^"\']+', 'ui.css?v=20260915-progress-pills1', index)
+          index = re.sub(r'app\.js\?v=[^"\']+', 'app.js?v=20260915-progress-pills1', index)
+          index_path.write_text(index, encoding='utf-8')
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.js ui.css index.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Mejora progreso visual y contraste de formularios"
+            git push
+          fi
