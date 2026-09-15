@@ -1,0 +1,164 @@
+from pathlib import Path
+import re
+
+app_path = Path("app.js")
+app = app_path.read_text(encoding="utf-8")
+
+new_family = r'''  function renderPartidaTypeCard(item) {
+    const selected = state.partidasType === item.value;
+    return `
+      <button class="partidas-type-card partidas-type-${escapeHTML(item.tone)}${selected ? " is-selected" : ""}" type="button"
+        data-action="select-partida-type" data-part-type="${escapeHTML(item.value)}"
+        aria-pressed="${selected ? "true" : "false"}" aria-label="${escapeHTML(item.title)}">
+        <span class="partidas-type-media" aria-hidden="true"><img src="${escapeHTML(item.icon)}" alt="" /></span>
+        <span class="catalog-card-info">
+          <span class="catalog-card-title">${escapeHTML(item.title)}</span>
+          <span class="catalog-card-subtitle">${escapeHTML(item.subtitle)}</span>
+        </span>
+      </button>
+    `;
+  }
+
+  function renderPartidasFamily() {
+    const partType = state.partidasType;
+    const selectedType = PARTIDAS_TYPE_CARDS.find((item) => item.value === partType) || null;
+
+    app.innerHTML = `
+      <section class="family-page partidas-family-page">
+        <div class="container partidas-selector-shell">
+          <button class="button button-secondary family-back" type="button" data-action="back-home">Volver</button>
+          <div class="partidas-selector-heading">
+            <h1>Elegí el tipo de partida</h1>
+            <p>Primero indicá qué partida necesitás.</p>
+          </div>
+          <div class="partidas-type-grid">
+            ${PARTIDAS_TYPE_CARDS.map((item) => renderPartidaTypeCard(item)).join("")}
+          </div>
+          <div class="partidas-flow-steps" aria-label="Pasos del trámite">
+            <span><strong>1.</strong> Tipo de partida</span>
+            <span class="partidas-flow-arrow" aria-hidden="true">→</span>
+            <span><strong>2.</strong> Jurisdicción</span>
+            <span class="partidas-flow-arrow" aria-hidden="true">→</span>
+            <span><strong>3.</strong> Datos</span>
+          </div>
+          ${partType ? `
+            <div class="partidas-type-section">
+              <div class="partidas-type-heading">
+                <h2>${escapeHTML(selectedType?.title || "Partida")}</h2>
+                <p>Ahora elegí dónde está inscripta.</p>
+              </div>
+              <div class="partidas-jurisdiction-grid">
+                ${renderPartidasJurisdictionCard("pba", "PBA", "Provincia de Buenos Aires")}
+                ${renderPartidasJurisdictionCard("caba", "CABA", "Ciudad Autónoma de Buenos Aires")}
+              </div>
+            </div>
+          ` : ""}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderFamily()'''
+
+app, n = re.subn(
+    r'  function renderPartidaTypeCard\(item, jurisdiction\) \{.*?\n  \}\n\n  function renderPartidasFamily\(\) \{.*?\n  \}\n\n  function renderFamily\(\)',
+    lambda m: new_family,
+    app,
+    count=1,
+    flags=re.S,
+)
+assert n == 1, f"family flow replacement count={n}"
+
+new_data = r'''  function renderDataStage(service) {
+    const partTypePreset = service.id === "partidas"
+      ? (sessionStorage.getItem("tramipago_partidas_prefill_v1") || "")
+      : service.id === "partidas-caba"
+        ? (state.draft.partType || sessionStorage.getItem("tramipago_partidas_caba_prefill_v1") || "")
+        : "";
+    const fields = (service.fields || []).filter((field) => !(partTypePreset && field.id === "partType"));
+
+    return `
+      <div class="panel">
+        <div class="panel-header"><h2>Completá tus datos</h2></div>
+        <div class="service-quick-summary">
+          <strong>${escapeHTML(service.shortDescription || service.name)}</strong>
+          <span>Completá los campos y tocá Siguiente.</span>
+        </div>
+        <form id="data-form" novalidate>
+          ${partTypePreset ? `<input type="hidden" name="partType" value="${escapeHTML(partTypePreset)}" />` : ""}
+          <div class="form-grid">${fields.map((field) => renderField(field, service)).join("")}</div>
+          <div class="form-error" role="alert"></div>
+          ${renderActionBar("Atrás", "Siguiente")}
+        </form>
+      </div>
+    `;
+  }
+
+  function renderCorrectionStage(service)'''
+
+app, n = re.subn(
+    r'  function renderDataStage\(service\) \{.*?\n  \}\n\n  function renderCorrectionStage\(service\)',
+    lambda m: new_data,
+    app,
+    count=1,
+    flags=re.S,
+)
+assert n == 1, f"data stage replacement count={n}"
+
+new_clicks = r'''    if (action === "select-partidas-jurisdiction") {
+      const jurisdiction = trigger.dataset.jurisdiction || "";
+      const partType = state.partidasType || "";
+      if (!partType || !["pba", "caba"].includes(jurisdiction)) return;
+      state.partidasJurisdiction = jurisdiction;
+      if (jurisdiction === "pba") {
+        sessionStorage.setItem("tramipago_partidas_prefill_v1", partType);
+        return startService("partidas");
+      }
+      sessionStorage.setItem("tramipago_partidas_caba_prefill_v1", partType);
+      return startService("partidas-caba");
+    }
+
+    if (action === "select-partida-type") {
+      const partType = trigger.dataset.partType || "";
+      if (!PARTIDAS_TYPE_CARDS.some((item) => item.value === partType)) return;
+      state.partidasType = partType;
+      state.partidasJurisdiction = null;
+      return render();
+    }'''
+
+app, n = re.subn(
+    r'    if \(action === "select-partidas-jurisdiction"\) \{.*?\n    \}\n\n    if \(action === "select-partida-type"\) \{.*?\n    \}',
+    lambda m: new_clicks,
+    app,
+    count=1,
+    flags=re.S,
+)
+assert n == 1, f"click flow replacement count={n}"
+
+old_select_family = '    if (action === "select-family") {\n      state.familyId = trigger.dataset.familyId;\n      return navigate(`#/familia/${state.familyId}`);\n    }'
+new_select_family = '    if (action === "select-family") {\n      state.familyId = trigger.dataset.familyId;\n      if (state.familyId === "partidas-pba") {\n        state.partidasType = null;\n        state.partidasJurisdiction = null;\n      }\n      return navigate(`#/familia/${state.familyId}`);\n    }'
+assert old_select_family in app, "select-family block not found"
+app = app.replace(old_select_family, new_select_family, 1)
+
+old_state = '    familyId: null,\n    partidasJurisdiction: null,\n    serviceId: null,'
+new_state = '    familyId: null,\n    partidasType: null,\n    partidasJurisdiction: null,\n    serviceId: null,'
+assert old_state in app, "state block not found"
+app = app.replace(old_state, new_state, 1)
+
+app_path.write_text(app, encoding="utf-8")
+
+services_path = Path("services.js")
+services = services_path.read_text(encoding="utf-8")
+old_parttype = '    const partType = form.querySelector(\'input[name="partType"]:checked\')?.value || "";'
+new_parttype = '    const partType = form.querySelector(\'input[name="partType"]:checked\')?.value\n      || form.querySelector(\'input[type="hidden"][name="partType"]\')?.value\n      || "";'
+assert old_parttype in services, "PBA partType lookup not found"
+services = services.replace(old_parttype, new_parttype, 1)
+services_path.write_text(services, encoding="utf-8")
+
+workflow = Path(".github/workflows/one-time-partidas-flow.yml")
+if workflow.exists():
+    workflow.unlink()
+
+patch_script = Path(".github/patch-partidas.py")
+if patch_script.exists():
+    patch_script.unlink()
