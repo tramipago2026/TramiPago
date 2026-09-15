@@ -72,8 +72,9 @@
     .site-main small,.site-main .text-small,.site-main .eyebrow,.site-main .service-tag,.site-main .family-unavailable,.site-main .timeline-item small,.site-main .summary-item small { font-size:var(--text-secondary);line-height:1.4; }
     .home-catalog { padding:30px 0 26px;background:#edf4f8; }
     .home-section-title { margin:10px 0 8px;color:var(--navy-deep);font-size:1.25rem;text-align:center; }
-    .home-direct-row,.home-family-row { display:grid;grid-template-columns:repeat(4,154px);justify-content:center;gap:14px;align-items:stretch; }
-    .home-family-row { grid-template-columns: repeat(3, 154px); margin-top:32px; }
+    .home-content-grid { display:grid;grid-template-columns:minmax(320px,390px) minmax(0,1fr);gap:28px;align-items:start; }
+    .home-services-panel { min-width:0; }
+    .home-services-grid { display:grid;grid-template-columns:repeat(4,minmax(0,154px));justify-content:center;gap:14px;align-items:stretch; }
     .home-catalog .home-tile { position:relative;display:flex;flex-direction:column;width:154px;height:auto;aspect-ratio:4/5;padding:0;overflow:hidden;background:var(--surface);border:0;border-radius:9px;box-shadow:0 5px 16px var(--shadow-soft); }
     .home-catalog .home-tile:hover,.home-catalog .home-tile:focus-visible { box-shadow:0 0 0 3px var(--focus-ring),0 8px 20px var(--shadow-strong);transform:translateY(-3px);outline:none; }
     .home-catalog .card-photo,.home-catalog .home-primary-logo { position:relative;display:block;width:100%;height:66%!important;flex:0 0 66%!important;overflow:hidden;border-radius:0;background-position:center;background-size:cover; }
@@ -146,8 +147,9 @@
     .site-footer { color:var(--white);background:var(--navy-deep);border-top-color:var(--navy-deep);font-size:var(--text-secondary); }
     .site-footer .legal-links a { color:var(--white);font-size:var(--text-secondary);font-weight:700;text-decoration-thickness:1px;text-underline-offset:3px; }
     .site-footer .legal-links a:hover,.site-footer .legal-links a:focus-visible { color:var(--cyan);outline-color:var(--cyan); }
-    @media(max-width:1040px){.header-inner{grid-template-columns:135px 1fr}.header-slogan{justify-self:end}.main-nav{grid-column:1/-1;justify-self:center;transform:none}.home-direct-row{grid-template-columns:repeat(2,154px)}}
-    @media(max-width:680px){.main-nav{width:100%;gap:6px}.main-nav a,.main-nav button{width:auto;min-width:0;height:34px;min-height:34px;padding:4px 6px;font-size:var(--text-secondary);flex:1 1 0}.button{width:100%;max-width:var(--action-button-width)}.home-direct-row,.home-family-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.home-catalog .home-tile{width:100%}.catalog-card-info{padding:7px 8px}.catalog-card-title{font-size:.8125rem}.catalog-card-subtitle{font-size:.6875rem}.confirmation{margin:12px auto 30px;padding:17px 14px}.confirmation-summary{grid-template-columns:1fr}.confirmation-summary-item{border-left:0;border-top:1px solid #c8dae5}.confirmation-summary-item:first-child{border-top:0}.finalization-summary{grid-template-columns:1fr 1fr}}
+    @media(max-width:1119px){.home-content-grid{grid-template-columns:1fr}.home-promo-slot{order:2}.home-services-panel{order:1}.home-services-grid{grid-template-columns:repeat(4,minmax(0,154px))}}
+    @media(max-width:1040px){.header-inner{grid-template-columns:135px 1fr}.header-slogan{justify-self:end}.main-nav{grid-column:1/-1;justify-self:center;transform:none}}
+    @media(max-width:680px){.main-nav{width:100%;gap:6px}.main-nav a,.main-nav button{width:auto;min-width:0;height:34px;min-height:34px;padding:4px 6px;font-size:var(--text-secondary);flex:1 1 0}.button{width:100%;max-width:var(--action-button-width)}.home-services-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.home-catalog .home-tile{width:100%}.catalog-card-info{padding:7px 8px}.catalog-card-title{font-size:.8125rem}.catalog-card-subtitle{font-size:.6875rem}.confirmation{margin:12px auto 30px;padding:17px 14px}.confirmation-summary{grid-template-columns:1fr}.confirmation-summary-item{border-left:0;border-top:1px solid #c8dae5}.confirmation-summary-item:first-child{border-top:0}.finalization-summary{grid-template-columns:1fr 1fr}}
   </style>
 </head>
 <body data-view="home">
@@ -173,9 +175,9 @@
   <script src="flow-ui.js?v=20260909-clean-final"></script>
   <script src="site-fixes.js?v=20260914-security2"></script>
   <script src="footer-menu.js?v=20260909-clean-final"></script>
-  <script src="app.js?v=20260915-secure-tracking1"></script>
-  <script src="catalog-search.js?v=20260915-search1"></script>
-  <script src="promos.js?v=20260911-full-ad-carousel-v6"></script>
+  <script src="app.js?v=20260915-home-layout2"></script>
+  <script src="catalog-search.js?v=20260915-home-layout2"></script>
+  <script src="promos.js?v=20260915-home-layout2"></script>
   <script src="security-hardening.js?v=20260915-secure-tracking1"></script>
   <script src="backend-sync.js?v=20260915-secure-tracking1"></script>
   <script>
