@@ -1,4 +1,4 @@
-/* Familias adicionales de TramiPago: solo servicios confirmados o consultas profesionales. */
+/* Familias adicionales de TramiPago: servicios confirmados y consultas profesionales. */
 (function(){
   "use strict";
 
@@ -26,23 +26,24 @@
     {
       id:"apostilla-tad",
       codePrefix:"AT",
-      name:"Apostilla por TAD",
-      shortDescription:"Apostilla de documentos públicos argentinos con validez internacional.",
-      description:"Cargá el documento y los datos básicos. TramiPago revisa si está en condiciones de apostillarse y prepara la gestión por TAD. El trámite puede iniciarlo una persona distinta del titular del documento.",
+      name:"Apostillado",
+      shortDescription:"Gestión de Apostilla por TAD para documentos públicos argentinos.",
+      description:"Cargá el documento y los datos básicos. TramiPago revisa la documentación, prepara la gestión por TAD y realiza el seguimiento del expediente.",
       active:true,
-      intakeOnly:true,
-      officialFee:4500,
+      officialFee:0,
+      priceField:"serviceOption",
+      priceOptions:[{value:"gestion",label:"Gestión de Apostillado",amount:20000,duration:"Gestión online"}],
       resultDelivery:"authority-platform",
       requirements:[
-        "La persona que inicia el TAD debe ser mayor de 18 años.",
-        "La persona que inicia el TAD debe contar con Clave Fiscal nivel 2 o superior y una cuenta bancaria argentina asociada.",
-        "El documento debe haber sido emitido por una autoridad u organismo argentino y cumplir las condiciones de la Cancillería según su tipo."
+        "Documento público argentino en condiciones de ser apostillado.",
+        "Datos del documento y país donde se presentará, si corresponde.",
+        "TramiPago verifica previamente que la documentación sea apta para iniciar la gestión."
       ],
       components:[
         "Revisión previa del documento",
-        "Preparación de la solicitud de Apostilla por TAD",
-        "Seguimiento de observaciones o subsanaciones del expediente",
-        "Costo oficial vigente informado por Cancillería: $4.500 por expediente/documento"
+        "Preparación e inicio de la gestión por TAD",
+        "Seguimiento de observaciones o subsanaciones",
+        "Entrega o seguimiento del resultado del expediente"
       ],
       fields:[
         {id:"documentType",label:"Tipo de documento",type:"select",required:true,options:[
@@ -57,95 +58,92 @@
         {id:"documentFile",label:"Documento a revisar (PDF)",type:"file",required:true,accept:"application/pdf,.pdf"},
         {id:"notes",label:"Aclaración (opcional)",type:"textarea",required:false},
         ...contactFields,
+        {id:"serviceOption",label:"Servicio",type:"hidden",required:false,value:"gestion"},
         authorizationField
       ]
     },
     {
-      id:"legalizacion-internacional-partidas",
-      codePrefix:"LI",
-      name:"Legalización internacional de partidas",
-      shortDescription:"Legalización con validez internacional de partidas de estado civil.",
-      description:"Para partidas de estado civil que requieren legalización con validez internacional en lugar de Apostilla. Se tramita por TAD y puede iniciarla una persona distinta del titular del documento.",
+      id:"legalizaciones",
+      codePrefix:"LG",
+      name:"Legalizaciones",
+      shortDescription:"Legalización de partidas, títulos, certificados y otros documentos públicos.",
+      description:"Elegí qué documento necesitás legalizar. TramiPago revisa los requisitos, prepara la gestión online y realiza el seguimiento correspondiente.",
       active:true,
-      intakeOnly:true,
-      officialFee:1500,
-      resultDelivery:"authority-platform",
-      requirements:[
-        "La persona que inicia el TAD debe ser mayor de 18 años.",
-        "Debe contar con Clave Fiscal nivel 2 o superior y una cuenta bancaria argentina asociada.",
-        "La partida debe reunir las condiciones exigidas por Cancillería para ser intervenida."
-      ],
-      components:[
-        "Revisión previa de la partida",
-        "Preparación de la legalización con validez internacional",
-        "Seguimiento de observaciones o subsanaciones",
-        "Costo oficial vigente informado por Cancillería: $1.500"
-      ],
-      fields:[
-        {id:"partType",label:"Tipo de partida",type:"select",required:true,options:[
-          {value:"birth",label:"Nacimiento"},
-          {value:"marriage",label:"Matrimonio"},
-          {value:"death",label:"Defunción"},
-          {value:"other",label:"Otra partida de estado civil"}
-        ]},
-        {id:"destinationCountry",label:"País donde se presentará",type:"text",required:false},
-        {id:"documentFile",label:"Partida a revisar (PDF)",type:"file",required:true,accept:"application/pdf,.pdf"},
-        ...contactFields,
-        authorizationField
-      ]
-    },
-    {
-      id:"legalizacion-mininterior",
-      codePrefix:"LM",
-      name:"Legalización de documentos públicos",
-      shortDescription:"Legalización nacional de documentos, títulos y certificados por TAD.",
-      description:"Gestión de legalización ante el organismo nacional competente mediante TAD. La información oficial confirma que el trámite puede realizarlo un tercero con sus propios requisitos de acceso.",
-      active:true,
-      intakeOnly:true,
       officialFee:0,
+      priceField:"serviceOption",
+      priceOptions:[{value:"gestion",label:"Gestión de Legalización",amount:15000,duration:"Gestión online"}],
       resultDelivery:"authority-platform",
       requirements:[
-        "Acceso a TAD con CUIT y Clave Fiscal de quien inicia el trámite.",
-        "Documento completo, legible y escaneado a color.",
-        "Un documento por expediente."
+        "Documento completo y legible.",
+        "Datos del organismo o autoridad que emitió el documento.",
+        "La vía exacta se determina según el tipo de documento y la legalización requerida."
       ],
       components:[
-        "Revisión del documento",
-        "Carga de datos del titular, organismo emisor y firma a legalizar",
-        "Seguimiento del expediente TAD",
-        "Trámite oficial gratuito"
+        "Legalización de partidas cuando corresponda",
+        "Legalización de títulos y certificados cuando corresponda",
+        "Legalización de documentos públicos",
+        "Revisión, presentación y seguimiento"
       ],
       fields:[
-        {id:"documentType",label:"Tipo de documento",type:"text",required:true,placeholder:"Ej.: título, certificado, partida"},
-        {id:"issuingAuthority",label:"Organismo o entidad que lo emitió",type:"text",required:true},
-        {id:"originProvince",label:"Provincia de origen",type:"text",required:true},
-        {id:"signerName",label:"Nombre de la persona que firmó el documento",type:"text",required:true},
-        {id:"signDate",label:"Fecha de la firma",type:"date",required:false},
-        {id:"documentFile",label:"Documento a legalizar (PDF)",type:"file",required:true,accept:"application/pdf,.pdf"},
+        {id:"legalizationType",label:"¿Qué necesitás legalizar?",type:"select",required:true,options:[
+          {value:"civil-international",label:"Partida / documento de estado civil"},
+          {value:"education",label:"Título, analítico o certificado"},
+          {value:"public-document",label:"Otro documento público"},
+          {value:"other",label:"No estoy seguro / otro"}
+        ]},
+        {id:"documentType",label:"Tipo de documento",type:"text",required:true,placeholder:"Ej.: partida de nacimiento, título secundario, certificado"},
+        {id:"issuingAuthority",label:"Organismo o entidad que lo emitió",type:"text",required:false},
+        {id:"originProvince",label:"Provincia de origen",type:"text",required:false},
+        {id:"destinationCountry",label:"País donde se presentará (si corresponde)",type:"text",required:false},
+        {id:"documentFile",label:"Documento a revisar (PDF)",type:"file",required:true,accept:"application/pdf,.pdf"},
+        {id:"notes",label:"Aclaración (opcional)",type:"textarea",required:false},
         ...contactFields,
+        {id:"serviceOption",label:"Servicio",type:"hidden",required:false,value:"gestion"},
         authorizationField
       ]
     },
     {
       id:"abogado-art",
       codePrefix:"AA",
-      name:"ART y accidentes laborales",
-      shortDescription:"Consulta con abogado por accidente de trabajo, accidente in itinere, enfermedad profesional o reclamo ante ART.",
-      description:"Dejá los datos básicos del caso. TramiPago coordina la consulta con un profesional abogado; el análisis jurídico y cualquier actuación profesional quedan a cargo del abogado interviniente.",
+      name:"Reclamo ART / accidente laboral",
+      shortDescription:"Consulta por accidente de trabajo, accidente in itinere, enfermedad profesional o reclamo ante ART.",
+      description:"Dejá los datos básicos del caso. TramiPago coordina la consulta con un abogado; el análisis jurídico y cualquier actuación profesional quedan a cargo del abogado interviniente.",
       active:true,
       intakeOnly:true,
       officialFee:null,
       requirements:["Datos básicos del hecho.","WhatsApp de contacto."],
-      components:["Accidente de trabajo","Accidente in itinere","Enfermedad profesional","Reclamos y diferencias con la ART"],
+      components:["Accidente de trabajo","Accidente in itinere","Enfermedad profesional","Reclamo o diferencia con la ART"],
       fields:[
         {id:"caseType",label:"Motivo de la consulta",type:"select",required:true,options:[
           {value:"work-accident",label:"Accidente de trabajo"},
           {value:"itinere",label:"Accidente in itinere"},
           {value:"occupational-disease",label:"Enfermedad profesional"},
-          {value:"art-claim",label:"Problema o reclamo con la ART"},
-          {value:"other",label:"Otro"}
+          {value:"art-claim",label:"Reclamo o problema con la ART"},
+          {value:"other",label:"Otro relacionado con ART"}
         ]},
         {id:"eventDate",label:"Fecha aproximada del hecho (opcional)",type:"date",required:false},
+        {id:"notes",label:"Contanos brevemente qué pasó",type:"textarea",required:true},
+        ...contactFields,
+        legalReferralAuthorization
+      ]
+    },
+    {
+      id:"abogado-accidentes",
+      codePrefix:"AX",
+      name:"Accidentes",
+      shortDescription:"Consulta jurídica por accidentes que no sean laborales.",
+      description:"Dejá los datos básicos del accidente. TramiPago coordina la consulta con un abogado para evaluar el caso y los pasos posibles.",
+      active:true,
+      intakeOnly:true,
+      officialFee:null,
+      requirements:["Descripción del accidente.","WhatsApp de contacto."],
+      components:["Accidentes de tránsito","Daños y lesiones derivados de un accidente","Otros accidentes no laborales"],
+      fields:[
+        {id:"caseType",label:"Tipo de accidente",type:"select",required:true,options:[
+          {value:"traffic",label:"Accidente de tránsito"},
+          {value:"other",label:"Otro accidente no laboral"}
+        ]},
+        {id:"eventDate",label:"Fecha aproximada del accidente",type:"date",required:false},
         {id:"notes",label:"Contanos brevemente qué pasó",type:"textarea",required:true},
         ...contactFields,
         legalReferralAuthorization
@@ -156,7 +154,7 @@
       codePrefix:"AS",
       name:"Sucesiones",
       shortDescription:"Consulta con abogado por inicio, seguimiento o dudas de una sucesión.",
-      description:"Dejá la información básica. TramiPago coordina la consulta con un profesional abogado para evaluar documentación, jurisdicción y próximos pasos.",
+      description:"Dejá la información básica. TramiPago coordina la consulta con un abogado para evaluar documentación, jurisdicción y próximos pasos.",
       active:true,
       intakeOnly:true,
       officialFee:null,
@@ -177,22 +175,21 @@
     {
       id:"abogado-laboral",
       codePrefix:"AL",
-      name:"Abogado laboral",
-      shortDescription:"Consulta laboral por despido, salarios, trabajo no registrado, telegramas u otros conflictos.",
-      description:"Dejá los datos principales. TramiPago coordina la consulta con un profesional abogado laboral; el asesoramiento jurídico queda a cargo del profesional interviniente.",
+      name:"Consulta laboral",
+      shortDescription:"Consulta por despido, diferencias salariales, trabajo no registrado, telegramas u otra cuestión laboral.",
+      description:"Completá el formulario con el problema laboral. TramiPago coordina la consulta con un abogado laboral; el asesoramiento jurídico queda a cargo del profesional interviniente.",
       active:true,
       intakeOnly:true,
       officialFee:null,
       requirements:["Descripción breve del problema laboral.","WhatsApp de contacto."],
-      components:["Despidos","Salarios o diferencias","Trabajo no registrado","Telegramas y comunicaciones laborales","Otros conflictos laborales"],
+      components:["Despido","Diferencias salariales o pagos pendientes","Trabajo no registrado","Telegramas y comunicaciones laborales","Otra consulta laboral"],
       fields:[
         {id:"caseType",label:"Motivo de la consulta",type:"select",required:true,options:[
           {value:"dismissal",label:"Despido"},
-          {value:"salary",label:"Salarios o diferencias"},
+          {value:"salary",label:"Diferencias salariales / pagos pendientes"},
           {value:"unregistered",label:"Trabajo no registrado"},
           {value:"telegram",label:"Telegrama / comunicación laboral"},
-          {value:"sanction",label:"Sanción o conflicto en el trabajo"},
-          {value:"other",label:"Otro"}
+          {value:"other",label:"Otra consulta laboral"}
         ]},
         {id:"notes",label:"Contanos brevemente qué necesitás consultar",type:"textarea",required:true},
         ...contactFields,
@@ -205,22 +202,25 @@
     {
       id:"legalizaciones-apostillas",
       name:"Legalizaciones y Apostillas",
-      description:"Apostilla, legalización con validez internacional y legalización nacional de documentos por TAD.",
+      description:"Dos gestiones: Legalizaciones y Apostillado.",
       image:"assets/partidas-familia-final.webp",
-      serviceIds:["apostilla-tad","legalizacion-internacional-partidas","legalizacion-mininterior"]
+      serviceIds:["legalizaciones","apostilla-tad"]
     },
     {
       id:"atencion-abogado",
       name:"Atención de Abogado",
-      description:"ART y accidentes laborales, sucesiones y consultas de derecho laboral.",
+      description:"Reclamos ART, accidentes, sucesiones y consultas laborales.",
       image:"assets/promo-art-20260911.webp",
-      serviceIds:["abogado-art","abogado-sucesiones","abogado-laboral"]
+      serviceIds:["abogado-art","abogado-accidentes","abogado-sucesiones","abogado-laboral"]
     }
   ];
 
+  const replacedIds=new Set([
+    "apostilla-tad","legalizaciones","legalizacion-internacional-partidas","legalizacion-mininterior",
+    "abogado-art","abogado-accidentes","abogado-sucesiones","abogado-laboral"
+  ]);
   const currentServices=Array.isArray(window.TRAMI_SERVICES)?window.TRAMI_SERVICES:[];
-  const serviceIds=new Set(services.map(item=>item.id));
-  window.TRAMI_SERVICES=currentServices.filter(item=>!serviceIds.has(item.id)).concat(services);
+  window.TRAMI_SERVICES=currentServices.filter(item=>!replacedIds.has(item.id)).concat(services);
 
   const currentFamilies=Array.isArray(window.TRAMI_FAMILIES)?window.TRAMI_FAMILIES:[];
   const familyIds=new Set(families.map(item=>item.id));
