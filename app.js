@@ -164,7 +164,11 @@
   function buildCode(prefix) {
     const current = Number(localStorage.getItem(COUNTER_KEY) || "0") + 1;
     localStorage.setItem(COUNTER_KEY, String(current));
-    return `${prefix}-${String(current).padStart(6, "0")}`;
+    const bytes = new Uint8Array(4);
+    if (window.crypto?.getRandomValues) window.crypto.getRandomValues(bytes);
+    else for (let i = 0; i < bytes.length; i += 1) bytes[i] = Math.floor(Math.random() * 256);
+    const suffix = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("").toUpperCase();
+    return `${prefix}-${String(current).padStart(6, "0")}-${suffix}`;
   }
 
   function createId() {

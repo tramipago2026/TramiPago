@@ -19,9 +19,9 @@
     awaiting_payment:"Pago pendiente",
     payment_review:"Pago en revisión",
     payment_confirmed:"Pago confirmado",
-    in_progress:"En proceso",
-    needs_info:"Falta información",
-    finalized:"Finalizado"
+    in_progress:"Trámite en proceso",
+    needs_info:"Requiere información adicional",
+    finalized:"Trámite finalizado"
   };
 
   function readJSON(key,fallback){try{return JSON.parse(localStorage.getItem(key)||"")||fallback;}catch(_){return fallback;}}
@@ -46,7 +46,7 @@
     if(!form||form.querySelector('[name="trackingPhoneLast4"]'))return;
     const codeInput=form.elements.namedItem("trackingCode");
     if(!(codeInput instanceof HTMLInputElement))return;
-    codeInput.placeholder="AP-000012";
+    codeInput.placeholder="AP-000012-A1B2C3D4";
     codeInput.autocapitalize="characters";
     codeInput.spellcheck=false;
 
@@ -73,12 +73,15 @@
   async function secureLookup(code,last4){
     const client=backendClient();
     if(!client)throw new Error("backend_not_ready");
-    const {data,error}=await client.rpc("get_public_request_status_secure",{
-      p_tracking_code:String(code||"").trim().toUpperCase(),
-      p_phone_last4:digits(last4).slice(-4)
+    const {data,error}=await client.functions.invoke("track-request",{
+      body:{
+        code:String(code||"").trim().toUpperCase(),
+        last4:digits(last4).slice(-4)
+      }
     });
     if(error)throw error;
-    return Array.isArray(data)?data[0]||null:data||null;
+    if(!data?.ok)return null;
+    return {tracking_code:data.code,status:data.status};
   }
 
   function redactFinalizedLocalRequest(request,row){
@@ -131,15 +134,12 @@
     const canResume=uiStatus==="payment_pending"&&localRequest&&localTokenMeta(localRequest);
     panel.innerHTML=`
       <div class="status-header">
-        <div><p class="eyebrow">${escapeHTML(row.tracking_code)}</p><h2>${escapeHTML(row.service_name)}</h2></div>
+        <div><p class="eyebrow">${escapeHTML(row.tracking_code)}</p><h2>Estado del trámite</h2></div>
         <span class="status-badge">${escapeHTML(STATUS_LABELS[row.status]||"Estado pendiente")}</span>
       </div>
-      <p class="text-small">Creada: ${escapeHTML(formatDate(row.created_at))}</p>
-      <p class="text-small">Última actualización: ${escapeHTML(formatDate(row.updated_at))}</p>
-      ${row.status_note?`<div class="notice"><strong>Observación:</strong> ${escapeHTML(row.status_note)}</div>`:""}
-      ${row.estimated_completion_at?`<div class="notice"><strong>Fecha estimada:</strong> ${escapeHTML(formatDate(row.estimated_completion_at))}</div>`:""}
-      ${canCorrect?`<div class="needs-info-box"><strong>Falta información.</strong><p>Revisá la observación y corregí los datos solicitados.</p><button class="button button-primary" type="button" data-action="correct-request" data-request-id="${escapeHTML(localId)}">Corregí información</button></div>`:""}
-      ${canResume?`<div class="needs-info-box"><strong>Pago pendiente.</strong><p>Podés continuar con el mismo código desde este dispositivo.</p><button class="button button-primary" type="button" data-action="resume-payment" data-request-id="${escapeHTML(localId)}">Continuá con el pago</button></div>`:""}
+      <p class="text-small">Por seguridad, esta consulta no muestra nombre, DNI, correo, domicilio ni otros datos personales.</p>
+      ${canCorrect?`<div class="needs-info-box"><strong>Requiere información adicional.</strong><p>Ingresá desde este dispositivo para completar lo solicitado.</p><button class="button button-primary" type="button" data-action="correct-request" data-request-id="${escapeHTML(localId)}">Completar información</button></div>`:""}
+      ${canResume?`<div class="needs-info-box"><strong>Pago pendiente.</strong><p>Podés continuar con el mismo código desde este dispositivo.</p><button class="button button-primary" type="button" data-action="resume-payment" data-request-id="${escapeHTML(localId)}">Continuar con el pago</button></div>`:""}
     `;
   }
 
