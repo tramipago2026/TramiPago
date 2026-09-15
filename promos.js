@@ -50,8 +50,8 @@
       .site-footer .footer-menu-col h3{font-size:12px!important;line-height:1.35!important}
       .site-footer .footer-menu-col a{font-size:12px!important;line-height:1.45!important}
       .site-footer .footer-menu-bottom{font-size:11px!important;line-height:1.4!important}
-      .promo-side-rail{position:relative;z-index:12;min-width:0;background:linear-gradient(180deg,#f8fbfd 0%,#edf4f8 100%);border-right:1px solid #bdcfdb}
-      .promo-rail-inner{position:sticky;top:0;display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px}
+      .promo-side-rail{position:relative;z-index:12;width:100%;min-width:0;background:transparent}
+      .promo-rail-inner{position:sticky;top:16px;display:flex;flex-direction:column;align-items:center;gap:12px;padding:0}
       .promo-rail-card{display:block;overflow:hidden;width:100%;max-width:428px;aspect-ratio:1;color:#fff;background:#fff;border:0;border-radius:14px;box-shadow:0 8px 24px rgba(8,42,71,.22);text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
       .promo-rail-card:hover,.promo-rail-card:focus-visible{box-shadow:0 11px 28px rgba(8,42,71,.32);transform:translateY(-2px);outline:3px solid rgba(41,182,246,.35)}
       .promo-rail-media{display:block;width:100%;height:100%;overflow:hidden;background:#fff}
@@ -66,7 +66,7 @@
       .promo-side-rail.is-mobile .promo-rail-inner{position:relative;padding:0}
       .promo-side-rail.is-mobile .promo-rail-card{width:min(390px,100%)}
       .promo-side-rail.is-mobile .promo-rail-controls{width:min(390px,100%)}
-      @media(max-width:1119px){body.promo-rail-layout{display:block!important}.promo-side-rail{width:min(460px,100%)}}
+      @media(max-width:1119px){.promo-side-rail{width:min(460px,100%);margin-inline:auto}}
       @media(max-width:680px){.main-nav a,.main-nav button{height:44px!important;min-height:44px!important}.promo-rail-arrow{width:44px;height:44px;min-height:44px}}
       @media(max-width:520px){.home-main-heading{margin-bottom:12px;font-size:1.12rem}}
       @media(prefers-reduced-motion:reduce){.promo-rail-card{transition:none!important}}
@@ -75,7 +75,7 @@
   }
 
   function ensureHomeHeading(){
-    const container=document.querySelector(".home-catalog > .container");
+    const container=document.querySelector(".home-services-panel");
     if(!container||container.querySelector(".home-main-heading"))return;
     const heading=document.createElement("h1");
     heading.className="home-main-heading";
@@ -126,9 +126,9 @@
       document.body.classList.remove("promo-rail-layout");
       return;
     }
-    const main=document.getElementById("app");
     const catalog=document.querySelector(".home-catalog");
-    if(!main||!catalog)return;
+    const slot=document.querySelector(".home-promo-slot");
+    if(!catalog||!slot)return;
     ensureHomeHeading();
     const rail=current||createRail();
     if(isDesktop()){
