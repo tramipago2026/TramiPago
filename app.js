@@ -25,6 +25,7 @@
   const state = {
     route: "home",
     familyId: null,
+    partidasType: null,
     partidasJurisdiction: null,
     serviceId: null,
     step: null,
@@ -347,12 +348,12 @@
     `;
   }
 
-  function renderPartidaTypeCard(item, jurisdiction) {
-    const available = jurisdiction === "pba" || jurisdiction === "caba";
+  function renderPartidaTypeCard(item) {
+    const selected = state.partidasType === item.value;
     return `
-      <button class="partidas-type-card partidas-type-${escapeHTML(item.tone)}" type="button"
-        ${available ? `data-action="select-partida-type" data-part-type="${escapeHTML(item.value)}"` : 'disabled aria-disabled="true"'}
-        aria-label="${escapeHTML(item.title)}${available ? "" : ", próximamente en CABA"}">
+      <button class="partidas-type-card partidas-type-${escapeHTML(item.tone)}${selected ? " is-selected" : ""}" type="button"
+        data-action="select-partida-type" data-part-type="${escapeHTML(item.value)}"
+        aria-pressed="${selected ? "true" : "false"}" aria-label="${escapeHTML(item.title)}">
         <span class="partidas-type-media" aria-hidden="true"><img src="${escapeHTML(item.icon)}" alt="" /></span>
         <span class="catalog-card-info">
           <span class="catalog-card-title">${escapeHTML(item.title)}</span>
@@ -363,40 +364,36 @@
   }
 
   function renderPartidasFamily() {
-    const jurisdiction = state.partidasJurisdiction;
-    const jurisdictionName = jurisdiction === "pba"
-      ? "Provincia de Buenos Aires"
-      : jurisdiction === "caba"
-        ? "Ciudad Autónoma de Buenos Aires"
-        : "";
+    const partType = state.partidasType;
+    const selectedType = PARTIDAS_TYPE_CARDS.find((item) => item.value === partType) || null;
 
     app.innerHTML = `
       <section class="family-page partidas-family-page">
         <div class="container partidas-selector-shell">
           <button class="button button-secondary family-back" type="button" data-action="back-home">Volver</button>
           <div class="partidas-selector-heading">
-            <h1>Elegí la jurisdicción</h1>
-            <p>Seleccioná dónde está inscripta la partida.</p>
+            <h1>Elegí el tipo de partida</h1>
+            <p>Primero indicá qué partida necesitás.</p>
           </div>
-          <div class="partidas-jurisdiction-grid">
-            ${renderPartidasJurisdictionCard("pba", "PBA", "Provincia de Buenos Aires")}
-            ${renderPartidasJurisdictionCard("caba", "CABA", "Ciudad Autónoma de Buenos Aires")}
+          <div class="partidas-type-grid">
+            ${PARTIDAS_TYPE_CARDS.map((item) => renderPartidaTypeCard(item)).join("")}
           </div>
           <div class="partidas-flow-steps" aria-label="Pasos del trámite">
-            <span><strong>1.</strong> Jurisdicción</span>
+            <span><strong>1.</strong> Tipo de partida</span>
             <span class="partidas-flow-arrow" aria-hidden="true">→</span>
-            <span><strong>2.</strong> Tipo de partida</span>
+            <span><strong>2.</strong> Jurisdicción</span>
             <span class="partidas-flow-arrow" aria-hidden="true">→</span>
             <span><strong>3.</strong> Datos</span>
           </div>
-          ${jurisdiction ? `
+          ${partType ? `
             <div class="partidas-type-section">
               <div class="partidas-type-heading">
-                <h2>${escapeHTML(jurisdictionName)}</h2>
-                <p>Elegí el tipo de partida.</p>
+                <h2>${escapeHTML(selectedType?.title || "Partida")}</h2>
+                <p>Ahora elegí dónde está inscripta.</p>
               </div>
-              <div class="partidas-type-grid">
-                ${PARTIDAS_TYPE_CARDS.map((item) => renderPartidaTypeCard(item, jurisdiction)).join("")}
+              <div class="partidas-jurisdiction-grid">
+                ${renderPartidasJurisdictionCard("pba", "PBA", "Provincia de Buenos Aires")}
+                ${renderPartidasJurisdictionCard("caba", "CABA", "Ciudad Autónoma de Buenos Aires")}
               </div>
             </div>
           ` : ""}
@@ -554,6 +551,13 @@
   }
 
   function renderDataStage(service) {
+    const partTypePreset = service.id === "partidas"
+      ? (sessionStorage.getItem("tramipago_partidas_prefill_v1") || "")
+      : service.id === "partidas-caba"
+        ? (state.draft.partType || sessionStorage.getItem("tramipago_partidas_caba_prefill_v1") || "")
+        : "";
+    const fields = (service.fields || []).filter((field) => !(partTypePreset && field.id === "partType"));
+
     return `
       <div class="panel">
         <div class="panel-header"><h2>Completá tus datos</h2></div>
@@ -562,7 +566,8 @@
           <span>Completá los campos y tocá Siguiente.</span>
         </div>
         <form id="data-form" novalidate>
-          <div class="form-grid">${(service.fields || []).map((field) => renderField(field, service)).join("")}</div>
+          ${partTypePreset ? `<input type="hidden" name="partType" value="${escapeHTML(partTypePreset)}" />` : ""}
+          <div class="form-grid">${fields.map((field) => renderField(field, service)).join("")}</div>
           <div class="form-error" role="alert"></div>
           ${renderActionBar("Atrás", "Siguiente")}
         </form>
@@ -1052,14 +1057,10 @@
     if (action === "whatsapp") return;
 
     if (action === "select-partidas-jurisdiction") {
-      state.partidasJurisdiction = trigger.dataset.jurisdiction || null;
-      return render();
-    }
-
-    if (action === "select-partida-type") {
-      const partType = trigger.dataset.partType || "";
-      const jurisdiction = state.partidasJurisdiction;
+      const jurisdiction = trigger.dataset.jurisdiction || "";
+      const partType = state.partidasType || "";
       if (!partType || !["pba", "caba"].includes(jurisdiction)) return;
+      state.partidasJurisdiction = jurisdiction;
       if (jurisdiction === "pba") {
         sessionStorage.setItem("tramipago_partidas_prefill_v1", partType);
         return startService("partidas");
@@ -1068,8 +1069,20 @@
       return startService("partidas-caba");
     }
 
+    if (action === "select-partida-type") {
+      const partType = trigger.dataset.partType || "";
+      if (!PARTIDAS_TYPE_CARDS.some((item) => item.value === partType)) return;
+      state.partidasType = partType;
+      state.partidasJurisdiction = null;
+      return render();
+    }
+
     if (action === "select-family") {
       state.familyId = trigger.dataset.familyId;
+      if (state.familyId === "partidas-pba") {
+        state.partidasType = null;
+        state.partidasJurisdiction = null;
+      }
       return navigate(`#/familia/${state.familyId}`);
     }
 

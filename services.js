@@ -478,7 +478,9 @@
     decoratePartType(form);
     clearAutomaticSelections(form);
 
-    const partType = form.querySelector('input[name="partType"]:checked')?.value || "";
+    const partType = form.querySelector('input[name="partType"]:checked')?.value
+      || form.querySelector('input[type="hidden"][name="partType"]')?.value
+      || "";
     const dataMode = form.querySelector('input[name="dataMode"]:checked')?.value
       || form.querySelector('select[name="dataMode"]')?.value
       || "";
