@@ -26,7 +26,7 @@
     const style=document.createElement("style");
     style.id=STYLE_ID;
     style.textContent=`
-      .catalog-search{max-width:700px;margin:0 auto 24px;padding:0 10px}
+      .catalog-search{width:100%;max-width:none;margin:0 auto 24px;padding:0}
       .catalog-search-box{position:relative}
       .catalog-search label{display:block;margin:0 0 7px;color:#082A47;font-weight:800;text-align:center}
       .catalog-search input{width:100%;min-height:48px;padding:11px 14px;border:2px solid #0B3D66;border-radius:10px;background:#fff;color:#082A47;font:inherit;box-shadow:0 4px 12px rgba(8,42,71,.12)}
