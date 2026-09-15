@@ -13,31 +13,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Apply progress pills and form contrast
+      - name: Repair progress UI patch
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          import base64
           import re
-          app_path = Path('app.js')
-          app = app_path.read_text(encoding='utf-8')
-          stepper = base64.b64decode('ICBmdW5jdGlvbiByZW5kZXJTdGVwcGVyKHNlcnZpY2UpIHsKICAgIGlmIChbImNvcnJlY3Rpb24iLCAiaW5lbGlnaWJsZSJdLmluY2x1ZGVzKHN0YXRlLnN0ZXApKSByZXR1cm4gIiI7CiAgICBjb25zdCBzdGVwcyA9IFtbImRhdGEiLCAiRGF0b3MiXSwgWyJwYXltZW50IiwgIlBhZ28iXSwgWyJjb25maXJtYXRpb24iLCAiRmluYWxpemFjacOzbiJdXTsKICAgIGNvbnN0IHZpc2libGVTdGVwID0gc3RhdGUuc3RlcCA9PT0gImVsaWdpYmlsaXR5IiA/ICJkYXRhIiA6IHN0YXRlLnN0ZXA7CiAgICBjb25zdCBjdXJyZW50SW5kZXggPSBzdGVwcy5maW5kSW5kZXgoKFtHZmQsIGxhYmVsXSkgPT4gR2ZkID09PSB2aXNpYmxlU3RlcCk7CiAgICBpZiAoY3VycmVudEluZGV4IDwgMCkgcmV0dXJuICIiOwogICAgY29uc3QgY29tcGxldGVkRmxvdyA9IHZpc2libGVTdGVwID09PSAiY29uZmlybWF0aW9uIjsKCiAgICByZXR1cm4gYAogICAgICA8ZGl2IGNsYXNzPSJzdGVwcGVyJHtjb21wbGV0ZWRGbG93ID8gIiBpcy1jb21wbGV0ZSIgOiAiIn0iIHN0eWxlPSJncmlkLXRlbXBsYXRlLWNvbHVtbnM6cmVwZWF0KDMsMWZyKSIgYXJpYS1sYWJlbD0iUHJvZ3Jlc28gZGVsIHRyw6FtaXRlIj4KICAgICAgICAke3N0ZXBzLm1hcCgoW2lkLCBsYWJlbF0sIGluZGV4KSA9PiB7CiAgICAgICAgICBjb25zdCBkb25lID0gY29tcGxldGVkRmxvdyA/IGluZGV4IDw9IGN1cnJlbnRJbmRleCA6IGluZGV4IDwgY3VycmVudEluZGV4OwogICAgICAgICAgY29uc3QgY3VycmVudCA9ICFjb21wbGV0ZWRGbG93ICYmIGluZGV4ID09PSBjdXJyZW50SW5kZXg7CiAgICAgICAgICByZXR1cm4gYAogICAgICAgICAgICA8ZGl2IGNsYXNzPSJzdGVwJHtjdXJyZW50ID8gIiBjdXJyZW50IiA6ICIifSR7ZG9uZSA/ICIgZG9uZSIgOiAiIn0iPgogICAgICAgICAgICAgIDxzcGFuIGNsYXNzPSJzdGVwLW51bWJlciI+JHt k b25lID8gIuKckyIgOiBpbmRleCArIDF9PC9zcGFuPgogICAgICAgICAgICAgIDxzcGFuPiR7bGFiZWx9PC9zcGFuPgogICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgIGA7CiAgICAgICAgfSkuam9pbigiIil9CiAgICAgIDwvZGl2PgogICAgYDsKICB9Cg=='.replace(' ', '')).decode('utf-8')
-          pattern = re.compile(r'  function renderStepper\(service\) \{.*?\n  \}\n\n(?=  function renderProcess\(\))', re.S)
-          app2, count = pattern.subn(stepper + '\n', app, count=1)
-          if count != 1:
-              raise SystemExit(f'No se pudo reemplazar renderStepper; coincidencias: {count}')
-          app_path.write_text(app2, encoding='utf-8')
           css_path = Path('ui.css')
           css = css_path.read_text(encoding='utf-8')
-          marker = '/* TramiPago · progreso por óvalos + contraste de formularios · 2026-09-15 */'
-          css_block = base64.b64decode('CgovKiBUcmFtaVBhZ28gwrcgcHJvZ3Jlc28gcG9yIMOzdmFsb3MgKyBjb250cmFzdGUgZGUgZm9ybXVsYXJpb3MgwrcgMjAyNi0wOS0xNSAqLwpib2R5IC5wcm9jZXNzLXNoZWxsIC5zdGVwcGVyIHsKICBwb3NpdGlvbjogcmVsYXRpdmUgIWltcG9ydGFudDsKICBkaXNwbGF5OiBncmlkICFpbXBvcnRhbnQ7CiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiByZXBlYXQoMywgbWlubWF4KDAsIDFmcilpICFpbXBvcnRhbnQ7CiAgZ2FwOiAyNHB4ICFpbXBvcnRhbnQ7CiAgbWFyZ2luOiAycHggYXV0byAxNHB4ICFpbXBvcnRhbnQ7CiAgcGFkZGluZzogMCAhaW1wb3J0YW50OwogIG92ZXJmbG93OiB2aXNpYmxlICFpbXBvcnRhbnQ7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXAgewogIHBvc2l0aW9uOiByZWxhdGl2ZSAhaW1wb3J0YW50OwogIGRpc3BsYXk6IGZsZXggIWltcG9ydGFudDsKICBhbGlnbi1pdGVtczogY2VudGVyICFpbXBvcnRhbnQ7CiAganVzdGlmeS1jb250ZW50OiBjZW50ZXIgIWltcG9ydGFudDsKICBnYXA6IDhweCAhaW1wb3J0YW50OwogIG1pbi1oZWlnaHQ6IDQ0cHggIWltcG9ydGFudDsKICBwYWRkaW5nOiA4cHggMTRweCAhaW1wb3J0YW50OwogIGNvbG9yOiAjNDc2NDc3ICFpbXBvcnRhbnQ7CiAgYmFja2dyb3VuZDogI2VkZjRmOCAhaW1wb3J0YW50OwogIGJvcmRlcjogMXB4IHNvbGlkICNjNWQ1ZGYgIWltcG9ydGFudDsKICBib3JkZXItcmFkaXVzOiA5OTlweCAhaW1wb3J0YW50OwogIGJveC1zaGFkb3c6IDAgMnB4IDdweCByZ2JhKDgsNDIsNzEsLjA4KSAhaW1wb3J0YW50OwogIGZvbnQtd2VpZ2h0OiA3NTAgIWltcG9ydGFudDsKICBsaW5lLWhlaWdodDogMS4xICFpbXBvcnRhbnQ7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXA6bm90KDpsYXN0LWNoaWxkKTo6YWZ0ZXIgewogIGNvbnRlbnQ6ICLigJ0iOwogIHBvc2l0aW9uOiBhYnNvbHV0ZTsKICB0b3A6IDUwJTsKICByaWdodDogLTE5cHg7CiAgei1pbmRleDogMzsKICB0cmFuc2Zvcm06IHRyYW5zbGF0ZVkoLTUyJSk7CiAgY29sb3I6ICMyOUI2RjY7CiAgZm9udC1zaXplOiAxLjA1cmVtOwogIGZvbnQtd2VpZ2h0OiA5MDA7CiAgbGluZS1oZWlnaHQ6IDE7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXAtbnVtYmVyIHsKICBkaXNwbGF5OiBpbmxpbmUtZmxleCAhaW1wb3J0YW50OwogIGFsaWduLWl0ZW1zOiBjZW50ZXIgIWltcG9ydGFudDsKICBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlciAhaW1wb3J0YW50OwogIGZsZXg6IDAgMCAyN3B4ICFpbXBvcnRhbnQ7CiAgd2lkdGg6IDI3cHggIWltcG9ydGFudDsKICBoZWlnaHQ6IDI3cHggIWltcG9ydGFudDsKICBjb2xvcjogIzMxNTc2ZSAhaW1wb3J0YW50OwogIGJhY2tncm91bmQ6ICNmZmZmZmYgIWltcG9ydGFudDsKICBib3JkZXI6IDFweCBzb2xpZCAjYjljY2Q4ICFpbXBvcnRhbnQ7CiAgYm9yZGVyLXJhZGl1czogNTAlICFpbXBvcnRhbnQ7CiAgYm94LXNoYWRvdzogbm9uZSAhaW1wb3J0YW50OwogIGZvbnQtc2l6ZTogLjc4cmVtICFpbXBvcnRhbnQ7CiAgZm9udC13ZWlnaHQ6IDg1MCAhaW1wb3J0YW50Owp9Cgpib2R5IC5wcm9jZXNzLXNoZWxsIC5zdGVwLmN1cnJlbnQgewogIGNvbG9yOiAjZmZmZmZmICFpbXBvcnRhbnQ7CiAgYmFja2dyb3VuZDogIzFCNkZBOCAhaW1wb3J0YW50OwogIGJvcmRlci1jb2xvcjogIzE1NWI4YiAhaW1wb3J0YW50OwogIGJveC1zaGFkb3c6IDAgNHB4IDEycHggcmdiYSgyNywxMTEsMTY4LC4yMikgIWltcG9ydGFudDsKfQoKYm9keSAucHJvY2Vzcy1zaGVsbCAuc3RlcC5jdXJyZW50IC5zdGVwLW51bWJlciB7CiAgY29sb3I6ICMwQjNENjYgIWltcG9ydGFudDsKICBiYWNrZ3JvdW5kOiAjZGZmNGZmICFpbXBvcnRhbnQ7CiAgYm9yZGVyLWNvbG9yOiAjZmZmZmZmICFpbXBvcnRhbnQ7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXAuZG9uZSwKYm9keSAucHJvY2Vzcy1zaGVsbCAuc3RlcHBlci5pcy1jb21wbGV0ZSAuc3RlcCB7CiAgY29sb3I6ICNmZmZmZmYgIWltcG9ydGFudDsKICBiYWNrZ3JvdW5kOiAjMjNBODVEICFpbXBvcnRhbnQ7CiAgYm9yZGVyLWNvbG9yOiAjMTc4MzQ3ICFpbXBvcnRhbnQ7CiAgYm94LXNoYWRvdzogMCA0cHggMTJweCByZ2JhKDM1LDE2OCw5MywuMjIpICFpbXBvcnRhbnQ7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXAuZG9uZSAuc3RlcC1udW1iZXIsCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXBwZXIuaXMtY29tcGxldGUgLnN0ZXAtbnVtYmVyIHsKICBjb2xvcjogIzEyNkIzQSAhaW1wb3J0YW50OwogIGJhY2tncm91bmQ6ICNmZmZmZmYgIWltcG9ydGFudDsKICBib3JkZXItY29sb3I6IHJnYmEoMjU1LDI1NSwyNTUsLjk1KSAhaW1wb3J0YW50Owp9Cgpib2R5IC5wcm9jZXNzLXNoZWxsIC5wcm9jZXNzLXRvcCB7CiAgYmFja2dyb3VuZDogbGluZWFyLWdyYWRpZW50KDE4MGRlZywjZmZmZmZmIDAlLCNmNGZhZmYgMTAwJSkgIWltcG9ydGFudDsKICBib3JkZXI6IDFweCBzb2xpZCAjYmZkNGUyICFpbXBvcnRhbnQ7CiAgYm94LXNoYWRvdzogMCA0cHggMTJweCByZ2JhKDgsNDIsNzEsLjA3KSAhaW1wb3J0YW50Owp9Cgpib2R5IC5wcm9jZXNzLXNoZWxsIC5wcm9jZXNzLWNvbnRlbnQgPiAucGFuZWwgewogIGJhY2tncm91bmQ6ICNmN2ZiZmQgIWltcG9ydGFudDsKICBib3JkZXI6IDFweCBzb2xpZCAjYmZkMGRjICFpbXBvcnRhbnQ7CiAgYm94LXNoYWRvdzogMCA1cHggMTZweCByZ2JhKDgsNDIsNzEsLjA5KSAhaW1wb3J0YW50Owp9Cgpib2R5IC5wcm9jZXNzLXNoZWxsIC5wYW5lbC1oZWFkZXIgewogIHBhZGRpbmc6IDEwcHggMTRweCAhaW1wb3J0YW50OwogIG1hcmdpbjogLTJweCAwIDEzcHggIWltcG9ydGFudDsKICBiYWNrZ3JvdW5kOiAjZTdmMmY4ICFpbXBvcnRhbnQ7CiAgYm9yZGVyOiAxcHggc29saWQgI2MzZDllNiAhaW1wb3J0YW50OwogIGJvcmRlci1yYWRpdXM6IDlweCAhaW1wb3J0YW50Owp9Cgpib2R5IC5wcm9jZXNzLXNoZWxsIC5wYW5lbC1oZWFkZXIgaDIsCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLnBhbmVsLWhlYWRlciBoMyB7CiAgY29sb3I6ICMwODJBNDcgIWltcG9ydGFudDsKICBmb250LXdlaWdodDogODAwICFpbXBvcnRhbnQ7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLmZpZWxkID4gbGFiZWwsCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLmNob2ljZS1maWVsZCA+IGxlZ2VuZCB7CiAgY29sb3I6ICMwQjNENjYgIWltcG9ydGFudDsKICBmb250LXdlaWdodDogNzUwICFpbXBvcnRhbnQ7Cn0KCmJvZHkgLnByb2Nlc3Mtc2hlbGwgLmNob2ljZS1vcHRpb24gewogIGJhY2tncm91bmQ6ICNmZmZmZmYgIWltcG9ydGFudDsKICBib3JkZXItY29sb3I6ICNiN2NiZDggIWltcG9ydGFudDsKfQoKYm9keSAucHJvY2Vzcy1zaGVsbCAuY2hvaWNlLW9wdGlvbjp oYXMobW5wdXQ6Y2hlY2tlZCkgewogIGJhY2tncm91bmQ6ICNlZmZhZjQgIWltcG9ydGFudDsKICBib3JkZXItY29sb3I6ICMyM0E4NUQgIWltcG9ydGFudDsKICBib3gtc2hhZG93OiAwIDAgMCAycHggcmdiYSgzNSwxNjgsOTMsLjEyKSAhaW1wb3J0YW50Owp9CgpAbWVkaWEgKG1heC13aWR0aDogNzYwcHgpIHsKICBib2R5IC5wcm9jZXNzLXNoZWxsIC5zdGVwcGVyIHsKICAgIGdhcDogMTJweCAhaW1wb3J0YW50OwogICAgbWFyZ2luLWJvdHRvbTogMTFweCAhaW1wb3J0YW50OwogIH0KCiAgYm9keSAucHJvY2Vzcy1zaGVsbCAuc3RlcCB7CiAgICBtaW4taGVpZ2h0OiA0MHB4ICFpbXBvcnRhbnQ7CiAgICBnYXA6IDVweCAhaW1wb3J0YW50OwogICAgcGFkZGluZzogN3B4IDdweCAhaW1wb3J0YW50OwogICAgZm9udC1zaXplOiAuNzJyZW0gIWltcG9ydGFudDsKICB9CgogIGJvZHkgLnByb2Nlc3Mtc2hlbGwgLnN0ZXAtbnVtYmVyIHsKICAgIGZsZXgtYmFzaXM6IDIzcHggIWltcG9ydGFudDsKICAgIHdpZHRoOiAyM3B4ICFpbXBvcnRhbnQ7CiAgICBoZWlnaHQ6IDIzcHggIWltcG9ydGFudDsKICAgIGZvbnQtc2l6ZTogLjY4cmVtICFpbXBvcnRhbnQ7CiAgfQoKICBib2R5IC5wcm9jZXNzLXNoZWxsIC5zdGVwOm5vdCg6bGFzdC1jaGlsZCk6OmFmdGVyIHsKICAgIHJpZ2h0OiAtMTBweDsKICAgIGZvbnQtc2l6ZTogLjhyZW07CiAgfQoKICBib2R5IC5wcm9jZXNzLXNoZWxsIC5wYW5lbC1oZWFkZXIgewogICAgcGFkZGluZzogOXB4IDEwcHggIWltcG9ydGFudDsKICAgIG1hcmdpbi1ib3R0b206IDExcHggIWltcG9ydGFudDsKICB9Cn0K'.replace(' ', '')).decode('utf-8')
-          if marker not in css:
-              css_path.write_text(css.rstrip() + css_block + '\n', encoding='utf-8')
+          css = css.replace('grid-template-columns: repeat(3, minmax(0, 1fr)i !important;', 'grid-template-columns: repeat(3, minmax(0, 1fr)) !important;')
+          css = css.replace('content: "”";', 'content: "→";')
+          css = css.replace('.choice-option:has(mnput:checked)', '.choice-option:has(input:checked)')
+          css_path.write_text(css, encoding='utf-8')
+          app_path = Path('app.js')
+          app = app_path.read_text(encoding='utf-8')
+          app = app.replace('steps.findIndex(([Gfd, label]) => Gfd === visibleStep)', 'steps.findIndex(([id, label]) => id === visibleStep)')
+          app_path.write_text(app, encoding='utf-8')
           index_path = Path('index.html')
           index = index_path.read_text(encoding='utf-8')
-          index = re.sub(r'ui\.css\?v=[^"\']+', 'ui.css?v=20260915-progress-pills1', index)
-          index = re.sub(r'app\.js\?v=[^"\']+', 'app.js?v=20260915-progress-pills1', index)
+          index = re.sub(r'ui\.css\?v=[^"\']+', 'ui.css?v=20260915-progress-pills2', index)
+          index = re.sub(r'app\.js\?v=[^"\']+', 'app.js?v=20260915-progress-pills2', index)
           index_path.write_text(index, encoding='utf-8')
           PY
           git config user.name "github-actions[bot]"
@@ -46,6 +41,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Mejora progreso visual y contraste de formularios"
+            git commit -m "Corrige estilos del progreso visual"
             git push
           fi
