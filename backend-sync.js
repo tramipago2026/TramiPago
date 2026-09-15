@@ -138,29 +138,29 @@
       return meta;
     }
 
-    const raw=randomToken();
-    const tokenHash=await sha256Hex(raw);
     const contact=contactFor(request);
-    const data=await rpc("create_request_record",{
-      p_service_id:request.serviceId,
-      p_public_token_hash:tokenHash,
-      p_client_name:contact.clientName||null,
-      p_email:contact.email,
-      p_whatsapp:contact.whatsapp,
-      p_quoted_amount:quotedAmount(request),
-      p_payload:payloadFor(request)
+    const {data,error}=await client.functions.invoke("create-request",{
+      body:{
+        serviceId:request.serviceId,
+        clientName:contact.clientName||"",
+        email:contact.email||"",
+        whatsapp:contact.whatsapp||"",
+        formData:payloadFor(request)
+      }
     });
-    const row=Array.isArray(data)?data[0]:data;
-    if(!row?.tracking_code)throw new Error("Supabase no devolvió el código del trámite");
+    if(error)throw error;
+    if(data?.error)throw new Error(data.error);
+    if(!data?.code||!data?.requestToken)throw new Error("El backend no devolvió los datos de la solicitud");
 
-    meta={raw,code:row.tracking_code,serverId:row.id,lastSignature:"",paymentUploaded:false,files:{}};
+    meta={raw:data.requestToken,code:data.code,serverId:null,lastSignature:"",paymentUploaded:false,files:{}};
     tokenMap[request.id]=meta;
     saveTokens(tokenMap);
-    request.code=row.tracking_code;
-    request.serverId=row.id;
-    request.status=DB_TO_UI[row.status]||request.status;
-    request.createdAt=row.created_at||request.createdAt;
-    request.updatedAt=row.created_at||request.updatedAt;
+    request.code=data.code;
+    request.serverId=null;
+    request.status=DB_TO_UI[data.status]||request.status;
+    request.createdAt=data.createdAt||request.createdAt;
+    request.updatedAt=data.createdAt||request.updatedAt;
+    if(Number.isFinite(Number(data.amount))&&request.pricing){request.pricing.total=Number(data.amount);}
     return meta;
   }
 
