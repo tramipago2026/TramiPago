@@ -1,0 +1,205 @@
+/* Auditoría visual 2026-09-16: tarjetas e ilustraciones de familias.
+   No modifica formularios, rutas, precios ni estados. */
+
+/* El rótulo genérico duplicaba la jerarquía de los encabezados de familias. */
+.family-page .family-heading .eyebrow { display:none!important; }
+
+/* Las tarjetas de ARCA ya reciben imágenes desde arca-family.js. Añadir
+   foco visible al botón que el script hace transparente y superpone a la tarjeta. */
+body .arca-family-page .family-service-card:focus-within {
+  outline:3px solid #29b6f6!important;
+  outline-offset:3px!important;
+  box-shadow:0 0 0 5px rgba(41,182,246,.22),0 10px 22px rgba(8,47,79,.22)!important;
+}
+body .arca-family-page .arca-service-thumb { background:#e5f3f9!important; }
+
+/* Identificar las otras familias por la imagen del encabezado presente en
+   extra-families.js, sin depender de números globales ni afectar Partidas. */
+.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-grid,
+.family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-grid {
+  width:100%!important;
+  max-width:1000px!important;
+  margin:22px auto 0!important;
+  gap:16px!important;
+  justify-content:center!important;
+  align-items:stretch!important;
+}
+.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-grid {
+  grid-template-columns:repeat(2,minmax(0,242px))!important;
+}
+.family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-grid {
+  grid-template-columns:repeat(4,minmax(0,216px))!important;
+}
+
+:is(.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]),
+    .family-page:has(.family-heading img[src$="promo-art-20260911.webp"])) .family-service-card {
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:0!important;
+  gap:0!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  border:1px solid #cbdde8!important;
+  border-radius:12px!important;
+  box-shadow:0 7px 18px rgba(8,47,79,.13)!important;
+}
+:is(.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]),
+    .family-page:has(.family-heading img[src$="promo-art-20260911.webp"])) .family-service-card::before {
+  content:"";
+  display:block;
+  flex:0 0 auto;
+  width:100%;
+  height:138px;
+  background-color:#0c456c;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+}
+:is(.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]),
+    .family-page:has(.family-heading img[src$="promo-art-20260911.webp"])) .family-service-card>div {
+  flex:1 1 auto!important;
+  min-width:0!important;
+  padding:12px 12px 9px!important;
+  text-align:left!important;
+}
+:is(.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]),
+    .family-page:has(.family-heading img[src$="promo-art-20260911.webp"])) .family-service-card .service-tag {
+  display:none!important;
+}
+:is(.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]),
+    .family-page:has(.family-heading img[src$="promo-art-20260911.webp"])) .family-service-card h2 {
+  margin:0 0 5px!important;
+  color:#082a47!important;
+  font-size:.89rem!important;
+  line-height:1.25!important;
+  overflow-wrap:anywhere!important;
+}
+:is(.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]),
+    .family-page:has(.family-heading img[src$="promo-art-20260911.webp"])) .family-service-card p {
+  margin:0!important;
+  color:#536b7e!important;
+  font-size:.73rem!important;
+  line-height:1.35!important;
+  overflow-wrap:anywhere!important;
+}
+:is(.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]),
+    .family-page:has(.family-heading img[src$="promo-art-20260911.webp"])) .family-service-card>.button {
+  display:block!important;
+  width:calc(100% - 24px)!important;
+  min-width:0!important;
+  min-height:38px!important;
+  margin:0 12px 12px!important;
+  padding:7px 8px!important;
+  flex:0 0 auto!important;
+  font-size:.75rem!important;
+  line-height:1.15!important;
+  text-align:center!important;
+  white-space:normal!important;
+}
+:is(.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]),
+    .family-page:has(.family-heading img[src$="promo-art-20260911.webp"])) .family-service-card:focus-within {
+  outline:3px solid #29b6f6!important;
+  outline-offset:2px!important;
+}
+
+/* Imágenes propias, sin escudos ni logotipos oficiales. */
+.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card:nth-child(1)::before {
+  background-image:url("assets/legalizacion-visual.svg");
+}
+.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card:nth-child(2)::before {
+  background-image:url("assets/apostillado-visual.svg");
+}
+.family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card:nth-child(1)::before {
+  background-image:url("assets/abogado-art-visual.svg");
+}
+.family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card:nth-child(2)::before {
+  background-image:url("assets/abogado-accidentes-visual.svg");
+}
+.family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card:nth-child(3)::before {
+  background-image:url("assets/abogado-sucesiones-visual.svg");
+}
+.family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card:nth-child(4)::before {
+  background-image:url("assets/abogado-laboral-visual.svg");
+}
+
+/* Cabeceras: sustitución visual no destructiva de imágenes genéricas anteriores. */
+.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-heading img,
+.family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-heading img {
+  visibility:hidden!important;
+}
+.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-heading::before,
+.family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-heading::before {
+  content:"";
+  position:absolute!important;
+  left:22px!important;
+  top:50%!important;
+  z-index:1;
+  transform:translateY(-50%)!important;
+  display:block!important;
+  width:118px!important;
+  height:92px!important;
+  border:1px solid #cbdde8;
+  border-radius:10px;
+  background-color:#082a47;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:cover;
+}
+.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-heading::before {
+  background-image:url("assets/apostillado-visual.svg");
+}
+.family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-heading::before {
+  background-image:url("assets/abogado-laboral-visual.svg");
+}
+@media(max-width:980px) {
+  .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-grid {
+    grid-template-columns:repeat(2,minmax(0,242px))!important;
+  }
+}
+@media(max-width:760px) {
+  .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-heading img,
+  .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-heading img {
+    display:none!important;
+  }
+  .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-heading,
+  .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-heading {
+    padding-top:123px!important;
+  }
+  .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-heading::before,
+  .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-heading::before {
+    left:50%!important;
+    top:16px!important;
+    transform:translateX(-50%)!important;
+  }
+}
+@media(max-width:560px) {
+  .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-grid,
+  .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:12px!important;
+  }
+  :is(.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]),
+      .family-page:has(.family-heading img[src$="promo-art-20260911.webp"])) .family-service-card::before {
+    height:105px;
+  }
+  :is(.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]),
+      .family-page:has(.family-heading img[src$="promo-art-20260911.webp"])) .family-service-card>div {
+    padding:10px 9px!important;
+  }
+  :is(.family-page:has(.family-heading img[src$="partidas-familia-final.webp"]),
+      .family-page:has(.family-heading img[src$="promo-art-20260911.webp"])) .family-service-card>.button {
+    width:calc(100% - 18px)!important;
+    margin:0 9px 9px!important;
+    font-size:.69rem!important;
+  }
+}
+@media(max-width:365px) {
+  .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-grid,
+  .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-grid {
+    grid-template-columns:minmax(0,260px)!important;
+  }
+}
