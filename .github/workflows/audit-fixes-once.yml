@@ -1,0 +1,51 @@
+name: Aplicar correcciones verificadas de auditoría (una vez)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/audit-fixes-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Corregir escapes del ejecutor y guardar la corrección reproducible
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/apply-20260916-audit-fixes.py')
+          s=p.read_text(encoding='utf-8')
+          slash=chr(92)
+          assert s.count(slash*2+'?v=')==1, 'Patrón de búsqueda cambió'
+          assert s.count(slash*2+'g<1>')==1, 'Referencia de reemplazo cambió'
+          s=s.replace(slash*2+'?v=',slash+'?v=').replace(slash*2+'g<1>',slash+'g<1>')
+          p.write_text(s,encoding='utf-8')
+          PY
+          git add scripts/apply-20260916-audit-fixes.py
+      - name: Aplicar cambios puntuales y comprobar sintaxis y referencias
+        run: python scripts/apply-20260916-audit-fixes.py
+      - name: Probar contrato de precios, tokens y prevención de duplicados
+        run: node tests/pricing-privacy-contract.mjs
+      - name: Confirmar que ningún archivo de imagen cambió y guardar correcciones
+        run: |
+          git add extra-families.js app.js backend-sync.js security-hardening.js index.html
+          python - <<'PY'
+          import subprocess
+          allowed={'scripts/apply-20260916-audit-fixes.py','extra-families.js','app.js','backend-sync.js','security-hardening.js','index.html'}
+          changed=set(subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines())
+          assert changed==allowed, f'Archivos fuera del alcance o ausentes: {changed ^ allowed}'
+          assert not any(path.startswith('assets/') for path in changed)
+          print('PASS: únicamente seis archivos de texto autorizados, ninguna imagen.')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Separar arancel TAD, reducir persistencia de tokens y evitar duplicados'
+          git push
