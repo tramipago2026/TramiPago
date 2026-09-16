@@ -1,0 +1,26 @@
+name: Comprobar sitio publicado por HTTP
+
+on:
+  push:
+    paths:
+      - '.github/workflows/live-site-smoke.yml'
+  schedule:
+    - cron: '41 12,23 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-published-files:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar recursos y versiones desde GitHub Pages
+        env:
+          SITE_URL: https://tramipago2026.github.io/TramiPago/
+        run: node tests/live-site-smoke.mjs
