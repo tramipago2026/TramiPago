@@ -45,8 +45,19 @@
   }
 
   function requests(){return readJSON(REQUESTS_KEY,[]);}
-  function tokens(){return readJSON(TOKENS_KEY,{});}
-  function saveTokens(value){writeJSON(TOKENS_KEY,value);}
+  function tokens(){
+    try{
+      const current=sessionStorage.getItem(TOKENS_KEY);
+      if(current)return JSON.parse(current)||{};
+      const legacy=readJSON(TOKENS_KEY,{});
+      if(Object.keys(legacy).length)saveTokens(legacy);
+      return legacy;
+    }catch(_){return {};}
+  }
+  function saveTokens(value){
+    sessionStorage.setItem(TOKENS_KEY,JSON.stringify(value));
+    try{localStorage.removeItem(TOKENS_KEY);}catch(_){}
+  }
   function saveRequests(value){writeJSON(REQUESTS_KEY,value);}
 
   function ensureActivationTime(){
@@ -62,6 +73,7 @@
 
   function isEligibleForBackend(request,tokenMap){
     if(tokenMap[request.id])return true;
+    if(request.serverId)return false; // No recrear una ficha si se cerró la pestaña y expiró su token.
     const created=Date.parse(request.createdAt||"");
     return Number.isFinite(created)&&created>=activationMs-1000;
   }
@@ -160,7 +172,7 @@
     request.status=DB_TO_UI[data.status]||request.status;
     request.createdAt=data.createdAt||request.createdAt;
     request.updatedAt=data.createdAt||request.updatedAt;
-    if(Number.isFinite(Number(data.amount))&&request.pricing){request.pricing.total=Number(data.amount);}
+    if(data.amount!==null&&data.amount!==undefined&&Number.isFinite(Number(data.amount))&&request.pricing){request.pricing.total=Number(data.amount);}
     return meta;
   }
 

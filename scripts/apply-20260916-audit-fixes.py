@@ -72,8 +72,8 @@ for name in ('extra-families.js', 'app.js', 'security-hardening.js', 'backend-sy
     import re
     p=Path('index.html')
     html=p.read_text(encoding='utf-8')
-    pattern=rf'(<script src="{re.escape(name)}\\?v=)[^" ]+'
-    revised, count=re.subn(pattern, rf'\\g<1>20260916-audit2', html)
+    pattern=rf'(<script src="{re.escape(name)}\?v=)[^" ]+'
+    revised, count=re.subn(pattern, rf'\g<1>20260916-audit2', html)
     if count != 1:
         raise RuntimeError(f'index.html: no se encontró versión de {name}: {count}')
     p.write_text(revised, encoding='utf-8')

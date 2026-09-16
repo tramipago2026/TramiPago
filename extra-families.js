@@ -30,14 +30,16 @@
       shortDescription:"Gestión de Apostilla por TAD para documentos públicos argentinos.",
       description:"Cargá el documento y los datos básicos. TramiPago revisa la documentación, prepara la gestión por TAD y realiza el seguimiento del expediente.",
       active:true,
-      officialFee:0,
+      officialFee:null,
+      officialFeeExternal:true,
       priceField:"serviceOption",
       priceOptions:[{value:"gestion",label:"Gestión de Apostillado",amount:20000,duration:"Gestión online"}],
       resultDelivery:"authority-platform",
       requirements:[
         "Documento público argentino en condiciones de ser apostillado.",
         "Datos del documento y país donde se presentará, si corresponde.",
-        "TramiPago verifica previamente que la documentación sea apta para iniciar la gestión."
+        "TramiPago verifica previamente que la documentación sea apta para iniciar la gestión.",
+        "Arancel oficial TAD de apostilla: $4.500 por documento, abonado aparte por VEP al organismo. El precio de TramiPago no incluye ese arancel."
       ],
       components:[
         "Revisión previa del documento",
@@ -68,14 +70,16 @@
       shortDescription:"Legalización de partidas, títulos, certificados y otros documentos públicos.",
       description:"Elegí qué documento necesitás legalizar. TramiPago revisa los requisitos, prepara la gestión online y realiza el seguimiento correspondiente.",
       active:true,
-      officialFee:0,
+      officialFee:null,
+      officialFeeExternal:true,
       priceField:"serviceOption",
       priceOptions:[{value:"gestion",label:"Gestión de Legalización",amount:15000,duration:"Gestión online"}],
       resultDelivery:"authority-platform",
       requirements:[
         "Documento completo y legible.",
         "Datos del organismo o autoridad que emitió el documento.",
-        "La vía exacta se determina según el tipo de documento y la legalización requerida."
+        "La vía exacta se determina según el tipo de documento y la legalización requerida.",
+        "Si corresponde legalización internacional por TAD, el arancel oficial general es $4.500; solo para partidas de estado civil es $1.500. Otras vías pueden tener costos distintos o ser gratuitas. Se paga aparte, según organismo."
       ],
       components:[
         "Legalización de partidas cuando corresponda",

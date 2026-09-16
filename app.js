@@ -64,7 +64,7 @@
 
   function hasCommercialData(service) {
     if (!service) return false;
-    if (service.officialFee === null || service.officialFee === undefined || service.officialFee === "") return false;
+    if (!service.officialFeeExternal && (service.officialFee === null || service.officialFee === undefined || service.officialFee === "")) return false;
     if (!Array.isArray(service.priceOptions) || !service.priceOptions.length) return false;
     return service.priceOptions.every((option) => {
       const amountReady = option.amount !== null && option.amount !== undefined && option.amount !== "";
@@ -148,9 +148,11 @@
     const option = selectedPriceOption(service, values);
     const officialFee = service.officialFee;
     const serviceFee = option?.amount ?? null;
-    const total = officialFee !== null && officialFee !== undefined && serviceFee !== null && serviceFee !== undefined
-      ? Number(officialFee) + Number(serviceFee)
-      : null;
+    const total = service.officialFeeExternal
+      ? (serviceFee !== null && serviceFee !== undefined ? Number(serviceFee) : null)
+      : officialFee !== null && officialFee !== undefined && serviceFee !== null && serviceFee !== undefined
+        ? Number(officialFee) + Number(serviceFee)
+        : null;
 
     return {
       officialFee,
@@ -739,8 +741,9 @@
         <div class="summary-grid">
           <div class="summary-item"><small>Código</small><strong>${escapeHTML(request.code)}</strong></div>
           <div class="summary-item"><small>Servicio</small><strong>${escapeHTML(service.name)}</strong></div>
-          <div class="summary-item"><small>Total</small><strong>${formatARS(pricing.total)}</strong></div>
+          <div class="summary-item"><small>${service.officialFeeExternal ? "Total TramiPago (sin arancel oficial)" : "Total"}</small><strong>${formatARS(pricing.total)}</strong></div>
         </div>
+        ${service.officialFeeExternal ? `<div class="notice"><strong>Arancel oficial aparte:</strong> se abona directamente al organismo mediante su VEP cuando corresponda. No transfieras ese arancel a TramiPago; esta pantalla cobra únicamente nuestro servicio.</div>` : ""}
         <div class="notice"><strong>Datos de pago:</strong> alias ${escapeHTML(window.TRAMI_CONFIG.alias)} · titular ${escapeHTML(window.TRAMI_CONFIG.paymentHolder)}.</div>
         <form id="payment-form">
           <div class="field field-full payment-file">

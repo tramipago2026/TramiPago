@@ -27,7 +27,7 @@
   function readJSON(key,fallback){try{return JSON.parse(localStorage.getItem(key)||"")||fallback;}catch(_){return fallback;}}
   function writeJSON(key,value){try{localStorage.setItem(key,JSON.stringify(value));}catch(_){}}
   function requests(){return readJSON(REQUESTS_KEY,[]);}
-  function tokens(){return readJSON(TOKENS_KEY,{});}
+  function tokens(){try{return JSON.parse(sessionStorage.getItem(TOKENS_KEY)||"{}")||{};}catch(_){return {};}}
   function digits(value){return String(value||"").replace(/\D/g,"");}
   function findLocalByCode(code){const normalized=String(code||"").trim().toUpperCase();return requests().find(item=>String(item.code||"").toUpperCase()===normalized)||null;}
   function findLocalById(id){return requests().find(item=>item.id===id)||null;}
@@ -112,7 +112,7 @@
       list[index]=redacted;
       writeJSON(REQUESTS_KEY,list);
       const tokenMap=tokens();
-      if(request.id&&tokenMap[request.id]){delete tokenMap[request.id];writeJSON(TOKENS_KEY,tokenMap);}
+      if(request.id&&tokenMap[request.id]){delete tokenMap[request.id];sessionStorage.setItem(TOKENS_KEY,JSON.stringify(tokenMap));localStorage.removeItem(TOKENS_KEY);}
       return redacted;
     }
     request.status=DB_TO_UI[row.status]||request.status;
