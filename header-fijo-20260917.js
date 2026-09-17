@@ -1,4 +1,4 @@
-/* Cabecera principal TramiPago: enlaces existentes, sin navegación automática por hover. */
+/* Cabecera TramiPago. Cada enlace se activa al hacer clic (hover solo visual). */
 (function(){
   "use strict";
   const STYLE_ID="tramipago-header-fixed-20260917";
@@ -10,7 +10,7 @@
     const link=document.createElement("link");
     link.id=STYLE_ID;
     link.rel="stylesheet";
-    link.href="header-fijo-20260917.css?v=20260917-header1";
+    link.href="header-fijo-20260917.css?v=20260917-art2";
     document.head.appendChild(link);
   }
 
@@ -41,15 +41,14 @@
       legal.id=LEGAL_ID;
       legal.className="header-legal";
       legal.href=legalHref;
-      legal.title="Elegí el tipo de consulta legal";
-      legal.setAttribute("aria-label","Consulta legal: ART, accidentes y sucesiones. Abrir los formularios de atención de abogado.");
-      legal.innerHTML='<span class="header-legal-copy"><strong class="header-legal-title">Consulta <em>legal</em></strong><small class="header-legal-subtitle">ART · Accidentes · Sucesiones</small></span><img class="header-legal-art" src="assets/header-consulta-legal-20260917.svg" alt="" aria-hidden="true" width="240" height="120">';
+      legal.title="Abrir la sección de consultas por ART";
+      legal.setAttribute("aria-label","Especialista en reclamos de ART. Abrir consultas con abogado.");
+      legal.innerHTML='<span class="header-legal-copy"><strong class="header-legal-title">Especialista en <em>reclamos de ART</em></strong></span><img class="header-legal-art" src="assets/header-consulta-legal-20260917.svg" alt="" aria-hidden="true" width="240" height="120">';
       brand.insertAdjacentElement("afterend",legal);
     }
     if(!home.querySelector(".header-home-icon")){
       home.insertAdjacentHTML("afterbegin",'<svg class="nav-icon header-home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg>');
     }
-    // Los destinos originales siguen siendo manejados por app.js.
     brand.href="#/";
     home.href="#/";
     tracking.href="#/seguimiento";
