@@ -26,3 +26,5 @@ jobs:
         run: node tests/header-navigation.mjs
       - name: Verificar página de abogado y cuatro formularios
         run: node tests/legal-landing.mjs
+      - name: Verificar cuatro recortes aprobados y su conexión al formulario
+        run: node tests/abogado-fotos-aprobadas.mjs
