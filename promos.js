@@ -16,7 +16,7 @@
   let timer=null;
   let index=0;
 
-  const promos=[
+  const originalPromos=[
     {image:"assets/promo-general-20260911.webp",alt:"TramiPago, trámites online y asistencia personalizada",message:"Quiero consultar por un trámite."},
     {image:"assets/promo-vehicular-20260911.webp",alt:"Informe vehicular de TramiPago",href:"#/tramite/informe-vehicular"},
     {image:"assets/promo-antecedentes-20260911.webp",alt:"Antecedentes Penales de TramiPago",href:"#/tramite/antecedentes-penales"},
@@ -24,7 +24,36 @@
     {image:"assets/promo-art-20260911.webp",alt:"Consulta por accidente de trabajo o ART",message:"Quiero consultar por un accidente de trabajo o ART."}
   ];
 
-  promos.forEach(item=>{const image=new Image();image.src=item.image;});
+  // Estas piezas se activan únicamente cuando el archivo aprobado existe y carga.
+  // Así GitHub Pages nunca muestra una imagen rota antes de que se suban los WebP.
+  const approvedPromos=[
+    {image:"assets/promo-arca-20260916.webp",alt:"ARCA y Monotributo: altas, bajas, modificaciones y facturación",href:"#/familia/arca-monotributo"},
+    {image:"assets/promo-apostillas-20260916.webp",alt:"Apostillado y legalizaciones: consultas y gestiones documentales",href:"#/familia/legalizaciones-apostillas"},
+    {image:"assets/promo-abogado-20260916.webp",alt:"Consultá con abogado: ART, laboral, accidentes y sucesiones",href:"#/familia/atencion-abogado"}
+  ];
+  const verifiedImages=new Set();
+  let promos=originalPromos.slice();
+
+  function updateAvailablePromos(){
+    const lawyerReady=verifiedImages.has("assets/promo-abogado-20260916.webp");
+    promos=approvedPromos.filter(item=>verifiedImages.has(item.image)).concat(
+      originalPromos.filter(item=>!lawyerReady||item.image!=="assets/promo-art-20260911.webp")
+    );
+    if(index>=promos.length)index=0;
+    setContent();
+  }
+
+  originalPromos.forEach(item=>{const image=new Image();image.src=item.image;});
+  approvedPromos.forEach(item=>{
+    const image=new Image();
+    image.onload=()=>{
+      if(!image.naturalWidth||!image.naturalHeight)return;
+      verifiedImages.add(item.image);
+      updateAvailablePromos();
+    };
+    image.onerror=()=>{};
+    image.src=item.image;
+  });
 
   function isHome(){return !location.hash||location.hash==="#/";}
   function isDesktop(){return window.innerWidth>=DESKTOP_BREAKPOINT;}
