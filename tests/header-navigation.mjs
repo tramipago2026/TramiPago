@@ -46,6 +46,6 @@ assert.ok(config.includes('whatsappNumber:'),'Número configurado');
 assert.ok(index.includes('href="#/"')&&index.includes('href="#/seguimiento"'),'Enlaces del HTML conservados');
 assert.ok(search.includes('import("./header-fijo-20260917.js'),'Cabecera integrada en página');
 assert.ok(css.includes('grid-template-columns:116px')&&css.includes('@media(max-width:590px)'),'Cabecera horizontal y adaptación móvil');
-assert.ok(existsSync(resolve(root,'assets/header-consulta-legal-20260917.svg')),'Ilustración disponible');
+assert.ok(existsSync(resolve(root,'assets','header-consulta-legal-20260917.svg')),'Ilustración disponible');
 console.log('PASS: logo, Consulta legal, Inicio, Estado y Ayuda; montaje, rutas y estilos adaptables.');
 console.log('NOTA: prueba de integración de código; no equivale a inspección visual del navegador.');
