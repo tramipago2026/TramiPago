@@ -43,7 +43,7 @@
       legal.href=legalHref;
       legal.title="Abrir la sección de consultas por ART";
       legal.setAttribute("aria-label","Especialista en reclamos de ART. Abrir consultas con abogado.");
-      legal.innerHTML='<span class="header-legal-copy"><strong class="header-legal-title">Especialista en <em>reclamos de ART</em></strong></span><img class="header-legal-art" src="assets/header-consulta-legal-20260917.svg" alt="" aria-hidden="true" width="240" height="120">';
+      legal.innerHTML='<span class="header-legal-copy"><strong class="header-legal-title" style="white-space:normal!important;font-size:15px!important;line-height:1.17!important">Especialista en <em>reclamos de ART</em></strong></span><img class="header-legal-art" src="assets/header-consulta-legal-20260917.svg" alt="" aria-hidden="true" width="240" height="120">';
       brand.insertAdjacentElement("afterend",legal);
     }
     if(!home.querySelector(".header-home-icon")){
