@@ -210,7 +210,7 @@
     },
     {
       id:"atencion-abogado",
-      name:"Atención de Abogado",
+      name:"Consulta con un abogado",
       description:"Reclamos ART, accidentes, sucesiones y consultas laborales.",
       image:"assets/promo-art-20260911.webp",
       serviceIds:["abogado-art","abogado-accidentes","abogado-sucesiones","abogado-laboral"]
