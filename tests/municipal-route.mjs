@@ -16,6 +16,8 @@ assert.match(search, /title:"Trámites municipales: San Miguel y José C\. Paz"/
 assert.match(search, /href:"municipales\.html"/, 'La búsqueda no conduce a la sección municipal');
 assert.match(catalog, /<h2>Trámites municipales — San Miguel y José C\. Paz<\/h2>/, 'Municipales no aparece en Todos los trámites');
 assert.match(catalog, /href="municipales\.html"/, 'El listado no vincula la sección municipal');
+assert.match(catalog, /href="index\.html#\/familia\/legalizaciones-apostillas"/, 'El listado de todos los trámites omite Legalizaciones y Apostillas');
+assert.match(catalog, /href="index\.html#\/familia\/atencion-abogado"/, 'El listado de todos los trámites omite Abogado');
 assert.match(page, /id="san-miguel"/, 'Falta San Miguel');
 assert.match(page, /id="jose-paz"/, 'Falta José C. Paz');
 assert.match(page, /https:\/\/pagos\.msm\.gov\.ar\//, 'Falta el portal de San Miguel');
@@ -26,5 +28,5 @@ assert.match(page, /No se comprobó un portal web/, 'No se debe prometer un port
 assert.match(page, /honorarios|Honorarios|precio/, 'La asistencia debe identificar sus condiciones comerciales');
 assert.ok(fs.existsSync(new URL('../assets/logo-tramipago.webp', import.meta.url)), 'Falta el logo');
 assert.ok(fs.existsSync(new URL('../assets/promo-municipal-20260911.webp', import.meta.url)), 'Falta la imagen municipal reutilizada');
-console.log('PASS municipal: carrusel, inicio, buscador, catálogo, destinos, mensajes y recursos locales.');
+console.log('PASS rutas: carrusel, inicio, buscador, catálogo, tres familias, destinos, mensajes y recursos locales.');
 console.log('Límite: prueba estática; no valida operaciones con contribuyentes ni pagos municipales.');
