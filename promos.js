@@ -20,7 +20,7 @@
     {image:"assets/promo-general-20260911.webp",alt:"TramiPago, trámites online y asistencia personalizada",message:"Quiero consultar por un trámite."},
     {image:"assets/promo-vehicular-20260911.webp",alt:"Informe vehicular de TramiPago",href:"#/tramite/informe-vehicular"},
     {image:"assets/promo-antecedentes-20260911.webp",alt:"Antecedentes Penales de TramiPago",href:"#/tramite/antecedentes-penales"},
-    {image:"assets/promo-municipal-20260911.webp",alt:"Consulta de deuda municipal de José C. Paz y San Miguel",message:"Quiero consultar deuda municipal de José C. Paz o San Miguel."},
+    {image:"assets/promo-municipal-20260911.webp",alt:"Trámites municipales de San Miguel y José C. Paz: elegir municipio y gestión",href:"municipales.html"},
     {image:"assets/promo-art-20260911.webp",alt:"Consulta por accidente de trabajo o ART",message:"Quiero consultar por un accidente de trabajo o ART."}
   ];
 
@@ -95,8 +95,15 @@
       .promo-side-rail.is-mobile .promo-rail-inner{position:relative;padding:0}
       .promo-side-rail.is-mobile .promo-rail-card{width:min(390px,100%)}
       .promo-side-rail.is-mobile .promo-rail-controls{width:min(390px,100%)}
+      .home-municipal-entry{grid-column:1/-1!important;order:3!important;display:flex;align-items:center;gap:12px;min-width:0;width:100%;margin:3px 0 0;padding:8px 12px;border:2px solid #156c60;border-radius:11px;background:linear-gradient(110deg,#ffffff,#e2f5e9);box-shadow:0 3px 10px rgba(8,42,71,.1);color:#082a47;text-decoration:none}
+      .home-municipal-entry img{width:64px;height:64px;object-fit:cover;flex:0 0 64px;border-radius:8px}
+      .home-municipal-entry span{display:flex;flex-direction:column;min-width:0;gap:2px}
+      .home-municipal-entry strong{font-size:1rem;line-height:1.2}
+      .home-municipal-entry small{font-size:.82rem;line-height:1.25}
+      .home-municipal-entry b{margin-left:auto;white-space:nowrap;color:#126b3a;font-size:.86rem}
+      .home-municipal-entry:hover,.home-municipal-entry:focus-visible{background:#d9f3e5;outline:3px solid #29b6f6;outline-offset:2px}
       @media(max-width:1119px){body.promo-rail-layout{display:block!important}.promo-side-rail{width:min(460px,100%)}}
-      @media(max-width:680px){.main-nav a,.main-nav button{height:44px!important;min-height:44px!important}.promo-rail-arrow{width:44px;height:44px;min-height:44px}}
+      @media(max-width:680px){.main-nav a,.main-nav button{height:44px!important;min-height:44px!important}.promo-rail-arrow{width:44px;height:44px;min-height:44px}.home-municipal-entry{flex-wrap:wrap}.home-municipal-entry b{width:100%;margin-left:76px}}
       @media(max-width:520px){.home-main-heading{margin-bottom:12px;font-size:1.12rem}}
       @media(prefers-reduced-motion:reduce){.promo-rail-card{transition:none!important}}
     `;
@@ -110,6 +117,18 @@
     heading.className="home-main-heading";
     heading.textContent="Elegí el trámite que necesitás";
     container.insertBefore(heading,container.firstChild);
+  }
+
+  // Entrada destacada sin agregar tarjetas falsas al catálogo de nueve gestiones.
+  function ensureMunicipalEntry(){
+    const container=document.querySelector(".home-catalog > .container");
+    if(!container||container.querySelector(".home-municipal-entry"))return;
+    const link=document.createElement("a");
+    link.className="home-municipal-entry";
+    link.href="municipales.html";
+    link.setAttribute("aria-label","Trámites municipales: ver opciones para San Miguel y José C. Paz");
+    link.innerHTML='<img src="assets/promo-municipal-20260911.webp" alt="" loading="lazy"><span><strong>Trámites municipales</strong><small>San Miguel y José C. Paz · Elegí municipio y gestión</small></span><b>Ver opciones →</b>';
+    container.appendChild(link);
   }
 
   function createRail(){
@@ -159,6 +178,7 @@
     const catalog=document.querySelector(".home-catalog");
     if(!main||!catalog)return;
     ensureHomeHeading();
+    ensureMunicipalEntry();
     const rail=current||createRail();
     if(isDesktop()){
       document.body.classList.add("promo-rail-layout");
