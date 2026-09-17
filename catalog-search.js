@@ -91,7 +91,7 @@
         title:service.name,
         description:service.shortDescription||service.description||"",
         href:`#/tramite/${encodeURIComponent(service.id)}`,
-        text:[service.name,service.shortDescription,service.description,...(service.components||[]),...(service.requirements||[])].join(" ")
+        text:[service.name,service.shortDescription,service.description,...(service.components||[])].join(" ")
       });
     });
 
@@ -151,4 +151,5 @@
   queue();
 
   import("./commercial-display.js?v=20260915-prices1").catch(error=>console.error("TramiPago visual comercial:",error));
+  import("./header-fijo-20260917.js?v=20260917-header1").catch(error=>console.error("TramiPago cabecera:",error));
 })();
