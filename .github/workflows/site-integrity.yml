@@ -20,3 +20,5 @@ jobs:
           node-version: '22'
       - name: Verificar enlaces locales, imágenes y sintaxis JavaScript
         run: node tests/site-integrity.mjs
+      - name: Verificar recorrido municipal de publicidad a gestiones
+        run: node tests/municipal-route.mjs
