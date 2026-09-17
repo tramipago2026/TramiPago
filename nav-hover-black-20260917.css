@@ -1,0 +1,5 @@
+/* La cabecera conserva sus colores de identidad, pero muestra texto y bordes negros al interactuar. */
+body .site-header.header-featured-active .header-featured .main-nav .nav-home:is(:hover,:focus-visible){background:#fff!important;color:#050505!important;border-color:#050505!important;box-shadow:0 0 0 3px #ffffff63,0 3px 9px #0005!important;outline:none}
+body .site-header.header-featured-active .header-featured .main-nav .nav-tracking:is(:hover,:focus-visible){background:#93d9ff!important;color:#050505!important;border-color:#050505!important;box-shadow:0 0 0 3px #ffffff63,0 3px 9px #0005!important;outline:none}
+body .site-header.header-featured-active .header-featured .main-nav .nav-help:is(:hover,:focus-visible){background:#80ecac!important;color:#050505!important;border-color:#050505!important;box-shadow:0 0 0 3px #ffffff63,0 3px 9px #0005!important;outline:none}
+body .site-header.header-featured-active .header-featured .main-nav :is(a,button):focus-visible{outline:3px solid #ffd36f!important;outline-offset:3px!important}
