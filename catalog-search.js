@@ -151,5 +151,6 @@
   queue();
 
   import("./commercial-display.js?v=20260915-prices1").catch(error=>console.error("TramiPago visual comercial:",error));
-  import("./header-fijo-20260917.js?v=20260917-header1").catch(error=>console.error("TramiPago cabecera:",error));
+  import("./header-fijo-20260917.js?v=20260917-art2").catch(error=>console.error("TramiPago cabecera:",error));
+  import("./legal-landing-20260917.js?v=20260917-legal1").catch(error=>console.error("TramiPago página jurídica:",error));
 })();
