@@ -1,0 +1,151 @@
+/* Ajuste visual solicitado el 17/09/2026. Nueve tarjetas reales = 3 filas de 3.
+   Sin inventar siete servicios para simular una grilla de 4 x 4.
+   Solo diseño: no cambia rutas, precios, formularios ni datos. */
+
+body[data-view="home"] .home-catalog {
+  padding: 12px 0 24px !important;
+}
+
+/* Las dos filas que crea app.js pasan a ser un solo grupo visual, sin
+   cambiar los botones ni su comportamiento. */
+body[data-view="home"] .home-catalog > .container {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 154px)) !important;
+  justify-content: center !important;
+  justify-items: stretch !important;
+  align-items: start !important;
+  column-gap: 14px !important;
+  row-gap: 14px !important;
+  width: min(100% - 24px, 740px) !important;
+  max-width: 740px !important;
+  margin: 0 auto !important;
+}
+body[data-view="home"] .home-catalog .home-direct-row,
+body[data-view="home"] .home-catalog .home-family-row {
+  display: contents !important;
+}
+body[data-view="home"] .home-catalog .home-tile {
+  order: 2 !important;
+  width: 154px !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+/* Un solo título visible: el H1 de promos.js. La etiqueta del campo sigue
+   accesible para lectores de pantalla sin duplicar el texto en pantalla. */
+body[data-view="home"] .home-catalog .home-main-heading {
+  grid-column: 1 / -1 !important;
+  order: 0 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: clamp(1.15rem, 1.8vw, 1.42rem) !important;
+  line-height: 1.18 !important;
+  text-align: center !important;
+}
+body[data-view="home"] .home-catalog .catalog-search {
+  grid-column: 1 / -1 !important;
+  order: 1 !important;
+  width: 100% !important;
+  max-width: 680px !important;
+  margin: -4px auto 4px !important;
+  padding: 0 !important;
+}
+body[data-view="home"] .home-catalog .catalog-search label {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+body[data-view="home"] .home-catalog .catalog-search input {
+  min-height: 46px !important;
+  margin: 0 !important;
+}
+body[data-view="home"] .home-catalog .catalog-search-results {
+  position: relative;
+  z-index: 5;
+}
+
+/* Imágenes YA existentes en assets: forzar su visibilidad en el navegador.
+   Se selecciona por familia + tarjeta, sin alterar las ilustraciones ni
+   subir material nuevo sin aprobación. */
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card:nth-of-type(1)::before {
+  background-image: url("assets/legalizacion-visual.svg") !important;
+  background-color: #0f5675 !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card:nth-of-type(2)::before {
+  background-image: url("assets/apostillado-visual.svg") !important;
+  background-color: #0f5675 !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+body .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card:nth-of-type(1)::before {
+  background-image: url("assets/abogado-art-visual.svg") !important;
+  background-color: #124465 !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+body .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card:nth-of-type(2)::before {
+  background-image: url("assets/abogado-accidentes-visual.svg") !important;
+  background-color: #124465 !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+body .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card:nth-of-type(3)::before {
+  background-image: url("assets/abogado-sucesiones-visual.svg") !important;
+  background-color: #124465 !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+body .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card:nth-of-type(4)::before {
+  background-image: url("assets/abogado-laboral-visual.svg") !important;
+  background-color: #124465 !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+body .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-heading::before {
+  background-image: url("assets/abogado-laboral-visual.svg") !important;
+  background-color: #124465 !important;
+  background-size: cover !important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-heading::before {
+  background-image: url("assets/apostillado-visual.svg") !important;
+  background-color: #0f5675 !important;
+  background-size: cover !important;
+}
+
+/* Evita que el botón y las descripciones se amontonen en las nuevas familias. */
+body .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card h2,
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card h2 {
+  font-size: .94rem !important;
+}
+body .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card p,
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card p {
+  font-size: .82rem !important;
+  line-height: 1.35 !important;
+}
+
+@media (max-width: 680px) {
+  body[data-view="home"] .home-catalog > .container {
+    grid-template-columns: repeat(2, minmax(0, 154px)) !important;
+    column-gap: 12px !important;
+    row-gap: 12px !important;
+  }
+  body[data-view="home"] .home-catalog .home-tile {
+    width: 100% !important;
+  }
+}
+@media (max-width: 360px) {
+  body[data-view="home"] .home-catalog > .container {
+    grid-template-columns: minmax(0, 230px) !important;
+  }
+}
