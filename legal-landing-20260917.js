@@ -1,20 +1,19 @@
 /* Formulario jurídico compacto. No registra datos en localStorage ni genera pagos.
-   La persona elige opcionalmente un tema y WhatsApp abre un mensaje editable:
-   el envío se confirma exclusivamente dentro de WhatsApp. */
+   El tema y los campos son opcionales. WhatsApp abre un mensaje editable: el usuario confirma el envío. */
 (function(){
   'use strict';
   const ROUTE='#/familia/atencion-abogado';
   const STYLE_ID='tramipago-legal-landing-style';
   const topics=[
-    {id:'art',name:'ART',photo:'assets/promo-art-20260911.webp',desc:'Accidentes de trabajo, enfermedades profesionales y reclamos ante la ART.'},
-    {id:'accidentes',name:'Accidentes',photo:'assets/promo-vehicular-20260911.webp',desc:'Choques, accidentes de tránsito y lesiones fuera del ámbito laboral.'},
-    {id:'sucesiones',name:'Sucesiones',photo:'assets/partidas-familia-final.webp',desc:'Declaratoria de herederos, inicio y seguimiento de sucesiones.'},
-    {id:'laboral',name:'Laboral',photo:'assets/promo-abogado-20260916.webp',desc:'Despidos, trabajo no registrado, diferencias salariales y reclamos laborales.'}
+    {id:'art',name:'ART',desc:'Reclamos por accidentes de trabajo, enfermedades profesionales y gestiones ante la ART.'},
+    {id:'accidentes',name:'Accidentes',desc:'Asesoramiento legal por accidentes de tránsito, choques y lesiones fuera del ámbito laboral.'},
+    {id:'sucesiones',name:'Sucesiones',desc:'Asesoramiento en declaratoria de herederos, inicio y seguimiento del trámite sucesorio.'},
+    {id:'laboral',name:'Laboral',desc:'Consultas por despidos, trabajo no registrado, diferencias salariales y otros conflictos laborales.'}
   ];
   function loadStyles(){
     if(document.getElementById(STYLE_ID))return;
     const link=document.createElement('link');link.id=STYLE_ID;link.rel='stylesheet';
-    link.href='legal-landing-20260917.css?v=20260917-consulta3';document.head.appendChild(link);
+    link.href='legal-landing-20260917.css?v=20260917-cards2';document.head.appendChild(link);
   }
   function composeMessage({topic='',name='',phone='',query=''}){
     const lines=['Hola, quiero iniciar una consulta jurídica mediante TramiPago para el Dr. Francisco Liberatore.'];
@@ -42,7 +41,7 @@
         <section class="legal-widget-body" aria-labelledby="legal-topic-title">
           <div class="legal-line"><h2 id="legal-topic-title"><span class="legal-num">1</span> Elegí el tema de tu consulta</h2><p>Opcional: si seleccionás un tema, se incluye en el mensaje.</p></div>
           <div class="legal-topic-grid" role="group" aria-label="Seleccionar un tema opcional">
-            ${topics.map(t=>`<article class="legal-topic" data-topic-card="${t.id}"><div class="legal-topic-photo" style="background-image:url('${t.photo}')" aria-hidden="true"></div><div class="legal-topic-copy"><h3>${t.name}</h3><p>${t.desc}</p><button type="button" class="legal-topic-select" data-legal-topic="${t.id}" aria-pressed="false">Seleccionar tema</button></div></article>`).join('')}
+            ${topics.map(t=>`<article class="legal-topic" data-topic-card="${t.id}"><div class="legal-topic-photo" aria-hidden="true"></div><div class="legal-topic-copy"><h3>${t.name}</h3><p>${t.desc}</p><button type="button" class="legal-topic-select" data-legal-topic="${t.id}" aria-pressed="false">Seleccionar tema</button></div></article>`).join('')}
           </div>
           <form id="legal-whatsapp-form" autocomplete="on" novalidate>
             <div class="legal-line legal-form-line"><h2><span class="legal-num">2</span> Completá tus datos</h2><p>También podés iniciar la consulta sin seleccionar tema ni completar campos.</p></div>
