@@ -21,7 +21,7 @@ const brand={href:'#/',insertAdjacentElement(_position,el){legal=el;}};
 const nav={querySelector(selector){return ({'.nav-home':home,'.nav-tracking':tracking,'.nav-help':help})[selector]||null;}};
 const row={classList:{add(value){this.value=value;}},querySelector(selector){return ({'.brand':brand,'.main-nav':nav})[selector]||null;}};
 const header={classList:{add(value){this.value=value;}},querySelector:()=>row};
-const document={readyState:'complete',head:{appendChild(el){style=el;}},querySelector:()=>header,getElementById(id){return id==='tramipago-header-legal'?legal:id==='tramipago-header-fixed-20260917'?style:null;},createElement(tag){return {tag,setAttribute(k,v){this[k]=v;},removeAttribute(k){delete this[k];},attributes:{}};}};
+const document={readyState:'complete',head:{appendChild(el){style=el;}},querySelector(selector){return ({'.site-header':header,'.site-header .nav-home':home,'.site-header .nav-tracking':tracking})[selector]||null;},getElementById(id){return id==='tramipago-header-legal'?legal:id==='tramipago-header-fixed-20260917'?style:null;},createElement(tag){return {tag,setAttribute(k,v){this[k]=v;},removeAttribute(k){delete this[k];},attributes:{}};}};
 const location={hash:'#/'};
 const window={TRAMI_FAMILIES:[{id:'atencion-abogado'}],addEventListener(name,handler){if(name==='hashchange')hashHandler=handler;}};
 runInNewContext(js,{document,window,location});
