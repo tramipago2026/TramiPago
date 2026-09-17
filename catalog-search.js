@@ -91,7 +91,7 @@
         title:service.name,
         description:service.shortDescription||service.description||"",
         href:`#/tramite/${encodeURIComponent(service.id)}`,
-        text:[service.name,service.shortDescription,service.description,...(service.components||[])].join(" ")
+        text:[service.name,service.shortDescription,service.description,...(service.components||[]),...(service.requirements||[])].join(" ")
       });
     });
 
