@@ -1,0 +1,53 @@
+name: Importar tres imágenes del carrusel (única ejecución)
+on:
+  push:
+    paths:
+      - .github/workflows/import-carrusel-20260917.yml
+permissions:
+  contents: write
+jobs:
+  importar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Descargar las tres imágenes aprobadas
+        env:
+          ABOGADO_URL: "https://oaisdmntprbrazilsouth.blob.core.windows.net/files/00000000-49c8-820e-a4fb-172ce57ba29b/raw?se=2026-09-17T10%3A43%3A08Z&sp=r&sv=2026-02-06&sr=b&scid=9122b200-1841-4ab5-94b4-61b51ea7932a&skoid=127c13cb-e695-43ea-b6b2-0a863d41dbf7&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-17T03%3A10%3A21Z&ske=2026-09-18T03%3A10%3A21Z&sks=b&skv=2026-02-06&sig=yED89eiOF6h0xxwEFO9ykQiy9eIpgJjDbkEUu3cHzbw%3D"
+          APOSTILLAS_URL: "https://oaisdmntprbrazilsouth.blob.core.windows.net/files/00000000-3228-820e-bf78-d388ac6ebd13/raw?se=2026-09-17T10%3A43%3A39Z&sp=r&sv=2026-02-06&sr=b&scid=9122b200-1841-4ab5-94b4-61b51ea7932a&skoid=127c13cb-e695-43ea-b6b2-0a863d41dbf7&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-16T20%3A14%3A49Z&ske=2026-09-17T20%3A14%3A49Z&sks=b&skv=2026-02-06&sig=JI91b6APxXX4MMVzuyb6TN2nR9Xj%2Bj%2BRWIOVyPLOznQ%3D"
+          ARCA_URL: "https://oaisdmntprbrazilsouth.blob.core.windows.net/files/00000000-b278-820e-89a8-e6f7e11e7d24/raw?se=2026-09-17T10%3A43%3A39Z&sp=r&sv=2026-02-06&sr=b&scid=9122b200-1841-4ab5-94b4-61b51ea7932a&skoid=127c13cb-e695-43ea-b6b2-0a863d41dbf7&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-17T10%3A14%3A35Z&ske=2026-09-18T10%3A14%3A35Z&sks=b&skv=2026-02-06&sig=Gizl36wJsPi9sysihT1qCvt/uEBhqyfV3DwKNsGuBng%3D"
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 "$ABOGADO_URL" -o /tmp/abogado.png
+          curl --fail --silent --show-error --location --retry 2 "$APOSTILLAS_URL" -o /tmp/apostillas.png
+          curl --fail --silent --show-error --location --retry 2 "$ARCA_URL" -o /tmp/arca.png
+          echo '8e969543181b0a458f55fc4595aaf6f24aec3168f6617ad8f6ca4bf5e4e02a95  /tmp/abogado.png' | sha256sum --check
+          echo '474ca8e1b704e4cda05213a1c50ee0330565fdadf2c1fd4a8aa0ce60f43d436c  /tmp/apostillas.png' | sha256sum --check
+          echo '773ee38a0486eb13fd94f4585cdf739efa153f2893e70b56757cf7c4096734d6  /tmp/arca.png' | sha256sum --check
+      - name: Convertir a WebP conservando dimensiones y validar
+        run: |
+          python3 -m pip install --quiet Pillow
+          python3 - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          for name in ('abogado','apostillas','arca'):
+              with Image.open('/tmp/'+name+'.png') as im:
+                  im.load()
+                  assert im.size == (856,856), (name,im.size)
+                  out=Path('assets/promo-'+name+'-20260916.webp')
+                  im.convert('RGB').save(out,format='WEBP',quality=88,method=6)
+                  with Image.open(out) as check:
+                      check.verify()
+                  assert 10000 < out.stat().st_size < 500000, (name,out.stat().st_size)
+                  print(name, out, out.stat().st_size)
+          PY
+      - name: Subir los tres WebP al repositorio
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/promo-abogado-20260916.webp assets/promo-apostillas-20260916.webp assets/promo-arca-20260916.webp
+          git diff --cached --quiet && exit 0
+          git commit -m 'Agregar las tres imágenes aprobadas para el carrusel'
+          git push origin HEAD:main
