@@ -1,61 +1,47 @@
-/* Página de abogado TramiPago: contenido original, iconos propios en línea y formularios existentes. */
-body .legal-landing{background:#f5f8f9;color:#172f3c;min-height:calc(100vh - 112px)}
-body .legal-landing .family-shell{width:min(1140px,calc(100% - 28px))!important;max-width:1140px!important;padding:22px 0 38px!important}
-body .legal-landing .family-heading{display:none!important}
-body .legal-landing .family-back{display:none!important}
-body .legal-landing .legal-hero{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(250px,.88fr);align-items:center;gap:26px;padding:clamp(20px,3vw,36px);border:1px solid #e2cb95;border-radius:20px;background:linear-gradient(124deg,#142c37 0%,#203844 66%,#2b453c 100%);box-shadow:0 12px 30px #122d3940;color:#fff;overflow:hidden}
-body .legal-landing .legal-eyebrow{display:block;margin-bottom:10px;color:#ae7b20;font-size:13px;font-weight:850;letter-spacing:.035em;line-height:1.35;text-transform:uppercase}
-body .legal-landing .legal-hero .legal-eyebrow,body .legal-landing .legal-contact .legal-eyebrow{color:#f2cd7e}
-body .legal-landing .legal-hero h1{max-width:680px!important;margin:0 0 15px!important;color:#fff!important;font-size:clamp(27px,3.3vw,44px)!important;line-height:1.08!important;letter-spacing:-.024em!important}
-body .legal-landing .legal-hero h1 span{color:#f6ce78}
-body .legal-landing .legal-hero p{margin:0 0 12px;color:#f3f7f9;font-size:clamp(15px,1.2vw,17px)!important;line-height:1.52}
-body .legal-landing .legal-hero .legal-hero-lead{font-size:clamp(17px,1.5vw,20px)!important;font-weight:550}
-body .legal-landing .legal-hero-actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:22px}
-body .legal-landing .legal-primary,body .legal-landing .legal-secondary{display:inline-flex!important;justify-content:center;align-items:center;min-height:46px!important;min-width:0!important;margin:0!important;padding:11px 18px!important;border-radius:10px!important;font:800 15px/1.2 "Segoe UI",Arial,sans-serif!important;white-space:normal!important;text-align:center;cursor:pointer}
-body .legal-landing .legal-primary{border:2px solid #e1f8e8!important;background:#108245!important;color:#fff!important;box-shadow:0 3px 9px #0003!important}
-body .legal-landing .legal-primary:hover,body .legal-landing .legal-primary:focus-visible{background:#076c39!important;outline:3px solid #f5d18b;outline-offset:2px}
-body .legal-landing .legal-secondary{border:2px solid #edc778!important;background:transparent!important;color:#fff!important}
-body .legal-landing .legal-secondary:hover,body .legal-landing .legal-secondary:focus-visible{background:#ffffff1c!important;outline:3px solid #f5d18b;outline-offset:2px}
-body .legal-landing .legal-hero-visual{display:grid;gap:10px;align-items:center;justify-items:center;min-width:0}
-body .legal-landing .legal-hero-visual img{display:block;width:100%;max-width:420px;max-height:250px;object-fit:contain;border:1px solid #d3b675;border-radius:14px;background:#112d41;box-shadow:0 8px 18px #0004}
-body .legal-landing .legal-hero-visual-label{max-width:100%;padding:8px 12px;border-radius:30px;border:1px solid #e0b55f;color:#fff;font-weight:750;font-size:13px;line-height:1.3;text-align:center}
-body .legal-landing .legal-block{margin-top:32px}
-body .legal-landing .legal-section-head{max-width:850px;margin:0 auto 18px;text-align:center}
-body .legal-landing .legal-section-head h2{margin:0 0 8px!important;color:#173647!important;font-size:clamp(22px,2.5vw,32px)!important;line-height:1.2!important}
-body .legal-landing .legal-section-head p{margin:0;color:#435b66;font-size:16px!important;line-height:1.5}
-body .legal-landing .legal-cases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-body .legal-landing .legal-case{display:flex;flex-direction:column;align-items:flex-start;min-height:223px;padding:18px;background:#fff;border:1px solid #dbe2e5;border-top:4px solid #c79a40;border-radius:13px;box-shadow:0 5px 15px #16333d14}
-body .legal-landing .legal-case-icon{display:grid;place-items:center;width:49px;height:49px;flex:none;margin-bottom:12px;border-radius:12px;color:#0c603d;background:#e5f5e9}
-body .legal-landing .legal-case h3{margin:0 0 8px!important;color:#172d39!important;font-size:17px!important;line-height:1.27!important}
-body .legal-landing .legal-case p{margin:0 0 14px;color:#49606b;font-size:15px!important;line-height:1.42}
-body .legal-landing .legal-case button{margin-top:auto;padding:5px 0;border:0;border-bottom:2px solid transparent;background:transparent;color:#095c38;font-size:15px;font-weight:800;text-align:left;cursor:pointer}
-body .legal-landing .legal-case button:hover,body .legal-landing .legal-case button:focus-visible{border-bottom-color:currentColor;outline:2px solid #135b3c;outline-offset:3px}
-body .legal-landing .legal-choose{scroll-margin-top:140px}
-body .legal-landing .family-service-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;max-width:1140px!important;width:100%!important;justify-content:center!important;gap:14px!important;margin:0 auto!important;align-items:stretch!important}
-body .legal-landing .family-service-card{min-width:0!important;border:1px solid #d7e0e3!important;border-radius:13px!important;background:#fff!important;box-shadow:0 7px 16px #1c414019!important}
-body .legal-landing .family-service-card::before{height:155px!important;min-height:155px!important;background-position:center!important;background-size:cover!important}
-body .legal-landing .family-service-card>div{padding:15px!important}
-body .legal-landing .family-service-card h2{font-size:17px!important;line-height:1.27!important;color:#193544!important;margin:0 0 8px!important}
-body .legal-landing .family-service-card p{font-size:14px!important;line-height:1.42!important;color:#445963!important}
-body .legal-landing .family-service-card>.button{width:calc(100% - 28px)!important;min-height:43px!important;margin:0 14px 14px!important;padding:9px!important;font-size:14px!important;background:#0f7c45!important;color:#fff!important}
-body .legal-landing .legal-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
-body .legal-landing .legal-step{padding:20px 16px 18px;border-radius:13px;background:#173746;color:#fff;border-bottom:4px solid #d1a74d}
-body .legal-landing .legal-step>span{display:inline-flex;margin-bottom:12px;color:#f7d27e;font-size:29px;font-weight:900}
-body .legal-landing .legal-step h3{margin:0 0 8px!important;color:#fff!important;font-size:17px!important;line-height:1.3}
-body .legal-landing .legal-step p{margin:0;color:#edf4f7;font-size:14px!important;line-height:1.48}
-body .legal-landing .legal-faq-list{width:min(880px,100%);margin:0 auto;display:grid;gap:9px}
-body .legal-landing .legal-faq-list details{padding:0 18px;border:1px solid #d1dfe3;border-radius:11px;background:#fff}
-body .legal-landing .legal-faq-list summary{padding:17px 0;color:#183747;font-size:16px;font-weight:800;line-height:1.4;cursor:pointer}
-body .legal-landing .legal-faq-list summary:focus-visible{outline:3px solid #3b9cdb;outline-offset:3px}
-body .legal-landing .legal-faq-list details p{margin:0 0 17px;color:#425d68;font-size:15px!important;line-height:1.56}
-body .legal-landing .legal-official{width:min(880px,100%);margin:12px auto 0;color:#475e69;font-size:14px!important;line-height:1.5}
-body .legal-landing .legal-official a{color:#045b3c;text-decoration:underline;font-weight:750}
-body .legal-landing .legal-contact{display:flex;justify-content:space-between;align-items:center;gap:22px;margin-top:34px;padding:24px clamp(18px,3vw,34px);border:1px solid #bd984e;border-radius:17px;background:linear-gradient(110deg,#1c3743,#263b35);color:#fff}
-body .legal-landing .legal-contact h2{margin:0 0 6px!important;color:#fff!important;font-size:clamp(22px,2.4vw,29px)!important}
-body .legal-landing .legal-contact p{margin:0;max-width:690px;color:#f0f5f5;font-size:15px!important;line-height:1.5}
-body .legal-landing .legal-contact .legal-primary{flex:none}
-body .legal-landing .legal-disclaimer{max-width:1000px;margin:18px auto 0;color:#546870;font-size:13px!important;line-height:1.5;text-align:center}
-@media(max-width:980px){body .legal-landing .legal-hero{grid-template-columns:minmax(0,1fr) 280px;gap:16px}body .legal-landing .legal-cases{grid-template-columns:repeat(2,minmax(0,1fr))}body .legal-landing .family-service-grid{grid-template-columns:repeat(2,minmax(0,260px))!important}body .legal-landing .legal-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:680px){body .legal-landing .family-shell{padding-top:14px!important}body .legal-landing .legal-hero{grid-template-columns:minmax(0,1fr);padding:20px;gap:20px}body .legal-landing .legal-hero-visual{display:none}body .legal-landing .legal-cases{grid-template-columns:minmax(0,1fr)}body .legal-landing .legal-case{min-height:0}body .legal-landing .legal-steps{grid-template-columns:minmax(0,1fr)}body .legal-landing .legal-contact{flex-direction:column;align-items:stretch}body .legal-landing .legal-hero-actions .legal-primary,body .legal-landing .legal-hero-actions .legal-secondary,body .legal-landing .legal-contact .legal-primary{width:100%!important}body .legal-landing .legal-block{margin-top:27px}}
-@media(max-width:420px){body .legal-landing .family-service-grid{grid-template-columns:minmax(0,1fr)!important;max-width:310px!important}body .legal-landing .family-service-card::before{height:162px!important}body .legal-landing .legal-hero h1{font-size:28px!important}}
-@media(prefers-reduced-motion:reduce){body .legal-landing *{scroll-behavior:auto!important}}
+/* Consulta legal real: selección opcional, campos visibles y WhatsApp sin cobro. */
+body .legal-landing{background:#edf6fc;color:#fff;min-height:0!important}
+body .legal-landing .family-shell{width:min(1280px,calc(100% - 24px))!important;max-width:1280px!important;padding:12px 0 22px!important}
+body .legal-landing .legal-widget,body .legal-landing .legal-widget *{box-sizing:border-box}
+body .legal-landing .legal-widget{overflow:hidden;width:100%;border:2px solid #d6b56a;border-radius:23px;background:#0a304b;box-shadow:0 11px 30px #12365035;color:#fff;font-family:'Segoe UI',Arial,sans-serif}
+body .legal-landing .legal-branding{display:grid;grid-template-columns:minmax(175px,.88fr) minmax(260px,1.7fr) minmax(100px,.5fr);align-items:center;gap:14px;min-height:132px;padding:15px 24px;background:linear-gradient(106deg,#0e314e,#09243d 75%,#173c49)}
+body .legal-landing .legal-identity{display:flex;align-items:center;gap:10px;color:#fff;font-size:12px!important;letter-spacing:.12em;line-height:1.3;white-space:nowrap}
+body .legal-landing .legal-identity strong{font-size:17px!important;letter-spacing:.09em;color:#fff}
+body .legal-landing .legal-identity small{display:block;margin-top:4px;color:#e8c577;font-size:11px!important;letter-spacing:.22em}
+body .legal-landing .legal-emblem{display:grid;place-items:center;flex:0 0 63px;width:63px;height:63px;border:2px solid #e9be5a;border-radius:50%;color:#efcb6f;font-size:36px!important;line-height:1}
+body .legal-landing .legal-intro{min-width:0}
+body .legal-landing .legal-intro h1{margin:0!important;color:#fff!important;font-size:clamp(25px,3vw,39px)!important;line-height:1.08!important;letter-spacing:-.03em}
+body .legal-landing .legal-intro h1 span{color:#ffd379}
+body .legal-landing .legal-doctor{margin:4px 0!important;color:#fff!important;font-size:clamp(18px,2.05vw,26px)!important;font-weight:800;line-height:1.12}
+body .legal-landing .legal-specialty{display:inline-block;margin:4px 0!important;padding:4px 10px;border:1px solid #eec668;border-radius:7px;color:#ffe29b!important;font-size:14px!important;font-weight:850;line-height:1.2}
+body .legal-landing .legal-areas{margin:6px 0 0!important;color:#d9e8ee!important;font-size:11px!important;font-weight:750;letter-spacing:.17em;line-height:1.3}
+body .legal-landing .legal-header-art{justify-self:end;width:min(100%,150px);height:90px;object-fit:cover;border:1px solid #d4a958;border-radius:12px}
+body .legal-landing .legal-widget-body{padding:13px clamp(12px,2vw,24px) 15px;background:linear-gradient(175deg,#0b2c46,#0d3855)}
+body .legal-landing .legal-line{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 10px}
+body .legal-landing .legal-line h2{display:flex;align-items:center;gap:10px;margin:0!important;color:#fff!important;font-size:clamp(18px,1.7vw,23px)!important;font-weight:800;line-height:1.2}
+body .legal-landing .legal-line p{margin:0!important;color:#e8f3f7!important;font-size:12px!important;line-height:1.35;text-align:right}
+body .legal-landing .legal-num{display:grid;place-items:center;width:35px;height:35px;flex:0 0 35px;border-radius:50%;background:#f4c65d;color:#0a2b45;font-size:22px!important;font-weight:900}
+body .legal-landing .legal-topic-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+body .legal-landing .legal-topic{display:flex;flex-direction:column;overflow:hidden;min-width:0;border:2px solid #e5b85e;border-radius:14px;background:#092b45;transition:border-color .15s ease,box-shadow .15s ease}
+body .legal-landing .legal-topic.is-selected{border-color:#35ed91;box-shadow:0 0 0 2px #128c51}
+body .legal-landing .legal-topic-photo{height:92px;flex:none;background-color:#184965;background-size:cover;background-position:center 39%}
+body .legal-landing .legal-topic-copy{display:flex;flex:1;flex-direction:column;padding:8px 10px 10px;background:linear-gradient(0deg,#08273f,#0c344f)}
+body .legal-landing .legal-topic h3{margin:0 0 4px!important;color:#fff!important;font-size:clamp(17px,1.5vw,21px)!important;line-height:1.12}
+body .legal-landing .legal-topic p{min-height:49px;margin:0 0 7px!important;color:#f2f5f7!important;font-size:clamp(11px,.89vw,13px)!important;line-height:1.25!important}
+body .legal-landing .legal-topic-select{width:100%;min-width:0;min-height:34px;margin:auto 0 0;padding:5px 8px;border:2px solid #e7bf63;border-radius:8px;background:#082b44;color:#fff;font:800 13px/1.2 'Segoe UI',Arial,sans-serif;cursor:pointer}
+body .legal-landing .legal-topic-select[aria-pressed='true']{border-color:#a2ffc7;background:#098846;color:#fff}
+body .legal-landing .legal-topic-select:hover,body .legal-landing .legal-topic-select:focus-visible{border-color:#fff;outline:3px solid #f5d786;outline-offset:1px}
+body .legal-landing .legal-form-line{margin-top:13px;margin-bottom:9px}
+body .legal-landing .legal-inputs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr) minmax(0,1.7fr);align-items:start;gap:10px}
+body .legal-landing .legal-inputs label{display:block;color:#fff!important;font-size:12px!important;font-weight:700;line-height:1.25}
+body .legal-landing .legal-inputs label span{color:#bcd2df;font-size:11px;font-weight:500}
+body .legal-landing .legal-inputs input,body .legal-landing .legal-inputs textarea{display:block;width:100%;min-width:0;min-height:44px;max-height:118px;margin:4px 0 0!important;padding:9px 11px!important;border:1px solid #b2c6d5!important;border-radius:8px!important;background:#173d57!important;color:#fff!important;font:500 15px/1.4 'Segoe UI',Arial,sans-serif!important;resize:vertical}
+body .legal-landing .legal-inputs input::placeholder,body .legal-landing .legal-inputs textarea::placeholder{color:#d9e5ed!important;opacity:1}
+body .legal-landing .legal-inputs input:focus,body .legal-landing .legal-inputs textarea:focus{outline:3px solid #f6cc6f!important;outline-offset:1px}
+body .legal-landing .legal-send{display:block;width:100%;min-height:46px;margin-top:10px!important;padding:8px 20px;border:1px solid #a7f6c5;border-radius:10px;background:#07934a;color:#fff;font:850 clamp(17px,1.8vw,23px)/1.2 'Segoe UI',Arial,sans-serif;text-align:center;cursor:pointer}
+body .legal-landing .legal-send span{margin-left:12px}
+body .legal-landing .legal-send:hover,body .legal-landing .legal-send:focus-visible{background:#057d3d;outline:3px solid #f1cd75;outline-offset:2px}
+body .legal-landing .legal-note{margin:7px 0 0!important;color:#cee1ec!important;font-size:11px!important;line-height:1.35!important;text-align:center}
+@media(max-width:980px){body .legal-landing .legal-branding{grid-template-columns:1fr 2fr;padding:15px}body .legal-landing .legal-header-art{display:none}body .legal-landing .legal-topic-grid{grid-template-columns:repeat(2,minmax(0,1fr))}body .legal-landing .legal-topic-photo{height:120px}body .legal-landing .legal-topic p{min-height:0;font-size:13px!important}}
+@media(max-width:620px){body .legal-landing .family-shell{width:calc(100% - 16px)!important}body .legal-landing .legal-branding{display:flex;flex-direction:column;align-items:flex-start;gap:10px}body .legal-landing .legal-identity{font-size:11px!important}body .legal-landing .legal-emblem{height:45px;width:45px;flex-basis:45px;font-size:28px!important}body .legal-landing .legal-intro h1{font-size:28px!important}body .legal-landing .legal-doctor{font-size:20px!important}body .legal-landing .legal-areas{font-size:10px!important;letter-spacing:.06em}body .legal-landing .legal-line{align-items:flex-start;flex-direction:column}body .legal-landing .legal-line p{text-align:left}body .legal-landing .legal-topic-grid{gap:9px}body .legal-landing .legal-topic-photo{height:86px}body .legal-landing .legal-topic-copy{padding:8px}body .legal-landing .legal-topic h3{font-size:17px!important}body .legal-landing .legal-topic p{font-size:12px!important}body .legal-landing .legal-topic-select{font-size:12px!important}body .legal-landing .legal-inputs{grid-template-columns:minmax(0,1fr)}body .legal-landing .legal-inputs textarea{min-height:88px}}
+@media(max-width:360px){body .legal-landing .legal-topic-grid{grid-template-columns:1fr}body .legal-landing .legal-topic-photo{height:125px}}
+@media(prefers-reduced-motion:reduce){body .legal-landing .legal-topic{transition:none}}
