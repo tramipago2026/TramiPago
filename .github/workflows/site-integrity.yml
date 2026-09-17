@@ -22,3 +22,5 @@ jobs:
         run: node tests/site-integrity.mjs
       - name: Verificar recorrido municipal de publicidad a gestiones
         run: node tests/municipal-route.mjs
+      - name: Verificar cabecera, consulta legal y destinos de botones
+        run: node tests/header-navigation.mjs
