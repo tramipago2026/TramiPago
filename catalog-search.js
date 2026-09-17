@@ -51,7 +51,13 @@
     const directs=window.TRAMI_DIRECTS||[];
     const families=window.TRAMI_FAMILIES||[];
     const directIds=new Set(directs.map(item=>item.serviceId));
-    const entries=[];
+    const entries=[{
+      type:"Categoría municipal",
+      title:"Trámites municipales: San Miguel y José C. Paz",
+      description:"Elegí el municipio. Boletas, deuda, opciones de pago y consulta de disponibilidad.",
+      href:"municipales.html",
+      text:"municipal municipio municipios municipalidad tasas boletas deuda pago pagos san miguel jose c paz jose cpaz rentas rodados patente multas servicios"
+    }];
 
     directs.forEach(item=>{
       const service=serviceById(item.serviceId);
@@ -105,7 +111,7 @@
     section.innerHTML=`
       <div class="catalog-search-box">
         <label for="tramipago-search-input">¿Qué trámite necesitás?</label>
-        <input id="tramipago-search-input" type="search" autocomplete="off" placeholder="Ej.: partida, monotributo, antecedentes, vehículo" />
+        <input id="tramipago-search-input" type="search" autocomplete="off" placeholder="Ej.: municipal, partida, monotributo, antecedentes" />
       </div>
       <div class="catalog-search-results" aria-live="polite"></div>
     `;
