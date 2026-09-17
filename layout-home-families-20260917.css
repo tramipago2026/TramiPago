@@ -1,22 +1,21 @@
-/* Ajuste visual solicitado el 17/09/2026. Nueve tarjetas reales = 3 filas de 3.
-   Sin inventar siete servicios para simular una grilla de 4 x 4.
-   Solo diseño: no cambia rutas, precios, formularios ni datos. */
-
+/* Portada TramiPago, 17/09/2026.
+   Nueve gestiones existentes: cuatro tarjetas en la primera fila,
+   cuatro en la segunda y la novena centrada. No se inventan servicios.
+   Los cambios de portada no modifican rutas, precios ni formularios. */
 body[data-view="home"] .home-catalog {
-  padding: 12px 0 24px !important;
+  padding: 10px 0 22px !important;
 }
-
-/* Las dos filas que crea app.js pasan a ser un solo grupo visual, sin
-   cambiar los botones ni su comportamiento. */
+/* app.js genera dos grupos (4 trámites directos + 5 familias).
+   display:contents los integra en una única grilla sin alterar los botones. */
 body[data-view="home"] .home-catalog > .container {
   display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 154px)) !important;
+  grid-template-columns: repeat(4, minmax(0, 154px)) !important;
   justify-content: center !important;
   justify-items: stretch !important;
   align-items: start !important;
   column-gap: 14px !important;
-  row-gap: 14px !important;
-  width: min(100% - 24px, 740px) !important;
+  row-gap: 12px !important;
+  width: min(calc(100% - 24px), 740px) !important;
   max-width: 740px !important;
   margin: 0 auto !important;
 }
@@ -31,9 +30,13 @@ body[data-view="home"] .home-catalog .home-tile {
   min-width: 0 !important;
   margin: 0 !important;
 }
-
-/* Un solo título visible: el H1 de promos.js. La etiqueta del campo sigue
-   accesible para lectores de pantalla sin duplicar el texto en pantalla. */
+/* Si hay nueve tarjetas, la novena ocupa el centro visual de cuatro columnas. */
+body[data-view="home"] .home-catalog .home-family-row > .home-tile:last-child:nth-child(odd) {
+  grid-column: 2 / span 2 !important;
+  justify-self: center !important;
+}
+/* Un único título visible. La etiqueta del buscador sigue accesible
+   para lectores de pantalla, pero deja de duplicar la pregunta. */
 body[data-view="home"] .home-catalog .home-main-heading {
   grid-column: 1 / -1 !important;
   order: 0 !important;
@@ -49,7 +52,7 @@ body[data-view="home"] .home-catalog .catalog-search {
   order: 1 !important;
   width: 100% !important;
   max-width: 680px !important;
-  margin: -4px auto 4px !important;
+  margin: 0 auto 2px !important;
   padding: 0 !important;
 }
 body[data-view="home"] .home-catalog .catalog-search label {
@@ -72,10 +75,7 @@ body[data-view="home"] .home-catalog .catalog-search-results {
   position: relative;
   z-index: 5;
 }
-
-/* Imágenes YA existentes en assets: forzar su visibilidad en el navegador.
-   Se selecciona por familia + tarjeta, sin alterar las ilustraciones ni
-   subir material nuevo sin aprobación. */
+/* Mantener visibles las ilustraciones existentes de las nuevas familias. */
 body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card:nth-of-type(1)::before {
   background-image: url("assets/legalizacion-visual.svg") !important;
   background-color: #0f5675 !important;
@@ -122,8 +122,6 @@ body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .
   background-color: #0f5675 !important;
   background-size: cover !important;
 }
-
-/* Evita que el botón y las descripciones se amontonen en las nuevas familias. */
 body .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card h2,
 body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card h2 {
   font-size: .94rem !important;
@@ -133,8 +131,8 @@ body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .
   font-size: .82rem !important;
   line-height: 1.35 !important;
 }
-
-@media (max-width: 680px) {
+/* Adaptación de ancho: cuatro columnas solo si entran completas. */
+@media (max-width: 760px) {
   body[data-view="home"] .home-catalog > .container {
     grid-template-columns: repeat(2, minmax(0, 154px)) !important;
     column-gap: 12px !important;
@@ -143,9 +141,18 @@ body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .
   body[data-view="home"] .home-catalog .home-tile {
     width: 100% !important;
   }
+  body[data-view="home"] .home-catalog .home-family-row > .home-tile:last-child:nth-child(odd) {
+    grid-column: 1 / -1 !important;
+    justify-self: center !important;
+    width: min(154px, 100%) !important;
+  }
 }
 @media (max-width: 360px) {
   body[data-view="home"] .home-catalog > .container {
     grid-template-columns: minmax(0, 230px) !important;
+  }
+  body[data-view="home"] .home-catalog .home-family-row > .home-tile:last-child:nth-child(odd) {
+    grid-column: auto !important;
+    width: 100% !important;
   }
 }
