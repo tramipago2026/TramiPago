@@ -48,3 +48,34 @@ body .legal-landing .legal-topic{overflow:hidden!important;min-height:0!importan
   body .legal-landing .legal-topic p{margin:0 9px 9px!important;font-size:12px!important}
   body .legal-landing .legal-topic-select{width:calc(100% - 18px)!important;margin:auto 9px 9px!important;font-size:12px!important}
 }
+
+/* Solapa fotográfica aprobada. El matiz se aplica en CSS y conserva el archivo original. */
+body .legal-landing .legal-branding-photo{
+  display:block!important;position:relative;isolation:isolate;overflow:hidden;
+  padding:0!important;min-height:0!important;
+  background:#114359!important;border-bottom:2px solid #d5b354;
+}
+body .legal-landing .legal-approved-banner{
+  display:block;width:100%;height:auto;max-width:none;
+}
+body .legal-landing .legal-branding-photo::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:#126b7926;mix-blend-mode:screen;
+}
+body .legal-landing .legal-branding-photo .legal-identity,
+body .legal-landing .legal-branding-photo .legal-header-art{display:none!important}
+body .legal-landing .legal-branding-photo .legal-intro{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip-path:inset(50%);white-space:nowrap;
+}
+@media(max-width:620px){
+  body .legal-landing .legal-branding-photo .legal-intro{
+    position:relative;width:auto;height:auto;margin:0;padding:10px 14px 14px;
+    clip-path:none;white-space:normal;text-align:center;z-index:1;
+  }
+  body .legal-landing .legal-branding-photo .legal-intro h1,
+  body .legal-landing .legal-branding-photo .legal-doctor,
+  body .legal-landing .legal-branding-photo .legal-areas{color:#fff!important}
+  body .legal-landing .legal-branding-photo .legal-intro h1 span{color:#ffda70!important}
+  body .legal-landing .legal-branding-photo .legal-intro h1{font-size:26px!important}
+}
