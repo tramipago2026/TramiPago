@@ -25,7 +25,7 @@
     let photos=document.getElementById('tramipago-legal-photo-hd');
     if(!photos){
       photos=document.createElement('link');photos.id='tramipago-legal-photo-hd';photos.rel='stylesheet';
-      photos.href='legal-photos-hd-20260918.css?v=20260918-integrado3';
+      photos.href='legal-photos-hd-20260918.css?v=20260918-integrado4';
     }
     document.head.appendChild(photos);
   }
