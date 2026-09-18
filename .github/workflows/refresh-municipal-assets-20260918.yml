@@ -1,0 +1,35 @@
+name: Renovar recursos municipales (una vez)
+on:
+  push:
+    paths:
+      - .github/workflows/refresh-municipal-assets-20260918.yml
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Actualizar exclusivamente las versiones de CSS y JavaScript de la portada
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          changes={
+            'site.css?v=20260914-security2':'site.css?v=20260918-municipal-card-live',
+            'promos.js?v=20260911-full-ad-carousel-v6':'promos.js?v=20260918-select-municipio-live'
+          }
+          for old,new in changes.items():
+            assert s.count(old)==1, f'No coincide recurso previo: {old}'
+            s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          git add index.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Evitar caché anterior de tarjeta y selector municipal'
+          git push
