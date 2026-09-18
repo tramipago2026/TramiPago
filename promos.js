@@ -125,9 +125,9 @@
     if(!container||container.querySelector(".home-municipal-entry"))return;
     const link=document.createElement("a");
     link.className="home-municipal-entry";
-    link.href="municipales.html";
-    link.setAttribute("aria-label","Trámites municipales: ver opciones para San Miguel y José C. Paz");
-    link.innerHTML='<img src="assets/promo-municipal-20260911.webp" alt="" loading="lazy"><span><strong>Trámites municipales</strong><small>San Miguel y José C. Paz · Elegí municipio y gestión</small></span><b>Ver opciones →</b>';
+    link.href="municipales.html#elegir-municipio";
+    link.setAttribute("aria-label","Trámites municipales: seleccionar municipio José C. Paz o San Miguel");
+    link.innerHTML='<img src="assets/promo-municipal-20260911.webp" alt="" loading="lazy"><span><strong>Trámites municipales</strong><small>San Miguel y José C. Paz · Elegí municipio y gestión</small></span><b>Seleccionar municipio</b>';
     container.appendChild(link);
   }
 
