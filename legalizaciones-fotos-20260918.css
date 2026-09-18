@@ -114,3 +114,31 @@ body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .
     font-size:.94rem!important;
   }
 }
+
+/* Se conserva el botón nativo para accesibilidad (teclado/Enter) y su ruta de formulario,
+   pero se elimina de la presentación: toda la fotografía y el texto son superficie clicable.
+   Esta regla solo afecta a las dos tarjetas de esta familia. */
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card:has(> .button[data-action="select-service"]) {
+  position:relative!important;
+  cursor:pointer!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card > .button[data-action="select-service"] {
+  position:absolute!important;
+  inset:0!important;
+  z-index:2!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:inherit!important;
+  opacity:0!important;
+  cursor:pointer!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card:focus-within {
+  outline:3px solid #29b6f6!important;
+  outline-offset:3px!important;
+}
