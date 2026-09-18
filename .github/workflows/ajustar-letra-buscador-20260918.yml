@@ -1,0 +1,42 @@
+name: Ajustar letra del buscador (una vez)
+on:
+  push:
+    paths:
+      - '.github/workflows/ajustar-letra-buscador-20260918.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Agrandar solo el rótulo y renovar la versión del buscador
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('catalog-search.js'); s=p.read_text(encoding='utf-8')
+          before='font-size:13px!important;line-height:1.2!important;text-align:left!important;'
+          assert s.count(before)==1, 'Regla CSS del rótulo no coincide'
+          s=s.replace(before,'font-size:16px!important;line-height:1.2!important;text-align:left!important;')
+          before="heading.style.setProperty('font-size','13px','important');"
+          assert s.count(before)==1, 'Regla JS del rótulo no coincide'
+          s=s.replace(before,"heading.style.setProperty('font-size','16px','important');")
+          p.write_text(s,encoding='utf-8')
+          p=Path('index.html'); s=p.read_text(encoding='utf-8')
+          before='catalog-search.js?v=20260918-search-cache-ee3efc22'
+          assert s.count(before)==1, 'Versión actual del buscador no coincide'
+          s=s.replace(before,'catalog-search.js?v=20260918-label-16px')
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check catalog-search.js
+          git add catalog-search.js index.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Agrandar a 16px el título del buscador sin cambiar el diseño'
+          git push
