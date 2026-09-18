@@ -25,7 +25,7 @@
     let photos=document.getElementById('tramipago-legal-photo-hd');
     if(!photos){
       photos=document.createElement('link');photos.id='tramipago-legal-photo-hd';photos.rel='stylesheet';
-      photos.href='legal-photos-hd-20260918.css?v=20260918-banner2';
+      photos.href='legal-photos-hd-20260918.css?v=20260918-integrado3';
     }
     document.head.appendChild(photos);
   }
@@ -48,7 +48,7 @@
     shell.innerHTML=`
       <div class="legal-widget" id="legal-consultation">
         <header class="legal-branding legal-branding-photo">
-          <img class="legal-approved-banner" src="assets/abogado-cabecera-fotografica-20260918.png" alt="" width="1774" height="294" fetchpriority="high">
+          <div class="legal-banner-window"><img class="legal-approved-banner" src="assets/abogado-cabecera-fotografica-20260918.png" alt="" width="1774" height="294" fetchpriority="high"></div>
           <div class="legal-identity"><span class="legal-emblem" aria-hidden="true">⚖</span><span>DR. FRANCISCO<br><strong>LIBERATORE</strong><small>ABOGADO</small></span></div>
           <div class="legal-intro"><h1>Consulta con <span>abogado</span></h1><p class="legal-doctor">Dr. Francisco Liberatore</p><p class="legal-specialty">Especialista en reclamos de ART</p><p class="legal-areas">ART · ACCIDENTES · SUCESIONES · LABORAL</p></div>
           <img class="legal-header-art" src="assets/header-consulta-legal-20260917.svg" alt="" width="180" height="100" loading="lazy">

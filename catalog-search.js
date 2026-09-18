@@ -64,6 +64,6 @@
   function queue(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;ensureSearch();});}
   new MutationObserver(queue).observe(document.body,{childList:true,subtree:true});window.addEventListener('hashchange',queue);queue();
   import('./commercial-display.js?v=20260915-prices1').catch(error=>console.error('TramiPago visual comercial:',error));
-  import('./header-fijo-20260917.js?v=20260917-contrast1').catch(error=>console.error('TramiPago cabecera:',error));
-  import('./legal-landing-20260917.js?v=20260918-banner2').catch(error=>console.error('TramiPago página jurídica:',error));
+  import('./header-fijo-20260917.js?v=20260918-integrado3').catch(error=>console.error('TramiPago cabecera:',error));
+  import('./legal-landing-20260917.js?v=20260918-integrado3').catch(error=>console.error('TramiPago página jurídica:',error));
 })();

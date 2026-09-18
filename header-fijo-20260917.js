@@ -7,7 +7,7 @@
   function loadStyles(){
     if(!document.getElementById(STYLE_ID)){
       const link=document.createElement('link');link.id=STYLE_ID;link.rel='stylesheet';
-      link.href='header-fijo-20260917.css?v=20260917-art2';document.head.appendChild(link);
+      link.href='header-fijo-20260917.css?v=20260918-integrado3';document.head.appendChild(link);
     }
     if(!document.getElementById('tramipago-nav-hover-black')){
       const contrast=document.createElement('link');contrast.id='tramipago-nav-hover-black';contrast.rel='stylesheet';
@@ -43,7 +43,7 @@
       const legal=document.createElement('a');legal.id=LEGAL_ID;legal.className='header-legal';legal.href=legalHref;
       legal.title='Abrir la consulta con abogado';
       legal.setAttribute('aria-label','Especialista en reclamos de ART. Abrir consulta con abogado.');
-      legal.innerHTML='<span class="header-legal-copy"><strong class="header-legal-title" style="white-space:normal!important;font-size:15px!important;line-height:1.17!important">Especialista en <em>reclamos de ART</em></strong></span><img class="header-legal-art" src="assets/header-consulta-legal-20260917.svg" alt="" aria-hidden="true" width="240" height="120">';
+      legal.innerHTML='<span class="header-legal-copy"><strong class="header-legal-title" style="white-space:normal!important;font-size:15px!important;line-height:1.17!important">Especialista en <em>reclamos de ART</em></strong></span><img class="header-legal-art" src="assets/justicia-balanza-martillo-20260918.svg" alt="" aria-hidden="true" width="240" height="120">';
       brand.insertAdjacentElement('afterend',legal);
     }
     if(!home.querySelector('.header-home-icon'))home.insertAdjacentHTML('afterbegin','<svg class="nav-icon header-home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg>');

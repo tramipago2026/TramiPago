@@ -139,3 +139,5 @@ body .site-header .header-featured .main-nav button:focus-visible{
   body .site-header .header-featured .main-nav a,body .site-header .header-featured .main-nav button{font-size:13px!important}
 }
 @media(prefers-reduced-motion:reduce){body .site-header .header-featured .header-legal{transition:none!important}}
+
+body .site-header .header-featured .header-legal-art{object-fit:contain!important;filter:none!important;border-radius:0!important}
