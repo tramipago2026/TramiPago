@@ -1,4 +1,4 @@
-/* Cabecera principal TramiPago: se navega con clic; hover solo visual. */
+/* Cabecera principal TramiPago: cada enlace se navega por clic; hover solo visual. */
 (function(){
   'use strict';
   const STYLE_ID='tramipago-header-fixed-20260917';
@@ -12,6 +12,10 @@
     if(!document.getElementById('tramipago-nav-hover-black')){
       const contrast=document.createElement('link');contrast.id='tramipago-nav-hover-black';contrast.rel='stylesheet';
       contrast.href='nav-hover-black-20260917.css?v=20260917-contrast1';document.head.appendChild(contrast);
+    }
+    if(!document.getElementById('tramipago-legal-visual-refresh')){
+      const refresh=document.createElement('link');refresh.id='tramipago-legal-visual-refresh';refresh.rel='stylesheet';
+      refresh.href='legal-design-refresh-20260917.css?v=20260917-centro2';document.head.appendChild(refresh);
     }
   }
   function updateCurrentPage(){
