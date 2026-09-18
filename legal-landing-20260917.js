@@ -20,8 +20,14 @@
       refresh=document.createElement('link');refresh.id='tramipago-legal-visual-refresh';refresh.rel='stylesheet';
       refresh.href='legal-design-refresh-20260917.css?v=20260917-centro2';
     }
-    /* El override debe quedar DESPUÉS del CSS base incluso si la cabecera lo insertó antes. */
+    /* Los overrides se agregan al final para preservar el diseño general. */
     document.head.appendChild(refresh);
+    let photos=document.getElementById('tramipago-legal-photo-hd');
+    if(!photos){
+      photos=document.createElement('link');photos.id='tramipago-legal-photo-hd';photos.rel='stylesheet';
+      photos.href='legal-photos-hd-20260918.css?v=20260918-approved-hd1';
+    }
+    document.head.appendChild(photos);
   }
   function composeMessage({topic='',name='',phone='',query=''}){
     const lines=['Hola, quiero iniciar una consulta jurídica mediante TramiPago para el Dr. Francisco Liberatore.'];
