@@ -8,13 +8,15 @@
 <link rel="icon" href="assets/logo-tramipago.webp" type="image/webp">
 <style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#082a47;background:#edf5fa}*{box-sizing:border-box}body{margin:0;line-height:1.45}a{color:inherit}a:focus-visible{outline:3px solid #24b6e9;outline-offset:3px}header{background:#102e49;color:white}header .wrap{min-height:88px;display:flex;align-items:center;justify-content:space-between;gap:16px}header img{width:75px;height:75px;object-fit:contain}nav a{display:inline-block;padding:9px 14px;border:1px solid #90adc0;border-radius:8px;text-decoration:none;font-weight:700}.wrap{width:min(1050px,calc(100% - 32px));margin-inline:auto}.intro{padding:25px 0 15px;text-align:center}.intro h1{font-size:clamp(1.7rem,3vw,2.2rem);margin:0 0 6px}.intro p{max-width:750px;margin:0 auto;font-size:1.04rem}.towns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:18px auto 25px}.town{background:#fff;border:1px solid #c4d7e4;border-radius:14px;overflow:hidden;box-shadow:0 7px 20px rgba(8,42,71,.1);display:flex;flex-direction:column}.town .heading{padding:18px 20px 9px;background:#e6f4f9}.town:nth-child(2) .heading{background:#f6eddc}.town h2{font-size:1.4rem;margin:0 0 5px}.town p{margin:0 0 12px}.town .content{padding:15px 20px 20px;display:flex;flex-direction:column;flex:1}.town ul{padding-left:22px;margin:3px 0 16px}.town li{margin:5px 0}.actions{margin-top:auto;display:flex;flex-wrap:wrap;gap:9px}.action{min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:10px 13px;border-radius:8px;font-weight:800;text-decoration:none;border:2px solid #082a47;background:#fff;color:#082a47}.action.primary{background:#17854f;color:white;border-color:#105e38}.action:hover{filter:brightness(.94)}.note{margin:8px auto 24px;padding:15px 19px;border:1px solid #b6d4e8;border-radius:12px;background:#fff}.note h2{font-size:1.16rem;margin:0 0 6px}.note p{margin:0 0 8px}.note p:last-child{margin-bottom:0}.note a{font-weight:700;text-decoration:underline}footer{background:#102e49;color:#fff;padding:15px 0}footer .wrap{display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap;font-size:.88rem}footer a{color:#fff}@media(max-width:700px){.towns{grid-template-columns:1fr}.intro{padding-top:18px}.town .heading,.town .content{padding-inline:15px}header .wrap{min-height:76px}header img{width:65px;height:65px}}
-/* Identidad visual de cada municipio: conservar proporciones del logo, sin recortes ni fotos genéricas. */
-.town .town-media{display:flex;justify-content:center;align-items:center;width:100%;height:185px;margin:0;padding:22px 28px;overflow:hidden;background:#fff;border-bottom:1px solid #d8e5ee}
-.town .town-media img{display:block;max-width:100%;max-height:145px;width:auto;height:auto;object-fit:contain;object-position:center}
-.town:first-child .town-media img{max-width:min(100%,210px)}
-.town:nth-child(2) .town-media img{max-width:min(100%,390px)}
-.town .heading{padding-top:15px}.town .heading h2{font-weight:800}
-@media(max-width:700px){.town .town-media{height:175px;padding:18px 24px}.town .town-media img{max-height:135px}}
+/* Cabeceras compactas con la paleta del catálogo TramiPago. Se conservan los logos oficiales y sus proporciones. */
+.town .town-media{display:flex;align-items:center;justify-content:center;width:100%;height:124px;margin:0;padding:14px 22px;overflow:hidden;background:linear-gradient(115deg,#102e49 0%,#144e6d 100%);border-bottom:3px solid #29b6f6}
+.town:nth-child(2) .town-media{background:linear-gradient(115deg,#102e49 0%,#16445c 100%)}
+.town .town-media img{display:block;object-fit:contain;object-position:center;max-width:100%;max-height:100%;width:auto;height:auto;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.19)}
+.town:first-child .town-media img{width:94px;height:94px;padding:5px;border-radius:50%}
+.town:nth-child(2) .town-media img{width:min(100%,300px);height:76px;padding:9px 14px;border-radius:10px}
+.town .heading{padding-top:15px}
+.town .heading h2{font-weight:800}
+@media(max-width:700px){.town .town-media{height:116px;padding:12px 16px}.town:first-child .town-media img{width:86px;height:86px}.town:nth-child(2) .town-media img{width:min(100%,280px);height:72px}}
 </style>
 </head>
 <body>
