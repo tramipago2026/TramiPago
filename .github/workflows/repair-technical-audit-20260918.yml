@@ -1,0 +1,66 @@
+name: Corregir fallos técnicos verificados sin tocar diseño
+
+on:
+  push:
+    paths:
+      - '.github/workflows/repair-technical-audit-20260918.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Corregir sincronización y validación de correcciones con coincidencias exactas
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          def replace_once(name, old, new):
+              path=Path(name)
+              text=path.read_text(encoding='utf-8')
+              count=text.count(old)
+              assert count==1, f'{name}: se esperó una coincidencia, encontradas {count}: {old[:60]!r}'
+              path.write_text(text.replace(old,new,1),encoding='utf-8')
+          replace_once('backend-sync.js','  let activationMs=0;','  let activationMs=0;\n  let rerunRequested=false;')
+          replace_once('backend-sync.js','    if(!client||syncing)return;\n    syncing=true;','    if(!client)return;\n    if(syncing){rerunRequested=true;return;}\n    syncing=true;')
+          replace_once('backend-sync.js','    }finally{syncing=false;}','    }finally{syncing=false;if(rerunRequested){rerunRequested=false;queueSync();}}')
+          replace_once('backend-sync.js','      const errorBox=form.querySelector(".form-error");\n      try{\n        const patch={};','      const errorBox=form.querySelector(".form-error");\n      if(!form.checkValidity()){\n        if(errorBox){errorBox.textContent="Completá los campos obligatorios antes de enviar la corrección.";errorBox.classList.add("visible");}\n        form.reportValidity();\n        return;\n      }\n      try{\n        const patch={};')
+          replace_once('security-hardening.js','    const errorBox=form.querySelector(".form-error");\n    if(errorBox){errorBox.textContent="";errorBox.classList.remove("visible");}\n    try{\n      const patch={};','    const errorBox=form.querySelector(".form-error");\n    if(errorBox){errorBox.textContent="";errorBox.classList.remove("visible");}\n    if(!form.checkValidity()){\n      if(errorBox){errorBox.textContent="Completá los campos obligatorios antes de enviar la corrección.";errorBox.classList.add("visible");}\n      form.reportValidity();\n      return;\n    }\n    try{\n      const patch={};')
+          replace_once('index.html','security-hardening.js?v=20260916-audit2','security-hardening.js?v=20260918-correction-validation1')
+          replace_once('index.html','backend-sync.js?v=20260916-audit2','backend-sync.js?v=20260918-sync-race1')
+          replace_once('tests/live-site-smoke.mjs','backend-sync.js?v=20260916-audit2','backend-sync.js?v=20260918-sync-race1')
+          print('PASS: cambios puntuales, comprobados por coincidencias únicas; no se modificaron estilos, precios, imágenes ni textos comerciales.')
+          PY
+      - name: Verificar sintaxis, recursos, rutas, formularios y seguridad de precios
+        run: |
+          node --check backend-sync.js
+          node --check security-hardening.js
+          node tests/site-integrity.mjs
+          node tests/municipal-route.mjs
+          node tests/header-navigation.mjs
+          node tests/legal-landing.mjs
+          node tests/abogado-fotos-aprobadas.mjs
+          node tests/pricing-privacy-contract.mjs
+          grep -q 'if(syncing){rerunRequested=true;return;}' backend-sync.js
+          grep -q 'if(rerunRequested){rerunRequested=false;queueSync();}' backend-sync.js
+          test "$(grep -c 'if(!form.checkValidity())' security-hardening.js)" -eq 1
+      - name: Guardar solo cuatro archivos técnicos auditados
+        run: |
+          git add backend-sync.js security-hardening.js index.html tests/live-site-smoke.mjs
+          python - <<'PY'
+          import subprocess
+          changed=set(subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines())
+          expected={'backend-sync.js','security-hardening.js','index.html','tests/live-site-smoke.mjs'}
+          assert changed==expected, f'Cambio fuera del alcance: {changed ^ expected}'
+          print('PASS: únicamente archivos técnicos y control de versión; ningún CSS ni imagen.')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Evitar solicitudes sin sincronizar y validar correcciones antes del envío'
+          git push
