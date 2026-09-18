@@ -1,0 +1,66 @@
+/* Correcciones visuales solicitadas: cabecera centrada, botones contrastados y landing luminosa.
+   Este archivo se carga después de los estilos anteriores para evitar una regresión en otras familias. */
+@media(min-width:1181px){
+  body .site-header .header-inner.header-featured{position:relative!important}
+  body .site-header .header-featured .header-slogan{
+    position:absolute!important;left:50%!important;top:50%!important;
+    transform:translate(-50%,-50%)!important;width:max-content!important;
+    max-width:calc(100% - 720px)!important;margin:0!important;
+    grid-column:auto!important;grid-row:auto!important;z-index:1;
+  }
+}
+body .site-header .header-featured .main-nav .nav-home{
+  border:2px solid #151c25!important;color:#0b2236!important;background:#fff!important;
+}
+body .site-header.header-featured-active .header-featured .main-nav .nav-home:is(:hover,:focus-visible){
+  color:#080b10!important;border:2px solid #080b10!important;background:#e1f5ff!important;
+  filter:none!important;box-shadow:0 0 0 3px #bdeeff,0 4px 10px #0004!important;
+}
+body .site-header.header-featured-active .header-featured .main-nav .nav-tracking:is(:hover,:focus-visible){
+  color:#080b10!important;border:2px solid #080b10!important;background:#a9e6ff!important;filter:none!important;
+}
+body .site-header.header-featured-active .header-featured .main-nav .nav-help:is(:hover,:focus-visible){
+  color:#080b10!important;border:2px solid #080b10!important;background:#a6f0c2!important;filter:none!important;
+}
+body .site-header.header-featured-active .header-featured .main-nav :is(.nav-home,.nav-tracking,.nav-help):is(:hover,:focus-visible) svg{
+  color:#080b10!important;stroke:#080b10!important;
+}
+body .legal-landing{background:radial-gradient(ellipse 82% 90% at 52% 25%,#fff 0%,#ecfbff 40%,#d2effb 75%,#b0dcee 100%)!important;color:#112f46!important}
+body .legal-landing .legal-widget{
+  border:2px solid #c8993f!important;
+  background:radial-gradient(ellipse 90% 85% at 50% 17%,#fff 0%,#eaf9ff 36%,#aed9ec 100%)!important;
+  box-shadow:0 12px 28px #1d52702d!important;
+}
+body .legal-landing .legal-branding{
+  background:radial-gradient(ellipse 83% 180% at 48% 52%,#fff 1%,#edfaff 40%,#bae4f7 74%,#9dd4eb 100%)!important;
+  border-bottom:1px solid #80b8d2;
+}
+body .legal-landing .legal-widget-body{
+  background:radial-gradient(ellipse 82% 95% at 49% 14%,#fff 0%,#f0fbff 32%,#cdeefa 68%,#9ccee6 100%)!important;
+}
+body .legal-landing .legal-identity,body .legal-landing .legal-identity strong,
+body .legal-landing .legal-intro h1,body .legal-landing .legal-doctor,
+body .legal-landing .legal-areas,body .legal-landing .legal-line h2,
+body .legal-landing .legal-line p,body .legal-landing .legal-inputs label{
+  color:#102d47!important;
+}
+body .legal-landing .legal-identity small{color:#725018!important}
+body .legal-landing .legal-emblem{background:#102d47!important;color:#f5c969!important}
+body .legal-landing .legal-intro h1 span{color:#83570b!important}
+body .legal-landing .legal-specialty{color:#152b3f!important;border:1.5px solid #a77717!important;background:#ffe6aa!important}
+body .legal-landing .legal-inputs label span{color:#355e75!important}
+body .legal-landing .legal-inputs input,body .legal-landing .legal-inputs textarea{
+  background:#fff!important;color:#102d47!important;border:1.5px solid #537a95!important;
+}
+body .legal-landing .legal-inputs input::placeholder,body .legal-landing .legal-inputs textarea::placeholder{color:#52697a!important}
+body .legal-landing .legal-send{box-shadow:0 5px 12px #0756313b!important}
+body .legal-landing .legal-note{display:none!important}
+/* Tarjetas aprobadas, sin bordes blancos ni superposición del texto con las fotos. */
+body .legal-landing .legal-topic-grid{gap:12px!important}
+body .legal-landing .legal-topic{transition:transform .18s ease,box-shadow .18s ease!important}
+body .legal-landing .legal-topic:hover{transform:translateY(-3px)!important;box-shadow:0 8px 18px #143c5140!important}
+body .legal-landing .legal-topic-photo{height:185px!important}
+@media(max-width:980px){body .legal-landing .legal-topic-photo{height:205px!important}}
+@media(max-width:620px){body .legal-landing .legal-topic-photo{height:145px!important}}
+@media(max-width:360px){body .legal-landing .legal-topic-photo{height:200px!important}}
+@media(prefers-reduced-motion:reduce){body .legal-landing .legal-topic{transition:none!important}}
