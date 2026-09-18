@@ -1,18 +1,22 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const read=path=>fs.readFileSync(new URL(`../${path}`,import.meta.url),'utf8');
-const promos=read('promos.js'),search=read('catalog-search.js'),catalog=read('tramites.html'),page=read('municipales.html');
+const promos=read('promos.js'),search=read('catalog-search.js'),catalog=read('tramites.html'),page=read('municipales.html'),styles=read('site.css');
 // Auditoría estática: no suplanta verificaciones con datos reales de contribuyentes.
 assert.match(promos,/promo-municipal-20260911\.webp[^\n]*href:["']municipales\.html["']/,'Anuncio municipal conduce a Municipales');
 assert.match(promos,/function ensureMunicipalEntry\(/,'Entrada municipal definida');
 assert.match(promos,/ensureMunicipalEntry\(\);/,'Entrada municipal montada');
-assert.match(promos,/link\.href=["']municipales\.html["']/,'Entrada municipal vinculada');
+assert.match(promos,/link\.href=["']municipales\.html#elegir-municipio["']/,'Entrada municipal vinculada al selector');
+assert.match(promos,/<b>Seleccionar municipio<\/b>/,'Botón municipal con rótulo solicitado');
 assert.match(search,/title:["']Trámites municipales: San Miguel y José C\. Paz["']/,'Municipales indexados en buscador');
 assert.match(search,/href:["']municipales\.html["']/,'Buscador conduce a Municipales');
 assert.match(catalog,/<h2>Trámites municipales — San Miguel y José C\. Paz<\/h2>/,'Municipales en catálogo');
 assert.match(catalog,/href="municipales\.html"/,'Catálogo municipal vinculado');
 assert.match(catalog,/href="index\.html#\/familia\/legalizaciones-apostillas"/,'Legalizaciones en catálogo');
 assert.match(catalog,/href="index\.html#\/familia\/atencion-abogado"/,'Abogados en catálogo');
+assert.match(page,/id="elegir-municipio"/,'Formulario selector visible');
+assert.match(page,/name="municipio" value="jose-paz"/,'Opción José C. Paz');
+assert.match(page,/name="municipio" value="san-miguel"/,'Opción San Miguel');
 assert.match(page,/id="san-miguel"/,'San Miguel');
 assert.match(page,/id="jose-paz"/,'José C. Paz');
 assert.match(page,/https:\/\/pagos\.msm\.gov\.ar\//,'Portal San Miguel');
@@ -21,7 +25,10 @@ assert.ok(page.includes('municipal%20de%20San%20Miguel'),'Mensaje identifica San
 assert.ok(page.includes('municipal%20de%20Jos%C3%A9%20C.%20Paz'),'Mensaje identifica José C. Paz');
 assert.match(page,/No se comprobó un portal web/,'No promete portal no verificado');
 assert.match(page,/honorarios|Honorarios|precio/,'Condiciones comerciales identificadas');
+assert.match(styles,/municipal-20260918\.avif/,'Imagen nueva usada por la tarjeta municipal');
+assert.match(styles,/home-municipal-entry:hover>b/,'Texto del botón cambia al pasar el cursor');
 assert.ok(fs.existsSync(new URL('../assets/logo-tramipago.webp',import.meta.url)),'Logo');
-assert.ok(fs.existsSync(new URL('../assets/promo-municipal-20260911.webp',import.meta.url)),'Imagen municipal existente');
-console.log('PASS: municipal, carrusel, inicio, buscador, catálogo, familias y recursos locales.');
+assert.ok(fs.existsSync(new URL('../assets/promo-municipal-20260911.webp',import.meta.url)),'Imagen municipal del carrusel');
+assert.ok(fs.existsSync(new URL('../assets/municipal-20260918.avif',import.meta.url)),'Imagen municipal aprobada');
+console.log('PASS: imagen, selector, hover, carrusel, inicio, buscador, catálogo y destinos municipales.');
 console.log('Límite: revisión estática, sin operaciones reales ni pagos.');
