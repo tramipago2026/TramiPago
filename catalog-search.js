@@ -20,6 +20,19 @@
       .catalog-search-result span{margin-top:2px;color:#607789;font-size:.82rem}
       .catalog-search-empty{margin:8px 0 0;padding:9px 11px;color:#607789;text-align:center;font-size:.86rem}
       @media(max-width:620px){.catalog-search{margin-bottom:18px}.catalog-search input{min-height:46px}}
+      /* Solo buscador de Inicio: rótulo compacto y caja en la misma fila. */
+      @media(min-width:761px){
+        body[data-view="home"] .home-catalog .home-main-heading{
+          grid-column:1 / 3!important;grid-row:1!important;
+          align-self:start!important;margin:15px 0 0!important;
+          font-size:.9rem!important;line-height:1.2!important;
+          text-align:left!important;white-space:nowrap!important;
+        }
+        body[data-view="home"] .home-catalog .catalog-search{
+          grid-column:3 / -1!important;grid-row:1!important;
+          min-width:0!important;max-width:none!important;margin:0 0 2px!important;
+        }
+      }
     `;document.head.appendChild(style);
   }
   function serviceById(id){return (window.TRAMI_SERVICES||[]).find(item=>item.id===id)||null;}
@@ -47,9 +60,12 @@
   function ensureSearch(){
     if((location.hash||'#/')!=='#/'&&location.hash)return;
     const container=document.querySelector('.home-catalog .container');
-    if(!container||document.getElementById(SEARCH_ID))return;injectStyles();
+    if(!container)return;
+    const heading=container.querySelector('.home-main-heading');
+    if(heading&&heading.textContent!=='Elegí el trámite que necesitás:')heading.textContent='Elegí el trámite que necesitás:';
+    if(document.getElementById(SEARCH_ID))return;injectStyles();
     const section=document.createElement('section');section.id=SEARCH_ID;section.className='catalog-search';section.setAttribute('aria-label','Buscador de trámites');
-    section.innerHTML=`<div class="catalog-search-box"><label for="tramipago-search-input">¿Qué trámite necesitás?</label><input id="tramipago-search-input" type="search" autocomplete="off" placeholder="Ej.: municipal, partida, monotributo, antecedentes" /></div><div class="catalog-search-results" aria-live="polite"></div>`;
+    section.innerHTML=`<div class="catalog-search-box"><label for="tramipago-search-input">¿Qué trámite necesitás?</label><input id="tramipago-search-input" type="search" autocomplete="off" placeholder="Ej.: antecedentes, apostillas, ART" /></div><div class="catalog-search-results" aria-live="polite"></div>`;
     container.insertBefore(section,container.firstChild);
     const input=section.querySelector('input');const results=section.querySelector('.catalog-search-results');const index=buildIndex();
     input.addEventListener('input',()=>{
