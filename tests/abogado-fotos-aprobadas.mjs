@@ -1,23 +1,27 @@
-// Regresión: se quitaron las cuatro fotos pixeladas sin perder temas ni formulario.
+// Regresión del catálogo jurídico: fotos aprobadas verificadas, textos y botones HTML reales.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
-// Dividir la ruta para que el verificador de imágenes no confunda este CSS con un recurso gráfico.
-const cardStylesPath='assets/'+'abogado-tarjetas-fotos-20260917.css';
-const asset=read(cardStylesPath);
+const sprite=readFileSync(new URL('../assets/abogado-fotos-20260918.avif',import.meta.url));
+const photos=read('legal-photos-hd-20260918.css');
+const asset=read('assets/abogado-tarjetas-fotos-20260917.css');
 const page=read('legal-landing-20260917.css');
 const js=read('legal-landing-20260917.js');
-assert.ok(page.includes('abogado-tarjetas-fotos-20260917.css'),'Se cargan los estilos de las tarjetas');
-assert.ok(!asset.includes('data:image/'),'Se eliminó el WebP embebido');
-assert.ok(!asset.includes('background-image:url('),'Las tarjetas no cargan imágenes pixeladas');
-assert.ok(!js.includes('legal-topic-photo'),'La página no genera elementos fotográficos');
-assert.ok(js.includes('legal-topic-grid'),'La grilla de cuatro temas se mantiene');
+assert.equal(sprite.length,20534,'Tamaño exacto de imágenes AVIF aprobadas');
+assert.equal(createHash('sha256').update(sprite).digest('hex'),'8a54321db0596416526bdf81b40be1ca931a69b77db585f74a9f64fb1e711167','Imagen aprobada incompleta o alterada');
+assert.ok(page.includes('abogado-tarjetas-fotos-20260917.css'),'Se mantienen estilos del catálogo');
+assert.ok(!asset.includes('data:image/'),'Se retiró el antiguo sprite de muy baja calidad');
+assert.ok(js.includes('legal-photos-hd-20260918.css'),'El formulario carga el nuevo CSS al final');
+assert.ok(photos.includes('assets/abogado-fotos-20260918.avif'),'Las fotos nuevas están conectadas');
 for(const name of ['art','accidentes','sucesiones','laboral']){
-  assert.ok(js.includes("id:'"+name+"'"),'Se conserva el tema '+name);
+  assert.ok(photos.includes('[data-topic-card="'+name+'"]'),'Falta recorte de '+name);
+  assert.ok(js.includes("id:'"+name+"'"),'Falta botón interactivo para '+name);
 }
-assert.ok(js.includes('data-legal-topic="${t.id}"'),'Las tarjetas conservan botones interactivos');
-assert.ok(js.includes('aria-pressed'),'Selección accesible y reversible');
-assert.ok(js.includes('legal-whatsapp-form'),'Se conserva el formulario');
+assert.ok(photos.includes('background-size:100% 400%'),'Cada fotografía ocupa su propio recorte, sin ampliar un thumbnail');
+assert.ok(!js.includes('legal-topic-photo'),'Los textos y botones no están incrustados en la fotografía');
+assert.ok(js.includes('aria-pressed'),'Selección única reversible');
+assert.ok(js.includes('legal-whatsapp-form'),'Formulario existente conservado');
 assert.ok(js.includes('fullName')&&js.includes('phone')&&js.includes('query'),'Tres campos opcionales conservados');
-console.log('PASS: cuatro tarjetas sin imágenes pixeladas; textos, selección y formulario conservados.');
-console.log('Límite: prueba estática; no equivale a verificación visual del sitio publicado.');
+console.log('PASS: sprite AVIF íntegro, cuatro fotos de alta definición, botones y formulario intactos.');
+console.log('Límite: prueba estática; la inspección visual del navegador queda pendiente.');
