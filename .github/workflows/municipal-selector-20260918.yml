@@ -1,0 +1,55 @@
+name: Implementar selector municipal (una vez)
+on:
+  push:
+    paths:
+      - .github/workflows/municipal-selector-20260918.yml
+permissions:
+  contents: write
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Corregir solo enlace y selección municipal
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('promos.js'); s=p.read_text(encoding='utf-8')
+          old='link.href="municipales.html";'
+          assert s.count(old)==1, 'No coincide el enlace municipal vigente'
+          s=s.replace(old,'link.href="municipales.html#elegir-municipio";')
+          old='link.setAttribute("aria-label","Trámites municipales: ver opciones para San Miguel y José C. Paz");'
+          assert s.count(old)==1, 'No coincide el texto accesible vigente'
+          s=s.replace(old,'link.setAttribute("aria-label","Trámites municipales: seleccionar municipio José C. Paz o San Miguel");')
+          old="<b>Ver opciones →</b>"
+          assert s.count(old)==1, 'No coincide el botón municipal vigente'
+          s=s.replace(old,'<b>Seleccionar municipio</b>')
+          p.write_text(s,encoding='utf-8')
+          p=Path('municipales.html'); s=p.read_text(encoding='utf-8')
+          assert s.count('<div class="towns">')==1
+          picker='''<form id="elegir-municipio" class="municipal-picker" aria-labelledby="municipal-picker-heading"><h2 id="municipal-picker-heading">Seleccioná tu municipio</h2><p>Elegí el partido para consultar las gestiones disponibles.</p><fieldset><legend>Municipio</legend><label class="municipal-choice"><input type="radio" name="municipio" value="jose-paz" required><span>José C. Paz</span></label><label class="municipal-choice"><input type="radio" name="municipio" value="san-miguel" required><span>San Miguel</span></label></fieldset><button class="action primary municipal-continue" type="submit">Seleccionar municipio</button></form>'''
+          s=s.replace('<div class="towns">',picker+'\n<div class="towns" id="municipal-results">',1)
+          assert s.count('<section class="town" aria-labelledby="san-miguel">')==1
+          assert s.count('<section class="town" aria-labelledby="jose-paz">')==1
+          s=s.replace('<section class="town" aria-labelledby="san-miguel">','<section class="town" id="municipio-san-miguel" aria-labelledby="san-miguel" hidden>',1)
+          s=s.replace('<section class="town" aria-labelledby="jose-paz">','<section class="town" id="municipio-jose-paz" aria-labelledby="jose-paz" hidden>',1)
+          css='''.municipal-picker{max-width:800px;margin:12px auto 24px;padding:20px;border:2px solid #155f7d;border-radius:14px;background:#f6fcff;box-shadow:0 5px 14px rgba(8,42,71,.09);text-align:center}.municipal-picker h2{margin:0 0 4px;font-size:clamp(1.25rem,3vw,1.65rem)}.municipal-picker p{margin:0 0 13px}.municipal-picker fieldset{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 16px;padding:0;border:0}.municipal-picker legend{width:100%;margin-bottom:8px;font-weight:800;text-align:left}.municipal-choice{display:flex;align-items:center;justify-content:center;gap:10px;min-height:60px;padding:10px 15px;background:#fff;border:2px solid #8bbbd4;border-radius:11px;font-size:1.1rem;font-weight:800;cursor:pointer}.municipal-choice:hover,.municipal-choice:focus-within,.municipal-choice:has(input:checked){border-color:#050505;background:#e9f8ff;box-shadow:0 3px 8px rgba(0,0,0,.13)}.municipal-choice input{width:21px;height:21px;accent-color:#087c56}.municipal-continue{min-width:min(300px,100%);font-size:1rem;cursor:pointer}.municipal-continue:hover,.municipal-continue:focus-visible{color:#050505!important;border-color:#050505!important;box-shadow:0 4px 11px rgba(0,0,0,.28);outline:0}.town[hidden]{display:none!important}.towns.is-selected{grid-template-columns:minmax(0,850px);justify-content:center}@media(max-width:600px){.municipal-picker{padding:15px}.municipal-picker fieldset{grid-template-columns:1fr}.municipal-choice{min-height:54px}}'''
+          assert s.count('</style>')==1
+          s=s.replace('</style>',css+'\n</style>',1)
+          js='''<script>(function(){"use strict";const form=document.getElementById("elegir-municipio"),results=document.getElementById("municipal-results");if(!form||!results)return;function choose(id,scroll){if(!["jose-paz","san-miguel"].includes(id))return;form.querySelectorAll('input[name="municipio"]').forEach(input=>input.checked=input.value===id);results.querySelectorAll(".town").forEach(section=>section.hidden=section.id!=="municipio-"+id);results.classList.add("is-selected");if(scroll)results.scrollIntoView({behavior:"smooth",block:"start"});}form.addEventListener("submit",event=>{event.preventDefault();const selected=form.querySelector('input[name="municipio"]:checked');if(selected)choose(selected.value,true);});const hash=location.hash.slice(1);if(hash==="san-miguel"||hash==="jose-paz")choose(hash,false);})();</script>'''
+          assert s.count('</body>')==1
+          s=s.replace('</body>',js+'\n</body>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check promos.js
+          git add promos.js municipales.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Conectar Seleccionar municipio a formulario con dos partidos'
+          git push
