@@ -42,3 +42,9 @@
   box-shadow:var(--shadow-card)!important;
   transform:none!important;
 }
+
+/* Quitar exclusivamente la tarjeta aislada de abogado del catálogo de inicio.
+   La sección de abogados y el acceso del encabezado siguen funcionando. */
+body[data-view="home"] .home-catalog .home-family-row > .home-tile[data-family-id="atencion-abogado"] {
+  display:none!important;
+}
