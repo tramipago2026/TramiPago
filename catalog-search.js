@@ -24,7 +24,7 @@
       @media(min-width:761px){
         body[data-view="home"] .home-catalog .home-main-heading{
           grid-column:1 / 2!important;grid-row:1!important;align-self:center!important;
-          font-size:13px!important;line-height:1.2!important;text-align:left!important;
+          font-size:16px!important;line-height:1.2!important;text-align:left!important;
           white-space:nowrap!important;margin:0!important;
         }
         body[data-view="home"] .home-catalog .catalog-search{
@@ -65,7 +65,7 @@
         heading.style.setProperty('grid-column','1 / 2','important');
         heading.style.setProperty('grid-row','1','important');
         heading.style.setProperty('align-self','center','important');
-        heading.style.setProperty('font-size','13px','important');
+        heading.style.setProperty('font-size','16px','important');
         heading.style.setProperty('line-height','1.2','important');
         heading.style.setProperty('text-align','left','important');
         heading.style.setProperty('white-space','nowrap','important');
