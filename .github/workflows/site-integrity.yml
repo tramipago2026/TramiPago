@@ -20,6 +20,8 @@ jobs:
           node-version: '22'
       - name: Verificar enlaces locales, imágenes y sintaxis JavaScript
         run: node tests/site-integrity.mjs
+      - name: Verificar destinos de todas las tarjetas y estructura de todos los formularios
+        run: node tests/catalog-form-contract.mjs
       - name: Verificar recorrido municipal de publicidad a gestiones
         run: node tests/municipal-route.mjs
       - name: Verificar cabecera, consulta legal y destinos de botones
@@ -28,3 +30,5 @@ jobs:
         run: node tests/legal-landing.mjs
       - name: Verificar cuatro recortes aprobados y su conexión al formulario
         run: node tests/abogado-fotos-aprobadas.mjs
+      - name: Verificar precios y tokens temporales
+        run: node tests/pricing-privacy-contract.mjs
