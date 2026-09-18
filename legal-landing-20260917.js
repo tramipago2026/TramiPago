@@ -11,9 +11,14 @@
     {id:'laboral',name:'Laboral',desc:'Consultas por despidos, trabajo no registrado, diferencias salariales y otros conflictos laborales.'}
   ];
   function loadStyles(){
-    if(document.getElementById(STYLE_ID))return;
-    const link=document.createElement('link');link.id=STYLE_ID;link.rel='stylesheet';
-    link.href='legal-landing-20260917.css?v=20260917-cards2';document.head.appendChild(link);
+    if(!document.getElementById(STYLE_ID)){
+      const link=document.createElement('link');link.id=STYLE_ID;link.rel='stylesheet';
+      link.href='legal-landing-20260917.css?v=20260917-visual4';document.head.appendChild(link);
+    }
+    if(!document.getElementById('tramipago-legal-visual-refresh')){
+      const refresh=document.createElement('link');refresh.id='tramipago-legal-visual-refresh';refresh.rel='stylesheet';
+      refresh.href='legal-design-refresh-20260917.css?v=20260917-centro2';document.head.appendChild(refresh);
+    }
   }
   function composeMessage({topic='',name='',phone='',query=''}){
     const lines=['Hola, quiero iniciar una consulta jurídica mediante TramiPago para el Dr. Francisco Liberatore.'];
@@ -51,7 +56,6 @@
               <label class="legal-query-label">Consulta breve <span>(opcional)</span><textarea name="query" rows="2" maxlength="1400" placeholder="Contanos tu situación"></textarea></label>
             </div>
             <button class="legal-send" type="submit">Iniciar consulta <span aria-hidden="true">↗</span></button>
-            <p class="legal-note">El botón abre WhatsApp con tu mensaje preparado. Podés revisarlo antes de enviarlo; el envío no es automático.</p>
           </form>
         </section>
       </div>`;
