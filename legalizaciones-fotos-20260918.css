@@ -1,0 +1,116 @@
+/* Solo familia Legalizaciones y Apostillas. No altera otras tarjetas, rutas ni formularios.
+   Fotografías de Unsplash (licencia de uso comercial). Fallback: ilustraciones locales.
+   Legalizaciones: https://unsplash.com/photos/person-signing-a-document-with-a-pen-DFSa7IaWcz4
+   Apostillado: https://unsplash.com/photos/a-passport-and-a-boarding-pass-are-on-a-bag-LVA3S6isNYQ */
+
+/* Selector exclusivo de esta familia: no afecta Partidas ni el módulo de abogados. */
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-heading::before {
+  background-image:url("https://images.unsplash.com/photo-1769038947088-62455c949efc?auto=format&fit=crop&w=600&q=85"),url("assets/legalizacion-visual.svg")!important;
+  background-position:center 53%!important;
+  background-size:cover!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-grid {
+  grid-template-columns:repeat(2,minmax(0,306px))!important;
+  max-width:690px!important;
+  gap:20px!important;
+  align-items:stretch!important;
+  margin:24px auto 36px!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card {
+  min-width:0!important;
+  border:1px solid #c4d8e6!important;
+  border-radius:14px!important;
+  box-shadow:0 9px 24px rgba(8,42,71,.15)!important;
+  transition:box-shadow .2s ease,transform .2s ease!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card:hover {
+  box-shadow:0 14px 30px rgba(8,42,71,.20)!important;
+  transform:translateY(-2px);
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card::before {
+  height:174px!important;
+  background-color:#123b54!important;
+  background-position:center!important;
+  background-size:cover!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card:nth-child(1)::before {
+  background-image:url("https://images.unsplash.com/photo-1769038947088-62455c949efc?auto=format&fit=crop&w=1000&q=85"),url("assets/legalizacion-visual.svg")!important;
+  background-position:center 52%!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card:nth-child(2)::before {
+  background-image:url("https://images.unsplash.com/photo-1586441133374-ed1cb4007a47?auto=format&fit=crop&w=1000&q=85"),url("assets/apostillado-visual.svg")!important;
+  background-position:center 55%!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card > div {
+  padding:17px 17px 12px!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card h2 {
+  margin:0 0 8px!important;
+  font-size:1.18rem!important;
+  font-weight:800!important;
+  line-height:1.24!important;
+  color:#082a47!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card p {
+  font-size:.9rem!important;
+  line-height:1.48!important;
+  color:#29465a!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card .service-card-mini {
+  margin-top:14px!important;
+  padding-top:12px!important;
+  border-top:1px solid #d8e5ec!important;
+  color:#082a47!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card .service-summary-option {
+  gap:8px!important;
+  align-items:center!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card .service-summary-option strong {
+  font-size:.86rem!important;
+  line-height:1.35!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card .service-summary-option small {
+  font-size:.81rem!important;
+  color:#45647a!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card > .button {
+  width:calc(100% - 34px)!important;
+  margin:0 17px 17px!important;
+  min-height:46px!important;
+  font-size:.94rem!important;
+  font-weight:800!important;
+  border:2px solid #050505!important;
+  border-radius:9px!important;
+}
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card > .button:hover,
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card > .button:focus-visible {
+  border-color:#050505!important;
+}
+@media(max-width:700px){
+  body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:14px!important;
+  }
+  body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card::before {
+    height:142px!important;
+  }
+}
+@media(max-width:560px){
+  body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-grid {
+    grid-template-columns:minmax(0,350px)!important;
+    justify-content:center!important;
+    gap:20px!important;
+  }
+  body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card::before {
+    height:170px!important;
+  }
+  body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card > div {
+    padding:15px 15px 12px!important;
+  }
+  body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card > .button {
+    width:calc(100% - 30px)!important;
+    margin:0 15px 15px!important;
+    font-size:.94rem!important;
+  }
+}
