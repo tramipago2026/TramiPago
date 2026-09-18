@@ -13,7 +13,7 @@
   function loadStyles(){
     if(!document.getElementById(STYLE_ID)){
       const link=document.createElement('link');link.id=STYLE_ID;link.rel='stylesheet';
-      link.href='legal-landing-20260917.css?v=20260917-visual4';document.head.appendChild(link);
+      link.href='legal-landing-20260917.css?v=20260917-sinfotos1';document.head.appendChild(link);
     }
     let refresh=document.getElementById('tramipago-legal-visual-refresh');
     if(!refresh){
@@ -49,7 +49,7 @@
         <section class="legal-widget-body" aria-labelledby="legal-topic-title">
           <div class="legal-line"><h2 id="legal-topic-title"><span class="legal-num">1</span> Elegí el tema de tu consulta</h2><p>Opcional: si seleccionás un tema, se incluye en el mensaje.</p></div>
           <div class="legal-topic-grid" role="group" aria-label="Seleccionar un tema opcional">
-            ${topics.map(t=>`<article class="legal-topic" data-topic-card="${t.id}"><div class="legal-topic-photo" aria-hidden="true"></div><div class="legal-topic-copy"><h3>${t.name}</h3><p>${t.desc}</p><button type="button" class="legal-topic-select" data-legal-topic="${t.id}" aria-pressed="false">Seleccionar tema</button></div></article>`).join('')}
+            ${topics.map(t=>`<article class="legal-topic" data-topic-card="${t.id}"><div class="legal-topic-copy"><h3>${t.name}</h3><p>${t.desc}</p><button type="button" class="legal-topic-select" data-legal-topic="${t.id}" aria-pressed="false">Seleccionar tema</button></div></article>`).join('')}
           </div>
           <form id="legal-whatsapp-form" autocomplete="on" novalidate>
             <div class="legal-line legal-form-line"><h2><span class="legal-num">2</span> Completá tus datos</h2><p>También podés iniciar la consulta sin seleccionar tema ni completar campos.</p></div>
