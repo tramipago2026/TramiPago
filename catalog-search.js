@@ -20,17 +20,17 @@
       .catalog-search-result span{margin-top:2px;color:#607789;font-size:.82rem}
       .catalog-search-empty{margin:8px 0 0;padding:9px 11px;color:#607789;text-align:center;font-size:.86rem}
       @media(max-width:620px){.catalog-search{margin-bottom:18px}.catalog-search input{min-height:46px}}
-      /* Solo buscador de Inicio: rótulo compacto y caja en la misma fila. */
+      /* Únicamente Inicio: título y campo juntos, sin cambiar la grilla de tarjetas. */
       @media(min-width:761px){
         body[data-view="home"] .home-catalog .home-main-heading{
-          grid-column:1 / 3!important;grid-row:1!important;
-          align-self:start!important;margin:15px 0 0!important;
-          font-size:.9rem!important;line-height:1.2!important;
-          text-align:left!important;white-space:nowrap!important;
+          grid-column:1 / 3!important;grid-row:1!important;align-self:center!important;
+          font-size:13px!important;line-height:1.2!important;text-align:left!important;
+          white-space:nowrap!important;margin:0!important;
         }
         body[data-view="home"] .home-catalog .catalog-search{
-          grid-column:3 / -1!important;grid-row:1!important;
-          min-width:0!important;max-width:none!important;margin:0 0 2px!important;
+          grid-column:3 / -1!important;grid-row:1!important;align-self:center!important;
+          width:100%!important;min-width:0!important;max-width:none!important;
+          margin:0!important;padding:0!important;
         }
       }
     `;document.head.appendChild(style);
@@ -57,16 +57,50 @@
     });
     return entries.map(entry=>({...entry,search:normalize(entry.text)}));
   }
+  function syncSearchLayout(container,section){
+    const heading=container.querySelector('.home-main-heading');
+    if(heading){
+      if(heading.textContent!=='Elegí el trámite que necesitás:')heading.textContent='Elegí el trámite que necesitás:';
+      if(window.innerWidth>=761){
+        heading.style.setProperty('grid-column','1 / 3','important');
+        heading.style.setProperty('grid-row','1','important');
+        heading.style.setProperty('align-self','center','important');
+        heading.style.setProperty('font-size','13px','important');
+        heading.style.setProperty('line-height','1.2','important');
+        heading.style.setProperty('text-align','left','important');
+        heading.style.setProperty('white-space','nowrap','important');
+        heading.style.setProperty('margin','0','important');
+      }else{
+        ['grid-column','grid-row','align-self','font-size','line-height','text-align','white-space','margin'].forEach(prop=>heading.style.removeProperty(prop));
+      }
+    }
+    if(!section)return;
+    const input=section.querySelector('input');
+    if(input)input.placeholder='Ej.: antecedentes penales, apostillas, ART';
+    if(window.innerWidth>=761){
+      section.style.setProperty('grid-column','3 / -1','important');
+      section.style.setProperty('grid-row','1','important');
+      section.style.setProperty('align-self','center','important');
+      section.style.setProperty('width','100%','important');
+      section.style.setProperty('max-width','none','important');
+      section.style.setProperty('min-width','0','important');
+      section.style.setProperty('padding','0','important');
+      section.style.setProperty('margin','0','important');
+    }else{
+      ['grid-column','grid-row','align-self','width','max-width','min-width','padding','margin'].forEach(prop=>section.style.removeProperty(prop));
+    }
+  }
   function ensureSearch(){
     if((location.hash||'#/')!=='#/'&&location.hash)return;
     const container=document.querySelector('.home-catalog .container');
     if(!container)return;
-    const heading=container.querySelector('.home-main-heading');
-    if(heading&&heading.textContent!=='Elegí el trámite que necesitás:')heading.textContent='Elegí el trámite que necesitás:';
-    if(document.getElementById(SEARCH_ID))return;injectStyles();
-    const section=document.createElement('section');section.id=SEARCH_ID;section.className='catalog-search';section.setAttribute('aria-label','Buscador de trámites');
-    section.innerHTML=`<div class="catalog-search-box"><label for="tramipago-search-input">¿Qué trámite necesitás?</label><input id="tramipago-search-input" type="search" autocomplete="off" placeholder="Ej.: antecedentes, apostillas, ART" /></div><div class="catalog-search-results" aria-live="polite"></div>`;
+    injectStyles();
+    let section=document.getElementById(SEARCH_ID);
+    if(section){syncSearchLayout(container,section);return;}
+    section=document.createElement('section');section.id=SEARCH_ID;section.className='catalog-search';section.setAttribute('aria-label','Buscador de trámites');
+    section.innerHTML=`<div class="catalog-search-box"><label for="tramipago-search-input">¿Qué trámite necesitás?</label><input id="tramipago-search-input" type="search" autocomplete="off" placeholder="Ej.: antecedentes penales, apostillas, ART" /></div><div class="catalog-search-results" aria-live="polite"></div>`;
     container.insertBefore(section,container.firstChild);
+    syncSearchLayout(container,section);
     const input=section.querySelector('input');const results=section.querySelector('.catalog-search-results');const index=buildIndex();
     input.addEventListener('input',()=>{
       const term=normalize(input.value);if(term.length<2){results.innerHTML='';return;}
@@ -78,7 +112,7 @@
   }
   let queued=false;
   function queue(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;ensureSearch();});}
-  new MutationObserver(queue).observe(document.body,{childList:true,subtree:true});window.addEventListener('hashchange',queue);queue();
+  new MutationObserver(queue).observe(document.body,{childList:true,subtree:true});window.addEventListener('hashchange',queue);window.addEventListener('resize',queue,{passive:true});queue();
   import('./commercial-display.js?v=20260915-prices1').catch(error=>console.error('TramiPago visual comercial:',error));
   import('./header-fijo-20260917.js?v=20260918-boton5').catch(error=>console.error('TramiPago cabecera:',error));
   import('./legal-landing-20260917.js?v=20260918-integrado4').catch(error=>console.error('TramiPago página jurídica:',error));
