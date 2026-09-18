@@ -43,20 +43,18 @@
   transform:none!important;
 }
 
-/* Quitar exclusivamente la tarjeta aislada de abogado del catálogo de inicio.
-   La sección de abogados y el acceso del encabezado siguen funcionando. */
+/* La consulta jurídica permanece accesible en la cabecera, sin tarjeta duplicada. */
 body[data-view="home"] .home-catalog .home-family-row > .home-tile[data-family-id="atencion-abogado"] {
   display:none!important;
 }
 
-/* Portada de escritorio: centrar las dos columnas dentro del ancho disponible.
-   El carrusel acompaña el scroll normal: no queda fijo sobre el contenido.
-   No se modifican cabecera, pie, tarjetas, enlaces ni otras páginas. */
+/* Inicio en escritorio: un único conjunto centrado, carrusel alineado al catálogo.
+   El carrusel permanece a la vista al bajar, sin superponerse al pie de página. */
 @media (min-width:1120px){
   body[data-view="home"].promo-rail-layout{
-    grid-template-columns:minmax(12px,1fr) clamp(310px,28vw,380px) minmax(0,820px) minmax(12px,1fr)!important;
+    grid-template-columns:minmax(12px,1fr) clamp(300px,28vw,360px) minmax(0,740px) minmax(12px,1fr)!important;
     grid-template-rows:auto auto auto!important;
-    column-gap:20px!important;
+    column-gap:24px!important;
     align-content:start!important;
   }
   body[data-view="home"].promo-rail-layout > .site-header,
@@ -66,8 +64,9 @@ body[data-view="home"] .home-catalog .home-family-row > .home-tile[data-family-i
   body[data-view="home"].promo-rail-layout > .promo-side-rail{
     grid-column:2!important;
     grid-row:2!important;
-    align-self:start!important;
+    align-self:stretch!important;
     min-width:0!important;
+    padding:12px 0 0!important;
     background:transparent!important;
     border-right:0!important;
     overflow:visible!important;
@@ -81,9 +80,12 @@ body[data-view="home"] .home-catalog .home-family-row > .home-tile[data-family-i
     grid-row:3!important;
   }
   body[data-view="home"].promo-rail-layout .promo-side-rail .promo-rail-inner{
-    position:static!important;
-    top:auto!important;
-    padding:12px 0 0!important;
+    position:sticky!important;
+    top:126px!important;
+    width:100%!important;
+    max-width:360px!important;
+    margin:0 auto!important;
+    padding:0!important;
     gap:10px!important;
   }
   body[data-view="home"].promo-rail-layout .promo-side-rail .promo-rail-card,
@@ -92,5 +94,8 @@ body[data-view="home"] .home-catalog .home-family-row > .home-tile[data-family-i
     max-width:360px!important;
     margin-left:auto!important;
     margin-right:auto!important;
+  }
+  body[data-view="home"].promo-rail-layout .home-catalog{
+    padding-top:12px!important;
   }
 }
