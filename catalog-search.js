@@ -20,15 +20,15 @@
       .catalog-search-result span{margin-top:2px;color:#607789;font-size:.82rem}
       .catalog-search-empty{margin:8px 0 0;padding:9px 11px;color:#607789;text-align:center;font-size:.86rem}
       @media(max-width:620px){.catalog-search{margin-bottom:18px}.catalog-search input{min-height:46px}}
-      /* Únicamente Inicio: título y campo juntos, sin cambiar la grilla de tarjetas. */
+      /* Inicio: rótulo corto en la primera columna, campo ancho en las otras tres. */
       @media(min-width:761px){
         body[data-view="home"] .home-catalog .home-main-heading{
-          grid-column:1 / 3!important;grid-row:1!important;align-self:center!important;
+          grid-column:1 / 2!important;grid-row:1!important;align-self:center!important;
           font-size:13px!important;line-height:1.2!important;text-align:left!important;
           white-space:nowrap!important;margin:0!important;
         }
         body[data-view="home"] .home-catalog .catalog-search{
-          grid-column:3 / -1!important;grid-row:1!important;align-self:center!important;
+          grid-column:2 / -1!important;grid-row:1!important;align-self:center!important;
           width:100%!important;min-width:0!important;max-width:none!important;
           margin:0!important;padding:0!important;
         }
@@ -60,9 +60,9 @@
   function syncSearchLayout(container,section){
     const heading=container.querySelector('.home-main-heading');
     if(heading){
-      if(heading.textContent!=='Elegí el trámite que necesitás:')heading.textContent='Elegí el trámite que necesitás:';
+      if(heading.textContent!=='Ingresá el trámite:')heading.textContent='Ingresá el trámite:';
       if(window.innerWidth>=761){
-        heading.style.setProperty('grid-column','1 / 3','important');
+        heading.style.setProperty('grid-column','1 / 2','important');
         heading.style.setProperty('grid-row','1','important');
         heading.style.setProperty('align-self','center','important');
         heading.style.setProperty('font-size','13px','important');
@@ -78,7 +78,7 @@
     const input=section.querySelector('input');
     if(input)input.placeholder='Ej.: antecedentes penales, apostillas, ART';
     if(window.innerWidth>=761){
-      section.style.setProperty('grid-column','3 / -1','important');
+      section.style.setProperty('grid-column','2 / -1','important');
       section.style.setProperty('grid-row','1','important');
       section.style.setProperty('align-self','center','important');
       section.style.setProperty('width','100%','important');
