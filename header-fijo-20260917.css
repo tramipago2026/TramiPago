@@ -141,3 +141,25 @@ body .site-header .header-featured .main-nav button:focus-visible{
 @media(prefers-reduced-motion:reduce){body .site-header .header-featured .header-legal{transition:none!important}}
 
 body .site-header .header-featured .header-legal-art{object-fit:contain!important;filter:none!important;border-radius:0!important}
+
+/* Ajuste exclusivo de la oblea del abogado. */
+body .site-header .header-inner.header-featured .header-legal{
+  grid-template-columns:minmax(0,1fr) 60px;gap:8px;
+  height:82px;min-height:82px;padding:8px 10px;
+  border:2px solid #050505;box-shadow:0 3px 8px #0006;
+  align-self:center;transform:none;
+}
+body .site-header .header-inner.header-featured .header-legal-copy{gap:4px;align-items:flex-start;text-align:left;justify-content:center}
+body .site-header .header-inner.header-featured .header-legal-title{font:800 21px/1.05 'Segoe UI',Arial,sans-serif!important;letter-spacing:0}
+body .site-header .header-inner.header-featured .header-legal-subtitle{font:600 13px/1.25 'Segoe UI',Arial,sans-serif!important;white-space:normal!important}
+body .site-header .header-inner.header-featured .header-legal-subtitle em{font-style:normal;color:#f7cf79;font-weight:750;white-space:nowrap}
+body .site-header .header-inner.header-featured .header-legal-photo{
+  display:block;width:60px;height:62px;border-radius:7px;
+  background:#0a2638 url('assets/abogado-cabecera-fotografica-20260918.png') 91% center / auto 120% no-repeat;
+}
+body .site-header .header-inner.header-featured .header-legal:is(:hover,:focus-visible){border-color:#050505;box-shadow:0 0 0 1px #050505,0 5px 12px #0008;transform:none;outline:2px solid #050505;outline-offset:2px}
+@media(min-width:841px) and (max-width:1120px){
+ body .site-header .header-inner.header-featured .header-legal{height:75px;min-height:75px;grid-template-columns:minmax(0,1fr) 48px;padding:6px 8px;gap:6px}
+ body .site-header .header-inner.header-featured .header-legal-photo{width:48px;height:58px}
+ body .site-header .header-inner.header-featured .header-legal-subtitle{font-size:12px!important}
+}

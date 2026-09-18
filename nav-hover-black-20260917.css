@@ -1,5 +1,12 @@
-/* La cabecera conserva sus colores de identidad, pero muestra texto y bordes negros al interactuar. */
-body .site-header.header-featured-active .header-featured .main-nav .nav-home:is(:hover,:focus-visible){background:#fff!important;color:#050505!important;border-color:#050505!important;box-shadow:0 0 0 3px #ffffff63,0 3px 9px #0005!important;outline:none}
-body .site-header.header-featured-active .header-featured .main-nav .nav-tracking:is(:hover,:focus-visible){background:#93d9ff!important;color:#050505!important;border-color:#050505!important;box-shadow:0 0 0 3px #ffffff63,0 3px 9px #0005!important;outline:none}
-body .site-header.header-featured-active .header-featured .main-nav .nav-help:is(:hover,:focus-visible){background:#80ecac!important;color:#050505!important;border-color:#050505!important;box-shadow:0 0 0 3px #ffffff63,0 3px 9px #0005!important;outline:none}
-body .site-header.header-featured-active .header-featured .main-nav :is(a,button):focus-visible{outline:3px solid #ffd36f!important;outline-offset:3px!important}
+/* Inicio, Estado y Ayuda: borde y sombra negros en todos los estados. */
+body .site-header.header-featured-active .header-inner.header-featured .main-nav :is(.nav-home,.nav-tracking,.nav-help){border:2px solid #050505!important;box-shadow:0 2px 6px #0006!important}
+body .site-header.header-featured-active .header-inner.header-featured .main-nav :is(.nav-home,.nav-tracking,.nav-help):is(:hover,:focus-visible){
+ color:#050505!important;border-color:#050505!important;
+ box-shadow:0 0 0 1px #050505,0 4px 9px #0009!important;
+ outline:none!important;filter:none!important;transform:none!important;
+}
+body .site-header.header-featured-active .header-inner.header-featured .main-nav .nav-home:is(:hover,:focus-visible){background:#fff!important}
+body .site-header.header-featured-active .header-inner.header-featured .main-nav .nav-tracking:is(:hover,:focus-visible){background:#93d9ff!important}
+body .site-header.header-featured-active .header-inner.header-featured .main-nav .nav-help:is(:hover,:focus-visible){background:#80ecac!important}
+body .site-header.header-featured-active .header-inner.header-featured .main-nav :is(.nav-home,.nav-tracking,.nav-help):is(:hover,:focus-visible) svg{color:#050505!important;stroke:#050505!important}
+body .site-header.header-featured-active .header-inner.header-featured .main-nav :is(.nav-home,.nav-tracking,.nav-help):focus-visible{outline:2px solid #050505!important;outline-offset:3px!important}
