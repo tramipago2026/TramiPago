@@ -1,0 +1,43 @@
+name: Actualizar carga del buscador una sola vez
+
+on:
+  push:
+    paths:
+      - '.github/workflows/one-time-search-cache-20260918.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar el cambio limitado y renovar versión del recurso
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          index = Path('index.html')
+          current = index.read_text(encoding='utf-8')
+          old = 'catalog-search.js?v=20260918-boton5'
+          new = 'catalog-search.js?v=20260918-search-cache-ee3efc22'
+          assert current.count(old) == 1, 'La referencia del buscador cambió, abortar sin tocar nada.'
+          js = Path('catalog-search.js').read_text(encoding='utf-8')
+          assert "heading.textContent='Ingresá el trámite:'" in js, 'El nuevo texto no está presente.'
+          assert "input.placeholder='Ej.: antecedentes penales, apostillas, ART'" in js, 'Faltan ejemplos nuevos.'
+          assert "section.style.setProperty('grid-column','2 / -1','important')" in js, 'Falta ampliar el campo.'
+          index.write_text(current.replace(old, new), encoding='utf-8')
+          print('PASS: únicamente se renovó la URL del JavaScript en index.html.')
+          PY
+          git diff --check
+          test "$(git diff --name-only)" = index.html
+      - name: Confirmar integridad del sitio
+        run: node tests/site-integrity.mjs
+      - name: Publicar cambio puntual
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Renovar URL del buscador para mostrar el texto y ancho actualizados'
+          git push
