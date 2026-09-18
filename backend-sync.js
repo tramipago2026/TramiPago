@@ -16,6 +16,7 @@
   let syncQueued=false;
   let internalWrite=false;
   let activationMs=0;
+  let rerunRequested=false;
 
   const DB_TO_UI={
     awaiting_payment:"payment_pending",
@@ -266,7 +267,8 @@
   }
 
   async function syncAll(){
-    if(!client||syncing)return;
+    if(!client)return;
+    if(syncing){rerunRequested=true;return;}
     syncing=true;
     try{
       const list=requests();
@@ -285,7 +287,7 @@
         saveRequests(list);
         window.dispatchEvent(new HashChangeEvent("hashchange"));
       }
-    }finally{syncing=false;}
+    }finally{syncing=false;if(rerunRequested){rerunRequested=false;queueSync();}}
   }
 
   function queueSync(){
@@ -424,6 +426,11 @@
       event.preventDefault();
       event.stopImmediatePropagation();
       const errorBox=form.querySelector(".form-error");
+      if(!form.checkValidity()){
+        if(errorBox){errorBox.textContent="Completá los campos obligatorios antes de enviar la corrección.";errorBox.classList.add("visible");}
+        form.reportValidity();
+        return;
+      }
       try{
         const patch={};
         for(const field of service.fields||[]){

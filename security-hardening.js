@@ -212,6 +212,11 @@
     event.stopImmediatePropagation();
     const errorBox=form.querySelector(".form-error");
     if(errorBox){errorBox.textContent="";errorBox.classList.remove("visible");}
+    if(!form.checkValidity()){
+      if(errorBox){errorBox.textContent="Completá los campos obligatorios antes de enviar la corrección.";errorBox.classList.add("visible");}
+      form.reportValidity();
+      return;
+    }
     try{
       const patch={};
       for(const field of service.fields||[]){
