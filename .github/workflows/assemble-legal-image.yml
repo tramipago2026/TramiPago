@@ -1,0 +1,25 @@
+name: Assemble approved legal photographs
+on:
+  push:
+    paths:
+      - '.image-import/legal-20260918.part1'
+      - '.image-import/legal-20260918.part2'
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rebuild and verify approved photographs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .image-import/legal-20260918.part1 .image-import/legal-20260918.part2 > assets/abogado-fotos-20260918.avif
+          echo '8a54321db0596416526bdf81b40be1ca931a69b77db585f74a9f64fb1e711167  assets/abogado-fotos-20260918.avif' | sha256sum --check --status
+          test "$(wc -c < assets/abogado-fotos-20260918.avif)" -eq 20534
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/abogado-fotos-20260918.avif
+          git commit -m 'Agregar fotografías aprobadas de alta definición para abogado'
+          git push origin HEAD:main
