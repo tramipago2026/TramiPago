@@ -24,3 +24,4 @@ jobs:
         env:
           SITE_URL: https://tramipago2026.github.io/TramiPago/
         run: node tests/live-site-smoke.mjs
+# Disparo de auditoría HTTP tras corregir la validación y sincronización, 2026-09-18.
