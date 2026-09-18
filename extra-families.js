@@ -204,7 +204,7 @@
     {
       id:"legalizaciones-apostillas",
       name:"Legalizaciones y Apostillas",
-      description:"Dos gestiones: Legalizaciones y Apostillado.",
+      description:"Elegí si necesitás legalizar o apostillar tu documento.",
       image:"assets/partidas-familia-final.webp",
       serviceIds:["legalizaciones","apostilla-tad"]
     },
