@@ -29,6 +29,6 @@ assert.match(styles,/f3de14_b18f1125127b4cc0a399602aa63de1b2~mv2\.png/,'Imagen n
 assert.match(styles,/home-municipal-entry>b:hover/,'Texto del botón cambia al pasar el cursor');
 assert.ok(fs.existsSync(new URL('../assets/logo-tramipago.webp',import.meta.url)),'Logo');
 assert.ok(fs.existsSync(new URL('../assets/promo-municipal-20260911.webp',import.meta.url)),'Imagen municipal del carrusel');
-assert.ok(fs.existsSync(new URL('../assets/municipal-20260918.avif',import.meta.url)),'Imagen municipal aprobada');
+assert.doesNotMatch(styles,/municipal-20260918\.avif/,'Sin recurso municipal obsoleto en CSS');
 console.log('PASS: imagen, selector, hover, carrusel, inicio, buscador, catálogo y destinos municipales.');
 console.log('Límite: revisión estática, sin operaciones reales ni pagos.');
