@@ -9,7 +9,6 @@
   --shadow-card:0 7px 20px rgba(8,42,71,.16);
   --shadow-card-hover:0 13px 30px rgba(8,42,71,.22);
 }
-
 .home-catalog .home-tile,
 .partidas-jurisdiction-card,
 .partidas-type-card{
@@ -17,24 +16,20 @@
   box-shadow:var(--shadow-card)!important;
   transition:box-shadow .18s ease,transform .18s ease!important;
 }
-
 .home-catalog .home-tile:hover,
 .partidas-jurisdiction-card:hover,
 .partidas-type-card:hover{
   box-shadow:var(--shadow-card-hover)!important;
   transform:translateY(-3px)!important;
 }
-
 .home-catalog .home-tile:focus-visible,
 .partidas-jurisdiction-card:focus-visible,
 .partidas-type-card:focus-visible{
   box-shadow:0 0 0 3px var(--focus-ring),var(--shadow-card-hover)!important;
 }
-
 .partidas-jurisdiction-card.is-selected{
   box-shadow:0 0 0 4px var(--cyan),var(--shadow-card-hover)!important;
 }
-
 .home-catalog .home-tile.is-unavailable:hover,
 .home-catalog .home-tile.is-unavailable:focus-visible,
 .partidas-type-card.is-unavailable:hover,
@@ -42,14 +37,11 @@
   box-shadow:var(--shadow-card)!important;
   transform:none!important;
 }
-
 /* La consulta jurídica permanece accesible en la cabecera, sin tarjeta duplicada. */
-body[data-view="home"] .home-catalog .home-family-row > .home-tile[data-family-id="atencion-abogado"] {
+body[data-view="home"] .home-catalog .home-family-row > .home-tile[data-family-id="atencion-abogado"]{
   display:none!important;
 }
-
-/* Inicio en escritorio: un único conjunto centrado, carrusel alineado al catálogo.
-   El carrusel permanece a la vista al bajar, sin superponerse al pie de página. */
+/* Se conserva el diseño original de la grilla y del carrusel. */
 @media (min-width:1120px){
   body[data-view="home"].promo-rail-layout{
     grid-template-columns:minmax(12px,1fr) clamp(300px,28vw,360px) minmax(0,740px) minmax(12px,1fr)!important;
@@ -58,88 +50,120 @@ body[data-view="home"] .home-catalog .home-family-row > .home-tile[data-family-i
     align-content:start!important;
   }
   body[data-view="home"].promo-rail-layout > .site-header,
-  body[data-view="home"].promo-rail-layout > .site-footer{
-    grid-column:1/-1!important;
-  }
+  body[data-view="home"].promo-rail-layout > .site-footer{grid-column:1/-1!important}
   body[data-view="home"].promo-rail-layout > .promo-side-rail{
-    grid-column:2!important;
-    grid-row:2!important;
-    align-self:stretch!important;
-    min-width:0!important;
-    padding:12px 0 0!important;
-    background:transparent!important;
-    border-right:0!important;
-    overflow:visible!important;
+    grid-column:2!important;grid-row:2!important;align-self:stretch!important;
+    min-width:0!important;padding:12px 0 0!important;background:transparent!important;
+    border-right:0!important;overflow:visible!important;
   }
   body[data-view="home"].promo-rail-layout > .site-main{
-    grid-column:3!important;
-    grid-row:2!important;
-    min-width:0!important;
+    grid-column:3!important;grid-row:2!important;min-width:0!important;
   }
-  body[data-view="home"].promo-rail-layout > .site-footer{
-    grid-row:3!important;
-  }
+  body[data-view="home"].promo-rail-layout > .site-footer{grid-row:3!important}
   body[data-view="home"].promo-rail-layout .promo-side-rail .promo-rail-inner{
-    position:sticky!important;
-    top:126px!important;
-    width:100%!important;
-    max-width:360px!important;
-    margin:0 auto!important;
-    padding:0!important;
-    gap:10px!important;
+    position:sticky!important;top:126px!important;width:100%!important;
+    max-width:360px!important;margin:0 auto!important;padding:0!important;gap:10px!important;
   }
   body[data-view="home"].promo-rail-layout .promo-side-rail .promo-rail-card,
   body[data-view="home"].promo-rail-layout .promo-side-rail .promo-rail-controls{
-    width:100%!important;
-    max-width:360px!important;
-    margin-left:auto!important;
-    margin-right:auto!important;
+    width:100%!important;max-width:360px!important;margin-left:auto!important;margin-right:auto!important;
   }
-  body[data-view="home"].promo-rail-layout .home-catalog{
-    padding-top:12px!important;
-  }
+  body[data-view="home"].promo-rail-layout .home-catalog{padding-top:12px!important}
 }
 
-/* Una sola tarjeta municipal. Coordenadas del botón medidas en imagen 1993x789:
-   x=757..1237, y=584..667. Sin zoom ni máscaras que duplican fondos. */
+/* Tarjeta municipal limpia. El fondo original contiene un botón dibujado:
+   se muestran EXCLUSIVAMENTE sus franjas fotográficas izquierda y derecha.
+   El centro es HTML: no existe imagen ni segundo fondo verde bajo el botón. */
 body[data-view="home"] .home-catalog .home-municipal-entry{
-  position:relative!important;display:block!important;grid-column:1/-1!important;
-  order:3!important;width:100%!important;max-width:740px!important;
+  position:relative!important;grid-column:1/-1!important;order:3!important;
+  display:grid!important;grid-template-columns:33.5% 33% 33.5%!important;
+  align-items:stretch!important;justify-items:stretch!important;
+  width:100%!important;max-width:740px!important;min-width:0!important;
   min-height:0!important;aspect-ratio:2.83!important;
-  margin:4px auto 0!important;padding:0!important;overflow:hidden!important;
-  border:0!important;border-radius:12px!important;
-  background:#f2fcff url("https://static.wixstatic.com/media/f3de14_b18f1125127b4cc0a399602aa63de1b2~mv2.png") center / 100% 100% no-repeat!important;
+  margin:4px auto 0!important;padding:0!important;gap:0!important;
+  overflow:hidden!important;border:2px solid #31ae8b!important;
+  border-radius:12px!important;background:#f5ffff!important;
   box-shadow:0 4px 13px rgba(8,42,71,.14)!important;
   color:#082a47!important;text-decoration:none!important;cursor:pointer!important;
   transform:none!important;
 }
-body[data-view="home"] .home-catalog .home-municipal-entry>img,
-body[data-view="home"] .home-catalog .home-municipal-entry>span{display:none!important}
+body[data-view="home"] .home-catalog .home-municipal-entry::before,
+body[data-view="home"] .home-catalog .home-municipal-entry::after{
+  content:""!important;display:block!important;position:relative!important;
+  grid-row:1!important;min-width:0!important;min-height:0!important;
+  background-image:url("https://static.wixstatic.com/media/f3de14_b18f1125127b4cc0a399602aa63de1b2~mv2.png")!important;
+  background-size:298.50746% 100%!important;background-repeat:no-repeat!important;
+  border:0!important;box-shadow:none!important;pointer-events:none!important;
+}
+body[data-view="home"] .home-catalog .home-municipal-entry::before{
+  grid-column:1!important;background-position:left center!important;
+  border-radius:9px 0 0 9px!important;
+}
+body[data-view="home"] .home-catalog .home-municipal-entry::after{
+  grid-column:3!important;background-position:right center!important;
+  border-radius:0 9px 9px 0!important;
+}
+body[data-view="home"] .home-catalog .home-municipal-entry>img{display:none!important}
+body[data-view="home"] .home-catalog .home-municipal-entry>span{
+  display:flex!important;grid-column:2!important;grid-row:1!important;
+  align-items:center!important;justify-content:flex-start!important;
+  flex-direction:column!important;gap:7px!important;min-width:0!important;
+  margin:0!important;padding:13px 5px 61px!important;
+  background:linear-gradient(180deg,#faffff 0%,#f1fffd 100%)!important;
+  text-align:center!important;color:#092b63!important;
+}
+body[data-view="home"] .home-catalog .home-municipal-entry>span::before{
+  content:""!important;display:block!important;flex:0 0 auto!important;
+  width:43px!important;height:37px!important;border-radius:10px!important;
+  background:#e5f6ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='%230a8050' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 18 24 7l18 11M9 20h30M8 40h32M13 22v15M21 22v15M29 22v15M37 22v15'/%3E%3C/svg%3E") center / 31px 31px no-repeat!important;
+}
+body[data-view="home"] .home-catalog .home-municipal-entry>span strong{
+  display:block!important;font-size:clamp(12px,1.72vw,20px)!important;
+  font-weight:850!important;line-height:1.1!important;color:#09245c!important;
+}
+body[data-view="home"] .home-catalog .home-municipal-entry>span small{
+  display:block!important;font-size:clamp(10px,1.12vw,14px)!important;
+  font-weight:650!important;line-height:1.25!important;color:#173976!important;
+}
+/* Único botón visible y clicable dentro del enlace al formulario municipal. */
 body[data-view="home"] .home-catalog .home-municipal-entry>b{
-  position:absolute!important;left:37.82%!important;top:73.78%!important;
-  box-sizing:border-box!important;width:24.4%!important;height:11.25%!important;
+  position:absolute!important;left:35%!important;bottom:8%!important;
+  box-sizing:border-box!important;width:30%!important;height:19%!important;
   min-width:0!important;min-height:0!important;margin:0!important;
   display:flex!important;align-items:center!important;justify-content:center!important;
-  padding:0 2px!important;border:4px solid transparent!important;border-radius:999px!important;
+  padding:0 5px!important;border:4px solid transparent!important;border-radius:999px!important;
   background:#087c47!important;color:#fff!important;box-shadow:none!important;
-  font-size:clamp(9px,1.05vw,13px)!important;font-weight:800!important;
-  line-height:1.1!important;text-align:center!important;white-space:nowrap!important;
-  opacity:0!important;transition:opacity .1s ease,color .1s ease,border-color .1s ease!important;
+  opacity:1!important;visibility:visible!important;
+  font-size:clamp(10px,1.13vw,14px)!important;font-weight:800!important;
+  line-height:1.12!important;text-align:center!important;white-space:nowrap!important;
+  transition:color .12s ease,border-color .12s ease!important;
 }
 body[data-view="home"] .home-catalog .home-municipal-entry:hover{
-  outline:0!important;box-shadow:0 4px 13px rgba(8,42,71,.14)!important;
-  transform:none!important;
-}
-body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible{
-  outline:2px solid #050505!important;outline-offset:2px!important;transform:none!important;
+  background:#f5ffff!important;outline:0!important;
+  box-shadow:0 4px 13px rgba(8,42,71,.14)!important;transform:none!important;
 }
 body[data-view="home"] .home-catalog .home-municipal-entry>b:hover,
 body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible>b{
-  opacity:1!important;background:#087c47!important;color:#050505!important;
-  border-color:#050505!important;box-shadow:none!important;
+  color:#050505!important;border-color:#050505!important;
+  background:#087c47!important;box-shadow:none!important;opacity:1!important;
+}
+body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible{
+  outline:2px solid #050505!important;outline-offset:2px!important;
 }
 @media(max-width:760px){
-  body[data-view="home"] .home-catalog .home-municipal-entry>b{
+  body[data-view="home"] .home-catalog .home-municipal-entry>span{
+    gap:3px!important;padding:7px 3px 30px!important;
+  }
+  body[data-view="home"] .home-catalog .home-municipal-entry>span::before{
+    width:23px!important;height:21px!important;background-size:18px 18px!important;
+  }
+  body[data-view="home"] .home-catalog .home-municipal-entry>span strong{
+    font-size:clamp(10px,2.4vw,15px)!important;
+  }
+  body[data-view="home"] .home-catalog .home-municipal-entry>span small{
     font-size:clamp(8px,1.8vw,11px)!important;
+  }
+  body[data-view="home"] .home-catalog .home-municipal-entry>b{
+    font-size:clamp(7px,1.9vw,11px)!important;border-width:3px!important;
   }
 }
