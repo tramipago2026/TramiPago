@@ -100,67 +100,46 @@ body[data-view="home"] .home-catalog .home-family-row > .home-tile[data-family-i
   }
 }
 
-/* Imagen aprobada como tarjeta real: únicamente afecta al acceso municipal bajo la grilla. */
+/* Única regla municipal: el botón HTML cubre totalmente el gráfico del botón
+   incluido en la imagen original; sin máscaras ni fondos superpuestos. */
 body[data-view="home"] .home-catalog .home-municipal-entry{
   position:relative!important;display:block!important;grid-column:1/-1!important;
   order:3!important;width:100%!important;max-width:740px!important;
   min-height:0!important;aspect-ratio:1983/793!important;
   margin:4px auto 0!important;padding:0!important;overflow:hidden!important;
   border:2px solid #31ae8b!important;border-radius:12px!important;
-  background:#f2fcff url("https://static.wixstatic.com/media/f3de14_1b4997be000d4fc59e190a647b19f4dd~mv2.png") center center / 100% 100% no-repeat!important;
+  background:#f2fcff url("https://static.wixstatic.com/media/f3de14_1b4997be000d4fc59e190a647b19f4dd~mv2.png") center / 100% 100% no-repeat!important;
   box-shadow:0 4px 13px rgba(8,42,71,.14)!important;
   color:#082a47!important;text-decoration:none!important;cursor:pointer!important;
-  transition:border-color .16s ease,box-shadow .16s ease!important;
 }
 body[data-view="home"] .home-catalog .home-municipal-entry>img,
 body[data-view="home"] .home-catalog .home-municipal-entry>span{display:none!important}
 body[data-view="home"] .home-catalog .home-municipal-entry>b{
-  position:absolute!important;left:34.55%!important;top:71.05%!important;
+  position:absolute!important;left:35.35%!important;top:70.7%!important;
+  box-sizing:border-box!important;width:29%!important;height:17.6%!important;
+  min-width:0!important;min-height:0!important;margin:0!important;
   display:flex!important;align-items:center!important;justify-content:center!important;
-  box-sizing:border-box!important;width:27.55%!important;height:14.8%!important;min-width:0!important;min-height:0!important;
-  margin:0!important;padding:0 3px!important;
-  border:4px solid transparent!important;border-radius:999px!important;
-  color:#fff!important;background:linear-gradient(180deg,#20a963,#067d49)!important;
-  box-shadow:0 4px 10px rgba(0,0,0,.12)!important;
-  font-size:clamp(9px,1.25vw,15px)!important;font-weight:800!important;
+  padding:0 4px!important;border:4px solid transparent!important;border-radius:999px!important;
+  background:#198754!important;color:#fff!important;box-shadow:none!important;
+  font-size:clamp(9px,1.3vw,17px)!important;font-weight:800!important;
   line-height:1.1!important;text-align:center!important;white-space:nowrap!important;
   transition:color .16s ease,border-color .16s ease,box-shadow .16s ease!important;
 }
-body[data-view="home"] .home-catalog .home-municipal-entry:hover,
-body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible{
+body[data-view="home"] .home-catalog .home-municipal-entry:hover{
   border-color:#31ae8b!important;outline:0!important;
-  box-shadow:0 4px 13px rgba(8,42,71,.14)!important;
-  transform:none!important;
+  background-color:#f2fcff!important;
+  box-shadow:0 4px 13px rgba(8,42,71,.14)!important;transform:none!important;
+}
+body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible{
+  outline:2px solid #050505!important;outline-offset:2px!important;transform:none!important;
 }
 body[data-view="home"] .home-catalog .home-municipal-entry>b:hover,
 body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible>b{
   color:#050505!important;border-color:#050505!important;
-  box-shadow:0 4px 10px rgba(0,0,0,.30)!important;
+  background:#198754!important;box-shadow:0 4px 10px rgba(0,0,0,.25)!important;
 }
 @media(max-width:760px){
-  body[data-view="home"] .home-catalog .home-municipal-entry{aspect-ratio:1983/793!important}
-  body[data-view="home"] .home-catalog .home-municipal-entry>b{font-size:clamp(8px,2.25vw,13px)!important}
-}
-
-/* Corrección definitiva de botón único municipal: tapar botón impreso bajo el control interactivo. */
-body[data-view="home"] .home-catalog .home-municipal-entry::before{
-  content:""!important;position:absolute!important;
-  left:34.25%!important;top:68.5%!important;
-  width:29%!important;height:21.5%!important;
-  background:linear-gradient(to bottom,#eafcf8 0%,#e1faf1 35%,#bcebd9 100%)!important;
-  pointer-events:none!important;z-index:1!important;
-}
-body[data-view="home"] .home-catalog .home-municipal-entry>b{
-  z-index:2!important;position:absolute!important;
-  box-sizing:border-box!important;left:34.55%!important;top:71.05%!important;
-  width:27.55%!important;height:14.8%!important;
-  color:#fff!important;background:#198754!important;
-  border:4px solid transparent!important;border-radius:999px!important;
-  box-shadow:0 2px 5px rgba(8,42,71,.12)!important;
-}
-body[data-view="home"] .home-catalog .home-municipal-entry>b:hover,
-body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible>b{
-  color:#050505!important;background:#198754!important;
-  border-color:#050505!important;
-  box-shadow:0 4px 10px rgba(0,0,0,.25)!important;
+  body[data-view="home"] .home-catalog .home-municipal-entry>b{
+    font-size:clamp(8px,2.25vw,13px)!important;
+  }
 }
