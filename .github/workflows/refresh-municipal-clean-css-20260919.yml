@@ -1,0 +1,26 @@
+name: Renovar caché de botón municipal
+on:
+  push:
+    paths:
+      - .github/workflows/refresh-municipal-clean-css-20260919.yml
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Versionar hoja CSS y verificar pruebas
+        run: |
+          grep -q 'site.css?v=20260919-single-municipal-button-fix-v2' index.html
+          sed -i 's/site.css?v=20260919-single-municipal-button-fix-v2/site.css?v=20260919-municipal-clean-rebuild-02/' index.html
+          node --check promos.js
+          node tests/municipal-route.mjs
+          git add index.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Renovar URL de estilos tras retirar superposiciones municipales'
+          git push
