@@ -1,0 +1,44 @@
+name: Publicar imagen municipal HD y hover (una vez)
+on:
+  push:
+    paths:
+      - .github/workflows/municipal-hd-hover-fix-v2-20260918.yml
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Cambio limitado a tarjeta municipal
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('site.css');s=p.read_text(encoding='utf-8')
+          old='url("assets/municipal-20260918.avif") center center / 105.4% 118%'
+          assert old in s
+          s=s.replace(old,'url("https://static.wixstatic.com/media/f3de14_1b4997be000d4fc59e190a647b19f4dd~mv2.png") center center / 100% 100%',1)
+          old='.home-municipal-entry:hover>b,'
+          assert old in s
+          s=s.replace(old,'.home-municipal-entry>b:hover,',1)
+          s=s.replace('aspect-ratio:2.83!important','aspect-ratio:1983/793!important')
+          p.write_text(s,encoding='utf-8')
+          p=Path('index.html');s=p.read_text(encoding='utf-8')
+          old='site.css?v=20260918-municipal-card-live'
+          assert old in s
+          p.write_text(s.replace(old,'site.css?v=20260918-municipal-HD-whitebutton',1),encoding='utf-8')
+          p=Path('tests/municipal-route.mjs');s=p.read_text(encoding='utf-8')
+          s=s.replace('municipal-20260918\\.avif','f3de14_1b4997be000d4fc59e190a647b19f4dd~mv2\\.png')
+          s=s.replace('home-municipal-entry:hover>b','home-municipal-entry>b:hover')
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check promos.js
+          node tests/municipal-route.mjs
+          git add site.css index.html tests/municipal-route.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Imagen HD municipal original y botón sin borde, hover negro'
+          git push
