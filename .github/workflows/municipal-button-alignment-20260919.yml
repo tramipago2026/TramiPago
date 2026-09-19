@@ -1,0 +1,74 @@
+name: Ajustar botón municipal (una vez)
+on:
+  push:
+    paths:
+      - .github/workflows/municipal-button-alignment-20260919.yml
+permissions:
+  contents: write
+jobs:
+  corregir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Ajustar exclusivamente superposición y borde del botón municipal
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('site.css')
+          css=p.read_text(encoding='utf-8')
+          before='''  position:absolute!important;left:35.15%!important;top:78.1%!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:29.7%!important;height:18%!important;min-width:0!important;min-height:0!important;
+  margin:0!important;padding:0 3px!important;
+  border:2px solid transparent!important;border-radius:999px!important;'''
+          after='''  position:absolute!important;left:34.55%!important;top:71.05%!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  box-sizing:border-box!important;width:27.55%!important;height:14.8%!important;min-width:0!important;min-height:0!important;
+  margin:0!important;padding:0 3px!important;
+  border:4px solid transparent!important;border-radius:999px!important;'''
+          assert css.count(before)==1,'No coincide la geometría actual del botón municipal'
+          css=css.replace(before,after,1)
+          before='font-size:clamp(9px,1.45vw,17px)!important;font-weight:800!important;'
+          after='font-size:clamp(9px,1.25vw,15px)!important;font-weight:800!important;'
+          assert css.count(before)==1,'No coincide tipografía del botón'
+          css=css.replace(before,after,1)
+          before='''body[data-view="home"] .home-catalog .home-municipal-entry:hover,
+body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible{
+  border-color:#050505!important;outline:0!important;
+  box-shadow:0 0 0 2px #050505,0 6px 14px rgba(0,0,0,.28)!important;
+  transform:none!important;
+}'''
+          after='''body[data-view="home"] .home-catalog .home-municipal-entry:hover{
+  border-color:#31ae8b!important;outline:0!important;
+  box-shadow:0 4px 13px rgba(8,42,71,.14)!important;
+  transform:none!important;
+}
+body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible{
+  outline:2px solid #050505!important;outline-offset:2px!important;
+  transform:none!important;
+}'''
+          assert css.count(before)==1,'No coincide el borde exterior de tarjeta'
+          css=css.replace(before,after,1)
+          p.write_text(css,encoding='utf-8')
+          p=Path('index.html')
+          html=p.read_text(encoding='utf-8')
+          before='site.css?v=20260918-municipal-HD-whitebutton'
+          after='site.css?v=20260919-municipal-button-aligned-4px'
+          assert html.count(before)==1,'No coincide versión vigente de estilos'
+          p.write_text(html.replace(before,after,1),encoding='utf-8')
+          assert 'border:4px solid transparent!important' in css
+          assert 'left:34.55%!important;top:71.05%!important' in css
+          assert 'home-municipal-entry>b:hover' in css
+          assert 'color:#050505!important;border-color:#050505!important' in css
+          print('PASS: botón municipal alineado, blanco normal, borde negro de 4 px en hover y tarjeta sin borde negro de hover')
+          PY
+          node --check promos.js
+          node tests/municipal-route.mjs
+          git add site.css index.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Alinear botón municipal y dejar borde negro de 4px solo al pasar el cursor'
+          git push
