@@ -1,0 +1,97 @@
+name: Publicar tarjeta municipal aprobada (una vez)
+on:
+  push:
+    paths:
+      - .github/workflows/publish-municipal-approved-image-20260919.yml
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Reemplazar únicamente tarjeta municipal y actualizar caché
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('site.css'); css=p.read_text(encoding='utf-8')
+          marker='/* Única regla municipal:'
+          assert css.count(marker)==1, 'Revisar estilos municipales: sección inesperada'
+          css=css.split(marker,1)[0].rstrip()+'''
+
+          /* Tarjeta municipal final: imagen aprobada con un solo botón visible.
+             La leyenda verde está en la fotografía: el enlace HTML es su zona interactiva,
+             transparente en reposo y con letra/borde negros exclusivamente en hover. */
+          body[data-view="home"] .home-catalog .home-municipal-entry{
+            position:relative!important;display:block!important;grid-column:1/-1!important;
+            order:3!important;width:100%!important;max-width:740px!important;
+            min-height:0!important;aspect-ratio:2.83!important;
+            margin:4px auto 0!important;padding:0!important;overflow:hidden!important;
+            border:0!important;border-radius:12px!important;
+            background:#f2fcff url("https://static.wixstatic.com/media/f3de14_b18f1125127b4cc0a399602aa63de1b2~mv2.png") 25% center / 105.5% 118% no-repeat!important;
+            box-shadow:0 4px 13px rgba(8,42,71,.14)!important;
+            color:#082a47!important;text-decoration:none!important;cursor:pointer!important;
+            transform:none!important;
+          }
+          body[data-view="home"] .home-catalog .home-municipal-entry>img,
+          body[data-view="home"] .home-catalog .home-municipal-entry>span{display:none!important}
+          body[data-view="home"] .home-catalog .home-municipal-entry>b{
+            position:absolute!important;left:37.45%!important;top:75.7%!important;
+            box-sizing:border-box!important;width:24.95%!important;height:12.4%!important;
+            min-width:0!important;min-height:0!important;margin:0!important;
+            display:flex!important;align-items:center!important;justify-content:center!important;
+            padding:0 2px!important;border:4px solid transparent!important;border-radius:999px!important;
+            background:#087c47!important;color:#fff!important;box-shadow:none!important;
+            font-size:clamp(9px,1.05vw,13px)!important;font-weight:800!important;
+            line-height:1.1!important;text-align:center!important;white-space:nowrap!important;
+            opacity:0!important;transition:opacity .12s ease,color .12s ease,border-color .12s ease!important;
+          }
+          body[data-view="home"] .home-catalog .home-municipal-entry:hover{
+            outline:0!important;box-shadow:0 4px 13px rgba(8,42,71,.14)!important;transform:none!important;
+          }
+          body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible{
+            outline:2px solid #050505!important;outline-offset:2px!important;transform:none!important;
+          }
+          body[data-view="home"] .home-catalog .home-municipal-entry>b:hover,
+          body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible>b{
+            opacity:1!important;background:#087c47!important;color:#050505!important;
+            border-color:#050505!important;box-shadow:0 4px 10px rgba(0,0,0,.25)!important;
+          }
+          @media(max-width:760px){
+            body[data-view="home"] .home-catalog .home-municipal-entry>b{
+              font-size:clamp(8px,1.8vw,11px)!important;
+            }
+          }
+          '''
+          assert css.count('home-municipal-entry>b:hover')==1
+          assert css.count('home-municipal-entry::before')==0
+          assert css.count('b18f1125127b4cc0a399602aa63de1b2')==1
+          p.write_text(css,encoding='utf-8')
+          p=Path('promos.js'); js=p.read_text(encoding='utf-8')
+          assert js.count('<b>Seleccionar municipio</b>')==1
+          js=js.replace('<b>Seleccionar municipio</b>','<b>Seleccioná tu municipio</b>',1)
+          assert js.count('link.href="municipales.html#elegir-municipio";')==1
+          p.write_text(js,encoding='utf-8')
+          p=Path('tests/municipal-route.mjs'); tests=p.read_text(encoding='utf-8')
+          assert tests.count('Seleccionar municipio')==1
+          tests=tests.replace('Seleccionar municipio','Seleccioná tu municipio',1)
+          assert 'f3de14_1b4997be000d4fc59e190a647b19f4dd' in tests
+          tests=tests.replace('f3de14_1b4997be000d4fc59e190a647b19f4dd','f3de14_b18f1125127b4cc0a399602aa63de1b2',1)
+          p.write_text(tests,encoding='utf-8')
+          p=Path('index.html'); html=p.read_text(encoding='utf-8')
+          old='site.css?v=20260919-municipal-clean-rebuild-02'
+          assert html.count(old)==1,'Versión CSS inesperada, detener sin cambios'
+          html=html.replace(old,'site.css?v=20260919-municipal-approved-image-one-control',1)
+          p.write_text(html,encoding='utf-8')
+          print('PASS: imagen final nueva, imagen sin nombre repetido, una sola apariencia de botón, enlace vigente y caché CSS renovada')
+          PY
+          node --check promos.js
+          node tests/municipal-route.mjs
+          git add site.css promos.js tests/municipal-route.mjs index.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Publicar tarjeta final y convertir boton verde impreso en enlace sin superposiciones'
+          git push
