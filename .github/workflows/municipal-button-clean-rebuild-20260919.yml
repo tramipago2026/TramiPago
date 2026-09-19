@@ -1,4 +1,4 @@
-name: Limpiar duplicaciones del botón municipal
+name: Renovar caché municipal sin alterar otras secciones
 on:
   push:
     paths:
@@ -6,83 +6,35 @@ on:
 permissions:
   contents: write
 jobs:
-  rebuild:
+  refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
-      - name: Sustituir reglas duplicadas por un único botón ajustado a la imagen original
+      - name: Actualizar versión del CSS municipal
         run: |
           python - <<'PY'
           from pathlib import Path
-          p=Path('site.css')
-          css=p.read_text(encoding='utf-8')
-          marker='/* Imagen aprobada como tarjeta real:'
-          assert css.count(marker)==1, 'La sección municipal de la hoja de estilos cambió; no modificar sin revisión'
-          head=css.split(marker,1)[0].rstrip()
-          new='''
-
-/* Una única tarjeta municipal. El botón HTML cubre completamente la ilustración
-   original del botón (x=35.35–64.35%, y=70.7–88.3%). Sin máscaras ni capas extra. */
-body[data-view="home"] .home-catalog .home-municipal-entry{
-  position:relative!important;display:block!important;grid-column:1/-1!important;
-  order:3!important;width:100%!important;max-width:740px!important;
-  min-height:0!important;aspect-ratio:1983/793!important;
-  margin:4px auto 0!important;padding:0!important;overflow:hidden!important;
-  border:2px solid #31ae8b!important;border-radius:12px!important;
-  background:#f2fcff url("https://static.wixstatic.com/media/f3de14_1b4997be000d4fc59e190a647b19f4dd~mv2.png") center / 100% 100% no-repeat!important;
-  box-shadow:0 4px 13px rgba(8,42,71,.14)!important;
-  color:#082a47!important;text-decoration:none!important;cursor:pointer!important;
-}
-body[data-view="home"] .home-catalog .home-municipal-entry>img,
-body[data-view="home"] .home-catalog .home-municipal-entry>span{display:none!important}
-body[data-view="home"] .home-catalog .home-municipal-entry>b{
-  position:absolute!important;left:35.35%!important;top:70.7%!important;
-  box-sizing:border-box!important;width:29%!important;height:17.6%!important;
-  min-width:0!important;min-height:0!important;margin:0!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  padding:0 4px!important;border:4px solid transparent!important;border-radius:999px!important;
-  background:#198754!important;color:#fff!important;box-shadow:none!important;
-  font-size:clamp(9px,1.3vw,17px)!important;font-weight:800!important;
-  line-height:1.1!important;text-align:center!important;white-space:nowrap!important;
-  transition:color .16s ease,border-color .16s ease,box-shadow .16s ease!important;
-}
-body[data-view="home"] .home-catalog .home-municipal-entry:hover{
-  border-color:#31ae8b!important;outline:0!important;
-  background-color:#f2fcff!important;
-  box-shadow:0 4px 13px rgba(8,42,71,.14)!important;transform:none!important;
-}
-body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible{
-  outline:2px solid #050505!important;outline-offset:2px!important;transform:none!important;
-}
-body[data-view="home"] .home-catalog .home-municipal-entry>b:hover,
-body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible>b{
-  color:#050505!important;border-color:#050505!important;
-  background:#198754!important;box-shadow:0 4px 10px rgba(0,0,0,.25)!important;
-}
-@media(max-width:760px){
-  body[data-view="home"] .home-catalog .home-municipal-entry>b{
-    font-size:clamp(8px,2.25vw,13px)!important;
-  }
-}
-'''
-          updated=head+new
-          assert updated.count('.home-municipal-entry>b{')==2, 'Reglas municipales duplicadas'
-          assert '.home-municipal-entry::before' not in updated, 'Persistió una máscara innecesaria'
-          p.write_text(updated,encoding='utf-8')
           p=Path('index.html')
           html=p.read_text(encoding='utf-8')
-          old='site.css?v=20260919-single-municipal-button-fix-v2'
-          assert html.count(old)==1, 'Recurso CSS inesperado'
-          p.write_text(html.replace(old,'site.css?v=20260919-municipal-clean-rebuild-01',1),encoding='utf-8')
-          print('PASS: borradas reglas anteriores, un solo botón real cubre la imagen de extremo a extremo; versión CSS renovada')
+          old='site.css?v=20260919-municipal-approved-image-one-control'
+          new='site.css?v=20260919-municipal-single-real-button-v3'
+          assert html.count(old)==1, 'Versión del CSS inesperada: no tocar sin revisar'
+          html=html.replace(old,new,1)
+          p.write_text(html,encoding='utf-8')
+          css=Path('site.css').read_text(encoding='utf-8')
+          assert css.count('/* Tarjeta municipal limpia.')==1
+          assert '105.5% 118%' not in css
+          assert 'opacity:0!important' not in css
+          assert css.count('grid-template-columns:33.5% 33% 33.5%')==1
+          print('PASS: fondo anterior eliminado; un botón HTML; CSS versionado')
           PY
           node --check promos.js
           node tests/municipal-route.mjs
-          git add site.css index.html
+          git add index.html
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Eliminar capas y duplicados del botón municipal; corregir cobertura y caché'
+          git commit -m 'Invalidar cache del CSS del boton municipal único'
           git push
