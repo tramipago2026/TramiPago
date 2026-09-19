@@ -100,46 +100,46 @@ body[data-view="home"] .home-catalog .home-family-row > .home-tile[data-family-i
   }
 }
 
-/* Única regla municipal: el botón HTML cubre totalmente el gráfico del botón
-   incluido en la imagen original; sin máscaras ni fondos superpuestos. */
+/* Tarjeta municipal final: imagen aprobada con un solo botón visible.
+   La leyenda verde está en la fotografía: el enlace HTML es su zona interactiva,
+   transparente en reposo y con letra/borde negros exclusivamente en hover. */
 body[data-view="home"] .home-catalog .home-municipal-entry{
   position:relative!important;display:block!important;grid-column:1/-1!important;
   order:3!important;width:100%!important;max-width:740px!important;
-  min-height:0!important;aspect-ratio:1983/793!important;
+  min-height:0!important;aspect-ratio:2.83!important;
   margin:4px auto 0!important;padding:0!important;overflow:hidden!important;
-  border:2px solid #31ae8b!important;border-radius:12px!important;
-  background:#f2fcff url("https://static.wixstatic.com/media/f3de14_1b4997be000d4fc59e190a647b19f4dd~mv2.png") center / 100% 100% no-repeat!important;
+  border:0!important;border-radius:12px!important;
+  background:#f2fcff url("https://static.wixstatic.com/media/f3de14_b18f1125127b4cc0a399602aa63de1b2~mv2.png") 25% center / 105.5% 118% no-repeat!important;
   box-shadow:0 4px 13px rgba(8,42,71,.14)!important;
   color:#082a47!important;text-decoration:none!important;cursor:pointer!important;
+  transform:none!important;
 }
 body[data-view="home"] .home-catalog .home-municipal-entry>img,
 body[data-view="home"] .home-catalog .home-municipal-entry>span{display:none!important}
 body[data-view="home"] .home-catalog .home-municipal-entry>b{
-  position:absolute!important;left:35.35%!important;top:70.7%!important;
-  box-sizing:border-box!important;width:29%!important;height:17.6%!important;
+  position:absolute!important;left:37.45%!important;top:75.7%!important;
+  box-sizing:border-box!important;width:24.95%!important;height:12.4%!important;
   min-width:0!important;min-height:0!important;margin:0!important;
   display:flex!important;align-items:center!important;justify-content:center!important;
-  padding:0 4px!important;border:4px solid transparent!important;border-radius:999px!important;
-  background:#198754!important;color:#fff!important;box-shadow:none!important;
-  font-size:clamp(9px,1.3vw,17px)!important;font-weight:800!important;
+  padding:0 2px!important;border:4px solid transparent!important;border-radius:999px!important;
+  background:#087c47!important;color:#fff!important;box-shadow:none!important;
+  font-size:clamp(9px,1.05vw,13px)!important;font-weight:800!important;
   line-height:1.1!important;text-align:center!important;white-space:nowrap!important;
-  transition:color .16s ease,border-color .16s ease,box-shadow .16s ease!important;
+  opacity:0!important;transition:opacity .12s ease,color .12s ease,border-color .12s ease!important;
 }
 body[data-view="home"] .home-catalog .home-municipal-entry:hover{
-  border-color:#31ae8b!important;outline:0!important;
-  background-color:#f2fcff!important;
-  box-shadow:0 4px 13px rgba(8,42,71,.14)!important;transform:none!important;
+  outline:0!important;box-shadow:0 4px 13px rgba(8,42,71,.14)!important;transform:none!important;
 }
 body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible{
   outline:2px solid #050505!important;outline-offset:2px!important;transform:none!important;
 }
 body[data-view="home"] .home-catalog .home-municipal-entry>b:hover,
 body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible>b{
-  color:#050505!important;border-color:#050505!important;
-  background:#198754!important;box-shadow:0 4px 10px rgba(0,0,0,.25)!important;
+  opacity:1!important;background:#087c47!important;color:#050505!important;
+  border-color:#050505!important;box-shadow:0 4px 10px rgba(0,0,0,.25)!important;
 }
 @media(max-width:760px){
   body[data-view="home"] .home-catalog .home-municipal-entry>b{
-    font-size:clamp(8px,2.25vw,13px)!important;
+    font-size:clamp(8px,1.8vw,11px)!important;
   }
 }
