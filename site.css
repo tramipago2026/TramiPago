@@ -141,3 +141,26 @@ body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible>b{
   body[data-view="home"] .home-catalog .home-municipal-entry{aspect-ratio:1983/793!important}
   body[data-view="home"] .home-catalog .home-municipal-entry>b{font-size:clamp(8px,2.25vw,13px)!important}
 }
+
+/* Corrección definitiva de botón único municipal: tapar botón impreso bajo el control interactivo. */
+body[data-view="home"] .home-catalog .home-municipal-entry::before{
+  content:""!important;position:absolute!important;
+  left:34.25%!important;top:68.5%!important;
+  width:29%!important;height:21.5%!important;
+  background:linear-gradient(to bottom,#eafcf8 0%,#e1faf1 35%,#bcebd9 100%)!important;
+  pointer-events:none!important;z-index:1!important;
+}
+body[data-view="home"] .home-catalog .home-municipal-entry>b{
+  z-index:2!important;position:absolute!important;
+  box-sizing:border-box!important;left:34.55%!important;top:71.05%!important;
+  width:27.55%!important;height:14.8%!important;
+  color:#fff!important;background:#198754!important;
+  border:4px solid transparent!important;border-radius:999px!important;
+  box-shadow:0 2px 5px rgba(8,42,71,.12)!important;
+}
+body[data-view="home"] .home-catalog .home-municipal-entry>b:hover,
+body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible>b{
+  color:#050505!important;background:#198754!important;
+  border-color:#050505!important;
+  box-shadow:0 4px 10px rgba(0,0,0,.25)!important;
+}
