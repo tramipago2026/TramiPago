@@ -1,0 +1,48 @@
+name: Aclarar servicio online municipal (una vez)
+on:
+  push:
+    paths:
+      - .github/workflows/municipal-online-service-copy-20260919.yml
+permissions:
+  contents: write
+jobs:
+  clarify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Aclarar 100 por ciento online solo para servicio privado y conservar advertencias municipales
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('municipales.html');s=p.read_text(encoding='utf-8')
+          changes=[
+            ('Elegí el municipio y consultá por partida municipal o estado de deuda. Antes de aceptar una gestión confirmamos si es posible y si requiere presencialidad; no ofrecemos trámites de multas ni del Juzgado de Faltas.', 'Atención y tramitación con TramiPago 100 % online para vos. Elegí el municipio y consultá por partida municipal o estado de deuda. Antes de aceptar la gestión confirmamos si el documento puede obtenerse y si el organismo exige presencialidad; no ofrecemos multas ni gestiones ante el Juzgado de Faltas.'),
+            ('<strong>No prometemos obtener ese informe 100 % online.</strong> Confirmamos modalidad y honorarios antes de aceptar la gestión;', '<strong>La atención y gestión con TramiPago son 100 % online para vos; no garantizamos que el organismo emita el informe formal por internet.</strong> Confirmamos modalidad y honorarios antes de aceptar la gestión;'),
+            ('La posibilidad de hacer cada gestión a distancia <strong>NO ESTÁ CONFIRMADA</strong>. Primero verificamos disponibilidad, documentación, modalidad (online o presencial) y honorarios.', 'La atención y gestión con TramiPago son <strong>100 % online para vos</strong>. La posibilidad de completar el trámite ante el organismo sin presencialidad <strong>NO ESTÁ CONFIRMADA</strong>. Primero verificamos disponibilidad, documentación, modalidad y honorarios.'),
+            ('TramiPago es un servicio privado de asistencia: <strong>no es un sitio municipal ni emite certificados oficiales por sí mismo</strong>.', 'TramiPago ofrece atención y gestión 100 % online para el cliente; esto no significa que todos los organismos emitan documentos por internet. Es un servicio privado de asistencia: <strong>no es un sitio municipal ni emite certificados oficiales por sí mismo</strong>.')
+          ]
+          for old,new in changes:
+            assert s.count(old)==1, 'Fragmento de texto municipal no encontrado exactamente: '+old[:72]
+            s=s.replace(old,new,1)
+          assert s.count('100 % online')>=4
+          assert 'NO ESTÁ CONFIRMADA' in s
+          assert 'No ofrecemos multas, infracciones ni trámites ante el Juzgado de Faltas' in s
+          assert 'No gestionamos multas, infracciones ni actuaciones ante el Juzgado de Faltas' in s
+          p.write_text(s,encoding='utf-8')
+          PY
+          node tests/municipal-route.mjs
+          node tests/site-integrity.mjs
+      - name: Publicar exclusivamente la aclaración de la página municipal
+        run: |
+          git add municipales.html
+          git diff --cached --quiet && exit 0
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Precisar atención y tramitación 100 % online para clientes'
+          git push
