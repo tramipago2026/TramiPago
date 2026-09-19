@@ -25,8 +25,8 @@ assert.ok(page.includes('municipal%20de%20San%20Miguel'),'Mensaje identifica San
 assert.ok(page.includes('municipal%20de%20Jos%C3%A9%20C.%20Paz'),'Mensaje identifica José C. Paz');
 assert.match(page,/No se comprobó un portal web/,'No promete portal no verificado');
 assert.match(page,/honorarios|Honorarios|precio/,'Condiciones comerciales identificadas');
-assert.match(styles,/municipal-20260918\.avif/,'Imagen nueva usada por la tarjeta municipal');
-assert.match(styles,/home-municipal-entry:hover>b/,'Texto del botón cambia al pasar el cursor');
+assert.match(styles,/f3de14_1b4997be000d4fc59e190a647b19f4dd~mv2\.png/,'Imagen nueva usada por la tarjeta municipal');
+assert.match(styles,/home-municipal-entry>b:hover/,'Texto del botón cambia al pasar el cursor');
 assert.ok(fs.existsSync(new URL('../assets/logo-tramipago.webp',import.meta.url)),'Logo');
 assert.ok(fs.existsSync(new URL('../assets/promo-municipal-20260911.webp',import.meta.url)),'Imagen municipal del carrusel');
 assert.ok(fs.existsSync(new URL('../assets/municipal-20260918.avif',import.meta.url)),'Imagen municipal aprobada');

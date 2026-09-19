@@ -104,10 +104,10 @@ body[data-view="home"] .home-catalog .home-family-row > .home-tile[data-family-i
 body[data-view="home"] .home-catalog .home-municipal-entry{
   position:relative!important;display:block!important;grid-column:1/-1!important;
   order:3!important;width:100%!important;max-width:740px!important;
-  min-height:0!important;aspect-ratio:2.83!important;
+  min-height:0!important;aspect-ratio:1983/793!important;
   margin:4px auto 0!important;padding:0!important;overflow:hidden!important;
   border:2px solid #31ae8b!important;border-radius:12px!important;
-  background:#f2fcff url("assets/municipal-20260918.avif") center center / 105.4% 118% no-repeat!important;
+  background:#f2fcff url("https://static.wixstatic.com/media/f3de14_1b4997be000d4fc59e190a647b19f4dd~mv2.png") center center / 100% 100% no-repeat!important;
   box-shadow:0 4px 13px rgba(8,42,71,.14)!important;
   color:#082a47!important;text-decoration:none!important;cursor:pointer!important;
   transition:border-color .16s ease,box-shadow .16s ease!important;
@@ -132,12 +132,12 @@ body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible{
   box-shadow:0 0 0 2px #050505,0 6px 14px rgba(0,0,0,.28)!important;
   transform:none!important;
 }
-body[data-view="home"] .home-catalog .home-municipal-entry:hover>b,
+body[data-view="home"] .home-catalog .home-municipal-entry>b:hover,
 body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible>b{
   color:#050505!important;border-color:#050505!important;
   box-shadow:0 4px 10px rgba(0,0,0,.30)!important;
 }
 @media(max-width:760px){
-  body[data-view="home"] .home-catalog .home-municipal-entry{aspect-ratio:2.83!important}
+  body[data-view="home"] .home-catalog .home-municipal-entry{aspect-ratio:1983/793!important}
   body[data-view="home"] .home-catalog .home-municipal-entry>b{font-size:clamp(8px,2.25vw,13px)!important}
 }
