@@ -1,0 +1,87 @@
+name: Auditoria focalizada portada municipal 2026-09-19
+on:
+  push:
+    paths:
+      - .github/workflows/front-municipal-audit-20260919.yml
+permissions:
+  contents: write
+jobs:
+  audit-and-fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Quitar estilos duplicados, imagen antigua del DOM y recurso huerfano
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root=Path('.')
+          p=Path('promos.js')
+          js=p.read_text(encoding='utf-8')
+          start='      .home-municipal-entry{grid-column:1/-1!important;order:3!important;display:flex;'
+          end='      .home-municipal-entry:hover,.home-municipal-entry:focus-visible{background:#d9f3e5;outline:3px solid #29b6f6;outline-offset:2px}'
+          assert js.count(start)==1 and js.count(end)==1, 'No borrar CSS sin coincidencia exacta'
+          a=js.index(start);b=js.index(end,a)+len(end)
+          js=js[:a]+js[b:]
+          mobile='.home-municipal-entry{flex-wrap:wrap}.home-municipal-entry b{width:100%;margin-left:76px}'
+          assert js.count(mobile)==1, 'Estilo municipal movil no encontrado'
+          js=js.replace(mobile,'',1)
+          legacy='<img src="assets/promo-municipal-20260911.webp" alt="" loading="lazy"><span>'
+          assert js.count(legacy)==1, 'La miniatura antigua de la tarjeta cambio'
+          js=js.replace(legacy,'<span>',1)
+          assert js.count('link.href="municipales.html#elegir-municipio";')==1
+          assert '      .home-municipal-entry{' not in js
+          p.write_text(js,encoding='utf-8')
+          p=Path('site.css');css=p.read_text(encoding='utf-8')
+          assert css.count('aspect-ratio:2.83!important;')==1,'Proporciones municipales cambiaron'
+          css=css.replace('aspect-ratio:2.83!important;','aspect-ratio:1993/789!important;',1)
+          assert css.count('.home-municipal-entry>b{')==2,'Solo debe haber estado normal y estilo movil'
+          assert css.count('background-image:url("https://static.wixstatic.com/media/f3de14_b18f1125127b4cc0a399602aa63de1b2~mv2.png")')==1,'Foto unificada solo en los dos laterales'
+          assert 'grid-template-columns:33.5% 33% 33.5%' in css
+          p.write_text(css,encoding='utf-8')
+          p=Path('index.html');html=p.read_text(encoding='utf-8')
+          old_css='site.css?v=20260919-municipal-single-real-button-v3'
+          old_js='promos.js?v=20260918-select-municipio-live'
+          assert html.count(old_css)==1 and html.count(old_js)==1,'Versiones de recursos inesperadas'
+          html=html.replace(old_css,'site.css?v=20260919-front-audit-v4',1)
+          html=html.replace(old_js,'promos.js?v=20260919-front-audit-v4',1)
+          p.write_text(html,encoding='utf-8')
+          obsolete=Path('assets/municipal-20260918.avif')
+          if obsolete.exists():
+            uses=[]
+            for ext in ('*.html','*.css','*.js','*.json','*.svg'):
+              for f in root.rglob(ext):
+                if '.github' in f.parts or 'tests' in f.parts or '.git' in f.parts:continue
+                if obsolete.name in f.read_text(encoding='utf-8',errors='replace'):uses.append(str(f))
+            if not uses:
+              obsolete.unlink()
+              t=Path('tests/municipal-route.mjs');test=t.read_text(encoding='utf-8')
+              line="assert.ok(fs.existsSync(new URL('../assets/municipal-20260918.avif',import.meta.url)),'Imagen municipal aprobada');\n"
+              assert test.count(line)==1,'Test de imagen antigua no coincide'
+              test=test.replace(line,"assert.doesNotMatch(styles,/municipal-20260918\\.avif/,'Sin recurso municipal obsoleto en CSS');\n",1)
+              t.write_text(test,encoding='utf-8')
+              print('CLEAN: removido AVIF antiguo sin referencias en archivos de produccion')
+            else:print('KEEP: AVIF conservado; referencias:',', '.join(uses))
+          print('PASS: unico CSS municipal, una imagen solo en laterales, un boton HTML y cache de CSS/JS actualizado')
+          PY
+      - name: Validacion de sintaxis, enlaces, grilla, iconos recientes y selector
+        run: |
+          node --check promos.js
+          node tests/site-integrity.mjs
+          node tests/municipal-route.mjs
+          node tests/catalog-form-contract.mjs
+          node tests/header-navigation.mjs
+          node tests/abogado-fotos-aprobadas.mjs
+      - name: Publicar exclusivamente los archivos auditados
+        run: |
+          git add promos.js site.css index.html tests/municipal-route.mjs assets/municipal-20260918.avif
+          if git diff --cached --quiet; then echo 'Sin cambios pendientes'; exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Depurar CSS municipal duplicado y cache; conservar botones superiores'
+          git push
