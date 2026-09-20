@@ -1,0 +1,119 @@
+name: Cabecera y pie únicos del sitio público
+on:
+  push:
+    paths:
+      - .github/workflows/unify-site-shell-20260920.yml
+      - index.html
+      - footer-menu.js
+      - shared-site-shell.css
+      - '*.html'
+permissions:
+  contents: write
+jobs:
+  harmonize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Construir encabezado y pie desde la portada y preservar formularios
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, html, urllib.parse
+          index=Path('index.html').read_text(encoding='utf-8')
+          footer_source=Path('footer-menu.js').read_text(encoding='utf-8')
+          header_match=re.search(r'<header\s+class="site-header">.*?</header>',index,re.S)
+          footer_match=re.search(r'inner\.innerHTML=`(.*?)`;',footer_source,re.S)
+          assert header_match and footer_match,'No se encontró la plantilla canónica de Inicio'
+          header=header_match.group(0)
+          header=header.replace('<header class="site-header">','<header class="site-header header-featured-active shared-site-header">',1)
+          header=header.replace('class="container header-inner"','class="container header-inner header-featured"',1)
+          legal='<a id="tramipago-header-legal" class="header-legal" href="index.html#/familia/atencion-abogado" title="Abrir la consulta con abogado" aria-label="Abogado especialista en reclamos de ART. Abrir consulta."><span class="header-legal-copy"><strong class="header-legal-title" style="white-space:normal!important">Abogado</strong><span class="header-legal-subtitle">Especialista en<br><em>reclamos de ART</em></span></span><span class="header-legal-photo" aria-hidden="true"></span></a>'
+          needle='      <div class="header-slogan"'
+          assert header.count(needle)==1
+          header=header.replace(needle,'      '+legal+'\n'+needle,1)
+          old_home='<a class="nav-home" href="#/">Inicio</a>'
+          home_icon='<svg class="nav-icon header-home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg>'
+          assert header.count(old_home)==1
+          header=header.replace(old_home,'<a class="nav-home" href="index.html#/">'+home_icon+'<span>Inicio</span></a>',1)
+          header=header.replace('href="#/"','href="index.html#/"').replace('href="#/seguimiento"','href="index.html#/seguimiento"')
+          button='<button class="nav-help" type="button" data-action="whatsapp" aria-label="Ayuda por WhatsApp">'
+          assert header.count(button)==1 and header.count('</button>')==1
+          header=header.replace(button,'<a class="nav-help" href="https://wa.me/5491167083232" target="_blank" rel="noopener noreferrer" aria-label="Ayuda por WhatsApp">',1).replace('</button>','</a>',1)
+          footer_inner=footer_match.group(1)
+          assert '${' not in footer_inner and all(x in footer_inner for x in ('arrepentimiento.html','baja-servicio.html','terminos-condiciones.html','politica-privacidad.html'))
+          footer='<footer class="site-footer shared-site-footer" aria-label="Enlaces y condiciones de TramiPago"><div class="container footer-inner">'+footer_inner+'</div></footer>'
+          link='<link rel="stylesheet" href="shared-site-shell.css?v=20260920-unified1" />'
+          pages=[f for f in sorted(Path('.').glob('*.html')) if f.name not in ('index.html','admin.html')]
+          assert len(pages)==8, 'La cantidad de páginas públicas cambió; revisar antes de modificar'
+          rows=[]
+          for p in pages:
+              before=p.read_text(encoding='utf-8')
+              main_before=re.search(r'<main\b[^>]*>.*?</main>',before,re.S|re.I)
+              h=re.search(r'<header\b[^>]*>.*?</header>',before,re.S|re.I)
+              f=re.search(r'<footer\b[^>]*>.*?</footer>',before,re.S|re.I)
+              assert main_before and h and f, 'Estructura inesperada en '+p.name
+              old_header=re.match(r'<header\b[^>]*>',h.group(0)).group(0)
+              old_footer=re.match(r'<footer\b[^>]*>',f.group(0)).group(0)
+              after=before[:h.start()]+header+before[h.end():]
+              f2=re.search(r'<footer\b[^>]*>.*?</footer>',after,re.S|re.I)
+              assert f2
+              after=after[:f2.start()]+footer+after[f2.end():]
+              if p.name in ('contacto.html','opiniones.html'):
+                  after,count=re.subn(r'<div class="consumer">.*?</div>\s*','',after,count=1,flags=re.S)
+                  assert count==1, 'La barra legal duplicada cambió: '+p.name
+              assert after.count('</head>')==1
+              after=after.replace('</head>',link+'\n</head>',1) if link not in after else after
+              main_after=re.search(r'<main\b[^>]*>.*?</main>',after,re.S|re.I)
+              assert main_after and main_before.group(0)==main_after.group(0), 'Se alteró el contenido o formulario de '+p.name
+              assert after.count('<header class="site-header header-featured-active shared-site-header">')==1
+              assert after.count('<footer class="site-footer shared-site-footer"')==1
+              assert after.count('class="nav-home"')==1 and after.count('class="nav-tracking"')==1 and after.count('class="nav-help"')==1
+              assert after.count('id="tramipago-header-legal"')==1
+              assert all(after.count('href="'+x+'"')>=1 for x in ('arrepentimiento.html','baja-servicio.html','terminos-condiciones.html','politica-privacidad.html'))
+              p.write_text(after,encoding='utf-8')
+              rows.append((p.name,old_header,old_footer))
+          # Confirmar una única plantilla HTML para todas las rutas independientes.
+          normalized_headers=[];normalized_footers=[];broken=set();local_count=0
+          for p in pages:
+              content=p.read_text(encoding='utf-8')
+              normalized_headers.append(re.search(r'<header\b[^>]*>.*?</header>',content,re.S).group(0))
+              normalized_footers.append(re.search(r'<footer\b[^>]*>.*?</footer>',content,re.S).group(0))
+              for href in re.findall(r'\bhref=["\']([^"\']+)',content):
+                  href=html.unescape(href)
+                  if href.startswith(('#','mailto:','tel:','data:','javascript:','//')):continue
+                  parsed=urllib.parse.urlsplit(href)
+                  if parsed.scheme or parsed.netloc:continue
+                  path=urllib.parse.unquote(parsed.path)
+                  if not path or path.endswith('/'):continue
+                  local_count+=1
+                  if not Path(path).exists():broken.add((p.name,path))
+          assert len(set(normalized_headers))==1 and len(set(normalized_footers))==1,'Las páginas no comparten exactamente el mismo HTML de cabecera y pie'
+          assert not broken,'Enlaces a archivos locales inexistentes: '+str(sorted(broken))
+          css=Path('shared-site-shell.css').read_text(encoding='utf-8')
+          assert all(x in css for x in ('header-fijo-20260917.css','nav-hover-black-20260917.css','legal-design-refresh-20260917.css','.shared-site-footer','.footer-menu-grid'))
+          report=['# Auditoría y unificación del frente — 20/09/2026','','Referencia aprobada: encabezado de Inicio (`index.html`, completado por `header-fijo-20260917.js`) y pie de `footer-menu.js`.','','## Diferencias detectadas antes de la corrección','','| Página | Cabecera anterior | Pie anterior |','|---|---|---|']
+          report.extend('| `'+name+'` | `'+oldh.replace('|','/')+'` | `'+oldf.replace('|','/')+'` |' for name,oldh,oldf in rows)
+          report+=['','## Cambios comprobados','',f'- {len(pages)} páginas HTML públicas independientes corregidas; `index.html` y el área administrativa quedaron intactos.','- Todas las páginas corregidas contienen el mismo encabezado HTML y el mismo pie HTML, derivados de las fuentes de Inicio.','- Cabecera: logo, abogado con imagen, eslogan, Inicio, Estado y Ayuda, con los mismos íconos y CSS de navegación de la portada.','- Pie: las mismas cuatro columnas, políticas, términos, arrepentimiento, baja, Defensa del Consumidor y datos de contacto.','- Se eliminaron solo dos barras legales redundantes (Contacto y Opiniones).','- El contenido dentro de `<main>`, incluidos los formularios municipales y legales, es idéntico antes y después.','- Las rutas SPA de partidas PBA/CABA, ARCA, apostillas y otras familias usan `index.html`: no había que duplicarles cabeceras.','- Se conserva el enlace desde las tarjetas, catálogos y carruseles a sus destinos originales.',f'- {local_count} referencias de enlaces locales comprobadas, 0 archivos de destino inexistentes.','','## Alcance de las pruebas','','Verificación estática del HTML, CSS, enlaces locales y pruebas Node existentes. No equivale a inspección visual en diferentes navegadores ni a completar formularios reales.']
+          dest=Path('audits/public-shell-20260920.md');dest.parent.mkdir(exist_ok=True);dest.write_text('\n'.join(report)+'\n',encoding='utf-8')
+          print('PASS:',len(pages),'páginas públicas idénticas en header/footer;',local_count,'enlaces locales válidos; contenidos de main conservados')
+          PY
+      - name: Pruebas existentes de rutas, botones y cabecera
+        run: |
+          node tests/municipal-route.mjs
+          node tests/header-navigation.mjs
+      - name: Publicar únicamente páginas públicas y reporte
+        run: |
+          git add -- '*.html' audits/public-shell-20260920.md
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if ! git diff --cached --quiet; then
+            git commit -m 'Unificar encabezado y pie de ocho paginas publicas'
+            git push
+          fi
