@@ -1,0 +1,51 @@
+name: Unificar texto selector municipal (una vez)
+on:
+  push:
+    paths:
+      - .github/workflows/municipal-copy-unification-20260920.yml
+permissions:
+  contents: write
+jobs:
+  simplify-copy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Quitar instrucciones repetidas sin tocar cabecera, pie ni funcionamiento
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('municipales.html')
+          html=p.read_text(encoding='utf-8')
+          changes={
+            '<section class="intro"><h1>Trámites municipales</h1><p>Atención 100 % online con TramiPago. Elegí tu municipio y consultá por partida municipal o estado de deuda.</p></section>':'<section class="intro"><h1>Trámites municipales</h1><p>Atención 100 % online · Partida municipal y estado de deuda.</p></section>',
+            '<h2 id="municipal-picker-heading">Seleccioná tu municipio</h2><p>Elegí el partido para consultar las gestiones disponibles.</p>':'<h2 id="municipal-picker-heading">Seleccioná tu municipio</h2>',
+            '<fieldset><legend>Municipio</legend>':'<fieldset><legend class="visually-hidden">Municipio</legend>',
+            '<button class="action primary municipal-continue" type="submit">Seleccionar municipio</button>':'<button class="action primary municipal-continue" type="submit">Continuar</button>',
+            '</style>':'/* La leyenda conserva accesibilidad sin repetir el título visible. */\n.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}\n</style>'
+          }
+          for before,after in changes.items():
+            assert html.count(before)==1, 'El texto o estilo cambió inesperadamente: '+before[:65]
+            html=html.replace(before,after,1)
+          assert html.count('<header class="tp-header">')==1
+          assert html.count('<footer class="tp-footer"')==1
+          assert 'arrepentimiento.html' in html and 'baja-servicio.html' in html
+          assert 'name="municipio" value="jose-paz"' in html and 'name="municipio" value="san-miguel"' in html
+          assert 'id="elegir-municipio"' in html and 'type="submit">Continuar</button>' in html
+          assert 'Elegí tu municipio y consultá' not in html and 'Elegí el partido para consultar las gestiones disponibles.' not in html
+          p.write_text(html,encoding='utf-8')
+          print('PASS: texto unificado; cabecera, pie, opciones y enlace funcional conservados')
+          PY
+          node tests/municipal-route.mjs
+      - name: Publicar solamente municipales.html
+        run: |
+          git add municipales.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Eliminar instrucciones repetidas en selección municipal'
+          git push
