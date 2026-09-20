@@ -1,0 +1,46 @@
+name: Simplificar aviso municipal una vez
+on:
+  push:
+    paths:
+      - .github/workflows/simplificar-aviso-municipal-20260920.yml
+permissions:
+  contents: write
+jobs:
+  simplify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Eliminar texto redundante y fuentes del aviso inferior
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('municipales.html')
+          old=p.read_text(encoding='utf-8')
+          start='<section class="note" aria-labelledby="antes">'
+          assert old.count(start)==1, 'El aviso no es unico: cancelar sin tocar el sitio'
+          a=old.index(start)
+          b=old.index('</section>',a)+len('</section>')
+          current=old[a:b]
+          assert 'Si una gestión tiene honorarios, deben informarse' in current, 'Texto comercial esperado no encontrado'
+          assert 'Fuentes oficiales para consultar condiciones:' in current, 'Fuentes esperadas no encontradas'
+          replacement='<section class="note" aria-labelledby="antes"><h2 id="antes">Antes de solicitar una gestión</h2><p>TramiPago es un servicio privado de asistencia, no un sitio municipal. No compartas claves ni códigos de verificación.</p></section>'
+          result=old[:a]+replacement+old[b:]
+          assert result[:a]==old[:a] and result[a+len(replacement):]==old[b:]
+          assert 'Fuentes oficiales para consultar condiciones:' not in result
+          p.write_text(result,encoding='utf-8')
+          print('PASS: solo aviso inferior acortado; enlaces, formularios y servicios intactos')
+          PY
+      - name: Verificar recursos y formulario
+        run: |
+          node tests/site-integrity.mjs
+          node tests/municipal-route.mjs
+      - name: Publicar cambio focalizado
+        run: |
+          git add municipales.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Acortar aviso municipal y retirar fuentes redundantes'
+          git push
