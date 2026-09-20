@@ -32,3 +32,5 @@ jobs:
         run: node tests/abogado-fotos-aprobadas.mjs
       - name: Verificar precios y tokens temporales
         run: node tests/pricing-privacy-contract.mjs
+      - name: Generar datos ficticios para cada servicio, opción y detectar assets potencialmente obsoletos
+        run: node tests/v1-fixture-audit.mjs
