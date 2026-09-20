@@ -39,7 +39,7 @@
         "Documento público argentino en condiciones de ser apostillado.",
         "Datos del documento y país donde se presentará, si corresponde.",
         "TramiPago verifica previamente que la documentación sea apta para iniciar la gestión.",
-        "Arancel oficial TAD de apostilla: $4.500 por documento, abonado aparte por VEP al organismo. El precio de TramiPago no incluye ese arancel."
+        "Si corresponde un arancel del organismo, se informa antes de continuar y se abona aparte por el canal correspondiente."
       ],
       components:[
         "Revisión previa del documento",
@@ -79,7 +79,7 @@
         "Documento completo y legible.",
         "Datos del organismo o autoridad que emitió el documento.",
         "La vía exacta se determina según el tipo de documento y la legalización requerida.",
-        "Si corresponde legalización internacional por TAD, el arancel oficial general es $4.500; solo para partidas de estado civil es $1.500. Otras vías pueden tener costos distintos o ser gratuitas. Se paga aparte, según organismo."
+        "Si corresponde un arancel del organismo, se informa antes de continuar y se paga aparte por el canal correspondiente."
       ],
       components:[
         "Legalización de partidas cuando corresponda",
