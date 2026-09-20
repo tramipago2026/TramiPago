@@ -1,0 +1,118 @@
+name: Formulario municipal unico
+on:
+  push:
+    paths:
+      - .github/workflows/municipal-single-consult-form-20260920.yml
+permissions:
+  contents: write
+jobs:
+  update-form:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Sustituir ambos pares de enlaces por formulario individual
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('municipales.html')
+          page=p.read_text(encoding='utf-8')
+          assert page.count('<section class="town" id="municipio-')==2
+          for slug,muni in [('san-miguel','San Miguel'),('jose-paz','José C. Paz')]:
+              pattern=r'<section class="town" id="municipio-'+slug+r'".*?</section>'
+              match=re.search(pattern,page,re.S)
+              assert match is not None, 'No se encontró la ficha '+slug
+              section=match.group()
+              assert section.count('<div class="actions">')==1, 'Acciones inesperadas '+slug
+              form='''<form class="municipal-consult-form" data-municipio="'''+muni+'''" aria-label="Consulta para '''+muni+'''"><div class="municipal-fields"><label>Nombre y apellido<input type="text" name="nombre" autocomplete="name" maxlength="100" required placeholder="Ingresá tu nombre"></label><label>Número de teléfono<input type="tel" name="telefono" autocomplete="tel" maxlength="25" required placeholder="Ej.: 11 1234-5678"></label><label class="municipal-full">Trámite que necesitás<textarea name="tramite" rows="2" maxlength="500" required placeholder="Describí tu consulta"></textarea></label></div><button class="action primary municipal-send" type="submit">Enviar consulta</button></form>'''
+              section,n=re.subn(r'<div class="actions">.*?</div>',lambda m:form,section,count=1,flags=re.S)
+              assert n==1
+              if slug=='san-miguel':
+                  section,n=re.subn(r'<p>El municipio dispone de un portal de autogestión.*?</p>','',section,count=1,flags=re.S)
+                  assert n==1, 'No coincide el texto largo de San Miguel'
+              page=page[:match.start()]+section+page[match.end():]
+          assert page.count('class="municipal-consult-form"')==2
+          assert page.count('class="action primary municipal-send"')==2
+          assert 'Consultar disponibilidad por WhatsApp' not in page
+          assert 'Abrir portal oficial de pagos ↗' not in page
+          assert 'Abrir sitio oficial del municipio ↗' not in page
+          css='''
+          /* Formulario municipal único: sin botones ni capas duplicadas. */
+          .municipal-consult-form{display:flex;flex-direction:column;gap:12px;margin-top:auto}
+          .municipal-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+          .municipal-fields label{display:flex;flex-direction:column;gap:5px;font-weight:700;font-size:.9rem}
+          .municipal-fields .municipal-full{grid-column:1/-1}
+          .municipal-fields input,.municipal-fields textarea{display:block;width:100%;min-width:0;padding:10px 11px;border:1px solid #779db8;border-radius:8px;background:#fff;color:#082a47;font:inherit;font-weight:400}
+          .municipal-fields input:focus-visible,.municipal-fields textarea:focus-visible{outline:2px solid #29b6f6;outline-offset:1px}
+          .municipal-consult-form .municipal-send{align-self:flex-start;min-width:190px;min-height:44px;border:3px solid transparent;background:#17854f;color:#fff;cursor:pointer;box-shadow:none}
+          .municipal-consult-form .municipal-send:hover,.municipal-consult-form .municipal-send:focus-visible{background:#17854f;color:#050505;border-color:#050505;filter:none;box-shadow:none}
+          @media(max-width:540px){.municipal-fields{grid-template-columns:1fr}.municipal-consult-form .municipal-send{align-self:stretch}}
+          '''
+          assert page.count('</style>')==1
+          page=page.replace('</style>',css+'</style>',1)
+          js='''<script>
+          (function(){"use strict";
+            document.querySelectorAll(".municipal-consult-form").forEach(function(form){
+              form.addEventListener("submit",function(event){
+                event.preventDefault();
+                const nombre=form.elements.namedItem("nombre").value.trim();
+                const telefono=form.elements.namedItem("telefono").value.trim();
+                const tramite=form.elements.namedItem("tramite").value.trim();
+                if(!nombre||!telefono||!tramite){form.reportValidity();return;}
+                const mensaje="Hola, vengo de TramiPago.\\nMunicipio: "+form.dataset.municipio+"\\nNombre: "+nombre+"\\nTeléfono: "+telefono+"\\nTrámite solicitado: "+tramite;
+                window.location.assign("https://wa.me/5491167083232?text="+encodeURIComponent(mensaje));
+              });
+            });
+          })();
+          </script>
+          '''
+          assert page.count('</body>')==1
+          page=page.replace('</body>',js+'</body>',1)
+          assert 'tp-header' in page and 'tp-footer' in page and 'id="elegir-municipio"' in page
+          assert 'La posibilidad de completar el trámite ante el organismo sin presencialidad' not in page
+          p.write_text(page,encoding='utf-8')
+          t=Path('tests/municipal-route.mjs')
+          lines=t.read_text(encoding='utf-8').splitlines()
+          remove=[
+            "assert.match(page,/https:\\/\\/pagos\\.msm\\.gov\\.ar\\//",
+            "assert.match(page,/https:\\/\\/josecpaz\\.gob\\.ar\\//",
+            "assert.ok(page.includes('municipal%20o%20un%20estado%20de%20deuda",
+            "assert.match(page,/informe formal de deuda como un trámite presencial/",
+            "assert.match(page,/honorarios|Honorarios|precio/",
+          ]
+          lines=[line for line in lines if not any(marker in line for marker in remove)]
+          newtests=[
+            "assert.equal((page.match(/class=\"municipal-consult-form\"/g)||[]).length,2,'Un formulario por municipio');",
+            "assert.equal((page.match(/class=\"action primary municipal-send\"/g)||[]).length,2,'Un botón Enviar consulta por municipio');",
+            "assert.match(page,/data-municipio=\"San Miguel\"/,'Consulta identifica San Miguel');",
+            "assert.match(page,/data-municipio=\"José C. Paz\"/,'Consulta identifica José C. Paz');",
+            "for(const campo of ['nombre','telefono','tramite']) assert.equal((page.match(new RegExp('name=\"'+campo+'\"','g'))||[]).length,2,'Campo '+campo+' para ambos municipios');",
+            "assert.match(page,/wa\\.me\\/5491167083232\\?text=/,'Envío a WhatsApp existente');",
+            "assert.match(page,/encodeURIComponent\\(mensaje\\)/,'Datos del formulario codificados en el mensaje');",
+            "assert.doesNotMatch(page,/Consultar disponibilidad por WhatsApp|Abrir portal oficial de pagos ↗|Abrir sitio oficial del municipio ↗/,'Sin botones anteriores');",
+            "assert.match(page,/municipal-consult-form \\.municipal-send:hover/,'Hover del botón nuevo');",
+          ]
+          ix=next(i for i,line in enumerate(lines) if line.startswith("console.log('PASS:"))
+          lines[ix:ix]=newtests
+          t.write_text('\n'.join(lines)+'\n',encoding='utf-8')
+          print('OK: dos formularios, un botón cada uno, enlaces antiguos eliminados, cabecera/pie/selector intactos')
+          PY
+      - name: Probar ruta municipal y cabecera
+        run: |
+          node tests/municipal-route.mjs
+          node tests/header-navigation.mjs
+          git diff --check
+      - name: Publicar cambios acotados
+        run: |
+          git add municipales.html tests/municipal-route.mjs
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Formulario unico por municipio y envio de consulta por WhatsApp'
+          git push
