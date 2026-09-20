@@ -1,0 +1,6 @@
+# CONFIGURACIÓN PROPUESTA; NO DESPLEGADA. Verificar en base aislada antes de usar.
+# El cliente público no tiene sesión Auth: la función valida el token aleatorio
+# de la solicitud contra su hash almacenado, comprueba payment_review y archivo.
+# No incluir claves ni credenciales en este archivo.
+[functions.notify-receipt]
+verify_jwt = false
