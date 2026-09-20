@@ -1,0 +1,58 @@
+name: Quitar texto redundante municipal
+on:
+  push:
+    paths:
+      - .github/workflows/municipal-remove-redundant-copy-20260920.yml
+permissions:
+  contents: write
+jobs:
+  update-copy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Eliminar solo el párrafo señalado y adecuar prueba de texto
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('municipales.html')
+          text=p.read_text(encoding='utf-8')
+          marker='<section class="town" id="municipio-jose-paz"'
+          assert text.count(marker)==1, 'La tarjeta José C. Paz no coincide'
+          start=text.index(marker)
+          prefix='<p>La atención y gestión con TramiPago son '
+          assert text[start:].count(prefix)==1, 'El párrafo no coincide'
+          begin=text.index(prefix,start)
+          end=text.index('</p>',begin)+4
+          removed=text[begin:end]
+          assert 'La posibilidad de completar el trámite ante el organismo sin presencialidad' in removed
+          assert 'No prometemos un portal de deuda' in removed
+          text=text[:begin]+text[end:]
+          assert 'Seleccioná tu municipio' in text and 'name="municipio"' in text
+          assert 'tp-header' in text and 'tp-footer' in text
+          p.write_text(text,encoding='utf-8')
+          t=Path('tests/municipal-route.mjs')
+          test=t.read_text(encoding='utf-8')
+          old="assert.match(page,/NO ESTÁ CONFIRMADA/,'La modalidad en José C. Paz queda explícitamente sin confirmar');"
+          assert test.count(old)==1, 'La prueba anterior cambió'
+          test=test.replace(old,"assert.doesNotMatch(page,/La posibilidad de completar el trámite ante el organismo sin presencialidad/,'Sin párrafo redundante en José C. Paz');",1)
+          t.write_text(test,encoding='utf-8')
+          print('OK: párrafo eliminado, cabecera, pie y selector preservados')
+          PY
+      - name: Validar selector y enlaces
+        run: |
+          node tests/municipal-route.mjs
+          node tests/header-navigation.mjs
+      - name: Publicar solamente el cambio solicitado
+        run: |
+          git add municipales.html tests/municipal-route.mjs
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Quitar advertencia repetida en José C. Paz'
+          git push
