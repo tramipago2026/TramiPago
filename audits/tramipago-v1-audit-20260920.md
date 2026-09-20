@@ -1,48 +1,44 @@
-# TramiPago V1 — auditoría inicial y plan de cierre
+# Auditoría factual rectificada — TramiPago V1 — 20/09/2026
 
-Fecha: 2026-09-20. Rama de trabajo: `work/tramipago-v1-audit-20260920`. Base recuperable: `backup/tramipago-v1-preaudit-20260920`, commit `761076773bc763a75411f3bc5a2f5bf4ba911467`.
+## Regla de interpretación
 
-## Alcance comprobado y límites
+**Requisito confirmado por Christian:** durante la construcción, el ingreso al panel de administración NO debe exigir segundo factor. El acceso sin MFA es deliberado. Fue incorrecto clasificarlo como un defecto o cambiarlo sin permiso. Se revirtió la modificación propuesta de `admin.js`; su SHA es idéntico a `main`. No cambiar este requisito sin instrucción expresa. Distinguir un riesgo potencial para producción de un fallo respecto de lo que el usuario pidió.
 
-Auditoría estática parcial de `index.html`, `app.js`, `backend-sync.js`, `security-hardening.js`, `admin.html`, `admin.js`, `admin-mfa.js`, inventarios anteriores y funciones Edge `create-request`, `track-request` y `confirm-payment`. Consulta de metadatos de tablas, políticas RLS, almacenamiento y asesor de seguridad en el proyecto Supabase existente. **No hubo prueba E2E, inspección visual comparativa ni prueba de envío de correo o pago.** No se modificaron datos productivos, configuración de Supabase ni rama `main`.
+**Alcance:** lectura de código de GitHub `main`, metadatos SQL/RLS, funciones y avisos de Supabase; consulta de fuentes gubernamentales, resultados y código de pruebas de GitHub Actions. No se realizaron solicitudes con datos ficticios en entorno aislado, pagos, pruebas de login real, envíos de correo ni inspección visual comparativa de PC/móvil. El sitio público no pudo abrirse con la herramienta de navegación externa. `main` y Supabase no se modificaron. Respaldo del código: `backup/tramipago-v1-preaudit-20260920`, commit `761076773bc763a75411f3bc5a2f5bf4ba911467`.
 
-## Invariantes de diseño
+## Hechos confirmados por doble contraste
 
-La portada actual `index.html` y el encabezado/pie aprobados son referencia. No modificar logo, tipografía, paleta, tarjetas, carrusel, botones, encabezados, pies, textos aprobados ni rutas fuera de cambios expresamente justificados. Mantener PC/móvil y conservar encabezado y pie del panel si se corrige autenticación. Comparar antes/después visualmente antes de solicitar publicación.
+**Acceso administrador — CONFIGURACIÓN APROBADA, NO DEFECTO:** `admin.html` incluye `admin.js`, que anuncia explícitamente `MODO DESARROLLO` y omite MFA manteniendo consulta de membresía `admin_users`. El propio usuario ratificó expresamente esa elección. `admin-mfa.js` está conservado para uso eventual; no activar unilateralmente. La función `public.is_admin()` consulta membresía, sin verificar `aal2`: coincide con el requisito temporal; para una futura decisión de producción debe evaluarse el riesgo, pero no es una falla contra la especificación vigente. El cargador usa `eval` y reemplazo de texto: rasgo técnico comprobado, estabilidad ante cambios futuros NO ESTÁ CONFIRMADA.
 
-## Inventario y clasificación (evidencia ≠ prueba funcional)
+**Tarifa AP — INCONSISTENCIA DEMOSTRADA:** `services.js` fija `officialFee: 0` en `antecedentes-penales`, dos opciones de honorarios $20.000/$15.000; Supabase confirma ambas opciones de honorarios activas. Dos secciones oficiales consultadas el 20/09/2026 indican arancel estatal de $8.500 (1 h) y $4.800 (6 h), con franjas horarias y plazo a partir de acreditación oficial. Fuentes: https://www.argentina.gob.ar/servicio/solicitar-certificado-de-antecedentes-penales-con-clave-fiscal y https://www.argentina.gob.ar/node/173590. Es incorrecto presentar la tasa general como $0. No se cambió precio ni forma de cobro: hace falta revisar la lógica comercial, diferenciar honorarios, arancel estatal y modalidad de pago, y verificar la vigencia justo antes de publicar. El FAQ oficial también dice que el mayor de 18 años debe gestionar su certificado personalmente; el alcance permitido de la asistencia de TramiPago o una gestión por tercero NO ESTÁ CONFIRMADO y no debe presumirse.
 
-| Componente | Clasificación | Hallazgo / evidencia | Acción |
-|---|---|---|---|
-| Portada, familias y estilos | NO VERIFICADO | Existe código y auditoría estática anterior (`audits/public-shell-20260920.md`), pero no capturas comparativas PC/móvil. | Capturas y prueba manual de rutas; preservar diseño. |
-| Formulario y alta AP | NO VERIFICADO | `app.js` guarda ficha local; `backend-sync.js` llama a Edge `create-request`, activa. Sin simulación de alta verificada. | Prueba ficticia completa con resultado en Supabase. |
-| Base de datos | NO VERIFICADO | Proyecto ACTIVE_HEALTHY; tablas `requests`, `request_data`, `request_files`, `request_events`, `services`, `admin_users`, `notifications`; RLS habilitada en todas las tablas públicas listadas. | Probar autorización por rol y escritura/lectura con cuenta de prueba. |
-| Archivos privados | NO VERIFICADO | Bucket `request-files` no público, límite 10 MB, MIME jpeg/png/webp/pdf; políticas de lectura para admins y carga condicionada. | Probar acceso anónimo negado, subida propia y descarga admin. |
-| Seguimiento | NO VERIFICADO | `security-hardening.js` intercepta formulario antes de `backend-sync.js` y llama `track-request` con código y 4 dígitos; la RPC heredada `get_public_request_status` no tiene permiso `anon`. | Probar con código propio, ajeno e incorrecto; retirar duplicación solo tras prueba. |
-| Panel administrativo | DEFECTUOSO | `admin.html` carga `admin.js`, que anuncia MFA desactivada, modifica por regex el `showSession` de `admin-mfa.js` y ejecuta código con `eval`. `admin-mfa.js` ya contiene comprobación AAL2 y MFA. | En rama aislada, reemplazar cargador de desarrollo por cargador directo del módulo MFA, sin tocar HTML/CSS. Probar inicio/cierre/AAL1/AAL2. |
-| Confirmación de pago | NO VERIFICADO | `backend-sync.js` registra comprobante como `payment_review`; Edge `confirm-payment` existe pero no se observó uso desde el flujo inspeccionado. | Probar que cargar comprobante NO acredita pago; solo admin confirma y comienza plazo según reglas. |
-| Notificaciones | INCOMPLETO / NO VERIFICADO | `notifications` figura sin filas; correo está implementado en Edge `confirm-payment`, pero no se verificó que el circuito público invoque esa función ni que las credenciales del proveedor estén configuradas. | Unificar flujo de comprobante y notificación; probar envío fallido/exitoso sin datos reales. |
-| Seguridad de funciones | NO VERIFICADO | Asesor de Supabase: 4 advertencias por RPC públicas SECURITY DEFINER y otra por protección de contraseñas filtradas desactivada. Las cuatro RPC validan código/hash de token y estados: la exposición puede ser intencional, no declarar vulnerabilidad explotable sin prueba. | Revisar permisos mínimos, abuso, propiedad y validación; documentar si se mantiene exposición, corregir si es innecesaria. |
-| Datos en navegador | DEFECTUOSO / RIESGO DE PRIVACIDAD | `app.js` guarda respuestas y solicitudes en `localStorage`; los adjuntos pueden existir transitoriamente como `dataUrl`. `security-hardening.js` purga información local solo al observar finalización. | Diseñar minimización y eliminación temprana después de sincronización confirmada, con recuperación sin pérdida de solicitudes. |
-| Precios y requisitos oficiales | NO VERIFICADO | Hay catálogo/precios en código y base, pero no se realizó doble validación con fuentes oficiales vigentes. | Verificar fuente primaria y segunda fuente oficial por trámite antes de anunciar plazos y costos oficiales. |
-| Entorno de publicación | NO VERIFICADO | No se realizó prueba visual en navegador ni comparación efectiva versión publicada/commit. | Verificar despliegue y rutas tras autorización expresa para publicar. |
+**Infraestructura — EXISTE, OPERACIÓN END-TO-END NO ESTÁ CONFIRMADA:** Supabase informa proyecto activo; 10 tablas en esquema `public`, todas con RLS habilitado; `requests`, `request_data`, `request_files`, `request_events`, `admin_users`, `services`, `service_price_options`, `catalog_services`, `catalog_sources`, `notifications` existen. No se recuperaron ni publicaron datos de clientes. SQL confirma que el rol `anon` no tiene `SELECT` directo en las tablas de solicitudes, datos, archivos o admin. Las políticas de lectura/escritura administrativa condicionan a `is_admin()`. Esto es verificación de permisos configurados, no una prueba negativa de ataque ni una simulación con usuario real.
 
-## Lista cerrada de pendientes para V1
+**Storage — CONFIGURADO, PRUEBA REAL NO CONFIRMADA:** el bucket `request-files` es privado, limita a 10 MiB y permite JPEG/PNG/WebP/PDF; hay políticas SQL para administradores y una condición de subida pública basada en código/token. Acceso efectivo correcto/denegado y carga completa desde navegador NO ESTÁN CONFIRMADOS.
 
-P1. Corregir MFA del panel y eliminar `eval` del cargador de desarrollo, sin alterar diseño.
-P2. Completar revisión de seguridad de RPC, Edge Functions, RLS, archivos y abuso de alta pública.
-P3. Corregir persistencia excesiva de datos sensibles en navegador sin perder recuperabilidad.
-P4. Verificar alta AP con datos ficticios y comparar cotización cliente/servidor.
-P5. Verificar subida de archivos y comprobante y transición a **Pago en revisión**; nunca marcar acreditado por carga.
-P6. Verificar acción administrativa de confirmación, inicio de plazo y registros de auditoría.
-P7. Integrar/probar aviso al administrador, estados fallidos y reintentos sin prometer WhatsApp API inexistente.
-P8. Verificar código de gestión + últimos cuatro dígitos, error seguro y seguimiento desde otro dispositivo.
-P9. Confirmar requisitos, aranceles oficiales y modalidades AP con dos fuentes oficiales antes de publicar afirmaciones de trámites.
-P10. Probar todos los enlaces y flujo completo AP, seguridad, accesibilidad y diseño PC/móvil con capturas comparativas.
-P11. Repetir pruebas tras correcciones; validar con el propietario el diseño, luego solicitar permiso explícito para publicación en `main`/producción.
+**Cobro — ESTADO SEPARADO EN CÓDIGO:** `app.js` pone comprobante local en `payment_review`; `backend-sync.js` registra comprobante vía RPC `register_public_payment_receipt`, que también pone `payment_review`, no `payment_confirmed`. El administrador puede elegir `payment_confirmed` manualmente mediante el panel; un trigger marca `paid_at` cuando el estado cambia a confirmado. No se encontró en las funciones inspeccionadas un cotejo bancario automático: la acreditación bancaria real NO ESTÁ CONFIRMADA. `confirm-payment` Edge contiene envío de correo, pero la ruta frontend inspeccionada usa la RPC anterior, no esa Edge; envío automático en esa ruta NO ESTÁ CONFIRMADO.
 
-## Plan de ejecución y puerta de publicación
+**Seguimiento — IMPLEMENTADO EN CÓDIGO, NO PROBADO EN VIVO:** `security-hardening.js` captura envío y llama Edge `track-request` con código + últimos 4 números de WhatsApp; la función compara hash y solo devuelve código/estado. La RPC anterior `get_public_request_status` no tiene permiso `anon`, lo que limita la ruta heredada de `backend-sync.js`. No simular falla operativa a partir de duplicación estática sin probar el orden de eventos en navegador. La resistencia a intentos repetidos y límites de solicitudes NO ESTÁ CONFIRMADA.
 
-1. Auditar: ampliar evidencia de P1–P11 sin datos personales. 2. Planificar: corregir bloqueantes sin ampliar alcance. 3. Respaldar: rama backup inmóvil. 4. Programar: cambios mínimos solo en rama de trabajo; no alterar pantallas aprobadas. 5. Probar: pruebas automatizadas reproducibles + E2E ficticio + PC/móvil. 6. Corregir fallos. 7. Validar evidencia y revisión visual con propietario. 8. Publicar **solo tras autorización**.
+**Datos en navegador — HECHO Y RIESGO A EVALUAR:** `app.js` persiste respuestas en `localStorage`; adjuntos/comprobantes pueden quedar temporalmente como `dataUrl`. `backend-sync.js` remueve `dataUrl` en el payload de sincronización y usa token en `sessionStorage`; `security-hardening.js` minimiza datos locales al observar estado finalizado. Tiempo real de permanencia, limpieza tras carga y exposición en equipos compartidos NO ESTÁN CONFIRMADOS; no calificar como explotación demostrada.
 
-**Criterio de salida:** no declarar V1 funcional ni lista para producción hasta superar P1–P11, sin errores críticos ni pruebas pendientes. Estados NO VERIFICADO indican falta de evidencia, no fallo demostrado.
+**Avisos de seguridad — ALERTAS, NO FALLAS EXPLOTADAS:** asesor Supabase el 20/09/2026 lista cuatro funciones públicas `SECURITY DEFINER` invocables por `anon` y protección de contraseñas filtradas desactivada. Se revisaron los cuerpos de las cuatro funciones: contienen validaciones de código/hash, estado y otros campos. No está demostrado que permitan acceso indebido; revisar cada alcance, abuso y necesidad de exposición sin revocar permisos que rompan los formularios. Guía oficial: https://supabase.com/docs/guides/observability/advisors?queryGroups=lint&lint=0028_anon_security_definer_function_executable y https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection.
+
+**Pruebas existentes — APROBADAS SOLO EN SU ALCANCE ESTÁTICO:** ejecución GitHub Actions del 20/09/2026, trabajo `static-audit`, finalizó con éxito: `tests/site-integrity.mjs`: 99 archivos inspeccionados, 290 referencias estáticas, 0 errores; `tests/catalog-form-contract.mjs`: 4 tarjetas directas, 5 familias, 23 formularios configurados, 241 campos y 80 opciones. Otras verificaciones estáticas pasaron en el mismo trabajo. Los propios scripts declaran que NO validan navegación visual, flujo cliente-Supabase ni pagos. Después del retorno de `admin.js` al original no se repitió aquí una batería de extremo a extremo.
+
+**Diseño — REFERENCIA APROBADA, FIDELIDAD NO VERIFICADA:** `index.html` es referencia visual; `audits/public-shell-20260920.md` afirma equivalencia estática de cabeceras/pies de páginas públicas y aclara que no hizo inspección visual. No se comprobaron capturas PC/móvil antes/después en esta revisión. Mantener todos los estilos, botones y estructura aprobados; no hacer rediseños no solicitados.
+
+## Prioridades cerradas y no destructivas
+
+1. Mantener acceso al panel sin doble factor mientras dure la construcción; no fusionar la propuesta anterior de MFA.
+2. Corregir SOLO con aprobación el dato erróneo `officialFee: 0` para AP y la presentación diferenciada entre tasa estatal/honorarios. Verificar que los plazos de RNR no se prometan como plazo propio sin condiciones.
+3. Confirmar, usando documentación oficial, qué acciones debe hacer personalmente el titular y qué asistencia concreta puede prestar TramiPago. Separar HECHO CONFIRMADO de DATO NO VERIFICADO.
+4. Probar alta AP, emails, carga de documentos, comprobante, acreditación manual, notificación y seguimiento con datos ficticios y entorno aislado, registrando evidencia de cada fase.
+5. Probar autorización por rol, archivos privados, funciones RPC y resistencia a abuso sin tocar datos de clientes. Revisar avisos de Supabase por alcance, no por su mera existencia.
+6. Evaluar retención local de DNI/datos y limpiar únicamente después de asegurar que la ficha quedó guardada y es recuperable.
+7. Capturas y comparación visual PC/móvil, rutas, botones y formulario; **no modificar otras secciones**.
+8. Hacer pruebas regresivas, documentar errores residuales, obtener validación del propietario y **solo entonces solicitar autorización separada para publicar**.
+
+## Estado de salida
+
+Auditoría factual de los puntos indicados ampliada y rectificada; NO equivale a auditoría integral de cada archivo o a certificación de seguridad. TramiPago V1 NO ESTÁ CONFIRMADO como operativo de extremo a extremo. `main` y Supabase sin cambios por esta auditoría. Solo se modificó documentación en rama de trabajo y se restauró `admin.js` al contenido original (misma SHA).
