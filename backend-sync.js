@@ -256,12 +256,30 @@
     request.status="payment_review";
   }
 
+  // Aviso independiente de la carga: un fallo del correo NO revierte el comprobante.
+  // La función del servidor comprueba token, estado y existencia del archivo.
+  async function notifyPayment(request,meta){
+    if(request.status!=="payment_review"||!meta.paymentUploaded||meta.notificationSent)return;
+    try{
+      const {data,error}=await client.functions.invoke("notify-receipt",{
+        body:{code:meta.code,requestToken:meta.raw}
+      });
+      if(error||!data?.ok||data.status!=="payment_review")throw new Error("notification_unavailable");
+      meta.notificationSent=data.notification==="sent";
+      request.notificationPending=!meta.notificationSent;
+      if(meta.notificationSent)delete request.notificationError;
+    }catch(_error){
+      request.notificationPending=true;
+      request.notificationError="Aviso administrativo aún no confirmado.";
+    }
+  }
+
   async function syncOne(request,tokenMap){
     if(!request?.id||!request?.serviceId||!isEligibleForBackend(request,tokenMap))return;
     const meta=await ensureServerRecord(request,tokenMap);
     await syncAnswerFiles(request,meta);
     if(request.status==="payment_pending")await updateServerDraft(request,meta);
-    if(request.status==="payment_review")await syncPayment(request,meta);
+    if(request.status==="payment_review"){await syncPayment(request,meta);await notifyPayment(request,meta);}
     delete request.backendSyncError;
     request.backendSyncedAt=new Date().toISOString();
   }
