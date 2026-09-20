@@ -1,0 +1,45 @@
+name: Inventario de estructura pública 20260920
+on:
+  push:
+    paths:
+      - .github/workflows/layout-inventory-20260920.yml
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Registrar diferencias sin modificar páginas
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          htmls=sorted(Path('.').glob('*.html'))
+          out=['# Inventario de cabeceras y pies - 2026-09-20','',f'HTML en raíz: {len(htmls)}','', '| Página | Header | Footer | Abogado | Inicio/Estado/Ayuda | Arrepentimiento/Baja |', '|---|---|---|---|---|---|']
+          route_links=set()
+          for f in htmls:
+              t=f.read_text(encoding='utf-8')
+              head=re.search(r'<header\b[^>]*>',t,re.I)
+              foot=re.search(r'<footer\b[^>]*>',t,re.I)
+              nav=all(s in t for s in ('Inicio','Estado','Ayuda'))
+              legal=all(s in t for s in ('arrepentimiento.html','baja-servicio.html'))
+              out.append('| '+ ' | '.join([f.name,head.group(0).replace('|','/') if head else 'NINGUNO',foot.group(0).replace('|','/') if foot else 'NINGUNO','sí' if 'header-legal' in t or 'tp-lawyer' in t else 'no','sí' if nav else 'no','sí' if legal else 'no'])+' |')
+              for href in re.findall(r'\bhref=["\']([^"\']+)',t):
+                  if href.startswith(('index.html','municipales.html','tramites.html','contacto.html')):route_links.add(href)
+          out.extend(['','## Rutas internas directas identificadas','']+[f'- `{x}`' for x in sorted(route_links)])
+          out.extend(['','## Criterio','', 'La portada index.html es la referencia visual. Sus rutas SPA comparten un único header/footer, pero las páginas HTML independientes no necesariamente lo comparten. Las páginas administrativas requieren revisión aparte.'])
+          dest=Path('audits/layout-inventory-20260920.md');dest.parent.mkdir(exist_ok=True);dest.write_text('\n'.join(out)+'\n',encoding='utf-8')
+          print('\n'.join(out[:30]))
+          PY
+      - name: Guardar evidencia de auditoría
+        run: |
+          git add audits/layout-inventory-20260920.md
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Inventariar cabeceras, pies y rutas publicas'
+          git push
