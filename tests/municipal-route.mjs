@@ -23,7 +23,7 @@ assert.match(page,/https:\/\/pagos\.msm\.gov\.ar\//,'Portal San Miguel');
 assert.match(page,/https:\/\/josecpaz\.gob\.ar\//,'Dominio José C. Paz');
 assert.ok(page.includes('municipal%20o%20un%20estado%20de%20deuda%20de%20San%20Miguel'),'Consulta limita el servicio de San Miguel');
 assert.ok(page.includes('municipal%20o%20un%20estado%20de%20deuda%20de%20Jos%C3%A9%20C.%20Paz'),'Consulta limita el servicio de José C. Paz');
-assert.match(page,/NO ESTÁ CONFIRMADA/,'La modalidad en José C. Paz queda explícitamente sin confirmar');
+assert.doesNotMatch(page,/La posibilidad de completar el trámite ante el organismo sin presencialidad/,'Sin párrafo redundante en José C. Paz');
 assert.match(page,/No ofrecemos multas, infracciones ni trámites ante el Juzgado de Faltas/,'Exclusión de multas en José C. Paz');
 assert.match(page,/No gestionamos multas, infracciones ni actuaciones ante el Juzgado de Faltas/,'Exclusión de multas en San Miguel');
 assert.doesNotMatch(page,/Consulta y pago de tasas, multas y boletas/,'Sin promesa anterior de multas y tasas');
