@@ -1,15 +1,23 @@
-# Rectificación: MFA en desarrollo — 20/09/2026
+# Anexo de decisiones aprobadas — desarrollo y acceso — 20/09/2026
 
-**El propietario solicitó expresamente que mientras TramiPago está en construcción el panel no pida doble verificación.** Esta condición es un requisito aprobado, no un error técnico. La auditoría inicial lo clasificó erróneamente como defecto. La propuesta de restauración obligatoria de MFA fue revertida en la rama de trabajo: `admin.js` vuelve a tener el mismo blob SHA `f9a8608b2ad2e467aac249745af5a9b048f1382f` que `main`.
+## La condición de trabajo prevalece sobre supuestos del auditor
 
-## Hechos comprobados
+**Declaración expresa del propietario:** TramiPago está en construcción y todavía no está registrado. Se mantiene el alojamiento de prueba existente. No contratar dominio ni hosting pagos hasta comprobar el sitio, la estructura y todo el circuito de principio a fin. No sugerir esas compras como solución al problema de programación ni como condición previa al cierre funcional.
 
-- `admin.html` carga `admin.js`; este muestra `MODO DESARROLLO`, saltea el paso MFA y conserva la comprobación de membresía en `admin_users` para dar acceso al panel.
-- `admin-mfa.js` existe como módulo alternativo para una futura decisión; no activarlo sin instrucción del usuario.
-- En Supabase, `public.is_admin()` comprueba membresía por `auth.uid()` sin exigir `aal2`, coherente con el acceso temporal deseado. No se realizó prueba real de sesión autorizada/no autorizada, por lo que seguridad integral NO ESTÁ CONFIRMADA.
-- `admin.js` usa reemplazo de código fuente mediante expresión regular y `eval` para aplicar el modo desarrollo. Eso está documentado como dependencia técnica frágil, NO como vulnerabilidad demostrada ni autorización para cambiarlo.
-- Referencia oficial para decisiones futuras: https://supabase.com/docs/guides/auth/auth-mfa#enforce-rules-for-mfa-logins. Si el usuario solicita MFA en producción, verificar conjuntamente frontend y reglas API/RLS; hoy esa decisión **no** está autorizada.
+**Acceso al panel:** durante desarrollo el propietario decidió ingresar desde navegador sin doble verificación. `admin.html` carga `admin.js`, cuyo código indica `MODO DESARROLLO`; preserva la comprobación de pertenencia a `admin_users`, sin exigir MFA. Este diseño de interacción es intencional. La modificación anterior de `admin.js` fue revertida y su blob SHA vuelve a coincidir con `main` (`f9a8608b2ad2e467aac249745af5a9b048f1382f`). NO reintroducir MFA ni cambiar las políticas de acceso unilateralmente.
 
-## Decisión de alcance
+**Modelo económico:** TramiPago factura la gestión, el conocimiento, la asistencia, el tiempo y la plataforma; el honorario es independiente de que el organismo tenga o no tasa. El costo oficial NO se publica en la página. Honorarios, textos comerciales y documentación legal trabajada previamente son referencia: no reclasificar como falla el precio privado por compararlo con un arancel estatal ni introducir cifras oficiales.
 
-Mantener el acceso rápido aprobado, no añadir segundo paso ni alterar otras pantallas. Priorizar fallos funcionales comprobados; registrar seguridad como evaluación independiente, sin afirmar explotación. No cambiar código ni políticas SQL por este documento.
+## Verificación técnica disponible y límites
+
+- Se consultaron fuentes del código y la función `public.is_admin()`: existe comprobación de membresía, sin obligación AAL2. Es consistente con el requisito temporal.
+- El cargador de desarrollo utiliza sustitución de una función por texto y `eval`: dependencia frágil constatada, NO vulnerabilidad explotada ni permiso para cambiar su comportamiento por iniciativa propia. Registrar como observación técnica separada.
+- No se ha probado un acceso real con identidad administradora y otro con identidad no administradora; control operativo NO VERIFICADO.
+- Hay advertencias del asesor Supabase relativas a funciones públicas con privilegios elevados y política de contraseñas filtradas; no demuestran explotación ni exigen por sí mismas MFA durante construcción. Pueden analizarse sin alterar el requisito del propietario.
+- La eventual configuración de un entorno comercial futuro se decidirá de forma separada DESPUÉS de cerrar y probar la V1; no bloquear ahora por ese escenario.
+
+## Prueba a realizar
+
+Validar que el panel abra con la cuenta administradora autorizada sin segundo paso, que otra cuenta sea rechazada, que los datos privados no se expongan y que las operaciones previstas funcionen. Usar datos ficticios y no introducir cambios productivos sin autorización. El objetivo prioritario de auditoría es completar el circuito cliente → pago de gestión → administración → seguimiento y conservar diseño aprobado.
+
+Referencia del inventario maestro rectificado: `audits/tramipago-v1-audit-20260920.md`.
