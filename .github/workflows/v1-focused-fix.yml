@@ -6,6 +6,7 @@ on:
       - work/tramipago-v1-audit-20260920
     paths:
       - .github/workflows/v1-focused-fix.yml
+      - scripts/v1-focused-fix.mjs
 
 permissions:
   contents: write
@@ -23,9 +24,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Aplicar parche solo a código y recursos auditados de la rama
+      - name: Aplicar parche exclusivamente a la rama de trabajo
         run: node scripts/v1-focused-fix.mjs
-      - name: Validación de sintaxis y contratos vigentes
+      - name: Validar sintaxis y contratos antes de realizar commit
         run: |
           node --check app.js
           node --check extra-families.js
@@ -34,12 +35,12 @@ jobs:
           node tests/pricing-privacy-contract.mjs
           node tests/v1-directives.mjs
           node tests/v1-fixture-audit.mjs
-      - name: Publicar únicamente commit de rama de revisión (NUNCA main ni GitHub Pages)
+      - name: Commit únicamente en la rama de revisión; nunca main ni Pages
         run: |
-          git add -A -- app.js extra-families.js index.html tests/live-site-smoke.mjs assets/justicia-balanza-martillo-20260918.svg
+          git add -A -- app.js extra-families.js index.html tests/live-site-smoke.mjs
           git diff --cached --check
-          if git diff --cached --quiet; then echo 'Sin cambios para confirmar'; exit 0; fi
+          if git diff --cached --quiet; then echo 'Sin modificaciones'; exit 0; fi
           git config user.name 'tramipago-v1-audit-bot'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Corregir exposición de costos oficiales y versión de caché en rama de prueba'
+          git commit -m 'Eliminar visualización de arancel oficial sin tocar honorarios ni diseño'
           git push origin HEAD:refs/heads/work/tramipago-v1-audit-20260920
