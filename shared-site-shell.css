@@ -1,0 +1,24 @@
+/* Cabecera y pie de las páginas públicas: misma fuente visual que Inicio.
+   Solo se aplica a los bloques compartidos; no cambia formularios o tarjetas. */
+@import url("header-fijo-20260917.css?v=20260920-unified1");
+@import url("nav-hover-black-20260917.css?v=20260920-unified1");
+@import url("legal-design-refresh-20260917.css?v=20260920-unified1");
+body .site-header.shared-site-header{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;position:sticky!important;top:0;z-index:60;box-sizing:border-box;background:#102d47!important;color:#fff!important;border-bottom:1px solid #274e69!important;font-family:"Segoe UI",Arial,sans-serif!important;line-height:1.25!important}
+body .site-header.shared-site-header *,body .site-footer.shared-site-footer *{box-sizing:border-box}
+body .site-header.shared-site-header .header-inner{box-sizing:border-box}
+body .site-header.shared-site-header .brand{color:#fff!important;text-decoration:none!important}
+body .site-header.shared-site-header .header-slogan{color:#fff!important}
+body .site-header.shared-site-header .nav-icon{display:inline-block;width:16px;height:16px;flex:0 0 16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+body .site-header.shared-site-header .header-featured .header-legal-copy{position:relative;z-index:1}
+body .site-header.shared-site-header .header-featured .main-nav a{color:#fff;text-decoration:none}
+body .site-footer.shared-site-footer{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:12px 0 8px!important;background:#082A47!important;border:0!important;color:#fff!important;font-family:"Segoe UI",Arial,sans-serif!important;line-height:1.35!important;text-align:left!important}
+body .site-footer.shared-site-footer .footer-inner{display:block!important;width:min(1180px,calc(100% - clamp(30px,6vw,96px)))!important;max-width:none!important;margin:0 auto!important;padding:0!important}
+body .site-footer.shared-site-footer .footer-menu-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;column-gap:clamp(26px,5vw,78px)!important;row-gap:18px!important;width:100%!important;align-items:start!important}
+body .site-footer.shared-site-footer .footer-menu-col{min-width:0;text-align:left}
+body .site-footer.shared-site-footer .footer-menu-col h3{margin:0 0 5px!important;color:#fff!important;font-size:10.5px!important;font-weight:650!important;line-height:1.35!important}
+body .site-footer.shared-site-footer .footer-menu-col a{display:block!important;margin:2px 0!important;padding:0!important;color:rgba(255,255,255,.82)!important;font-size:9.5px!important;font-weight:400!important;line-height:1.35!important;text-decoration:none!important;overflow-wrap:anywhere}
+body .site-footer.shared-site-footer .footer-menu-col a:hover,body .site-footer.shared-site-footer .footer-menu-col a:focus-visible{color:#29B6F6!important;text-decoration:underline!important;text-underline-offset:2px}
+body .site-footer.shared-site-footer .footer-menu-bottom{display:flex!important;justify-content:space-between!important;gap:18px!important;flex-wrap:wrap!important;width:100%!important;margin-top:10px!important;padding-top:6px!important;border-top:1px solid rgba(255,255,255,.18)!important;color:rgba(255,255,255,.68)!important;font-size:9px!important;line-height:1.3!important}
+@media(max-width:900px){body .site-footer.shared-site-footer .footer-inner{width:min(720px,calc(100% - 36px))!important}body .site-footer.shared-site-footer .footer-menu-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:590px){body .site-header.shared-site-header{position:relative!important}}
+@media(max-width:520px){body .site-footer.shared-site-footer .footer-menu-grid{grid-template-columns:1fr!important;row-gap:14px!important}body .site-footer.shared-site-footer .footer-menu-bottom{display:block!important}body .site-footer.shared-site-footer .footer-menu-bottom span{display:block!important;margin-top:4px!important}}
