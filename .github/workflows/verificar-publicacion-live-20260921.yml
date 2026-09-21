@@ -1,0 +1,37 @@
+name: Verificar publicación real de CTA TramiPago
+on:
+  push:
+    branches:
+      - work/tramipago-v1-audit-20260920
+    paths:
+      - .github/workflows/verificar-publicacion-live-20260921.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Consultar GitHub Pages PUBLICADO, no el checkout local
+        run: |
+          set -euo pipefail
+          base='https://tramipago2026.github.io/TramiPago'
+          for i in $(seq 1 12); do
+            if curl -fsSL --max-time 15 -H 'Cache-Control: no-cache' "$base/index.html?audit=$(date +%s)" -o /tmp/tramipago-live.html && grep -Fq 'site.css?v=20260921-cta-visible1' /tmp/tramipago-live.html && grep -Fq 'site-fixes.js?v=20260921-hint-single1' /tmp/tramipago-live.html; then
+              echo 'PASS: GitHub Pages sirve index.html nuevo CSS y JS, sin usar checkout local.'
+              break
+            fi
+            if [ "$i" -eq 12 ]; then echo 'FAIL: el sitio publicado aún no contiene las versiones corregidas'; exit 1; fi
+            sleep 10
+          done
+          curl -fsSL --max-time 15 -H 'Cache-Control: no-cache' "$base/site.css?audit=$(date +%s)" -o /tmp/tramipago-live-site.css
+          grep -Fq 'legalizaciones-fotos-20260918.css?v=20260921-cta-visible1' /tmp/tramipago-live-site.css
+          curl -fsSL --max-time 15 -H 'Cache-Control: no-cache' "$base/legalizaciones-fotos-20260918.css?audit=$(date +%s)" -o /tmp/tramipago-live-cta.css
+          grep -Fq 'opacity:1!important;' /tmp/tramipago-live-cta.css
+          grep -Fq 'border:2px solid #17212b!important;' /tmp/tramipago-live-cta.css
+          grep -Fq 'background:#198754!important;' /tmp/tramipago-live-cta.css
+          echo 'PASS: CSS publicado devuelve CTA visibles verdes con borde carbón, con recurso versionado.'
+          curl -fsSL --max-time 15 -H 'Cache-Control: no-cache' "$base/site-fixes.js?audit=$(date +%s)" -o /tmp/tramipago-live-js.js
+          grep -Fq 'app.js ya muestra el límite de PDF' /tmp/tramipago-live-js.js
+          echo 'PASS: prevención de aviso duplicado está publicada.'
