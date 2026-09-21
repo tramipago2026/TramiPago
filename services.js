@@ -59,7 +59,7 @@
       codePrefix: "AP",
       name: "Antecedentes Penales",
       shortDescription: "Asistencia para solicitar el certificado y seguir el trámite.",
-      description: "Completá los datos una sola vez. El Registro Nacional de Reincidencia envía el certificado directamente al correo del titular.",
+      description: "Asistencia para completar los datos. El Registro Nacional de Reincidencia envía al correo del titular un enlace para descargar el certificado. El arancel del organismo se informa y abona por separado; los plazos dependen del horario habilitado y de la acreditación del pago ante el organismo.",
       resultDelivery: "authority-direct",
       active: true,
       eligibility: { required: false },
@@ -71,9 +71,10 @@
       components: [
         "Asistencia en la carga y seguimiento",
         "Validaciones personales a cargo del titular cuando las exija el organismo",
-        "Envío directo del certificado al correo del titular"
+        "Enlace de descarga del organismo enviado al correo del titular"
       ],
-      officialFee: 0,
+      officialFee: null,
+      officialFeeExternal: true,
       priceField: "modality",
       priceOptions: [
         { value: "one-hour", label: "1 hora", amount: 20000, duration: "Modalidad: 1 hora" },

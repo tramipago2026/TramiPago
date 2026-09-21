@@ -273,13 +273,13 @@
     if (!/antecedentes penales/i.test(title)) return;
     document.querySelectorAll(".tracking-result .file-download").forEach((link) => link.remove());
     const finalizedText = document.querySelector(".tracking-result .finalization-box > p");
-    const finalCopy = "La gestión terminó. El Registro Nacional de Reincidencia envía el certificado directamente al correo del titular.";
+    const finalCopy = "La gestión terminó. El Registro Nacional de Reincidencia envía al correo del titular un enlace para descargar el certificado.";
     if (finalizedText && finalizedText.textContent !== finalCopy) finalizedText.textContent = finalCopy;
     const result = document.querySelector(".tracking-result");
     if (!result || result.querySelector(".authority-direct-note")) return;
     const note = document.createElement("div");
     note.className = "authority-direct-note";
-    note.textContent = "El certificado de antecedentes penales no se descarga ni se almacena en TramiPago. El Registro Nacional de Reincidencia lo envía directamente al correo del titular.";
+    note.textContent = "El certificado de antecedentes penales no se descarga ni se almacena en TramiPago. El Registro Nacional de Reincidencia envía al correo del titular un enlace para descargarlo desde el sitio oficial.";
     result.appendChild(note);
   }
 
