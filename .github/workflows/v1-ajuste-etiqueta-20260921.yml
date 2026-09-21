@@ -1,0 +1,51 @@
+name: Rectificar etiqueta de honorarios sin alterar diseño
+on:
+  push:
+    branches:
+      - fix/auditoria-aranceles-20260921
+    paths:
+      - .github/workflows/v1-ajuste-etiqueta-20260921.yml
+permissions:
+  contents: write
+jobs:
+  rectify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Reparar solo las comillas visibles introducidas en etiqueta
+        run: |
+          node --input-type=module <<'JS'
+          import {readFileSync,writeFileSync} from 'node:fs';
+          import assert from 'node:assert/strict';
+          const file='app.js';let code=readFileSync(file,'utf8');
+          const before='<small>"Honorarios de gestión TramiPago"</small>';
+          const after='<small>Honorarios de gestión TramiPago</small>';
+          assert.equal(code.split(before).length,2,'Ancla no encontrada/duplicada: etiqueta');
+          writeFileSync(file,code.replace(before,after));
+          const test='tests/v1-contrato-honorarios-20260921.mjs';let contract=readFileSync(test,'utf8');
+          const assertion='assert.match(app,/Honorarios de gestión TramiPago/,\'El cobro visible corresponde a la gestión\');';
+          assert.equal(contract.split(assertion).length,2,'Contrato alterado');
+          contract=contract.replace(assertion,assertion+'\nassert.doesNotMatch(app,/<small>"Honorarios de gestión TramiPago"<\\/small>/,\'Etiqueta sin comillas literales\');');
+          writeFileSync(test,contract);
+          console.log('PASS: únicamente etiqueta literal sin comillas; CSS, precios y estructura intactos.');
+          JS
+      - name: Validar contrato e integridad
+        run: |
+          node --check app.js
+          node tests/v1-contrato-honorarios-20260921.mjs
+          node tests/catalog-form-contract.mjs
+          node tests/site-integrity.mjs
+          git diff --check
+      - name: Guardar solo etiqueta y contrato en rama
+        run: |
+          git add app.js tests/v1-contrato-honorarios-20260921.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Corregir etiqueta de gestión sin comillas y reforzar contrato'
+          git push
