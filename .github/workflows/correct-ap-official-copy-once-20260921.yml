@@ -1,0 +1,90 @@
+name: Rectificar datos comprobados AP (solo rama de pruebas)
+on:
+  push:
+    branches: [work/remove-official-fee-display-20260921]
+    paths: [.github/workflows/correct-ap-official-copy-once-20260921.yml]
+permissions:
+  contents: write
+jobs:
+  adjust-only-ap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/remove-official-fee-display-20260921
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Rectificar únicamente la ficha AP y los dos textos de entrega
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('services.js')
+          text=p.read_text(encoding='utf-8')
+          a=text.index('      id: "antecedentes-penales",')
+          b=text.index('      id: "informe-vehicular",',a)
+          original=text[a:b]
+          assert original.count('officialFee: 0,')==1
+          prior='Completá los datos una sola vez. El Registro Nacional de Reincidencia envía el certificado directamente al correo del titular.'
+          accurate='Asistencia para completar los datos. El Registro Nacional de Reincidencia envía al correo del titular un enlace para descargar el certificado. El arancel del organismo se informa y abona por separado; los plazos dependen del horario habilitado y de la acreditación del pago ante el organismo.'
+          assert original.count(prior)==1
+          assert original.count('Envío directo del certificado al correo del titular')==1
+          revised=original.replace(prior,accurate).replace('Envío directo del certificado al correo del titular','Enlace de descarga del organismo enviado al correo del titular').replace('      officialFee: 0,','      officialFee: null,\n      officialFeeExternal: true,')
+          assert revised.count('officialFeeExternal: true,')==1
+          assert revised.count('amount: 20000')==1 and revised.count('amount: 15000')==1
+          p.write_text(text[:a]+revised+text[b:],encoding='utf-8')
+          p=Path('site-fixes.js')
+          text=p.read_text(encoding='utf-8')
+          changes={
+            'La gestión terminó. El Registro Nacional de Reincidencia envía el certificado directamente al correo del titular.': 'La gestión terminó. El Registro Nacional de Reincidencia envía al correo del titular un enlace para descargar el certificado.',
+            'El certificado de antecedentes penales no se descarga ni se almacena en TramiPago. El Registro Nacional de Reincidencia lo envía directamente al correo del titular.': 'El certificado de antecedentes penales no se descarga ni se almacena en TramiPago. El Registro Nacional de Reincidencia envía al correo del titular un enlace para descargarlo desde el sitio oficial.'
+          }
+          for old,new in changes.items():
+            assert text.count(old)==1, 'Texto de entrega no coincide: abortar sin rediseñar'
+            text=text.replace(old,new)
+          p.write_text(text,encoding='utf-8')
+          p=Path('index.html')
+          text=p.read_text(encoding='utf-8')
+          versions={
+            'services.js?v=20260914-partidas-flow1':'services.js?v=20260921-ap-official-data1',
+            'site-fixes.js?v=20260921-hint-single1':'site-fixes.js?v=20260921-ap-delivery-copy1',
+            'app.js?v=20260916-audit2':'app.js?v=20260921-remove-official-fee1'
+          }
+          for old,new in versions.items():
+            assert text.count(old)==1, 'Versión inesperada de recurso: abortar'
+            text=text.replace(old,new)
+          p.write_text(text,encoding='utf-8')
+          print('PASS: solo AP y dos textos de entrega; sin tocar precios ni diseño')
+          PY
+      - name: Comprobaciones de sintaxis, estructura y honorarios
+        run: |
+          git diff --check
+          node --check services.js
+          node --check site-fixes.js
+          node --check app.js
+          node tests/site-integrity.mjs
+          node tests/catalog-form-contract.mjs
+          node tests/pricing-privacy-contract.mjs
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('services.js').read_text(encoding='utf-8')
+          ap=s[s.index('      id: "antecedentes-penales",'):s.index('      id: "informe-vehicular",')]
+          assert 'officialFee: null,' in ap and 'officialFeeExternal: true,' in ap
+          assert 'amount: 20000' in ap and 'amount: 15000' in ap
+          assert 'envía el certificado directamente' not in ap
+          assert 'enlace para descargar el certificado' in ap
+          assert 'envía el certificado directamente' not in Path('site-fixes.js').read_text(encoding='utf-8')
+          assert 'Costo oficial' not in Path('app.js').read_text(encoding='utf-8').split('  const PARTIDAS_TYPE_CARDS')[0].split('  function renderServiceSummary(service) {')[-1]
+          print('PASS: contrato comercial y texto respaldado por dos páginas oficiales')
+          PY
+      - name: Guardar cambios limitados en rama, no en sitio publicado
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- services.js site-fixes.js index.html
+          git diff --cached --check
+          git diff --cached --quiet && exit 1 || true
+          git commit -m 'Corregir solo arancel externo y enlace de entrega AP; versionar JS'
+          git push origin HEAD:refs/heads/work/remove-official-fee-display-20260921
