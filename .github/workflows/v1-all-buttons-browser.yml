@@ -7,7 +7,11 @@ on:
       - .github/workflows/v1-all-buttons-browser.yml
       - tests/v1-all-buttons-browser.mjs
       - tests/v1-new-links-design.mjs
+      - tests/v1-file-hints-browser.mjs
       - legalizaciones-fotos-20260918.css
+      - site-fixes.js
+      - site.css
+      - index.html
   workflow_dispatch:
 permissions:
   contents: read
@@ -30,6 +34,8 @@ jobs:
           node tests/v1-all-buttons-browser.mjs
       - name: Comprobar CTA visibles, bordes, submenús, destinos y formularios PC/móvil
         run: node tests/v1-new-links-design.mjs
+      - name: Un solo aviso de archivo en los formularios Legalizaciones y Apostillado
+        run: node tests/v1-file-hints-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
