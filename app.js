@@ -318,17 +318,10 @@
           <h3>Requisitos</h3>
           <ul class="requirements">${(service.requirements || []).map((item) => `<li>${escapeHTML(item)}</li>`).join("")}</ul>
         </div>
-        ${service.intakeOnly
-          ? (service.officialFee !== null && service.officialFee !== undefined
-              ? `<div class="service-summary-block"><h3>Costo oficial</h3><div class="service-summary-row"><span>Arancel del organismo</span><strong>${formatARS(service.officialFee)}</strong></div></div>`
-              : "")
-          : `<div class="service-summary-block">
-              <h3>Precio y plazo</h3>
-              ${renderPriceOptions(service)}
-              ${service.officialFee !== null && service.officialFee !== undefined
-                ? `<div class="service-summary-row"><span>Costo oficial</span><strong>${formatARS(service.officialFee)}</strong></div>`
-                : ""}
-            </div>`}
+        ${service.intakeOnly ? "" : `<div class="service-summary-block">
+    <h3>Precio y plazo</h3>
+    ${renderPriceOptions(service)}
+  </div>`}
       </div>
     `;
   }
