@@ -29,26 +29,27 @@ jobs:
           start=source.index(anchor)
           end=source.index(boundary,start)
           original=source[start:end]
-          assert original.count('Costo oficial')==2, 'Se esperaba encontrar exactamente dos rótulos de costo oficial'
+          assert original.count('Costo oficial')==2, 'Se esperaban exactamente dos rótulos'
           selector='        ${service.intakeOnly\n'
           assert original.count(selector)==1, 'Cambio estructural imprevisto'
           suffix_marker='      </div>\n    `;\n  }'
-          assert original.count(suffix_marker)==1, 'Cierre del resumen ambiguo'
+          assert original.count(suffix_marker)==1, 'Cierre ambiguo'
           prefix=original[:original.index(selector)]
           suffix=original[original.index(suffix_marker):]
           replacement=prefix+'''        ${service.intakeOnly ? "" : `<div class="service-summary-block">
               <h3>Precio y plazo</h3>
               ${renderPriceOptions(service)}
             </div>`}
-'''+suffix
+          '''+suffix
           assert 'Costo oficial' not in replacement
           assert replacement.count('renderPriceOptions(service)')==1
           assert prefix.count('<h3>Requisitos</h3>')==1
           updated=source[:start]+replacement+source[end:]
-          assert updated.count('  function renderServiceSummary(service) {')==1
-          assert updated[:start]==source[:start] and updated[start+len(replacement):]==source[end:]
+          assert updated.count(anchor)==1
+          assert updated[:start]==source[:start]
+          assert updated[start+len(replacement):]==source[end:]
           path.write_text(updated,encoding='utf-8')
-          print('PASS: solo se reemplazó el resumen de servicio; sin tocar otras funciones ni precios')
+          print('PASS: modificación aislada del resumen de servicio')
           PY
       - name: Sintaxis y regresión estática
         run: |
@@ -63,7 +64,7 @@ jobs:
           b=s[s.index('  function renderServiceSummary(service) {'):s.index('\n  const PARTIDAS_TYPE_CARDS')]
           assert 'Costo oficial' not in b and 'Arancel del organismo' not in b
           assert '<h3>Precio y plazo</h3>' in b and 'renderPriceOptions(service)' in b
-          print('PASS: honorarios visibles y ningún arancel oficial en resumen')
+          print('PASS: honorarios visibles; sin filas de arancel oficial')
           PY
       - name: Registrar corrección solo en rama no publicada
         run: |
@@ -71,6 +72,6 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- app.js
           git diff --cached --check
-          git diff --cached --exit-code && exit 1 || true
+          git diff --cached --quiet && exit 1 || true
           git commit -m 'Ocultar exclusivamente filas de costo oficial en fichas'
           git push origin HEAD:refs/heads/work/remove-official-fee-display-20260921
