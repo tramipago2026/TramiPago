@@ -5,6 +5,7 @@ on:
       - work/tramipago-v1-audit-20260920
     paths:
       - .github/workflows/v1-all-buttons-browser.yml
+      - tests/v1-all-buttons-browser.mjs
   workflow_dispatch:
 permissions:
   contents: read
