@@ -1,0 +1,55 @@
+name: Validar directivas comerciales y circuito AP en rama aislada
+on:
+  push:
+    branches:
+      - fix/auditoria-aranceles-20260921
+    paths:
+      - .github/workflows/verificar-directivas-y-ap-20260921.yml
+permissions:
+  contents: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Aplicar solo cambios comerciales con anclas exactas
+        run: node scripts/aplicar-directivas-comerciales-20260921.mjs
+      - name: Validar contrato, rutas y sintaxis sin escribir en Supabase
+        run: |
+          node --check app.js
+          node --check services.js
+          node --check extra-families.js
+          node tests/v1-contrato-honorarios-20260921.mjs
+          node tests/catalog-form-contract.mjs
+          node tests/pricing-privacy-contract.mjs
+          node tests/site-integrity.mjs
+          git diff --check
+      - name: Instalar navegador aislado
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.55.1
+          npx playwright install --with-deps chromium
+      - name: Simular AP de principio a fin sin API externa ni personas reales
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/tramipago-ap.log 2>&1 &
+          node tests/v1-ap-recorrido-simulado.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tramipago-ap-simulado
+          path: audit-artifacts/ap-simulado.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Guardar únicamente cambios probados en rama, NUNCA publicar
+        run: |
+          git add app.js services.js index.html tests/pricing-privacy-contract.mjs tests/live-site-smoke.mjs
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'No exponer tasas en pantallas; conservar honorarios y probar AP con backend ficticio'
+          git push
