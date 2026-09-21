@@ -1,5 +1,5 @@
 /* Solo familia Legalizaciones y Apostillas. No altera otras tarjetas, rutas ni formularios.
-   Fotografías de Unsplash (licencia de uso comercial). Fallback: ilustraciones locales.
+   Fotografías de Unsplash; fallback: ilustraciones locales.
    Legalizaciones: https://unsplash.com/photos/person-signing-a-document-with-a-pen-DFSa7IaWcz4
    Apostillado: https://unsplash.com/photos/a-passport-and-a-boarding-pass-are-on-a-bag-LVA3S6isNYQ */
 
@@ -18,7 +18,7 @@ body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .
 }
 body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card {
   min-width:0!important;
-  border:1px solid #c4d8e6!important;
+  border:2px solid #17212b!important;
   border-radius:14px!important;
   box-shadow:0 9px 24px rgba(8,42,71,.15)!important;
   transition:box-shadow .2s ease,transform .2s ease!important;
@@ -115,30 +115,45 @@ body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .
   }
 }
 
-/* Se conserva el botón nativo para accesibilidad (teclado/Enter) y su ruta de formulario,
-   pero se elimina de la presentación: toda la fotografía y el texto son superficie clicable.
-   Esta regla solo afecta a las dos tarjetas de esta familia. */
-body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card:has(> .button[data-action="select-service"]) {
-  position:relative!important;
+/* Auditoría 21/09: el enlace de cada gestión NO puede ser invisible.
+   Conservar el botón nativo, su rótulo, la acción y su posición en el flujo.
+   No superponer una superficie transparente sobre fotografías y textos. */
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card > .button[data-action="select-service"] {
+  position:static!important;
+  inset:auto!important;
+  z-index:auto!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:calc(100% - 34px)!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:46px!important;
+  margin:0 17px 17px!important;
+  padding:9px 12px!important;
+  border:2px solid #050505!important;
+  border-radius:9px!important;
+  opacity:1!important;
+  visibility:visible!important;
+  color:#fff!important;
+  background:#198754!important;
   cursor:pointer!important;
 }
-body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card > .button[data-action="select-service"] {
-  position:absolute!important;
-  inset:0!important;
-  z-index:2!important;
-  display:block!important;
-  width:100%!important;
-  height:100%!important;
-  min-width:0!important;
-  min-height:0!important;
-  margin:0!important;
-  padding:0!important;
-  border:0!important;
-  border-radius:inherit!important;
-  opacity:0!important;
-  cursor:pointer!important;
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card > .button[data-action="select-service"]:hover,
+body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card > .button[data-action="select-service"]:focus-visible {
+  background:#126b3a!important;
+  color:#fff!important;
+  border-color:#050505!important;
+  outline:3px solid #29b6f6!important;
+  outline-offset:2px!important;
 }
 body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card:focus-within {
   outline:3px solid #29b6f6!important;
   outline-offset:3px!important;
+}
+@media(max-width:560px){
+  body .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card > .button[data-action="select-service"]{
+    width:calc(100% - 30px)!important;
+    margin:0 15px 15px!important;
+  }
 }
