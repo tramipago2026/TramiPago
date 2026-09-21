@@ -6,7 +6,7 @@ import {mkdirSync,writeFileSync} from 'node:fs';
 const base='http://127.0.0.1:8765/';
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 mkdirSync('audit-artifacts',{recursive:true});
-const report={mode:'Local Chromium, PC 1440x900 y móvil 390x844; peticiones externas bloqueadas; sin envíos reales',screens:[],links:[],families:[],issues:[],warnings:[]};
+const report={mode:'Local Chromium, PC 1440x900 y móvil 390x844; peticiones externas bloqueadas; sin envíos reales',links:[],families:[],issues:[],warnings:[]};
 const check=(ok,message)=>{if(!ok)report.issues.push(message);};
 const screenshot=async(page,name)=>page.screenshot({path:`audit-artifacts/${name}.png`,fullPage:true});
 try{
@@ -69,8 +69,10 @@ try{
      if(await button.count()!==1)continue;
      await button.click();
      check(page.url().endsWith('#/tramite/'+id),`${device.name}/${family.id}: botón ${id} abre ruta incorrecta`);
+     // El hash cambia sincrónicamente, pero el formulario puede renderizarse en el siguiente frame.
+     await page.locator('#data-form,#eligibility-form').first().waitFor({state:'visible',timeout:8000}).catch(()=>{});
      const found=await page.locator('#data-form,#eligibility-form').count();
-     check(found===1,`${device.name}/${family.id}: botón ${id} sin formulario`);
+     check(found===1,`${device.name}/${family.id}: botón ${id} sin formulario luego de esperar renderizado`);
      report.links.push({device:device.name,button:id,destination:page.url(),formVisible:found===1});
     }
    }
