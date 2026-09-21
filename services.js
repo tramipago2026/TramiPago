@@ -275,9 +275,9 @@
       ],
       components: [
         "Solicitud regular: 15 días hábiles.",
-        "Partida regular: trámite oficial gratuito cuando se conocen los datos registrales.",
-        "Si faltan datos registrales, CABA informa un costo oficial adicional de $10.950.",
-        "Solicitud urgente: 3 días hábiles; costo oficial $16.140 y exige todos los datos exactos.",
+        "Partida regular: requiere los datos registrales disponibles.",
+        "Si faltan datos registrales, puede ser necesaria una búsqueda adicional. Se informan las condiciones antes de continuar.",
+        "Solicitud urgente: exige todos los datos registrales exactos y está sujeta a disponibilidad del organismo.",
         "Unión Civil/Convivencial: la partida existe, pero su solicitud no figura en el trámite general de partidas; se revisa el canal oficial específico antes de iniciar."
       ],
       officialFee: null,
@@ -304,7 +304,7 @@
         { id: "bookNumber", label: "Tomo (si lo conocés)", type: "text", required: false },
         { id: "actNumber", label: "Acta (si la conocés)", type: "text", required: false },
         { id: "registrationYear", label: "Año de inscripción (si lo conocés)", type: "text", required: false, inputmode: "numeric" },
-        { id: "creditCardAvailable", label: "Si elegí urgente, cuento con tarjeta de crédito para abonar el costo oficial.", type: "checkbox", required: false },
+        { id: "creditCardAvailable", label: "Si elegí urgente, dispongo de tarjeta de crédito si el organismo requiere ese medio de pago.", type: "checkbox", required: false },
         { id: "previousAct", label: "Copia de una partida anterior (opcional)", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
         { id: "purpose", label: "¿Para qué trámite necesitás la partida? (opcional)", type: "text", required: false },
         ...contactFields,

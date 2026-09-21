@@ -736,9 +736,8 @@
         <div class="summary-grid">
           <div class="summary-item"><small>Código</small><strong>${escapeHTML(request.code)}</strong></div>
           <div class="summary-item"><small>Servicio</small><strong>${escapeHTML(service.name)}</strong></div>
-          <div class="summary-item"><small>${service.officialFeeExternal ? "Total TramiPago (sin arancel oficial)" : "Total"}</small><strong>${formatARS(pricing.total)}</strong></div>
+          <div class="summary-item"><small>"Honorarios de gestión TramiPago"</small><strong>${formatARS(pricing.total)}</strong></div>
         </div>
-        ${service.officialFeeExternal ? `<div class="notice"><strong>Arancel oficial aparte:</strong> se abona directamente al organismo mediante su VEP cuando corresponda. No transfieras ese arancel a TramiPago; esta pantalla cobra únicamente nuestro servicio.</div>` : ""}
         <div class="notice"><strong>Datos de pago:</strong> alias ${escapeHTML(window.TRAMI_CONFIG.alias)} · titular ${escapeHTML(window.TRAMI_CONFIG.paymentHolder)}.</div>
         <form id="payment-form">
           <div class="field field-full payment-file">

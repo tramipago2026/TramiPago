@@ -75,6 +75,10 @@ try{
     await page.waitForFunction(()=>Boolean(document.querySelector('.request-code')?.textContent?.includes('AP-000001-ABCDEF12')));
     await page.locator('[data-action="track-request"]').click();
     await page.waitForSelector('#tracking-form');
+    // Al venir de «Ver estado» ya hay un resultado local: el CTA cambia a «Consultar otro código».
+    // Se usa el recorrido real del usuario para hacer una nueva consulta validada en el servidor.
+    if(await page.locator('[data-tracking-new-query]').count())await page.locator('[data-tracking-new-query]').click();
+    await page.locator('[name="trackingCode"]').fill(SERVER_CODE);
     await page.locator('[name="trackingPhoneLast4"]').fill(phoneLast4);
     await page.locator('#tracking-form button[type="submit"]').click();
     await page.waitForFunction(()=>document.querySelector('.tracking-result .status-badge')?.textContent?.includes('Pago en revisión'));

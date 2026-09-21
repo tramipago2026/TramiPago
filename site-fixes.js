@@ -297,8 +297,15 @@
     if (form) {
       const submit = form.querySelector('button[type="submit"],button[data-tracking-new-query]');
       if (submit) {
-        const hasResult = Boolean(document.querySelector(".tracking-result .status-header"));
-        if (hasResult && !submit.hasAttribute("data-tracking-new-query")) {
+        const header = document.querySelector(".tracking-result .status-header");
+        const hasResult = Boolean(header);
+        // Solo volver a convertir el botón cuando el servidor presente otro resultado,
+        // no mientras se escribe un nuevo código sobre el resultado anterior.
+        if (form.dataset.trackingRequery === "true" && header && header !== form.__tramipagoPriorHeader) {
+          delete form.dataset.trackingRequery;
+          form.__tramipagoPriorHeader = null;
+        }
+        if (hasResult && form.dataset.trackingRequery !== "true" && !submit.hasAttribute("data-tracking-new-query")) {
           submit.type = "button";
           submit.textContent = "Consultar otro código";
           submit.setAttribute("data-tracking-new-query", "true");
@@ -412,6 +419,9 @@
     const form = document.getElementById("tracking-form");
     const input = form?.elements.namedItem("trackingCode");
     if (!input) return;
+    // El resultado anterior queda visible: el observador no debe bloquear una nueva consulta.
+    form.__tramipagoPriorHeader = document.querySelector(".tracking-result .status-header");
+    form.dataset.trackingRequery = "true";
     input.value = "";
     button.type = "submit";
     button.textContent = "Consultar";

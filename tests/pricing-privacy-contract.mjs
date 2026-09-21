@@ -16,8 +16,8 @@ for (const [id, amount] of [['apostilla-tad', 20000], ['legalizaciones', 15000]]
 const app = read('app.js');
 assert.match(app, /!service\.officialFeeExternal\s*&&/, 'los honorarios externos no desactivan el servicio');
 assert.match(app, /const total = service\.officialFeeExternal/, 'no sumar el VEP al pago de TramiPago');
-assert.match(app, /Total TramiPago \(sin arancel oficial\)/, 'separación visible en pantalla de pago');
-assert.match(app, /No transfieras ese arancel a TramiPago/, 'advertencia de pago');
+assert.match(app, /Honorarios de gestión TramiPago/, 'etiqueta de honorarios visible en pantalla de pago');
+assert.doesNotMatch(app, /Arancel oficial aparte:/, 'no publicar texto comercial de arancel oficial');
 const bridge = read('backend-sync.js');
 assert.match(bridge, /sessionStorage\.setItem\(TOKENS_KEY/, 'token temporal por pestaña');
 assert.match(bridge, /if\(request\.serverId\)return false/, 'no duplicar al expirar token');

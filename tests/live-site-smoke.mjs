@@ -16,7 +16,7 @@ async function probe(path){
     checked++;
     if(path==='index.html'){
       const html=await response.text();
-      if(!html.includes('app.js?v=20260916-audit2'))failures.push('La portada publicada todavía no contiene la versión auditada de app.js.');
+      if(!html.includes('app.js?v=20260921-directivas1'))failures.push('La portada publicada todavía no contiene la versión auditada de app.js.');
       if(!html.includes('backend-sync.js?v=20260918-sync-race1'))failures.push('La portada publicada todavía no contiene el puente auditado.');
     }else if(path==='extra-families.js'){
       const code=await response.text();
