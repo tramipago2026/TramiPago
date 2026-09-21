@@ -1,4 +1,4 @@
-name: Auditar 23 botones y WhatsApp en navegador aislado
+name: Auditar enlaces, botones y diseño en navegador aislado
 on:
   push:
     branches:
@@ -6,6 +6,8 @@ on:
     paths:
       - .github/workflows/v1-all-buttons-browser.yml
       - tests/v1-all-buttons-browser.mjs
+      - tests/v1-new-links-design.mjs
+      - legalizaciones-fotos-20260918.css
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,14 +24,16 @@ jobs:
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.55.1
           npx playwright install --with-deps chromium
-      - name: Verificar navegación y ayuda de 23 trámites PC y móvil
+      - name: Comprobar los 23 trámites y ayudas contextuales sin envíos
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/tramipago-browser.log 2>&1 &
           node tests/v1-all-buttons-browser.mjs
+      - name: Comprobar CTA visibles, bordes, submenús, destinos y formularios PC/móvil
+        run: node tests/v1-new-links-design.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: tramipago-botones-23
-          path: audit-artifacts/botones-23-tramites.json
+          name: tramipago-v1-botones-diseno
+          path: audit-artifacts/
           if-no-files-found: warn
           retention-days: 14
