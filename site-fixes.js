@@ -257,6 +257,8 @@
     document.querySelectorAll('input[type="file"]').forEach((input) => {
       const field = input.closest(".field");
       if (!field || field.querySelector(".upload-optimizer-note")) return;
+      // app.js ya muestra el límite de PDF. No repetirlo; conservar la ayuda de optimización para imágenes.
+      if (!input.accept?.includes("image") && Array.from(field.querySelectorAll("small")).some((item) => /^Archivo máximo:/i.test(item.textContent.trim()))) return;
       const note = document.createElement("small");
       note.className = "upload-optimizer-note";
       note.textContent = input.accept?.includes("image")
