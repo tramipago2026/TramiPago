@@ -20,12 +20,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verificar sintaxis y contratos del sitio publicado sin enviar solicitudes
+      - name: Verificar sintaxis y contratos existentes en main sin enviar solicitudes
         run: |
           node --check app.js
           node --check site-fixes.js
           node tests/site-integrity.mjs
-          node tests/v1-all-links-whatsapp.mjs
           node tests/catalog-form-contract.mjs
       - name: Crear ZIP exacto de main y manifiesto
         run: |
