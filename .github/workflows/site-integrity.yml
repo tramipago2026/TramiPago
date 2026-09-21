@@ -26,9 +26,13 @@ jobs:
         run: node tests/municipal-route.mjs
       - name: Verificar cabecera, consulta legal y destinos de botones
         run: node tests/header-navigation.mjs
-      - name: Verificar página de abogado y cuatro formularios
+      - name: Verificar página de abogado y cuatro temas de consulta
         run: node tests/legal-landing.mjs
       - name: Verificar cuatro recortes aprobados y su conexión al formulario
         run: node tests/abogado-fotos-aprobadas.mjs
       - name: Verificar precios y tokens temporales
         run: node tests/pricing-privacy-contract.mjs
+      - name: Generar datos ficticios para cada servicio, opción y detectar assets potencialmente obsoletos
+        run: node tests/v1-fixture-audit.mjs
+      - name: Verificar 23 accesos y enlaces WhatsApp contextuales
+        run: node tests/v1-all-links-whatsapp.mjs
