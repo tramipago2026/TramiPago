@@ -736,7 +736,7 @@
         <div class="summary-grid">
           <div class="summary-item"><small>Código</small><strong>${escapeHTML(request.code)}</strong></div>
           <div class="summary-item"><small>Servicio</small><strong>${escapeHTML(service.name)}</strong></div>
-          <div class="summary-item"><small>"Honorarios de gestión TramiPago"</small><strong>${formatARS(pricing.total)}</strong></div>
+          <div class="summary-item"><small>Honorarios de gestión TramiPago</small><strong>${formatARS(pricing.total)}</strong></div>
         </div>
         <div class="notice"><strong>Datos de pago:</strong> alias ${escapeHTML(window.TRAMI_CONFIG.alias)} · titular ${escapeHTML(window.TRAMI_CONFIG.paymentHolder)}.</div>
         <form id="payment-form">

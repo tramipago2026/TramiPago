@@ -17,6 +17,7 @@ for(const service of all){
 const app=read('app.js');
 assert.doesNotMatch(app, /<h3>Costo oficial<\/h3>|<span>Costo oficial<\/span>|Arancel oficial aparte:/, 'No volver a crear filas de arancel oficial en las pantallas');
 assert.match(app,/Honorarios de gestión TramiPago/,'El cobro visible corresponde a la gestión');
+assert.doesNotMatch(app,/<small>"Honorarios de gestión TramiPago"<\/small>/,'Etiqueta sin comillas literales');
 const index=read('index.html');
 for(const name of ['app.js','services.js','extra-families.js'])assert.ok(index.includes(name+'?v=20260921-directivas1'),`Caché antigua: ${name}`);
 console.log('PASS: 23 servicios/18 pagos; modalidades AP $20.000 y $15.000 intactas, ningún monto oficial en textos de catálogo, precio visible como honorarios y recursos versionados.');
