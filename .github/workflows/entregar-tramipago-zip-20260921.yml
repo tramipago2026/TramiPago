@@ -1,0 +1,40 @@
+name: Entregar ZIP del proyecto TramiPago
+on:
+  push:
+    branches:
+      - work/tramipago-v1-audit-20260920
+    paths:
+      - .github/workflows/entregar-tramipago-zip-20260921.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  paquete:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar sintaxis y contratos públicos sin enviar solicitudes
+        run: |
+          node --check app.js
+          node --check site-fixes.js
+          node tests/site-integrity.mjs
+          node tests/v1-all-links-whatsapp.mjs
+          node tests/catalog-form-contract.mjs
+      - name: Crear ZIP exacto del commit y manifiesto
+        run: |
+          mkdir -p entrega
+          git archive --format=zip --prefix=TramiPago/ --output=entrega/TramiPago-codigo.zip HEAD
+          git rev-parse HEAD > entrega/COMMIT.txt
+          sha256sum entrega/TramiPago-codigo.zip > entrega/SHA256.txt
+          unzip -tq entrega/TramiPago-codigo.zip
+          ls -lh entrega/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TramiPago-proyecto-ZIP
+          path: entrega/
+          retention-days: 14
+          if-no-files-found: error
