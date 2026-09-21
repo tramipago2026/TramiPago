@@ -17,7 +17,7 @@ async function probe(path){
     if(path==='index.html'){
       const html=await response.text();
       if(!html.includes('app.js?v=20260920-hide-official-fee1'))failures.push('La portada publicada todavía no contiene la versión auditada de app.js.');
-      if(!html.includes('backend-sync.js?v=20260920-notification-v1'))failures.push('La portada publicada todavía no contiene el puente auditado.');
+      if(!html.includes('backend-sync.js?v=20260918-sync-race1'))failures.push('La portada publicada todavía no contiene el puente auditado.');
     }else if(path==='extra-families.js'){
       const code=await response.text();
       if(!code.includes('officialFeeExternal:true'))failures.push('La versión pública aún no separa los aranceles TAD.');

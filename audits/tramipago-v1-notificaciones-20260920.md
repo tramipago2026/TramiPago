@@ -1,3 +1,5 @@
+> **DESCARTADO POR DIRECTIVA POSTERIOR DEL PROPIETARIO.** Este informe es histórico. El aviso por correo y su función Edge fueron retirados de la rama; nunca se desplegaron. Se conserva como evidencia de lo investigado, no como funcionalidad aprobada. La ayuda actual es WhatsApp con mensaje preparado que requiere que el cliente pulse Enviar. No hay automatización ni mensaje recibido confirmado.
+
 # Auditoría V1: aviso de comprobante — 20/09/2026
 
 ## Causa demostrada
