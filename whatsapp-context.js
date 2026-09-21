@@ -108,7 +108,6 @@
     }
     event.preventDefault();
     event.stopImmediatePropagation();
-    const opened=window.open(targetUrl,'_blank','noopener,noreferrer');
-    if(!opened)location.href=targetUrl;
+    window.open(targetUrl,'_blank','noopener,noreferrer');
   },true);
 })();
