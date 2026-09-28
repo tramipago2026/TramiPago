@@ -32,3 +32,5 @@ jobs:
         run: node tests/abogado-fotos-aprobadas.mjs
       - name: Verificar precios y tokens temporales
         run: node tests/pricing-privacy-contract.mjs
+      - name: Verificar robustez, autoguardado y manejo de errores
+        run: node tests/robustness-contract.mjs
