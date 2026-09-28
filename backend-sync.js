@@ -24,7 +24,8 @@
     payment_confirmed:"in_progress",
     in_progress:"in_progress",
     needs_info:"needs_info",
-    finalized:"finalized"
+    finalized:"finalized",
+    cancelled:"cancelled"
   };
 
   const STATUS_LABELS={
@@ -33,7 +34,8 @@
     payment_confirmed:"Pago confirmado",
     in_progress:"En proceso",
     needs_info:"Falta información",
-    finalized:"Finalizado"
+    finalized:"Finalizado",
+    cancelled:"Anulado"
   };
 
   async function reportClientError(error,context={}){
