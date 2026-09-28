@@ -1,0 +1,35 @@
+name: Auditoría práctica completa TramiPago
+
+on:
+  push:
+    paths:
+      - "tests/full-browser-audit.mjs"
+      - "app.js"
+      - "index.html"
+      - "services.js"
+      - "arca-family.js"
+      - "extra-families.js"
+      - "legal-landing-20260917.js"
+      - "promos.js"
+      - ".github/workflows/full-browser-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Instalar Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Ejecutar auditoría práctica
+        run: node tests/full-browser-audit.mjs
