@@ -10,8 +10,6 @@ on:
       - "footer-menu.js"
       - "index.html"
       - "services.js"
-      - "arca-family.js"
-      - "extra-families.js"
       - "legal-landing-20260917.js"
       - "promos.js"
       - ".github/workflows/full-browser-audit.yml"
