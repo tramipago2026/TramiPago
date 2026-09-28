@@ -6,7 +6,7 @@ const win={addEventListener(){},scrollTo(){}};
 const doc={addEventListener(){},getElementById(){return null;},querySelector(){return null;},querySelectorAll(){return[];},createElement(){return {}}};
 const location={hash:"#/"};
 class MutationObserver{observe(){}}
-runInNewContext(code,{window:win,document:doc,location,MutationObserver,requestAnimationFrame(fn){fn();},setTimeout(fn){if(typeof fn==="function")fn();},{filename:"services.js",timeout:3000});
+runInNewContext(code,{window:win,document:doc,location,MutationObserver,requestAnimationFrame(fn){fn();},setTimeout(fn){if(typeof fn==="function")fn();}},{filename:"services.js",timeout:3000});
 const services=win.TRAMI_SERVICES||[];
 const family=(win.TRAMI_FAMILIES||[]).find(f=>f.id==="atencion-abogado");
 assert.ok(family,"Falta familia de atención de abogado");
