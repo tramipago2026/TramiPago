@@ -1006,9 +1006,25 @@
     if (!number) return window.alert("Falta configurar el número de WhatsApp.");
 
     const request = state.requestId ? getRequest(state.requestId) : state.trackingResult;
-    const message = request?.code
-      ? `Necesito ayuda con mi trámite. Código: ${request.code}`
-      : "Necesito ayuda para realizar un trámite.";
+    const route = parseRoute();
+    const currentService = state.serviceId ? getService(state.serviceId) : null;
+    const currentFamily = state.familyId ? getFamily(state.familyId) : null;
+    let message = "Hola, necesito ayuda para realizar un trámite en TramiPago.";
+
+    if (request?.code) {
+      message = `Hola, necesito ayuda con mi trámite${request.serviceName ? ` de ${request.serviceName}` : ""}. Código: ${request.code}.`;
+    } else if (currentService?.id?.startsWith("abogado-")) {
+      message = `Hola, quiero hacer una consulta por ${currentService.name} con un abogado mediante TramiPago.`;
+    } else if (currentService) {
+      message = `Hola, quiero consultar por el trámite ${currentService.name} en TramiPago.`;
+    } else if (route.name === "tracking") {
+      message = "Hola, necesito ayuda para consultar el estado de mi trámite en TramiPago.";
+    } else if (currentFamily?.id === "atencion-abogado") {
+      message = "Hola, quiero hacer una consulta con un abogado mediante TramiPago.";
+    } else if (currentFamily) {
+      message = `Hola, quiero consultar por ${currentFamily.name} en TramiPago.`;
+    }
+
     window.open(`https://wa.me/${number}?text=${encodeURIComponent(message)}`, "_blank", "noopener");
   }
 
