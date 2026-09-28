@@ -31,7 +31,7 @@
       --green-ring: rgba(35, 168, 93, 0.24);
       --overlay-strong: rgba(8, 42, 71, 0.55);
       --overlay-soft: rgba(8, 42, 71, 0.08);
-      --header-button-width: 98px;
+      --header-button-width: 110px;
       --header-button-height: 33px;
       --action-button-width: 168px;
       --action-button-height: 46px;
@@ -62,6 +62,7 @@
     .main-nav button.nav-help { background: #25D366; color: var(--navy-deep); }
     .main-nav a:hover,.main-nav a:focus-visible,.main-nav button:hover,.main-nav button:focus-visible,.main-nav a.nav-tracking:hover,.main-nav a.nav-tracking:focus-visible { color:var(--white);border-color:var(--white);box-shadow:0 5px 10px var(--shadow-black);outline:none;transform:translateY(-1px); }
     .nav-icon { width:15px;height:15px;flex:0 0 15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
+    .main-nav a span,.main-nav button span { white-space:nowrap; }
     .button { display:inline-flex;align-items:center;justify-content:center;width:var(--action-button-width);min-width:var(--action-button-width);min-height:var(--action-button-height);padding:8px 14px;border:2px solid var(--black);border-radius:8px;box-shadow:0 4px 9px var(--shadow-black);font-size:.9375rem;font-weight:750;text-align:center;transition:color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease,background .16s ease; }
     .button.button-primary,.family-service-card .button.button-primary { color:var(--white);background:var(--green-action);border-color:var(--black);box-shadow:0 4px 9px var(--shadow-black); }
     .button.button-primary:hover,.button.button-primary:focus-visible,.family-service-card .button.button-primary:hover,.family-service-card .button.button-primary:focus-visible { color:var(--white);background:var(--green-action-hover);border-color:var(--white);box-shadow:0 0 0 3px var(--green-ring),0 5px 11px var(--shadow-black);outline:none;transform:translateY(-1px); }
@@ -157,7 +158,7 @@
       <div class="header-slogan" aria-label="Resolvé tus trámites sin vueltas"><strong>Resolvé tus trámites</strong><span>sin vueltas</span><small>Todo más fácil y claro.</small></div>
       <nav class="main-nav" aria-label="Navegación principal">
         <a class="nav-home" href="#/">Inicio</a>
-        <a class="nav-tracking" href="#/seguimiento" aria-label="Mi código y estado del trámite"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M16 16l4 4"></path></svg><span>Mi código</span></a>
+        <a class="nav-tracking" href="#/seguimiento" aria-label="Ver mi trámite"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M16 16l4 4"></path></svg><span>Ver mi trámite</span></a>
         <button class="nav-help" type="button" data-action="whatsapp" aria-label="Ayuda por WhatsApp"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4A8 8 0 1 1 20 11.5Z"></path><path d="M9 8.5c.5 2.6 2 4.1 4.6 4.8"></path><path d="M9.2 8.2l1.1 1.8-1 1"></path><path d="M13.6 13.2l1.1-1 1.8 1.1"></path></svg><span>Ayuda</span></button>
       </nav>
     </div>
