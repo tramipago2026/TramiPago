@@ -36,6 +36,14 @@
     finalized:"Finalizado"
   };
 
+  async function reportClientError(error,context={}){
+    try{
+      const message=String(error?.message||error||"Error desconocido").slice(0,1000);
+      await fetch(PROJECT_URL+"/functions/v1/log-client-error",{method:"POST",headers:{"apikey":PUBLISHABLE_KEY,"Content-Type":"application/json"},body:JSON.stringify({code:"frontend",message,context:{page:location.pathname,route:location.hash||"#/",serviceId:(location.hash.match(/^#\\/tramite\\/([^/?]+)/)||[])[1]||null,...context}})});
+    }catch(_){ }
+  }
+  window.TRAMI_REPORT_ERROR=reportClientError;
+
   function readJSON(key,fallback){
     try{return JSON.parse(localStorage.getItem(key)||"")||fallback;}catch(_){return fallback;}
   }
