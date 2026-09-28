@@ -1,0 +1,12 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const read=p=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
+const footer=read("footer-menu.js");
+const backend=read("backend-sync.js");
+const app=read("app.js");
+const services=read("services.js");
+for(const needle of ["validTaxId","validPatent","field-error","draft-save-status","localStorage.setItem(key","setupFormStages","data-stage-next","payment-total-emphasis"])assert.ok(footer.includes(needle),"Falta robustez frontend: "+needle);
+assert.ok(backend.includes("TRAMI_REPORT_ERROR")&&backend.includes("log-client-error"),"Falta registro persistente de errores");
+assert.ok(app.includes("openWhatsApp")&&app.includes("currentService"),"Falta ayuda contextual");
+assert.ok(services.includes('whatsappNumber: "5491167083232"')&&services.includes('contactEmail: "tramipago@gmail.com"'),"Contacto central inconsistente");
+console.log("PASS: validación, autoguardado, etapas, pago, WhatsApp y registro técnico presentes.");
