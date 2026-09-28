@@ -11,6 +11,7 @@
   const MAX_LOCAL_FILE_BYTES = Number(window.TRAMI_CONFIG?.maxLocalFileBytes || 1500000);
 
   const STATUS_LABELS = Object.freeze({
+    draft: "Borrador",
     payment_pending: "Pago pendiente",
     payment_review: "Pago en revisión",
     in_progress: "En proceso",
@@ -20,7 +21,7 @@
     cancelled: "Cancelado"
   });
 
-  const PROGRESS_STATUSES = ["payment_pending", "payment_review", "in_progress", "ready", "finalized"];
+  const PROGRESS_STATUSES = ["draft", "payment_pending", "payment_review", "in_progress", "ready", "finalized"];
 
   const state = {
     route: "home",
@@ -177,6 +178,35 @@
     return window.crypto?.randomUUID?.() || `req-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   }
 
+  function createDraftRequest(service) {
+    const now = new Date().toISOString();
+    const request = {
+      id: createId(),
+      code: "",
+      serviceId: service.id,
+      serviceName: service.name,
+      clientName: "",
+      answers: {},
+      pricing: getPricing(service, {}),
+      status: "draft",
+      currentStep: service.eligibility?.required ? "eligibility" : "data",
+      completionPercent: 0,
+      helpContext: null,
+      observations: [],
+      requestedFields: [],
+      result: "",
+      resultFile: null,
+      payment: null,
+      createdAt: now,
+      updatedAt: now
+    };
+    const requests = getRequests();
+    requests.unshift(request);
+    saveRequests(requests);
+    rememberActiveRequest(request);
+    return request;
+  }
+
   function createRequest(service, values) {
     const now = new Date().toISOString();
     const request = {
@@ -205,7 +235,7 @@
 
   function rememberActiveRequest(request) {
     if (!request) return;
-    sessionStorage.setItem(ACTIVE_REQUEST_KEY, JSON.stringify({
+    localStorage.setItem(ACTIVE_REQUEST_KEY, JSON.stringify({
       id: request.id,
       code: request.code,
       serviceId: request.serviceId
@@ -213,15 +243,15 @@
   }
 
   function clearActiveRequest() {
-    sessionStorage.removeItem(ACTIVE_REQUEST_KEY);
+    localStorage.removeItem(ACTIVE_REQUEST_KEY);
   }
 
   function activePendingRequest(serviceId = null) {
     try {
-      const ref = JSON.parse(sessionStorage.getItem(ACTIVE_REQUEST_KEY) || "null");
+      const ref = JSON.parse(localStorage.getItem(ACTIVE_REQUEST_KEY) || "null");
       if (!ref) return null;
       const request = getRequests().find((item) => item.id === ref.id || item.code === ref.code) || null;
-      if (!request || request.status !== "payment_pending") {
+      if (!request || !["draft", "payment_pending"].includes(request.status)) {
         clearActiveRequest();
         return null;
       }
@@ -965,15 +995,14 @@
     state.serviceId = serviceId;
     state.draft = {};
 
-    const pending = activePendingRequest(serviceId);
-    if (pending) {
-      state.requestId = pending.id;
-      state.draft = { ...(pending.answers || {}) };
-      state.step = "payment";
-    } else {
-      state.requestId = null;
-      state.step = service.eligibility?.required ? "eligibility" : "data";
-    }
+    let pending = activePendingRequest(serviceId);
+    if (!pending) pending = createDraftRequest(service);
+
+    state.requestId = pending.id;
+    state.draft = { ...(pending.answers || {}) };
+    state.step = pending.status === "payment_pending"
+      ? "payment"
+      : (pending.currentStep === "eligibility" && service.eligibility?.required ? "eligibility" : "data");
 
     navigate(`#/tramite/${serviceId}`);
   }
@@ -981,38 +1010,51 @@
   function restoreProcessState(serviceId) {
     const service = getService(serviceId);
     if (!service) return;
-    const pending = activePendingRequest(serviceId);
-    if (pending) {
-      state.requestId = pending.id;
-      state.draft = { ...(pending.answers || {}) };
-      state.step = "payment";
-      return;
-    }
-    state.requestId = null;
-    state.draft = {};
+    let pending = activePendingRequest(serviceId);
+    if (!pending) pending = createDraftRequest(service);
+
+    state.requestId = pending.id;
+    state.draft = { ...(pending.answers || {}) };
+
     if (serviceId === "partidas-caba") {
       const preset = sessionStorage.getItem("tramipago_partidas_caba_prefill_v1") || "";
-      if (preset) {
+      if (preset && pending.status === "draft") {
         state.draft.partType = preset;
         state.draft.requestMode = preset === "cohabitation" ? "union-review" : "regular";
+        updateRequest(pending.id,{answers:{...state.draft},currentStep:"data"});
         sessionStorage.removeItem("tramipago_partidas_caba_prefill_v1");
       }
     }
-    state.step = service.eligibility?.required ? "eligibility" : "data";
+
+    state.step = pending.status === "payment_pending"
+      ? "payment"
+      : (pending.currentStep === "eligibility" && service.eligibility?.required ? "eligibility" : "data");
   }
 
-  function openWhatsApp() {
+  async function openWhatsApp() {
     const number = String(window.TRAMI_CONFIG?.whatsappNumber || "").replace(/\D/g, "");
     if (!number) return window.alert("Falta configurar el número de WhatsApp.");
 
-    const request = state.requestId ? getRequest(state.requestId) : state.trackingResult;
+    let request = state.requestId ? getRequest(state.requestId) : state.trackingResult;
     const route = parseRoute();
     const currentService = state.serviceId ? getService(state.serviceId) : null;
     const currentFamily = state.familyId ? getFamily(state.familyId) : null;
-    let message = "Hola, necesito ayuda para realizar un trámite en TramiPago.";
 
+    if (request && window.TRAMIPAGO_BACKEND?.flush) {
+      try {
+        await window.TRAMIPAGO_BACKEND.flush();
+        request = getRequest(request.id) || request;
+        if (window.TRAMIPAGO_BACKEND?.recordHelp) {
+          await window.TRAMIPAGO_BACKEND.recordHelp(request,{step:request.currentStep||state.step||route.name});
+          request = getRequest(request.id) || request;
+        }
+      } catch (_) {}
+    }
+
+    let message = "Hola, necesito ayuda para realizar un trámite en TramiPago.";
     if (request?.code) {
-      message = `Hola, necesito ayuda con mi trámite${request.serviceName ? ` de ${request.serviceName}` : ""}. Código: ${request.code}.`;
+      const stage = request.currentStep || state.step || "trámite";
+      message = `Hola, necesito ayuda con mi trámite${request.serviceName ? ` de ${request.serviceName}` : ""}. Código: ${request.code}. Etapa: ${stage}.`;
     } else if (currentService?.id?.startsWith("abogado-")) {
       message = `Hola, quiero hacer una consulta por ${currentService.name} con un abogado mediante TramiPago.`;
     } else if (currentService) {
@@ -1190,6 +1232,56 @@
     }
   });
 
+  let draftSyncTimer = 0;
+  function snapshotDraftForm(form) {
+    const request = state.requestId ? getRequest(state.requestId) : null;
+    if (!request || request.status !== "draft" || !form) return;
+    const values = { ...(request.answers || {}) };
+    const fields = [...form.elements];
+    let requiredTotal = 0, requiredDone = 0;
+
+    fields.forEach((field) => {
+      if (!field?.name || field.type === "file" || field.type === "password" || field.type === "submit") return;
+      if (field.required) requiredTotal += 1;
+      if (field.type === "checkbox") {
+        values[field.name] = Boolean(field.checked);
+        if (field.required && field.checked) requiredDone += 1;
+      } else if (field.type === "radio") {
+        if (field.checked) values[field.name] = field.value;
+        if (field.required && form.elements.namedItem(field.name)?.value) requiredDone += 1;
+      } else {
+        values[field.name] = String(field.value || "").trim();
+        if (field.required && String(field.value || "").trim()) requiredDone += 1;
+      }
+    });
+
+    const stageIndex = Number(form.dataset.stageCurrent || 0);
+    const stageTotal = Number(form.dataset.stageTotal || 1);
+    const currentStep = stageTotal > 1 ? `data-${stageIndex + 1}-of-${stageTotal}` : "data";
+    const completionPercent = requiredTotal ? Math.min(99, Math.round((requiredDone / requiredTotal) * 100)) : 0;
+
+    updateRequest(request.id,{
+      answers: values,
+      clientName: values.fullName || request.clientName || "",
+      currentStep,
+      completionPercent
+    });
+  }
+
+  app.addEventListener("input", (event) => {
+    const form = event.target.closest?.("#data-form");
+    if (!form) return;
+    clearTimeout(draftSyncTimer);
+    draftSyncTimer = window.setTimeout(() => snapshotDraftForm(form), 1200);
+  });
+
+  app.addEventListener("change", (event) => {
+    const form = event.target.closest?.("#data-form");
+    if (!form) return;
+    clearTimeout(draftSyncTimer);
+    draftSyncTimer = window.setTimeout(() => snapshotDraftForm(form), 250);
+  });
+
   app.addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = event.target;
@@ -1228,11 +1320,15 @@
 
         state.draft = values;
         const existing = state.requestId ? getRequest(state.requestId) : null;
-        const request = existing?.status === "payment_pending"
+        const targetStatus = service.intakeOnly ? "in_progress" : "payment_pending";
+        const request = existing && ["draft","payment_pending"].includes(existing.status)
           ? updateRequest(existing.id, {
               answers: values,
               clientName: values.fullName || existing.clientName || "",
-              pricing: getPricing(service, values)
+              pricing: getPricing(service, values),
+              status: targetStatus,
+              currentStep: service.intakeOnly ? "confirmation" : "payment",
+              completionPercent: 100
             })
           : createRequest(service, values);
 
