@@ -185,17 +185,15 @@
   function safeName(name){return String(name||"archivo").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9._-]+/g,"-").replace(/^-+|-+$/g,"").slice(0,90)||"archivo";}
   async function uploadCorrectionFile(client,meta,kind,file,label){
     if(!file||file.size<1||file.size>MAX_FILE_BYTES)throw new Error("El archivo supera el límite permitido");
-    const tokenHash=await sha256Hex(meta.raw);
-    const filename=`${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safeName(file.name)}`;
-    const path=`${meta.code}/${tokenHash}/${filename}`;
-    const {error}=await client.storage.from(STORAGE_BUCKET).upload(path,file,{contentType:file.type||"application/octet-stream",upsert:false,cacheControl:"3600"});
+    const form=new FormData();
+    form.set("code",meta.code);
+    form.set("requestToken",meta.raw);
+    form.set("kind",kind);
+    form.set("file",file);
+    const {data,error}=await client.functions.invoke("upload-file",{body:form});
     if(error)throw error;
-    const {error:registerError}=await client.rpc("register_public_request_file",{
-      p_tracking_code:meta.code,p_public_token_hash:tokenHash,p_kind:kind,p_storage_path:path,
-      p_original_name:file.name||label||"archivo",p_mime_type:file.type||null,p_size_bytes:file.size
-    });
-    if(registerError)throw registerError;
-    return path;
+    if(data?.error)throw new Error(data.error);
+    return data?.storagePath||null;
   }
 
   document.addEventListener("submit",async event=>{
@@ -232,9 +230,9 @@
           }
         }else patch[field.id]=String(element.value||"").trim();
       }
-      const tokenHash=await sha256Hex(meta.raw);
-      const {error}=await client.rpc("submit_public_request_correction",{p_tracking_code:meta.code,p_public_token_hash:tokenHash,p_patch:patch});
+      const {data,error}=await client.functions.invoke("submit-correction",{body:{code:meta.code,requestToken:meta.raw,formData:patch}});
       if(error)throw error;
+      if(data?.error)throw new Error(data.error);
       const list=requests();
       const target=list.find(item=>item.id===local.id);
       if(target){target.answers={...(target.answers||{}),...patch};target.status="in_progress";writeJSON(REQUESTS_KEY,list);}
