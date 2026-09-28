@@ -52,7 +52,9 @@ async function fillVisibleForm(){
     if(type==="email")value="e2e@example.invalid"; else if(type==="tel")value="11 6708 3232"; else if(type==="date")value="1990-01-01"; else if(type==="month")value="2026-09"; else if(type==="number")value="1"; else if(name==="dni")value="12345678"; else if(name==="cuil"||name==="cuit")value="20-12345678-3"; else if(/patent/i.test(name))value="AA123BB"; else if(/emailConfirm/i.test(name))value="e2e@example.invalid";
     await el.fill(value);
   }
-  return form.evaluate(f=>f.checkValidity());
+  const valid=await form.evaluate(f=>f.checkValidity());
+  if(!valid){ const bad=await form.evaluate(f=>Array.from(f.querySelectorAll(":invalid")).map(e=>({name:e.name,type:e.type,value:e.value,message:e.validationMessage,pattern:e.pattern,min:e.min,max:e.max}))); console.log("INVALID_FIELDS",JSON.stringify(bad)); }
+  return valid;
 }
 
 for(const service of services){
