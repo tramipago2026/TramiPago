@@ -10,6 +10,8 @@
   const CORRECTION_KEY="tramipago_backend_correction_request_v1";
   const STORAGE_BUCKET="request-files";
   const MAX_FILE_BYTES=10*1024*1024;
+  const TOKEN_DB_NAME="tramipago_private_tokens_v1";
+  const TOKEN_DB_STORE="tokens";
 
   let client=null;
   let syncing=false;
@@ -19,6 +21,7 @@
   let rerunRequested=false;
 
   const DB_TO_UI={
+    draft:"draft",
     awaiting_payment:"payment_pending",
     payment_review:"payment_review",
     payment_confirmed:"in_progress",
@@ -29,6 +32,7 @@
   };
 
   const STATUS_LABELS={
+    draft:"Borrador",
     awaiting_payment:"Pago pendiente",
     payment_review:"Pago en revisión",
     payment_confirmed:"Pago confirmado",
@@ -56,19 +60,62 @@
   }
 
   function requests(){return readJSON(REQUESTS_KEY,[]);}
+
+  function openTokenDb(){
+    return new Promise((resolve,reject)=>{
+      if(!window.indexedDB)return reject(new Error("IndexedDB no disponible"));
+      const req=indexedDB.open(TOKEN_DB_NAME,1);
+      req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(TOKEN_DB_STORE))req.result.createObjectStore(TOKEN_DB_STORE);};
+      req.onsuccess=()=>resolve(req.result);
+      req.onerror=()=>reject(req.error||new Error("No se pudo abrir el almacenamiento privado"));
+    });
+  }
+
+  async function loadPersistedTokens(){
+    try{
+      const db=await openTokenDb();
+      const value=await new Promise((resolve,reject)=>{
+        const tx=db.transaction(TOKEN_DB_STORE,"readonly");
+        const req=tx.objectStore(TOKEN_DB_STORE).get("active");
+        req.onsuccess=()=>resolve(req.result||{});
+        req.onerror=()=>reject(req.error);
+      });
+      db.close();
+      return value&&typeof value==="object"?value:{};
+    }catch(_){return {};}
+  }
+
+  async function persistTokens(value){
+    try{
+      const db=await openTokenDb();
+      const tx=db.transaction(TOKEN_DB_STORE,"readwrite");
+      tx.objectStore(TOKEN_DB_STORE).put(value,"active");
+      await new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});
+      db.close();
+    }catch(_){}
+  }
+
   function tokens(){
     try{
       const current=sessionStorage.getItem(TOKENS_KEY);
-      if(current)return JSON.parse(current)||{};
-      const legacy=readJSON(TOKENS_KEY,{});
-      if(Object.keys(legacy).length)saveTokens(legacy);
-      return legacy;
+      return current?JSON.parse(current)||{}:{};
     }catch(_){return {};}
   }
+
   function saveTokens(value){
     sessionStorage.setItem(TOKENS_KEY,JSON.stringify(value));
+    persistTokens(value);
     try{localStorage.removeItem(TOKENS_KEY);}catch(_){}
   }
+
+  async function hydrateTokens(){
+    const current=tokens();
+    if(Object.keys(current).length)return current;
+    const persisted=await loadPersistedTokens();
+    if(Object.keys(persisted).length)sessionStorage.setItem(TOKENS_KEY,JSON.stringify(persisted));
+    return persisted;
+  }
+
   function saveRequests(value){writeJSON(REQUESTS_KEY,value);}
 
   function ensureActivationTime(){
@@ -157,9 +204,14 @@
     }
 
     const contact=contactFor(request);
+    const isDraft=request.status==="draft";
     const {data,error}=await client.functions.invoke("create-request",{
-      body:{
+      body:isDraft?{
         serviceId:request.serviceId,
+        complete:false
+      }:{
+        serviceId:request.serviceId,
+        complete:true,
         clientName:contact.clientName||"",
         email:contact.email||"",
         whatsapp:contact.whatsapp||"",
@@ -170,7 +222,7 @@
     if(data?.error)throw new Error(data.error);
     if(!data?.code||!data?.requestToken)throw new Error("El backend no devolvió los datos de la solicitud");
 
-    meta={raw:data.requestToken,code:data.code,serverId:data.requestId||null,lastSignature:"",paymentUploaded:false,files:{}};
+    meta={raw:data.requestToken,code:data.code,serverId:data.requestId||null,serverStatus:data.status||null,lastSignature:"",paymentUploaded:false,files:{},persistedAt:Date.now()};
     tokenMap[request.id]=meta;
     saveTokens(tokenMap);
     request.code=data.code;
@@ -182,24 +234,31 @@
     return meta;
   }
 
-  async function updateServerDraft(request,meta){
-    if(request.status!=="payment_pending")return;
+  async function updateServerDraft(request,meta,helpContext=null){
+    if(!["draft","payment_pending","in_progress"].includes(request.status))return;
+    if(meta.serverStatus&&!["draft","awaiting_payment"].includes(meta.serverStatus))return;
     const contact=contactFor(request);
-    const signature=JSON.stringify({c:contact,p:payloadFor(request)});
-    if(meta.lastSignature===signature)return;
-    const {data,error}=await client.functions.invoke("update-request-draft",{
-      body:{
-        code:meta.code,
-        requestToken:meta.raw,
-        clientName:contact.clientName||"",
-        email:contact.email||"",
-        whatsapp:contact.whatsapp||"",
-        formData:payloadFor(request)
-      }
-    });
+    const complete=request.status!=="draft";
+    const body={
+      code:meta.code,
+      requestToken:meta.raw,
+      clientName:contact.clientName||"",
+      email:contact.email||"",
+      whatsapp:contact.whatsapp||"",
+      formData:payloadFor(request),
+      currentStep:request.currentStep||"data",
+      completionPercent:Number.isFinite(Number(request.completionPercent))?Number(request.completionPercent):0,
+      complete,
+      helpContext:helpContext||null
+    };
+    const signature=JSON.stringify(body);
+    if(!helpContext&&meta.lastSignature===signature)return;
+    const {data,error}=await client.functions.invoke("update-request-draft",{body});
     if(error)throw error;
     if(data?.error)throw new Error(data.error);
-    meta.lastSignature=signature;
+    meta.serverStatus=data?.status||meta.serverStatus;
+    request.status=DB_TO_UI[data?.status]||request.status;
+    if(!helpContext)meta.lastSignature=signature;
   }
 
   async function uploadBlob(meta,kind,fileInfo,blob,label){
@@ -254,7 +313,7 @@
     if(!request?.id||!request?.serviceId||!isEligibleForBackend(request,tokenMap))return;
     const meta=await ensureServerRecord(request,tokenMap);
     await syncAnswerFiles(request,meta);
-    if(request.status==="payment_pending")await updateServerDraft(request,meta);
+    if(["draft","payment_pending","in_progress"].includes(request.status))await updateServerDraft(request,meta);
     if(request.status==="payment_review")await syncPayment(request,meta);
     delete request.backendSyncError;
     request.backendSyncedAt=new Date().toISOString();
@@ -393,6 +452,30 @@
     },true);
   }
 
+  async function recordHelp(request,context={}){
+    if(!client||!request)return null;
+    await syncAll();
+    const fresh=findLocalById(request.id)||request;
+    const meta=localTokenMeta(fresh);
+    if(!meta)return null;
+    const helpContext={
+      source:"whatsapp",
+      step:String(context.step||fresh.currentStep||"site").slice(0,80),
+      route:String(location.hash||"#/").slice(0,160),
+      serviceId:fresh.serviceId||null,
+      requestedAt:new Date().toISOString()
+    };
+    await updateServerDraft(fresh,meta,helpContext);
+    const list=requests();
+    const target=list.find(item=>item.id===fresh.id);
+    if(target){
+      target.helpContext=helpContext;
+      target.updatedAt=new Date().toISOString();
+      saveRequests(list);
+    }
+    return {request:target||fresh,helpContext};
+  }
+
   function installRetryInterceptor(){
     document.addEventListener("click",event=>{
       const button=event.target.closest('[data-action="retry-backend-sync"]');
@@ -490,7 +573,8 @@
       client=module.createClient(PROJECT_URL,PUBLISHABLE_KEY,{
         auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
       });
-      window.TRAMIPAGO_BACKEND={client,projectUrl:PROJECT_URL,sync:syncAll,lookupStatus};
+      await hydrateTokens();
+      window.TRAMIPAGO_BACKEND={client,projectUrl:PROJECT_URL,sync:syncAll,flush:syncAll,lookupStatus,recordHelp,queueSync};
       await syncAll();
     }catch(error){
       console.error("No se pudo iniciar Supabase para TramiPago:",error);
