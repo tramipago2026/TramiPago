@@ -40,13 +40,13 @@
 <h2 style="margin-top:0">Enviar solicitud</h2>
 <form id="withdrawal-form">
 <div class="grid">
-<div class="campo"><label for="nombre">Nombre y apellido *</label><input id="nombre" name="nombre" autocomplete="name" required></div>
-<div class="campo"><label for="dni">DNI *</label><input id="dni" name="dni" inputmode="numeric" required></div>
-<div class="campo"><label for="email">Correo electrónico *</label><input id="email" name="email" type="email" autocomplete="email" required></div>
-<div class="campo"><label for="whatsapp">WhatsApp *</label><input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" required></div>
+<div class="campo"><label for="nombre">Nombre y apellido (opcional)</label><input id="nombre" name="nombre" autocomplete="name"></div>
+<div class="campo"><label for="dni">DNI (opcional; puede pedirse luego para verificar identidad)</label><input id="dni" name="dni" inputmode="numeric"></div>
+<div class="campo"><label for="email">Correo electrónico (opcional)</label><input id="email" name="email" type="email" autocomplete="email"></div>
+<div class="campo"><label for="whatsapp">WhatsApp alternativo (opcional)</label><input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel"></div>
 <div class="campo"><label for="codigo">Código de solicitud o trámite</label><input id="codigo" name="codigo" placeholder="Si lo tenés"></div>
 <div class="campo"><label for="servicio">Servicio contratado *</label><input id="servicio" name="servicio" required></div>
-<div class="campo full"><label for="comentario">Observaciones opcionales</label><textarea id="comentario" name="comentario" placeholder="No es obligatorio indicar un motivo."></textarea><span class="ayuda">Los datos se utilizan únicamente para identificar la contratación y gestionar esta solicitud.</span></div>
+<div class="campo full"><label for="comentario">Observaciones opcionales</label><textarea id="comentario" name="comentario" placeholder="No es obligatorio indicar un motivo."></textarea><span class="ayuda">Completá sólo lo necesario para identificar la contratación. Si hace falta corroborar identidad, TramiPago podrá pedir una verificación razonable por un medio habitual.</span></div>
 </div>
 <div class="acciones"><button class="accion accion-primary" type="submit">Enviar solicitud por WhatsApp</button><a class="accion accion-secondary" href="mailto:tramipago@gmail.com?subject=Solicitud%20de%20arrepentimiento">Enviar por correo</a></div>
 <p class="nota-final">Al presionar “Enviar solicitud por WhatsApp” se abrirá una conversación con el mensaje preparado. La presentación queda efectuada cuando enviás ese mensaje. TramiPago responderá por ese mismo canal con el código de registro correspondiente dentro del plazo legal.</p>
