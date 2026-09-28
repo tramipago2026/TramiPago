@@ -1235,25 +1235,41 @@
   let draftSyncTimer = 0;
   function snapshotDraftForm(form) {
     const request = state.requestId ? getRequest(state.requestId) : null;
-    if (!request || request.status !== "draft" || !form) return;
+    const service = getService(state.serviceId);
+    if (!request || request.status !== "draft" || !form || !service) return;
+
     const values = { ...(request.answers || {}) };
-    const fields = [...form.elements];
+    const missingFields = [];
     let requiredTotal = 0, requiredDone = 0;
 
-    fields.forEach((field) => {
-      if (!field?.name || field.type === "file" || field.type === "password" || field.type === "submit") return;
-      if (field.required) requiredTotal += 1;
+    for (const field of service.fields || []) {
+      const element = form.elements.namedItem(field.id);
+      if (!element) continue;
+
+      let hasValue = false;
       if (field.type === "checkbox") {
-        values[field.name] = Boolean(field.checked);
-        if (field.required && field.checked) requiredDone += 1;
+        hasValue = Boolean(element.checked);
+        values[field.id] = hasValue;
       } else if (field.type === "radio") {
-        if (field.checked) values[field.name] = field.value;
-        if (field.required && form.elements.namedItem(field.name)?.value) requiredDone += 1;
+        const selected = element.value || "";
+        hasValue = Boolean(selected);
+        if (hasValue) values[field.id] = selected;
+      } else if (field.type === "file") {
+        const file = element.files?.[0];
+        const existing = values[field.id];
+        hasValue = Boolean(file || existing?.name);
       } else {
-        values[field.name] = String(field.value || "").trim();
-        if (field.required && String(field.value || "").trim()) requiredDone += 1;
+        const value = String(element.value || "").trim();
+        hasValue = Boolean(value);
+        values[field.id] = value;
       }
-    });
+
+      if (field.required) {
+        requiredTotal += 1;
+        if (hasValue) requiredDone += 1;
+        else missingFields.push(field.label || field.id);
+      }
+    }
 
     const stageIndex = Number(form.dataset.stageCurrent || 0);
     const stageTotal = Number(form.dataset.stageTotal || 1);
@@ -1264,7 +1280,8 @@
       answers: values,
       clientName: values.fullName || request.clientName || "",
       currentStep,
-      completionPercent
+      completionPercent,
+      missingFields
     });
   }
 
@@ -1328,7 +1345,8 @@
               pricing: getPricing(service, values),
               status: targetStatus,
               currentStep: service.intakeOnly ? "confirmation" : "payment",
-              completionPercent: 100
+              completionPercent: 100,
+              missingFields: []
             })
           : createRequest(service, values);
 
