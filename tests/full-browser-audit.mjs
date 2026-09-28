@@ -5,12 +5,12 @@ const server=spawn("python3",["-m","http.server","4173"],{stdio:"ignore"});
 await new Promise(r=>setTimeout(r,1200));
 const browser=await chromium.launch({headless:true});
 const page=await browser.newPage({viewport:{width:1440,height:1000}});
-await page.addInitScript(()=>{ window.__openedUrls=[]; window.open=(url)=>{window.__openedUrls.push(String(url)); return null;}; });
+await page.addInitScript(()=>{ window.__openedUrls=[]; window.open=(url)=>{window.__openedUrls.push(String(url)); return {opener:null,location:{replace(next){window.__openedUrls.push(String(next));}}};}; });
 const base="http://127.0.0.1:4173/index.html";
 const failures=[];
 const ok=(cond,msg)=>{if(!cond)failures.push(msg);};
 async function goto(hash="#/"){ await page.goto(base+hash,{waitUntil:"networkidle"}); await page.waitForTimeout(250); }
-async function helpUrl(){ await page.evaluate(()=>{window.__openedUrls=[];}); await page.click(".nav-help"); await page.waitForTimeout(80); return page.evaluate(()=>window.__openedUrls.at(-1)||""); }
+async function helpUrl(){ await page.evaluate(()=>{window.__openedUrls=[];}); await page.click(".nav-help"); try{await page.waitForFunction(()=>window.__openedUrls.some(u=>String(u).startsWith("https://wa.me/")),{timeout:4200});}catch{} return page.evaluate(()=>window.__openedUrls.filter(u=>String(u).startsWith("https://wa.me/")).at(-1)||""); }
 
 await goto("#/");
 ok((await page.locator(".nav-home").innerText()).trim().includes("Inicio"),"Botón Inicio sin texto esperado");
@@ -85,17 +85,13 @@ if(await next.count()&&await card.count()){
 }
 
 await goto("#/familia/atencion-abogado");
-const topics=page.locator("[data-legal-topic]");
-ok(await topics.count()===4,"Consulta legal no tiene cuatro temas");
-for(let i=0;i<await topics.count();i++){ await topics.nth(i).click(); ok((await topics.nth(i).getAttribute("aria-pressed"))==="true","Tema legal no selecciona"); }
-const lf=page.locator("#legal-whatsapp-form");
-if(await lf.count()){
-  await lf.locator('[name="fullName"]').fill("Prueba Legal"); await lf.locator('[name="phone"]').fill("11 6708 3232"); await lf.locator('[name="query"]').fill("Consulta de prueba");
-  await page.evaluate(()=>{window.__openedUrls=[];}); await lf.locator('button[type="submit"]').click(); await page.waitForTimeout(80);
-  const legalUrl=await page.evaluate(()=>window.__openedUrls.at(-1)||"");
-  ok(legalUrl.startsWith("https://wa.me/5491167083232?text="),"Consulta legal no abre WhatsApp correcto");
-  ok(/Consulta de prueba/.test(decodeURIComponent(legalUrl)),"Consulta legal pierde el texto");
-}
+const legalCards=page.locator(".family-service-card");
+ok(await legalCards.count()===4,"Consulta con abogado no muestra cuatro servicios");
+const legalTexts=(await legalCards.allTextContents()).join(" ");
+for(const expected of ["ART","Accidentes","Sucesiones","laboral"])ok(new RegExp(expected,"i").test(legalTexts),"Falta consulta jurídica: "+expected);
+url=await helpUrl();
+ok(url.startsWith("https://wa.me/5491167083232?text="),"Ayuda jurídica no abre WhatsApp correcto");
+ok(/abogado/i.test(decodeURIComponent(url)),"Ayuda jurídica sin contexto");
 
 await browser.close(); server.kill();
 if(failures.length){ console.error("FAILURES",failures.length); for(const f of failures)console.error("-",f); process.exit(1); }
