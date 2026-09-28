@@ -5,6 +5,9 @@ on:
     paths:
       - "tests/full-browser-audit.mjs"
       - "app.js"
+      - "site-fixes.js"
+      - "backend-sync.js"
+      - "footer-menu.js"
       - "index.html"
       - "services.js"
       - "arca-family.js"
