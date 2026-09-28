@@ -159,9 +159,17 @@
     return result;
   }
 
-  function payloadFor(request){return cloneWithoutDataUrls(request.answers||{});}
+  function draftAuthorized(request){
+    return request?.status!=="draft"||request?.answers?.authorization===true;
+  }
+
+  function payloadFor(request){
+    if(!draftAuthorized(request))return {};
+    return cloneWithoutDataUrls(request.answers||{});
+  }
 
   function contactFor(request){
+    if(!draftAuthorized(request))return {clientName:"",email:null,whatsapp:""};
     const answers=request.answers||{};
     return {
       clientName:request.clientName||answers.fullName||answers.name||"",
@@ -250,7 +258,7 @@
       completionPercent:Number.isFinite(Number(request.completionPercent))?Number(request.completionPercent):0,
       complete,
       helpContext:helpContext||null,
-      missingFields:Array.isArray(request.missingFields)?request.missingFields:[]
+      missingFields:draftAuthorized(request)&&Array.isArray(request.missingFields)?request.missingFields:[]
     };
     const signature=JSON.stringify(body);
     if(!helpContext&&meta.lastSignature===signature)return;
@@ -285,6 +293,7 @@
   }
 
   async function syncAnswerFiles(request,meta){
+    if(!draftAuthorized(request))return;
     const answers=request.answers||{};
     meta.files=meta.files||{};
     for(const [fieldId,value] of Object.entries(answers)){
