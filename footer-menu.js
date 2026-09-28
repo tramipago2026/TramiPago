@@ -5,6 +5,9 @@
   const DRAFT_PREFIX="tramipago_draft_";
   const REQUESTS_KEY="tramipago_requests_v1";
   const ACTIVE_REQUEST_KEY="tramipago_active_request_v1";
+  const DRAFT_MAX_AGE=7*24*60*60*1000;
+  const MAX_UPLOAD_BYTES=Math.min(10485760,Number(window.TRAMI_CONFIG?.maxLocalFileBytes||10485760));
+  const ALLOWED_FILE_TYPES=new Set(["image/jpeg","image/png","image/webp","application/pdf"]);
 
   function readJSON(storage,key,fallback){
     try{const raw=storage.getItem(key);return raw?JSON.parse(raw):fallback;}catch(_){return fallback;}
@@ -56,7 +59,8 @@
       .button[aria-busy="true"]{cursor:progress!important;opacity:.78!important;transform:none!important}
       .process-container{max-width:1040px!important}.process-top{margin-bottom:10px!important}.process-title h1{font-size:clamp(1.45rem,2.5vw,2rem)!important}.process-title p{font-size:.88rem!important;line-height:1.4!important}.process-content>.panel{padding:16px 18px!important}.panel-header{margin-bottom:10px!important}.panel-header h2{font-size:1.15rem!important}.panel-header p{font-size:.86rem!important}.service-summary{gap:8px!important;margin:10px 0!important}.service-summary-block{padding:9px 11px!important}.service-summary-block h3{font-size:.85rem!important;margin-bottom:5px!important}.service-summary-block li,.service-summary-option,.service-summary-row{font-size:.78rem!important;line-height:1.35!important}.form-grid{gap:9px 14px!important}.field label,.choice-field legend{font-size:.82rem!important}.form-control,.form-select{min-height:39px!important;padding:7px 9px!important;font-size:.88rem!important}.form-check{padding:7px 9px!important}.form-check-label,.privacy-help{font-size:.78rem!important;line-height:1.35!important}.step-actions{position:relative!important;z-index:2!important;margin-top:12px!important}.step-actions .button{min-height:40px!important}.stepper{margin:8px 0 12px!important}
       .payment-access{display:none!important}.payment-access-v2{grid-template-columns:minmax(210px,.78fr) minmax(300px,1.22fr)!important;gap:13px!important;margin:10px 0 12px!important}.payment-method-card{padding:12px!important;background:#f6fafc!important}.payment-method-card h3{margin-bottom:7px!important;font-size:.95rem!important}.payment-data-row{grid-template-columns:78px minmax(0,1fr) auto!important;padding:6px 0!important}.payment-data-row span{font-size:.75rem!important}.payment-data-row strong{font-size:.86rem!important}.payment-copy{min-height:28px!important;padding:3px 7px!important;box-shadow:none!important}
-      .email-pair{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 14px}.email-pair>.field{min-width:0}.existing-file-note,.draft-restored-note,.payment-back-warning{display:block;margin-top:5px;padding:6px 8px;border-radius:7px;background:#eef8ff;border:1px solid #b8dbef;color:#103b68;font-size:.72rem;line-height:1.35}.existing-file-note strong{overflow-wrap:anywhere}.field input:invalid.user-touched,.field select:invalid.user-touched,.field textarea:invalid.user-touched{border-color:#b42318!important;box-shadow:0 0 0 2px rgba(180,35,24,.12)!important}.form-error.visible{display:block!important}
+      .email-pair{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 14px}.email-pair>.field{min-width:0}.existing-file-note,.draft-restored-note,.payment-back-warning,.draft-save-status{display:block;margin-top:5px;padding:6px 8px;border-radius:7px;background:#eef8ff;border:1px solid #b8dbef;color:#103b68;font-size:.72rem;line-height:1.35}.draft-save-status{grid-column:1/-1;margin:0 0 4px}.draft-save-status.is-saved{background:#effaf4;border-color:#a8dfbd;color:#124c2d}.existing-file-note strong{overflow-wrap:anywhere}.field input:invalid.user-touched,.field select:invalid.user-touched,.field textarea:invalid.user-touched{border-color:#b42318!important;box-shadow:0 0 0 2px rgba(180,35,24,.12)!important}.field-error{display:none;margin-top:4px;color:#a51f2d;font-size:.72rem;font-weight:700;line-height:1.3}.field-error.visible{display:block}.form-error.visible{display:block!important}
+      .form-stage-meta{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 2px;padding:7px 9px;background:#f3f8fb;border:1px solid #d2e3ec;border-radius:8px;color:#607789;font-size:.75rem}.form-stage-meta strong{color:#082A47}.form-stage-controls{display:flex;justify-content:space-between;gap:10px;margin-top:12px}.form-stage-controls .button{width:auto!important;min-width:130px!important}.form-grid>[data-form-stage]:not(.is-current-stage){display:none!important}.payment-total-emphasis{background:#effaf4!important;border:2px solid #23A85D!important}.payment-total-emphasis strong{font-size:1.2rem!important;color:#126B3A!important}
       .site-footer{padding:12px 0 8px!important;background:#082A47!important}.site-footer .footer-inner{display:block!important;width:min(1180px,calc(100% - clamp(30px,6vw,96px)))!important;max-width:none!important;margin-inline:auto!important;padding-inline:0!important}.footer-menu-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:clamp(26px,5vw,78px);row-gap:18px;width:100%;align-items:start}.footer-menu-col{min-width:0;text-align:left}.footer-menu-col h3{margin:0 0 5px;color:#fff;font-size:10.5px;font-weight:650}.footer-menu-col a{display:block;margin:2px 0;color:rgba(255,255,255,.82);font-size:9.5px;font-weight:400;line-height:1.35;text-decoration:none;overflow-wrap:anywhere}.footer-menu-col a:hover,.footer-menu-col a:focus-visible{color:#29B6F6;text-decoration:underline;text-underline-offset:2px}.footer-menu-bottom{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;width:100%;margin-top:10px;padding-top:6px;border-top:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.68);font-size:9px;line-height:1.3}
       .tramipago-error-box{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(8,42,71,.42)}.tramipago-error-card{width:min(460px,100%);padding:22px;border-radius:12px;background:#fff;border:1px solid #c8dae5;box-shadow:0 18px 48px rgba(0,0,0,.22);text-align:center}.tramipago-error-actions{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
       @media(max-width:900px){.site-footer .footer-inner{width:min(720px,calc(100% - 36px))!important}.footer-menu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.service-summary{grid-template-columns:1fr!important}}
@@ -94,10 +98,19 @@
   }
 
   function tidyPayment(){
+    const form=document.getElementById("payment-form");
     const payment=document.querySelector(".payment-access-v2");
-    if(!payment)return;
-    const cards=payment.querySelectorAll(".payment-method-card");
-    setTextIfDifferent(cards[0]?.querySelector("h3"),"Pago por transferencia");
+    if(payment){
+      const cards=payment.querySelectorAll(".payment-method-card");
+      setTextIfDifferent(cards[0]?.querySelector("h3"),"Pago por transferencia");
+      if(form&&payment.nextElementSibling!==form)form.insertAdjacentElement("beforebegin",payment);
+    }
+    const panel=form?.closest(".panel");
+    const items=panel?.querySelectorAll(".summary-item");
+    if(items?.length)items[items.length-1].classList.add("payment-total-emphasis");
+    panel?.querySelectorAll(".notice").forEach(note=>{
+      if(/datos de pago:/i.test(note.textContent||""))note.remove();
+    });
   }
 
   function showExistingFiles(){
@@ -114,6 +127,19 @@
     });
   }
 
+  function ensureDraftStatus(form){
+    if(!form||form.id!=="data-form")return null;
+    let note=form.querySelector(".draft-save-status");
+    if(!note){
+      note=document.createElement("div");
+      note.className="draft-save-status";
+      note.setAttribute("role","status");
+      note.textContent="Guardamos tu avance en este dispositivo mientras completás el trámite.";
+      form.querySelector(".form-grid")?.prepend(note);
+    }
+    return note;
+  }
+
   function saveDraft(form){
     const key=draftKey();
     if(!key||form?.id!=="data-form")return;
@@ -124,15 +150,32 @@
       else if(el.type==="radio"){if(el.checked)data[el.name]=el.value;}
       else data[el.name]=el.value;
     });
-    try{sessionStorage.setItem(key,JSON.stringify(data));}catch(_){}
+    try{
+      localStorage.setItem(key,JSON.stringify({version:2,savedAt:Date.now(),serviceId:currentServiceId(),data}));
+      const note=ensureDraftStatus(form);
+      if(note){
+        note.textContent="Avance guardado en este dispositivo.";
+        note.classList.add("is-saved");
+        clearTimeout(Number(note.dataset.timer||0));
+        const timer=window.setTimeout(()=>{if(note.isConnected){note.textContent="Guardamos tu avance en este dispositivo mientras completás el trámite.";note.classList.remove("is-saved");}},1800);
+        note.dataset.timer=String(timer);
+      }
+    }catch(_){}
   }
 
   function restoreDraft(){
     const form=document.getElementById("data-form"),key=draftKey();
     if(!form||!key||form.dataset.draftRestored==="true")return;
     form.dataset.draftRestored="true";
-    const data=readJSON(sessionStorage,key,null);
-    if(!data||typeof data!=="object")return;
+    ensureDraftStatus(form);
+    const stored=readJSON(localStorage,key,null);
+    if(!stored||typeof stored!=="object")return;
+    const savedAt=Number(stored.savedAt||0);
+    if(!savedAt||Date.now()-savedAt>DRAFT_MAX_AGE||stored.serviceId!==currentServiceId()){
+      try{localStorage.removeItem(key);}catch(_){}
+      return;
+    }
+    const data=stored.data&&typeof stored.data==="object"?stored.data:{};
     let restored=false;
     Object.entries(data).forEach(([name,value])=>{
       const field=form.elements.namedItem(name);
@@ -142,42 +185,106 @@
         restored=true;
       }else if(field.type==="checkbox"){
         field.checked=Boolean(value);restored=true;
-      }else if(!field.value&&value){
+      }else if(!field.value&&value!==undefined&&value!==null&&String(value)!==""){
         field.value=String(value);restored=true;
       }
     });
     if(restored&&!form.querySelector(".draft-restored-note")){
       const note=document.createElement("div");
       note.className="draft-restored-note";
-      note.textContent="Recuperamos los datos que habías escrito en esta sesión.";
+      note.textContent="Recuperamos el avance que habías guardado en este dispositivo.";
       form.querySelector(".form-grid")?.prepend(note);
+      form.dispatchEvent(new Event("input",{bubbles:true}));
     }
   }
 
   function clearDraftWhenSaved(){
     if(!document.getElementById("payment-form"))return;
     const key=draftKey();
-    if(key)try{sessionStorage.removeItem(key);}catch(_){}
+    if(key)try{localStorage.removeItem(key);}catch(_){}
+  }
+
+  function fieldErrorNode(input){
+    const field=input?.closest?.(".field,.choice-field,.form-check");
+    if(!field)return null;
+    let error=field.querySelector(":scope > .field-error");
+    if(!error){
+      error=document.createElement("small");
+      error.className="field-error";
+      error.setAttribute("role","alert");
+      field.appendChild(error);
+    }
+    return error;
   }
 
   function setValidity(input,message){
+    if(!input?.setCustomValidity)return;
     input.setCustomValidity(message||"");
-    if(message)input.classList.add("user-touched");
+    const error=fieldErrorNode(input);
+    if(message){
+      input.classList.add("user-touched");
+      if(error){error.textContent=message;error.classList.add("visible");}
+    }else{
+      input.classList.remove("user-touched");
+      if(error){error.textContent="";error.classList.remove("visible");}
+    }
+  }
+
+  function validTaxId(digits){
+    if(!/^\d{11}$/.test(digits)||/^(\d)\1{10}$/.test(digits))return false;
+    const weights=[5,4,3,2,7,6,5,4,3,2];
+    const sum=weights.reduce((acc,w,i)=>acc+Number(digits[i])*w,0);
+    const mod=11-(sum%11);
+    const check=mod===11?0:mod===10?9:mod;
+    return check===Number(digits[10]);
+  }
+
+  function validPatent(raw){
+    const value=String(raw||"").toUpperCase().replace(/[\s-]/g,"");
+    return /^(?:[A-Z]{3}\d{3}|[A-Z]{2}\d{3}[A-Z]{2}|[A-Z]\d{3}[A-Z]{3})$/.test(value);
   }
 
   function validateField(input){
     if(!input?.name)return true;
     const raw=String(input.value||"").trim(),digits=raw.replace(/\D/g,"");
     let message="";
-    if(input.name==="cuil"&&raw&&digits.length!==11)message="Ingresá un CUIL de 11 dígitos.";
-    if(input.name==="cuit"&&raw&&digits.length!==11)message="Ingresá un CUIT de 11 dígitos.";
-    if(input.name==="dni"&&raw&&(digits.length<7||digits.length>9))message="Revisá el DNI.";
+    if(["cuil","cuit"].includes(input.name)&&raw&&!validTaxId(digits))message="Revisá el CUIL/CUIT: deben ser 11 dígitos y tener un dígito verificador válido.";
+    if(input.name==="dni"&&raw&&(!/^\d{7,9}$/.test(digits)))message="Ingresá un DNI de 7 a 9 dígitos.";
     if(input.name==="whatsapp"&&raw&&(digits.length<10||digits.length>11))message="Ingresá código de área y número, sin +54 9.";
+    if(input.type==="email"&&raw&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(raw))message="Ingresá un correo electrónico válido.";
     if(["fullName","fatherFullName","motherFullName"].includes(input.name)&&raw&&!/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]{2}/.test(raw))message="Revisá este nombre.";
     if(input.name==="birthDate"&&raw){const d=new Date(raw+"T12:00:00");if(!Number.isFinite(d.getTime())||d>new Date())message="Revisá la fecha de nacimiento.";}
-    if(input.name==="patent"&&raw&&raw.replace(/[^A-Za-z0-9]/g,"").length<5)message="Revisá el dominio ingresado.";
+    if(input.name==="patent"&&raw&&!validPatent(raw))message="Ingresá una patente válida, por ejemplo ABC123 o AB123CD.";
+    if(input.type==="file"&&input.files?.length){
+      const file=input.files[0];
+      if(file.size<1)message="El archivo está vacío.";
+      else if(file.size>MAX_UPLOAD_BYTES)message=`El archivo supera el máximo permitido de ${(MAX_UPLOAD_BYTES/1000000).toFixed(1)} MB.`;
+      else if(file.type&&!ALLOWED_FILE_TYPES.has(file.type))message="Usá una imagen JPG, PNG, WebP o un PDF.";
+    }
     setValidity(input,message);
     return !message;
+  }
+
+  function currentService(){
+    const id=currentServiceId();
+    return (window.TRAMI_SERVICES||[]).find(item=>item.id===id)||null;
+  }
+
+  function validateServiceRules(form){
+    const service=currentService();
+    const rules=service?.rules;
+    if(!rules)return "";
+    const hasValue=name=>{
+      const field=form.elements.namedItem(name);
+      if(!field)return false;
+      if(field instanceof RadioNodeList)return [...field].some(el=>el.checked&&String(el.value||"").trim());
+      if(field.type==="file")return Boolean(field.files?.length)||Boolean(activeRequest()?.answers?.[name]?.name);
+      if(field.type==="checkbox")return field.checked;
+      return Boolean(String(field.value||"").trim());
+    };
+    if(Array.isArray(rules.anyOf)&&rules.anyOf.length&&!rules.anyOf.some(hasValue))return rules.message||"Completá al menos una de las opciones requeridas.";
+    if(Array.isArray(rules.oneOfGroups)&&rules.oneOfGroups.length&&!rules.oneOfGroups.some(group=>group.every(hasValue)))return rules.message||"Completá una de las alternativas requeridas.";
+    return "";
   }
 
   function validateBasics(form){
@@ -189,6 +296,9 @@
       setValidity(confirm,"Los correos electrónicos no coinciden.");
       ok=false;
     }
+    const ruleMessage=validateServiceRules(form);
+    const box=form.querySelector(".form-error");
+    if(ruleMessage&&box){box.textContent=ruleMessage;box.classList.add("visible");ok=false;}
     return ok;
   }
 
@@ -233,6 +343,58 @@
     }
     window.setTimeout(unlock,10000);
     return true;
+  }
+
+  function validateStage(form,index){
+    let ok=true;
+    form.querySelectorAll(`[data-form-stage="${index}"] input,[data-form-stage="${index}"] select,[data-form-stage="${index}"] textarea`).forEach(el=>{
+      validateField(el);
+      if(!el.checkValidity()){el.classList.add("user-touched");ok=false;}
+    });
+    if(!ok){
+      const first=form.querySelector(`[data-form-stage="${index}"] :invalid`);
+      first?.focus();
+      first?.reportValidity?.();
+    }
+    return ok;
+  }
+
+  function showFormStage(form,index){
+    const total=Number(form.dataset.stageTotal||1);
+    const next=Math.max(0,Math.min(index,total-1));
+    form.dataset.stageCurrent=String(next);
+    form.querySelectorAll("[data-form-stage]").forEach(node=>node.classList.toggle("is-current-stage",Number(node.dataset.formStage)===next));
+    const meta=form.querySelector(".form-stage-meta");
+    if(meta)meta.innerHTML=`<strong>Datos del trámite</strong><span>Parte ${next+1} de ${total}</span>`;
+    const controls=form.querySelector(".form-stage-controls");
+    if(controls){
+      controls.querySelector("[data-stage-prev]").hidden=next===0;
+      controls.querySelector("[data-stage-next]").hidden=next===total-1;
+    }
+    const actions=form.querySelector(".step-actions");
+    if(actions)actions.hidden=next!==total-1;
+  }
+
+  function setupFormStages(){
+    const form=document.getElementById("data-form");
+    if(!form||form.dataset.stagesReady==="true")return;
+    const grid=form.querySelector(".form-grid");
+    if(!grid)return;
+    const items=[...grid.children].filter(node=>node.matches?.(".field,.choice-field,.form-check,.email-pair")&&!node.classList.contains("draft-save-status")&&!node.classList.contains("draft-restored-note"));
+    if(items.length<=10){form.dataset.stagesReady="true";return;}
+    const chunk=6,total=Math.ceil(items.length/chunk);
+    items.forEach((node,i)=>node.dataset.formStage=String(Math.floor(i/chunk)));
+    const meta=document.createElement("div");
+    meta.className="form-stage-meta";
+    grid.prepend(meta);
+    const controls=document.createElement("div");
+    controls.className="form-stage-controls";
+    controls.innerHTML='<button class="button button-secondary" type="button" data-stage-prev>Anterior</button><button class="button button-primary" type="button" data-stage-next>Continuar</button>';
+    const error=form.querySelector(".form-error");
+    if(error)error.insertAdjacentElement("beforebegin",controls);else form.appendChild(controls);
+    form.dataset.stagesReady="true";
+    form.dataset.stageTotal=String(total);
+    showFormStage(form,0);
   }
 
   function simplifyStepper(){
@@ -288,6 +450,7 @@
     showExistingFiles();
     restoreDraft();
     clearDraftWhenSaved();
+    setupFormStages();
     simplifyStepper();
     simplifyTimeline();
     linkOpinion();
@@ -320,6 +483,19 @@
   },true);
 
   document.addEventListener("click",e=>{
+    const next=e.target.closest?.("[data-stage-next]");
+    const prev=e.target.closest?.("[data-stage-prev]");
+    if(next||prev){
+      const form=(next||prev).closest("#data-form");
+      if(form){
+        e.preventDefault();
+        const current=Number(form.dataset.stageCurrent||0);
+        if(next&&!validateStage(form,current))return;
+        showFormStage(form,current+(next?1:-1));
+        form.scrollIntoView({behavior:"smooth",block:"start"});
+      }
+      return;
+    }
     const submit=e.target.closest?.('form button[type="submit"]');
     if(submit){
       const form=submit.closest("form");
