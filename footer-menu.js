@@ -520,8 +520,8 @@
     }
   },true);
 
-  window.addEventListener("error",event=>{if(event?.error)showSafeError();});
-  window.addEventListener("unhandledrejection",()=>showSafeError());
+  window.addEventListener("error",event=>{if(event?.error){window.TRAMI_REPORT_ERROR?.(event.error,{kind:"window_error"});showSafeError();}});
+  window.addEventListener("unhandledrejection",event=>{window.TRAMI_REPORT_ERROR?.(event?.reason||"Promesa rechazada",{kind:"unhandled_rejection"});showSafeError();});
 
   addStyles();
   buildFooter();
