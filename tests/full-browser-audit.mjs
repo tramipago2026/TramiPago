@@ -42,14 +42,14 @@ async function fillVisibleForm(){
   for(let i=0;i<await inputs.count();i++){
     const el=inputs.nth(i); if(!(await el.isVisible()))continue;
     const tag=await el.evaluate(e=>e.tagName.toLowerCase());
-    const type=(await el.getAttribute("type"))||""; const name=(await el.getAttribute("name"))||"";
+    const type=(await el.getAttribute("type"))||""; const name=(await el.getAttribute("name"))||""; const pattern=(await el.getAttribute("pattern"))||""; const inputmode=(await el.getAttribute("inputmode"))||"";
     if(type==="hidden"||type==="submit"||type==="button")continue;
     if(type==="checkbox"){ if(!(await el.isChecked()))await el.check(); continue; }
     if(type==="radio"){ const group=form.locator('input[type="radio"][name="'+name+'"]'); if(await group.count())await group.first().check(); continue; }
     if(type==="file"){ await el.setInputFiles({name:"prueba.png",mimeType:"image/png",buffer:tinyPng}); continue; }
     if(tag==="select"){ const opts=await el.locator("option").evaluateAll(os=>os.filter(o=>!o.disabled&&o.value).map(o=>o.value)); if(opts.length)await el.selectOption(opts[0]); continue; }
     let value="Prueba TramiPago";
-    if(type==="email")value="e2e@example.invalid"; else if(type==="tel")value="11 6708 3232"; else if(type==="date")value="1990-01-01"; else if(type==="month")value="2026-09"; else if(type==="number")value="1"; else if(name==="dni")value="12345678"; else if(name==="cuil"||name==="cuit")value="20-12345678-3"; else if(/patent/i.test(name))value="AA123BB"; else if(/emailConfirm/i.test(name))value="e2e@example.invalid";
+    if(type==="email")value="e2e@example.invalid"; else if(type==="tel")value="11 6708 3232"; else if(type==="date")value="1990-01-01"; else if(type==="month")value="2026-09"; else if(type==="number")value="1"; else if(name==="dni")value="12345678"; else if(name==="cuil"||name==="cuit")value="20-12345678-3"; else if(/patent/i.test(name))value="AA123BB"; else if(/emailConfirm/i.test(name))value="e2e@example.invalid"; else if(inputmode==="numeric"||pattern.includes("[0-9"))value="12345";
     await el.fill(value);
   }
   const valid=await form.evaluate(f=>f.checkValidity());
