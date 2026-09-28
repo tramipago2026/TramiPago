@@ -8,6 +8,7 @@
   const DRAFT_MAX_AGE=7*24*60*60*1000;
   const MAX_UPLOAD_BYTES=Math.min(10485760,Number(window.TRAMI_CONFIG?.maxLocalFileBytes||10485760));
   const ALLOWED_FILE_TYPES=new Set(["image/jpeg","image/png","image/webp","application/pdf"]);
+  const DRAFT_FILES_DB="tramipago_draft_files_v1";
 
   function readJSON(storage,key,fallback){
     try{const raw=storage.getItem(key);return raw?JSON.parse(raw):fallback;}catch(_){return fallback;}
@@ -127,6 +128,73 @@
     });
   }
 
+  function openDraftFilesDb(){
+    return new Promise((resolve,reject)=>{
+      if(!window.indexedDB)return reject(new Error("IndexedDB no disponible"));
+      const request=indexedDB.open(DRAFT_FILES_DB,1);
+      request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains("files"))request.result.createObjectStore("files",{keyPath:"key"});};
+      request.onsuccess=()=>resolve(request.result);
+      request.onerror=()=>reject(request.error||new Error("No se pudo abrir el guardado local"));
+    });
+  }
+
+  async function saveDraftFile(input){
+    const serviceId=currentServiceId(),file=input?.files?.[0];
+    if(!serviceId||!input?.name)return;
+    try{
+      const db=await openDraftFilesDb();
+      const tx=db.transaction("files","readwrite");
+      const store=tx.objectStore("files");
+      const key=serviceId+":"+input.name;
+      if(file)store.put({key,serviceId,name:input.name,fileName:file.name,type:file.type,lastModified:file.lastModified,savedAt:Date.now(),blob:file});
+      else store.delete(key);
+      await new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});
+      db.close();
+    }catch(_){}
+  }
+
+  async function restoreDraftFiles(form){
+    if(!form||form.id!=="data-form"||form.dataset.filesRestored==="true")return;
+    form.dataset.filesRestored="true";
+    const serviceId=currentServiceId();
+    if(!serviceId)return;
+    try{
+      const db=await openDraftFilesDb();
+      for(const input of form.querySelectorAll('input[type="file"][name]')){
+        const record=await new Promise((resolve,reject)=>{
+          const tx=db.transaction("files","readonly");
+          const req=tx.objectStore("files").get(serviceId+":"+input.name);
+          req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);
+        });
+        if(!record)continue;
+        if(Date.now()-Number(record.savedAt||0)>DRAFT_MAX_AGE){
+          const tx=db.transaction("files","readwrite");tx.objectStore("files").delete(record.key);continue;
+        }
+        if(record.blob&&window.DataTransfer){
+          const file=new File([record.blob],record.fileName||"archivo",{type:record.type||record.blob.type,lastModified:record.lastModified||Date.now()});
+          const dt=new DataTransfer();dt.items.add(file);input.files=dt.files;
+          const field=input.closest(".field");
+          if(field&&!field.querySelector(".draft-file-restored")){
+            const note=document.createElement("small");note.className="existing-file-note draft-file-restored";note.textContent="Recuperamos este archivo del avance guardado.";input.insertAdjacentElement("afterend",note);
+          }
+        }
+      }
+      db.close();
+    }catch(_){}
+  }
+
+  async function clearDraftFiles(){
+    const service=currentService();
+    if(!service)return;
+    try{
+      const db=await openDraftFilesDb();
+      const tx=db.transaction("files","readwrite"),store=tx.objectStore("files");
+      for(const field of (service.fields||[]))if(field.type==="file")store.delete(service.id+":"+field.id);
+      await new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});
+      db.close();
+    }catch(_){}
+  }
+
   function ensureDraftStatus(form){
     if(!form||form.id!=="data-form")return null;
     let note=form.querySelector(".draft-save-status");
@@ -168,6 +236,7 @@
     if(!form||!key||form.dataset.draftRestored==="true")return;
     form.dataset.draftRestored="true";
     ensureDraftStatus(form);
+    restoreDraftFiles(form);
     const stored=readJSON(localStorage,key,null);
     if(!stored||typeof stored!=="object")return;
     const savedAt=Number(stored.savedAt||0);
@@ -202,6 +271,7 @@
     if(!document.getElementById("payment-form"))return;
     const key=draftKey();
     if(key)try{localStorage.removeItem(key);}catch(_){}
+    clearDraftFiles();
   }
 
   function fieldErrorNode(input){
@@ -465,7 +535,10 @@
 
   document.addEventListener("change",e=>{
     const form=e.target.closest?.("#data-form");
-    if(form)saveDraft(form);
+    if(form){
+      saveDraft(form);
+      if(e.target.matches?.('input[type="file"]'))saveDraftFile(e.target);
+    }
   });
 
   document.addEventListener("submit",e=>{
