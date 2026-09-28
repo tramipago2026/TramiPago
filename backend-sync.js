@@ -339,7 +339,8 @@
       saveTokens(tokenMap);
       if(changed){
         saveRequests(list);
-        window.dispatchEvent(new HashChangeEvent("hashchange"));
+        if(!document.getElementById("data-form"))window.dispatchEvent(new HashChangeEvent("hashchange"));
+        else window.dispatchEvent(new CustomEvent("tramipago:draft-synced"));
       }
     }finally{syncing=false;if(rerunRequested){rerunRequested=false;queueSync();}}
   }
