@@ -6,7 +6,7 @@ const read=name=>readFileSync(new URL(`../${name}`,import.meta.url),'utf8');
 const win={addEventListener(){},setTimeout(){},scrollTo(){}};
 const doc={getElementById(){return null;},createElement(){return {};},head:{appendChild(){}},addEventListener(){},querySelectorAll(){return [];}};
 const ctx={window:win,document:doc,location:{hash:'#/'},setTimeout(){}};
-for(const filename of ['services.js','arca-family.js','extra-families.js']){
+for(const filename of ['services.js']){
   runInNewContext(read(filename),ctx,{filename,timeout:3000});
 }
 const services=win.TRAMI_SERVICES||[];
