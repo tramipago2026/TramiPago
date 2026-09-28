@@ -38,19 +38,24 @@ const tinyPng=Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQ
 async function fillVisibleForm(){
   const form=page.locator("form:visible").first();
   if(await form.count()===0)return true;
-  const inputs=form.locator("input,select,textarea");
-  for(let i=0;i<await inputs.count();i++){
-    const el=inputs.nth(i); if(!(await el.isVisible()))continue;
-    const tag=await el.evaluate(e=>e.tagName.toLowerCase());
-    const type=(await el.getAttribute("type"))||""; const name=(await el.getAttribute("name"))||""; const pattern=(await el.getAttribute("pattern"))||""; const inputmode=(await el.getAttribute("inputmode"))||"";
-    if(type==="hidden"||type==="submit"||type==="button")continue;
-    if(type==="checkbox"){ if(!(await el.isChecked()))await el.check(); continue; }
-    if(type==="radio"){ const group=form.locator('input[type="radio"][name="'+name+'"]'); if(await group.count())await group.first().check(); continue; }
-    if(type==="file"){ await el.setInputFiles({name:"prueba.png",mimeType:"image/png",buffer:tinyPng}); continue; }
-    if(tag==="select"){ const opts=await el.locator("option").evaluateAll(os=>os.filter(o=>!o.disabled&&o.value).map(o=>o.value)); if(opts.length)await el.selectOption(opts[0]); continue; }
-    let value="Prueba TramiPago";
-    if(type==="email")value="e2e@example.invalid"; else if(type==="tel")value="11 6708 3232"; else if(type==="date")value="1990-01-01"; else if(type==="month")value="2026-09"; else if(type==="number")value="1"; else if(name==="dni")value="12345678"; else if(name==="cuil"||name==="cuit")value="20-12345678-3"; else if(/patent/i.test(name))value="AA123BB"; else if(/emailConfirm/i.test(name))value="e2e@example.invalid"; else if(inputmode==="numeric"||pattern.includes("[0-9"))value="12345";
-    await el.fill(value);
+  for(let stagePass=0;stagePass<12;stagePass++){
+    const inputs=form.locator("input,select,textarea");
+    for(let i=0;i<await inputs.count();i++){
+      const el=inputs.nth(i); if(!(await el.isVisible()))continue;
+      const tag=await el.evaluate(e=>e.tagName.toLowerCase());
+      const type=(await el.getAttribute("type"))||""; const name=(await el.getAttribute("name"))||""; const pattern=(await el.getAttribute("pattern"))||""; const inputmode=(await el.getAttribute("inputmode"))||"";
+      if(type==="hidden"||type==="submit"||type==="button")continue;
+      if(type==="checkbox"){ if(!(await el.isChecked()))await el.check(); continue; }
+      if(type==="radio"){ const group=form.locator('input[type="radio"][name="'+name+'"]'); if(await group.count())await group.first().check(); continue; }
+      if(type==="file"){ await el.setInputFiles({name:"prueba.png",mimeType:"image/png",buffer:tinyPng}); continue; }
+      if(tag==="select"){ const opts=await el.locator("option").evaluateAll(os=>os.filter(o=>!o.disabled&&o.value).map(o=>o.value)); if(opts.length)await el.selectOption(opts[0]); continue; }
+      let value="Prueba TramiPago";
+      if(type==="email")value="e2e@example.invalid"; else if(type==="tel")value="11 6708 3232"; else if(type==="date")value="1990-01-01"; else if(type==="month")value="2026-09"; else if(type==="number")value="1"; else if(name==="dni")value="12345678"; else if(name==="cuil"||name==="cuit")value="20-12345678-6"; else if(/patent/i.test(name))value="AA123BB"; else if(/emailConfirm/i.test(name))value="e2e@example.invalid"; else if(inputmode==="numeric"||pattern.includes("[0-9"))value="12345";
+      await el.fill(value);
+    }
+    const next=form.locator("[data-stage-next]:visible");
+    if(await next.count()){await next.click();await page.waitForTimeout(60);continue;}
+    break;
   }
   const valid=await form.evaluate(f=>f.checkValidity());
   if(!valid){ const bad=await form.evaluate(f=>Array.from(f.querySelectorAll(":invalid")).map(e=>({name:e.name,type:e.type,value:e.value,message:e.validationMessage,pattern:e.pattern,min:e.min,max:e.max}))); console.log("INVALID_FIELDS",JSON.stringify(bad)); }
