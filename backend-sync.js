@@ -135,11 +135,6 @@
       .replace(/[^a-zA-Z0-9._-]+/g,"-").replace(/^-+|-+$/g,"").slice(0,90)||"archivo";
   }
 
-  async function rpc(name,args){
-    const {data,error}=await client.rpc(name,args);
-    if(error)throw error;
-    return data;
-  }
 
   async function ensureServerRecord(request,tokenMap){
     let meta=tokenMap[request.id]||null;
