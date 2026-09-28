@@ -1031,9 +1031,26 @@
       : (pending.currentStep === "eligibility" && service.eligibility?.required ? "eligibility" : "data");
   }
 
+  function composeWhatsAppMessage(request,route,currentService,currentFamily) {
+    if (request?.code) {
+      const stage = request.currentStep || state.step || "trámite";
+      return `Hola, necesito ayuda con mi trámite${request.serviceName ? ` de ${request.serviceName}` : ""}. Código: ${request.code}. Etapa: ${stage}.`;
+    }
+    if (currentService?.id?.startsWith("abogado-")) return `Hola, quiero hacer una consulta por ${currentService.name} con un abogado mediante TramiPago.`;
+    if (currentService) return `Hola, quiero consultar por el trámite ${currentService.name} en TramiPago.`;
+    if (route.name === "tracking") return "Hola, necesito ayuda para consultar el estado de mi trámite en TramiPago.";
+    if (currentFamily?.id === "atencion-abogado") return "Hola, quiero hacer una consulta con un abogado mediante TramiPago.";
+    if (currentFamily) return `Hola, quiero consultar por ${currentFamily.name} en TramiPago.`;
+    return "Hola, necesito ayuda para realizar un trámite en TramiPago.";
+  }
+
   async function openWhatsApp() {
     const number = String(window.TRAMI_CONFIG?.whatsappNumber || "").replace(/\D/g, "");
     if (!number) return window.alert("Falta configurar el número de WhatsApp.");
+
+    // Se abre una ventana inmediatamente para conservar el gesto del clic y evitar bloqueadores.
+    const popup = window.open("about:blank", "_blank");
+    if (popup) try { popup.opener = null; } catch (_) {}
 
     let request = state.requestId ? getRequest(state.requestId) : state.trackingResult;
     const route = parseRoute();
@@ -1042,32 +1059,27 @@
 
     if (request && window.TRAMIPAGO_BACKEND?.flush) {
       try {
-        await window.TRAMIPAGO_BACKEND.flush();
+        await Promise.race([
+          window.TRAMIPAGO_BACKEND.flush(),
+          new Promise(resolve => window.setTimeout(resolve, 2200))
+        ]);
         request = getRequest(request.id) || request;
         if (window.TRAMIPAGO_BACKEND?.recordHelp) {
-          await window.TRAMIPAGO_BACKEND.recordHelp(request,{step:request.currentStep||state.step||route.name});
+          await Promise.race([
+            window.TRAMIPAGO_BACKEND.recordHelp(request,{step:request.currentStep||state.step||route.name}),
+            new Promise(resolve => window.setTimeout(resolve, 1200))
+          ]);
           request = getRequest(request.id) || request;
         }
       } catch (_) {}
     }
 
-    let message = "Hola, necesito ayuda para realizar un trámite en TramiPago.";
-    if (request?.code) {
-      const stage = request.currentStep || state.step || "trámite";
-      message = `Hola, necesito ayuda con mi trámite${request.serviceName ? ` de ${request.serviceName}` : ""}. Código: ${request.code}. Etapa: ${stage}.`;
-    } else if (currentService?.id?.startsWith("abogado-")) {
-      message = `Hola, quiero hacer una consulta por ${currentService.name} con un abogado mediante TramiPago.`;
-    } else if (currentService) {
-      message = `Hola, quiero consultar por el trámite ${currentService.name} en TramiPago.`;
-    } else if (route.name === "tracking") {
-      message = "Hola, necesito ayuda para consultar el estado de mi trámite en TramiPago.";
-    } else if (currentFamily?.id === "atencion-abogado") {
-      message = "Hola, quiero hacer una consulta con un abogado mediante TramiPago.";
-    } else if (currentFamily) {
-      message = `Hola, quiero consultar por ${currentFamily.name} en TramiPago.`;
+    const message = composeWhatsAppMessage(request,route,currentService,currentFamily);
+    const url = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+    if (popup) {
+      try { popup.location.replace(url); return; } catch (_) {}
     }
-
-    window.open(`https://wa.me/${number}?text=${encodeURIComponent(message)}`, "_blank", "noopener");
+    window.location.href = url;
   }
 
   function updateDocumentTitle(route) {
