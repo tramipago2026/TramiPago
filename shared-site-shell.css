@@ -1,8 +1,255 @@
+/* TramiPago · consolidado sin imports encadenados. */
+/* Cabecera funcional: la marca es principal y Consulta legal es un servicio secundario.
+   Las cuatro zonas conservan sus enlaces reales y el diseño adapta filas según ancho. */
+body .site-header{position:sticky;top:0;z-index:60;background:#102d47!important;border-bottom:1px solid #274e69!important}
+body .site-header .header-inner.header-featured{
+  display:grid!important;grid-template-columns:116px minmax(235px,270px) minmax(225px,1fr) 224px!important;
+  grid-template-rows:auto!important;align-items:center!important;justify-items:stretch!important;
+  gap:clamp(8px,1.15vw,18px)!important;
+  width:calc(100% - 36px)!important;max-width:1390px!important;
+  min-height:112px!important;margin:0 auto!important;padding:8px 0!important;
+}
+body .site-header .header-featured .brand{
+  grid-column:1;grid-row:1;justify-self:start!important;display:flex!important;
+  align-items:center!important;justify-content:center!important;width:116px!important;
+  min-width:0!important;max-width:100%!important;min-height:96px!important;
+  padding:0!important;margin:0!important;text-decoration:none!important;
+}
+body .site-header .header-featured .brand img{
+  display:block!important;width:104px!important;height:104px!important;max-width:100%!important;
+  object-fit:contain!important;filter:drop-shadow(0 2px 3px #0004);
+}
+body .site-header .header-featured .header-legal{
+  grid-column:2;grid-row:1;justify-self:stretch;position:relative;display:grid!important;
+  grid-template-columns:minmax(0,1fr) 72px;align-items:center;gap:4px;
+  width:100%;min-width:0;min-height:76px;padding:8px 5px 8px 12px;
+  border:2px solid #d5a752;border-radius:13px;background:linear-gradient(115deg,#192734,#10191f);
+  color:#fff;text-decoration:none;box-shadow:0 2px 8px #0005;overflow:hidden;
+  transition:box-shadow .18s ease,border-color .18s ease,transform .18s ease;
+}
+body .site-header .header-featured .header-legal:hover,
+body .site-header .header-featured .header-legal:focus-visible{
+  border-color:#ffe1a0;box-shadow:0 0 0 3px #f0b64f55,0 5px 13px #0006;
+  transform:translateY(-1px);outline:none;
+}
+body .site-header .header-featured .header-legal-copy{display:flex;flex-direction:column;gap:5px;min-width:0;z-index:1}
+body .site-header .header-featured .header-legal-title{
+  color:#fff!important;display:block!important;white-space:nowrap;
+  font:800 clamp(17px,1.52vw,21px)/1.12 "Segoe UI",Arial,sans-serif!important;
+  letter-spacing:-.02em;
+}
+body .site-header .header-featured .header-legal-title em{color:#f7c766;font-style:normal}
+body .site-header .header-featured .header-legal-subtitle{
+  color:#fff!important;display:block!important;white-space:nowrap;
+  font:700 clamp(10px,.83vw,11.5px)/1.2 "Segoe UI",Arial,sans-serif!important;
+}
+body .site-header .header-featured .header-legal-art{
+  display:block;width:100%;height:67px;object-fit:cover;object-position:center;
+  border-radius:8px;filter:saturate(1.1);
+}
+body .site-header .header-featured .header-slogan{
+  grid-column:3;grid-row:1;justify-self:center!important;
+  display:flex!important;flex-direction:column;align-items:center;justify-content:center;
+  width:100%;min-width:0;margin:0!important;padding:0 3px!important;text-align:center!important;
+}
+body .site-header .header-featured .header-slogan strong{
+  display:block;color:#fff!important;white-space:nowrap;
+  font:800 clamp(18px,2.05vw,29px)/1.05 "Segoe UI",Arial,sans-serif!important;
+}
+body .site-header .header-featured .header-slogan span{
+  display:block;color:#29b6f6!important;white-space:nowrap;
+  font:850 clamp(22px,2.55vw,36px)/1.05 "Segoe UI",Arial,sans-serif!important;
+}
+body .site-header .header-featured .header-slogan small{
+  display:block;color:#f1f5f9!important;margin-top:2px;
+  font:400 clamp(10px,.93vw,13px)/1.15 "Segoe UI",Arial,sans-serif!important;
+}
+body .site-header .header-featured .main-nav{
+  grid-column:4;grid-row:1;justify-self:end!important;align-self:center;
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:34px 41px!important;gap:7px!important;
+  width:224px!important;max-width:100%!important;min-width:0!important;
+  margin:0!important;padding:0 0 0 10px!important;transform:none!important;
+  border-left:1px solid #54718a;
+}
+body .site-header .header-featured .main-nav a,
+body .site-header .header-featured .main-nav button{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;
+  min-width:0!important;max-width:100%!important;width:100%!important;
+  min-height:0!important;height:100%!important;padding:4px 6px!important;
+  border:1px solid #e7eff8!important;border-radius:9px!important;
+  box-shadow:0 2px 7px #0004!important;
+  font:750 13px/1.1 "Segoe UI",Arial,sans-serif!important;
+  white-space:nowrap;text-decoration:none;cursor:pointer;transform:none!important;
+  flex:none!important;
+}
+body .site-header .header-featured .main-nav .nav-home{
+  grid-column:1/-1;grid-row:1;justify-self:center!important;
+  width:115px!important;background:#f9fcff!important;color:#102d47!important;
+}
+body .site-header .header-featured .main-nav .nav-tracking{
+  grid-column:1;grid-row:2;background:#127ad9!important;color:#fff!important;
+}
+body .site-header .header-featured .main-nav .nav-help{
+  grid-column:2;grid-row:2;background:#118542!important;color:#fff!important;
+}
+body .site-header .header-featured .main-nav .nav-icon{width:16px!important;height:16px!important;flex:0 0 16px!important}
+body .site-header .header-featured .main-nav a:hover,
+body .site-header .header-featured .main-nav a:focus-visible,
+body .site-header .header-featured .main-nav button:hover,
+body .site-header .header-featured .main-nav button:focus-visible{
+  border-color:#fff!important;box-shadow:0 0 0 3px #29b6f655,0 4px 11px #0005!important;
+  filter:brightness(1.08);outline:none;
+}
+@media(max-width:1120px){
+  body .site-header .header-inner.header-featured{grid-template-columns:94px minmax(210px,235px) minmax(210px,1fr) 186px!important;gap:8px!important;min-height:99px!important}
+  body .site-header .header-featured .brand{width:94px!important;min-height:85px!important}
+  body .site-header .header-featured .brand img{width:90px!important;height:90px!important}
+  body .site-header .header-featured .header-legal{grid-template-columns:minmax(0,1fr) 52px;min-height:66px;padding:6px 3px 6px 8px}
+  body .site-header .header-featured .header-legal-title{font-size:17px!important}
+  body .site-header .header-featured .header-legal-subtitle{font-size:10px!important}
+  body .site-header .header-featured .header-legal-art{height:57px}
+  body .site-header .header-featured .main-nav{width:186px!important;grid-template-rows:31px 39px!important;gap:5px!important;padding-left:7px!important}
+  body .site-header .header-featured .main-nav a,body .site-header .header-featured .main-nav button{font-size:12px!important;padding:3px!important}
+  body .site-header .header-featured .header-slogan strong{font-size:clamp(17px,1.7vw,24px)!important}
+  body .site-header .header-featured .header-slogan span{font-size:clamp(21px,2.3vw,29px)!important}
+}
+@media(max-width:840px){
+  body .site-header .header-inner.header-featured{grid-template-columns:88px minmax(0,1fr) 185px!important;grid-template-rows:auto auto!important;gap:4px 10px!important;padding:6px 0!important}
+  body .site-header .header-featured .brand{grid-column:1;grid-row:1/3;width:88px!important}
+  body .site-header .header-featured .brand img{width:82px!important;height:82px!important}
+  body .site-header .header-featured .header-slogan{grid-column:2;grid-row:1}
+  body .site-header .header-featured .header-legal{grid-column:2;grid-row:2;max-width:245px;justify-self:center;min-height:52px}
+  body .site-header .header-featured .header-legal-art{height:42px}
+  body .site-header .header-featured .main-nav{grid-column:3;grid-row:1/3}
+}
+@media(max-width:590px){
+  body .site-header{position:relative}
+  body .site-header .header-inner.header-featured{grid-template-columns:76px minmax(0,1fr)!important;grid-template-rows:auto auto auto!important;width:calc(100% - 20px)!important;gap:5px 8px!important}
+  body .site-header .header-featured .brand{grid-column:1;grid-row:1;width:76px!important;min-height:72px!important}
+  body .site-header .header-featured .brand img{width:74px!important;height:74px!important}
+  body .site-header .header-featured .header-slogan{grid-column:2;grid-row:1}
+  body .site-header .header-featured .header-slogan strong{font-size:clamp(15px,4vw,20px)!important}
+  body .site-header .header-featured .header-slogan span{font-size:clamp(19px,5vw,26px)!important}
+  body .site-header .header-featured .header-legal{grid-column:1/-1;grid-row:2;justify-self:center;width:min(280px,100%);min-height:57px}
+  body .site-header .header-featured .header-legal-art{height:48px}
+  body .site-header .header-featured .main-nav{grid-column:1/-1;grid-row:3;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:42px!important;width:100%!important;padding:4px 0 0!important;border-left:0;border-top:1px solid #54718a;gap:7px!important}
+  body .site-header .header-featured .main-nav .nav-home{grid-column:1;grid-row:1;width:100%!important}
+  body .site-header .header-featured .main-nav .nav-tracking{grid-column:2;grid-row:1}
+  body .site-header .header-featured .main-nav .nav-help{grid-column:3;grid-row:1}
+  body .site-header .header-featured .main-nav a,body .site-header .header-featured .main-nav button{font-size:13px!important}
+}
+@media(prefers-reduced-motion:reduce){body .site-header .header-featured .header-legal{transition:none!important}}
+
+body .site-header .header-featured .header-legal-art{object-fit:contain!important;filter:none!important;border-radius:0!important}
+
+/* Ajuste exclusivo de la oblea del abogado. */
+body .site-header .header-inner.header-featured .header-legal{
+  grid-template-columns:minmax(0,1fr) 60px;gap:8px;
+  height:82px;min-height:82px;padding:8px 10px;
+  border:2px solid #050505;box-shadow:0 3px 8px #0006;
+  align-self:center;transform:none;
+}
+body .site-header .header-inner.header-featured .header-legal-copy{gap:4px;align-items:flex-start;text-align:left;justify-content:center}
+body .site-header .header-inner.header-featured .header-legal-title{font:800 21px/1.05 'Segoe UI',Arial,sans-serif!important;letter-spacing:0}
+body .site-header .header-inner.header-featured .header-legal-subtitle{font:600 13px/1.25 'Segoe UI',Arial,sans-serif!important;white-space:normal!important}
+body .site-header .header-inner.header-featured .header-legal-subtitle em{font-style:normal;color:#f7cf79;font-weight:750;white-space:nowrap}
+body .site-header .header-inner.header-featured .header-legal-photo{
+  display:block;width:60px;height:62px;border-radius:7px;
+  background:#0a2638 url('assets/abogado-cabecera-fotografica-20260918.png') 91% center / auto 120% no-repeat;
+}
+body .site-header .header-inner.header-featured .header-legal:is(:hover,:focus-visible){border-color:#050505;box-shadow:0 0 0 1px #050505,0 5px 12px #0008;transform:none;outline:2px solid #050505;outline-offset:2px}
+@media(min-width:841px) and (max-width:1120px){
+ body .site-header .header-inner.header-featured .header-legal{height:75px;min-height:75px;grid-template-columns:minmax(0,1fr) 48px;padding:6px 8px;gap:6px}
+ body .site-header .header-inner.header-featured .header-legal-photo{width:48px;height:58px}
+ body .site-header .header-inner.header-featured .header-legal-subtitle{font-size:12px!important}
+}
+
+
+/* Inicio, Estado y Ayuda: borde y sombra negros en todos los estados. */
+body .site-header.header-featured-active .header-inner.header-featured .main-nav :is(.nav-home,.nav-tracking,.nav-help){border:2px solid #050505!important;box-shadow:0 2px 6px #0006!important}
+body .site-header.header-featured-active .header-inner.header-featured .main-nav :is(.nav-home,.nav-tracking,.nav-help):is(:hover,:focus-visible){
+ color:#050505!important;border-color:#050505!important;
+ box-shadow:0 0 0 1px #050505,0 4px 9px #0009!important;
+ outline:none!important;filter:none!important;transform:none!important;
+}
+body .site-header.header-featured-active .header-inner.header-featured .main-nav .nav-home:is(:hover,:focus-visible){background:#fff!important}
+body .site-header.header-featured-active .header-inner.header-featured .main-nav .nav-tracking:is(:hover,:focus-visible){background:#93d9ff!important}
+body .site-header.header-featured-active .header-inner.header-featured .main-nav .nav-help:is(:hover,:focus-visible){background:#80ecac!important}
+body .site-header.header-featured-active .header-inner.header-featured .main-nav :is(.nav-home,.nav-tracking,.nav-help):is(:hover,:focus-visible) svg{color:#050505!important;stroke:#050505!important}
+body .site-header.header-featured-active .header-inner.header-featured .main-nav :is(.nav-home,.nav-tracking,.nav-help):focus-visible{outline:2px solid #050505!important;outline-offset:3px!important}
+
+
+/* Correcciones visuales solicitadas: cabecera centrada, botones contrastados y landing luminosa.
+   Este archivo se carga después de los estilos anteriores para evitar una regresión en otras familias. */
+@media(min-width:1181px){
+  body .site-header .header-inner.header-featured{position:relative!important}
+  body .site-header .header-featured .header-slogan{
+    position:absolute!important;left:50%!important;top:50%!important;
+    transform:translate(-50%,-50%)!important;width:max-content!important;
+    max-width:calc(100% - 720px)!important;margin:0!important;
+    grid-column:auto!important;grid-row:auto!important;z-index:1;
+  }
+}
+body .site-header .header-featured .main-nav .nav-home{
+  border:2px solid #151c25!important;color:#0b2236!important;background:#fff!important;
+}
+body .site-header.header-featured-active .header-featured .main-nav .nav-home:is(:hover,:focus-visible){
+  color:#080b10!important;border:2px solid #080b10!important;background:#e1f5ff!important;
+  filter:none!important;box-shadow:0 0 0 3px #bdeeff,0 4px 10px #0004!important;
+}
+body .site-header.header-featured-active .header-featured .main-nav .nav-tracking:is(:hover,:focus-visible){
+  color:#080b10!important;border:2px solid #080b10!important;background:#a9e6ff!important;filter:none!important;
+}
+body .site-header.header-featured-active .header-featured .main-nav .nav-help:is(:hover,:focus-visible){
+  color:#080b10!important;border:2px solid #080b10!important;background:#a6f0c2!important;filter:none!important;
+}
+body .site-header.header-featured-active .header-featured .main-nav :is(.nav-home,.nav-tracking,.nav-help):is(:hover,:focus-visible) svg{
+  color:#080b10!important;stroke:#080b10!important;
+}
+body .legal-landing{background:radial-gradient(ellipse 82% 90% at 52% 25%,#fff 0%,#ecfbff 40%,#d2effb 75%,#b0dcee 100%)!important;color:#112f46!important}
+body .legal-landing .legal-widget{
+  border:2px solid #c8993f!important;
+  background:radial-gradient(ellipse 90% 85% at 50% 17%,#fff 0%,#eaf9ff 36%,#aed9ec 100%)!important;
+  box-shadow:0 12px 28px #1d52702d!important;
+}
+body .legal-landing .legal-branding{
+  background:radial-gradient(ellipse 83% 180% at 48% 52%,#fff 1%,#edfaff 40%,#bae4f7 74%,#9dd4eb 100%)!important;
+  border-bottom:1px solid #80b8d2;
+}
+body .legal-landing .legal-widget-body{
+  background:radial-gradient(ellipse 82% 95% at 49% 14%,#fff 0%,#f0fbff 32%,#cdeefa 68%,#9ccee6 100%)!important;
+}
+body .legal-landing .legal-identity,body .legal-landing .legal-identity strong,
+body .legal-landing .legal-intro h1,body .legal-landing .legal-doctor,
+body .legal-landing .legal-areas,body .legal-landing .legal-line h2,
+body .legal-landing .legal-line p,body .legal-landing .legal-inputs label{
+  color:#102d47!important;
+}
+body .legal-landing .legal-identity small{color:#725018!important}
+body .legal-landing .legal-emblem{background:#102d47!important;color:#f5c969!important}
+body .legal-landing .legal-intro h1 span{color:#83570b!important}
+body .legal-landing .legal-specialty{color:#152b3f!important;border:1.5px solid #a77717!important;background:#ffe6aa!important}
+body .legal-landing .legal-inputs label span{color:#355e75!important}
+body .legal-landing .legal-inputs input,body .legal-landing .legal-inputs textarea{
+  background:#fff!important;color:#102d47!important;border:1.5px solid #537a95!important;
+}
+body .legal-landing .legal-inputs input::placeholder,body .legal-landing .legal-inputs textarea::placeholder{color:#52697a!important}
+body .legal-landing .legal-send{box-shadow:0 5px 12px #0756313b!important}
+body .legal-landing .legal-note{display:none!important}
+/* Tarjetas aprobadas, sin bordes blancos ni superposición del texto con las fotos. */
+body .legal-landing .legal-topic-grid{gap:12px!important}
+body .legal-landing .legal-topic{transition:transform .18s ease,box-shadow .18s ease!important}
+body .legal-landing .legal-topic:hover{transform:translateY(-3px)!important;box-shadow:0 8px 18px #143c5140!important}
+body .legal-landing .legal-topic-photo{height:185px!important}
+@media(max-width:980px){body .legal-landing .legal-topic-photo{height:205px!important}}
+@media(max-width:620px){body .legal-landing .legal-topic-photo{height:145px!important}}
+@media(max-width:360px){body .legal-landing .legal-topic-photo{height:200px!important}}
+@media(prefers-reduced-motion:reduce){body .legal-landing .legal-topic{transition:none!important}}
+
+
 /* Cabecera y pie de las páginas públicas: misma fuente visual que Inicio.
    Solo se aplica a los bloques compartidos; no cambia formularios o tarjetas. */
-@import url("header-fijo-20260917.css?v=20260920-unified1");
-@import url("nav-hover-black-20260917.css?v=20260920-unified1");
-@import url("legal-design-refresh-20260917.css?v=20260920-unified1");
 body .site-header.shared-site-header{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;position:sticky!important;top:0;z-index:60;box-sizing:border-box;background:#102d47!important;color:#fff!important;border-bottom:1px solid #274e69!important;font-family:"Segoe UI",Arial,sans-serif!important;line-height:1.25!important}
 body .site-header.shared-site-header *,body .site-footer.shared-site-footer *{box-sizing:border-box}
 body .site-header.shared-site-header .header-inner{box-sizing:border-box}
