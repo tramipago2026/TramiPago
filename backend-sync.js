@@ -249,7 +249,8 @@
       currentStep:request.currentStep||"data",
       completionPercent:Number.isFinite(Number(request.completionPercent))?Number(request.completionPercent):0,
       complete,
-      helpContext:helpContext||null
+      helpContext:helpContext||null,
+      missingFields:Array.isArray(request.missingFields)?request.missingFields:[]
     };
     const signature=JSON.stringify(body);
     if(!helpContext&&meta.lastSignature===signature)return;
@@ -457,7 +458,7 @@
     await syncAll();
     const fresh=findLocalById(request.id)||request;
     const meta=localTokenMeta(fresh);
-    if(!meta)return null;
+    if(!meta?.code||!meta?.raw)return null;
     const helpContext={
       source:"whatsapp",
       step:String(context.step||fresh.currentStep||"site").slice(0,80),
@@ -465,7 +466,16 @@
       serviceId:fresh.serviceId||null,
       requestedAt:new Date().toISOString()
     };
-    await updateServerDraft(fresh,meta,helpContext);
+    const {data,error}=await client.functions.invoke("request-help",{
+      body:{
+        code:meta.code,
+        requestToken:meta.raw,
+        currentStep:helpContext.step,
+        helpContext
+      }
+    });
+    if(error)throw error;
+    if(data?.error)throw new Error(data.error);
     const list=requests();
     const target=list.find(item=>item.id===fresh.id);
     if(target){
