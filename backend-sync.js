@@ -1,6 +1,9 @@
 (function(){
   "use strict";
 
+  const LOCAL_BACKEND_DISABLED=["localhost","127.0.0.1","::1"].includes(location.hostname)||window.__TRAMIPAGO_DISABLE_BACKEND===true;
+  if(LOCAL_BACKEND_DISABLED)return;
+
   const PROJECT_URL="https://injimzsxbnawnekybfpm.supabase.co";
   const PUBLISHABLE_KEY="sb_publishable__bYVmN8G7g1fJG28C0SN0g_WbRJ23Ua";
   const SDK_URL="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.0/+esm";
