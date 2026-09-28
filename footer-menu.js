@@ -22,7 +22,7 @@
   function draftKey(){const id=currentServiceId();return id?DRAFT_PREFIX+id:"";}
 
   function activeRequest(){
-    const ref=readJSON(sessionStorage,ACTIVE_REQUEST_KEY,null);
+    const ref=readJSON(localStorage,ACTIVE_REQUEST_KEY,null);
     if(!ref)return null;
     const requests=readJSON(localStorage,REQUESTS_KEY,[]);
     return requests.find(r=>r.id===ref.id||r.code===ref.code)||null;
