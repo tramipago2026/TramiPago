@@ -180,54 +180,43 @@
   async function updateServerDraft(request,meta){
     if(request.status!=="payment_pending")return;
     const contact=contactFor(request);
-    const tokenHash=await sha256Hex(meta.raw);
-    const signature=JSON.stringify({c:contact,q:quotedAmount(request),p:payloadFor(request)});
+    const signature=JSON.stringify({c:contact,p:payloadFor(request)});
     if(meta.lastSignature===signature)return;
-    await rpc("update_public_request_draft",{
-      p_tracking_code:meta.code,
-      p_public_token_hash:tokenHash,
-      p_client_name:contact.clientName||null,
-      p_email:contact.email,
-      p_whatsapp:contact.whatsapp,
-      p_quoted_amount:quotedAmount(request),
-      p_payload:payloadFor(request)
+    const {data,error}=await client.functions.invoke("update-request-draft",{
+      body:{
+        code:meta.code,
+        requestToken:meta.raw,
+        clientName:contact.clientName||"",
+        email:contact.email||"",
+        whatsapp:contact.whatsapp||"",
+        formData:payloadFor(request)
+      }
     });
+    if(error)throw error;
+    if(data?.error)throw new Error(data.error);
     meta.lastSignature=signature;
   }
 
   async function uploadBlob(meta,kind,fileInfo,blob,label){
     if(!blob||blob.size<1||blob.size>MAX_FILE_BYTES)throw new Error("El archivo supera el límite permitido");
-    const tokenHash=await sha256Hex(meta.raw);
-    const filename=`${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safeName(fileInfo.name)}`;
-    const path=`${meta.code}/${tokenHash}/${filename}`;
-    const {error}=await client.storage.from(STORAGE_BUCKET).upload(path,blob,{
-      contentType:fileInfo.type||blob.type||"application/octet-stream",
-      upsert:false,
-      cacheControl:"3600"
-    });
-    if(error)throw error;
-
+    const filename=fileInfo.name||label||(kind==="payment_receipt"?"comprobante":"archivo");
+    const type=fileInfo.type||blob.type||"application/octet-stream";
+    const file=blob instanceof File?blob:new File([blob],filename,{type});
+    const form=new FormData();
+    form.set("code",meta.code);
+    form.set("requestToken",meta.raw);
+    let functionName="upload-file";
     if(kind==="payment_receipt"){
-      await rpc("register_public_payment_receipt",{
-        p_tracking_code:meta.code,
-        p_public_token_hash:tokenHash,
-        p_storage_path:path,
-        p_original_name:fileInfo.name||label||"comprobante",
-        p_mime_type:fileInfo.type||blob.type||null,
-        p_size_bytes:blob.size
-      });
+      functionName="confirm-payment";
+      form.set("receipt",file);
     }else{
-      await rpc("register_public_request_file",{
-        p_tracking_code:meta.code,
-        p_public_token_hash:tokenHash,
-        p_kind:kind,
-        p_storage_path:path,
-        p_original_name:fileInfo.name||label||"archivo",
-        p_mime_type:fileInfo.type||blob.type||null,
-        p_size_bytes:blob.size
-      });
+      form.set("kind",kind);
+      form.set("file",file);
     }
-    return path;
+    const {data,error}=await client.functions.invoke(functionName,{body:form});
+    if(error)throw error;
+    if(data?.error)throw new Error(data.error);
+    return data?.storagePath||null;
   }
 
   async function syncAnswerFiles(request,meta){
@@ -362,9 +351,14 @@
   }
 
   async function lookupStatus(code){
-    const {data,error}=await client.rpc("get_public_request_status",{p_tracking_code:String(code||"").trim().toUpperCase()});
+    const local=findLocalByCode(code);
+    const whatsapp=contactFor(local||{}).whatsapp||"";
+    const last4=String(whatsapp).replace(/\D/g,"").slice(-4);
+    if(last4.length!==4)return null;
+    const {data,error}=await client.functions.invoke("track-request",{body:{code:String(code||"").trim().toUpperCase(),last4}});
     if(error)throw error;
-    return Array.isArray(data)?data[0]||null:data||null;
+    if(!data?.ok)return null;
+    return {tracking_code:data.code,status:data.status};
   }
 
   function installTrackingInterceptor(){
@@ -449,12 +443,11 @@
             patch[field.id]=String(element.value||"").trim();
           }
         }
-        const tokenHash=await sha256Hex(meta.raw);
-        await rpc("submit_public_request_correction",{
-          p_tracking_code:meta.code,
-          p_public_token_hash:tokenHash,
-          p_patch:patch
+        const {data,error}=await client.functions.invoke("submit-correction",{
+          body:{code:meta.code,requestToken:meta.raw,formData:patch}
         });
+        if(error)throw error;
+        if(data?.error)throw new Error(data.error);
         const list=requests();
         const target=list.find(item=>item.id===local.id);
         if(target){target.answers={...(target.answers||{}),...patch};target.status="in_progress";saveRequests(list);}
