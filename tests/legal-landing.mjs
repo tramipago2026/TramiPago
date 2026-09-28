@@ -3,8 +3,11 @@ import {readFileSync} from "node:fs";
 import {runInNewContext} from "node:vm";
 const read=p=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
 const code=read("services.js"),promos=read("promos.js"),app=read("app.js");
-const win={};
-runInNewContext(code,{window:win},{filename:"services.js",timeout:3000});
+const win={addEventListener(){},scrollTo(){}};
+const doc={addEventListener(){},getElementById(){return null;},querySelector(){return null;},querySelectorAll(){return[];},createElement(){return {}}};
+const location={hash:"#/"};
+class MutationObserver{observe(){}}
+runInNewContext(code,{window:win,document:doc,location,MutationObserver,requestAnimationFrame(fn){fn();},setTimeout(fn){if(typeof fn==="function")fn();},{filename:"services.js",timeout:3000});
 const family=(win.TRAMI_FAMILIES||[]).find(f=>f.id==="atencion-abogado");
 assert.ok(family&&family.serviceIds.length===4,"Consulta con abogado debe tener cuatro opciones");
 for(const id of family.serviceIds){
