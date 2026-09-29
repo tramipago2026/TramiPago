@@ -53,16 +53,18 @@ jobs:
               assert(cors.headers.get('access-control-allow-origin') === goodOrigin,
                 fn + ': CORS no autoriza ' + goodOrigin + '; valor=' + cors.headers.get('access-control-allow-origin'));
             }
-            const blocked = await fetch('https://injimzsxbnawnekybfpm.supabase.co/functions/v1/' + fn, {
-              method: 'OPTIONS',
-              headers: {
-                'Origin': 'https://example.invalid',
-                'Access-Control-Request-Method': 'POST',
-                'Access-Control-Request-Headers': 'content-type,apikey'
-              }
-            });
-            assert(!blocked.headers.get('access-control-allow-origin'),
-              fn + ': un origen ajeno recibió permiso CORS');
+            for (const badOrigin of ['https://example.invalid','https://tramipago2026.github.io']) {
+              const blocked = await fetch('https://injimzsxbnawnekybfpm.supabase.co/functions/v1/' + fn, {
+                method: 'OPTIONS',
+                headers: {
+                  'Origin': badOrigin,
+                  'Access-Control-Request-Method': 'POST',
+                  'Access-Control-Request-Headers': 'content-type,apikey'
+                }
+              });
+              assert(!blocked.headers.get('access-control-allow-origin'),
+                fn + ': origen no autorizado recibió permiso CORS: ' + badOrigin);
+            }
           }
           console.log('PASS: dominio productivo, www y CORS estricto de las 8 funciones de Supabase válidos');
           NODE
