@@ -335,34 +335,6 @@
     `).join("");
   }
 
-  function renderServiceSummary(service) {
-    return `
-      <div class="service-summary">
-        ${(service.components || []).length ? `
-          <div class="service-summary-block">
-            <h3>Incluye</h3>
-            <ul class="requirements">${service.components.map((item) => `<li>${escapeHTML(item)}</li>`).join("")}</ul>
-          </div>
-        ` : ""}
-        <div class="service-summary-block">
-          <h3>Requisitos</h3>
-          <ul class="requirements">${(service.requirements || []).map((item) => `<li>${escapeHTML(item)}</li>`).join("")}</ul>
-        </div>
-        ${service.intakeOnly
-          ? (service.officialFee !== null && service.officialFee !== undefined
-              ? `<div class="service-summary-block"><h3>Costo oficial</h3><div class="service-summary-row"><span>Arancel del organismo</span><strong>${formatARS(service.officialFee)}</strong></div></div>`
-              : "")
-          : `<div class="service-summary-block">
-              <h3>Precio y plazo</h3>
-              ${renderPriceOptions(service)}
-              ${service.officialFee !== null && service.officialFee !== undefined
-                ? `<div class="service-summary-row"><span>Costo oficial</span><strong>${formatARS(service.officialFee)}</strong></div>`
-                : ""}
-            </div>`}
-      </div>
-    `;
-  }
-
   const PARTIDAS_TYPE_CARDS = Object.freeze([
     { value: "birth", title: "Nacimiento", subtitle: "Partida de nacimiento", icon: "assets/partida-nacimiento-v3.webp", tone: "birth" },
     { value: "marriage", title: "Matrimonio", subtitle: "Partida de matrimonio", icon: "assets/partida-matrimonio-v3.webp", tone: "marriage" },
