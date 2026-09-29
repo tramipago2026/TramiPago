@@ -38,7 +38,6 @@
     return value.length>=4?value.slice(-4):"";
   }
   function backendClient(){return window.TRAMIPAGO_BACKEND?.client||null;}
-  function formatDate(value){if(!value)return "";try{return new Intl.DateTimeFormat("es-AR",{dateStyle:"medium",timeStyle:"short"}).format(new Date(value));}catch(_){return String(value);}}
   function escapeHTML(value){return String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
 
   function ensureTrackingVerificationField(){
@@ -177,12 +176,6 @@
     }
   },true);
 
-  async function sha256Hex(value){
-    const bytes=new TextEncoder().encode(value);
-    const digest=await crypto.subtle.digest("SHA-256",bytes);
-    return Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,"0")).join("");
-  }
-  function safeName(name){return String(name||"archivo").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9._-]+/g,"-").replace(/^-+|-+$/g,"").slice(0,90)||"archivo";}
   async function uploadCorrectionFile(client,meta,kind,file,label){
     if(!file||file.size<1||file.size>MAX_FILE_BYTES)throw new Error("El archivo supera el límite permitido");
     const form=new FormData();
