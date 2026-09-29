@@ -67,5 +67,41 @@ jobs:
             }
           }
           console.log('PASS: dominio productivo, www y CORS estricto de las 8 funciones de Supabase válidos');
+
+          const { readFileSync } = await import('node:fs');
+          const backend = readFileSync('backend-sync.js','utf8');
+          const keyMatch = backend.match(/PUBLISHABLE_KEY="([^"]+)"/);
+          assert(keyMatch, 'No se encontró la publishable key del frontend para la prueba');
+          const headers = {
+            'Origin': 'https://tramipago.com.ar',
+            'apikey': keyMatch[1],
+            'Content-Type': 'application/json'
+          };
+          const invalidJsonChecks = [
+            ['track-request',{code:'INVALID',last4:'0000'},[200,400,429]],
+            ['create-request',{},[400,429]],
+            ['submit-correction',{},[400,403,429]],
+            ['update-request-draft',{},[400,403,429]],
+            ['log-client-error',{},[400,429]],
+            ['request-help',{},[400,403,429]]
+          ];
+          for (const [fn,body,allowed] of invalidJsonChecks) {
+            const response = await fetch('https://injimzsxbnawnekybfpm.supabase.co/functions/v1/' + fn, {
+              method:'POST', headers, body:JSON.stringify(body)
+            });
+            assert(allowed.includes(response.status), fn + ': respuesta inesperada ' + response.status);
+            assert(response.status < 500, fn + ': devolvió error 5xx');
+          }
+          for (const fn of ['upload-file','confirm-payment']) {
+            const form = new FormData();
+            const response = await fetch('https://injimzsxbnawnekybfpm.supabase.co/functions/v1/' + fn, {
+              method:'POST',
+              headers:{'Origin':'https://tramipago.com.ar','apikey':keyMatch[1]},
+              body:form
+            });
+            assert([400,403,429].includes(response.status), fn + ': respuesta inesperada ' + response.status);
+            assert(response.status < 500, fn + ': devolvió error 5xx');
+          }
+          console.log('PASS: las 8 Edge Functions ejecutan rutas reales no destructivas sin errores 5xx');
           NODE
 # Auditoría HTTP actualizada al dominio productivo tramipago.com.ar, 2026-09-29.
