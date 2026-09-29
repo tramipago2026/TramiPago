@@ -214,19 +214,11 @@
       return meta;
     }
 
-    const contact=contactFor(request);
-    const isDraft=request.status==="draft";
+    const intendedStatus=request.status;
     const {data,error}=await client.functions.invoke("create-request",{
-      body:isDraft?{
+      body:{
         serviceId:request.serviceId,
         complete:false
-      }:{
-        serviceId:request.serviceId,
-        complete:true,
-        clientName:contact.clientName||"",
-        email:contact.email||"",
-        whatsapp:contact.whatsapp||"",
-        formData:payloadFor(request)
       }
     });
     if(error)throw error;
@@ -238,7 +230,7 @@
     saveTokens(tokenMap);
     request.code=data.code;
     request.serverId=data.requestId||null;
-    request.status=DB_TO_UI[data.status]||request.status;
+    request.status=intendedStatus==="draft"?(DB_TO_UI[data.status]||"draft"):intendedStatus;
     request.createdAt=data.createdAt||request.createdAt;
     request.updatedAt=data.createdAt||request.updatedAt;
     if(data.amount!==null&&data.amount!==undefined&&Number.isFinite(Number(data.amount))&&request.pricing){request.pricing.total=Number(data.amount);}
