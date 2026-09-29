@@ -990,6 +990,7 @@
   });
 
   function injectArcaStyles() {
+    if (!document?.head) return;
     if (document.getElementById("tramipago-arca-family-styles")) return;
     const style = document.createElement("style");
     style.id = "tramipago-arca-family-styles";
