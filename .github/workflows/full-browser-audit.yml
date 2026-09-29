@@ -7,11 +7,18 @@ on:
       - "app.js"
       - "site-fixes.js"
       - "backend-sync.js"
+      - "security-hardening.js"
+      - "whatsapp-context.js"
+      - "catalog-search.js"
+      - "flow-ui.js"
       - "footer-menu.js"
       - "index.html"
       - "services.js"
       - "legal-landing-20260917.js"
       - "promos.js"
+      - "site.css"
+      - "ui.css"
+      - "shared-site-shell.css"
       - ".github/workflows/full-browser-audit.yml"
   workflow_dispatch:
 
