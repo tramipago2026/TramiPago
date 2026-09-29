@@ -15,6 +15,6 @@ assert.ok(app.includes("createDraftRequest")&&app.includes('status: "draft"')&&a
 assert.ok(whatsappContext.includes("request-help")&&whatsappContext.includes("Código:"),"Falta contexto único de WhatsApp");
 assert.ok(app.includes("openWhatsApp")&&app.includes("currentService"),"Falta ayuda contextual");
 assert.ok(services.includes('whatsappNumber: "5491167083232"')&&services.includes('contactEmail: "tramipago@gmail.com"'),"Contacto central inconsistente");
-assert.equal((index.match(/backend-sync\\.js/g)||[]).length,1,"backend-sync.js debe cargarse una sola vez");
+assert.equal((index.match(/backend-sync\.js/g)||[]).length,1,"backend-sync.js debe cargarse una sola vez");
 assert.ok(!promos.includes("backend-sync.js"),"promos.js no debe inyectar backend-sync.js");
 console.log("PASS: validación, código temprano, borrador persistente, ayuda contextual, pago, WhatsApp y registro técnico presentes.");
