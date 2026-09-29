@@ -139,18 +139,6 @@
     return Number.isFinite(created)&&created>=activationMs-1000;
   }
 
-  function randomToken(){
-    const bytes=new Uint8Array(32);
-    crypto.getRandomValues(bytes);
-    return Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");
-  }
-
-  async function sha256Hex(value){
-    const bytes=new TextEncoder().encode(value);
-    const digest=await crypto.subtle.digest("SHA-256",bytes);
-    return Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,"0")).join("");
-  }
-
   function cloneWithoutDataUrls(value){
     if(Array.isArray(value))return value.map(cloneWithoutDataUrls);
     if(!value||typeof value!=="object")return value;
@@ -181,12 +169,6 @@
     };
   }
 
-  function quotedAmount(request){
-    const raw=request?.pricing?.total;
-    const value=Number(raw);
-    return Number.isFinite(value)&&value>=0?value:null;
-  }
-
   function dataUrlToBlob(dataUrl){
     const parts=String(dataUrl||"").split(",");
     if(parts.length<2)throw new Error("Archivo inválido");
@@ -197,12 +179,6 @@
     for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
     return new Blob([bytes],{type:mime});
   }
-
-  function safeName(name){
-    return String(name||"archivo").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-      .replace(/[^a-zA-Z0-9._-]+/g,"-").replace(/^-+|-+$/g,"").slice(0,90)||"archivo";
-  }
-
 
   async function ensureServerRecord(request,tokenMap){
     let meta=tokenMap[request.id]||null;
@@ -427,33 +403,6 @@
     if(error)throw error;
     if(!data?.ok)return null;
     return {tracking_code:data.code,status:data.status};
-  }
-
-  function installTrackingInterceptor(){
-    document.addEventListener("submit",async event=>{
-      const form=event.target;
-      if(!(form instanceof HTMLFormElement)||form.id!=="tracking-form"||!client)return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      const input=form.elements.namedItem("trackingCode");
-      const code=String(input?.value||"").trim().toUpperCase();
-      const errorBox=form.querySelector(".form-error");
-      if(errorBox){errorBox.textContent="";errorBox.classList.remove("visible");}
-      try{
-        const row=await lookupStatus(code);
-        if(!row){
-          if(errorBox){errorBox.textContent="No encontramos una solicitud con ese código.";errorBox.classList.add("visible");}
-          const panel=document.querySelector(".tracking-result");
-          if(panel)panel.innerHTML='<div class="empty-state"><h2>Estado de la solicitud</h2><p>No encontramos ese código.</p></div>';
-          return;
-        }
-        const local=updateLocalFromStatus(row)||findLocalByCode(code);
-        renderServerStatus(row,local);
-      }catch(error){
-        console.error("TramiPago tracking:",error);
-        if(errorBox){errorBox.textContent="No se pudo consultar el estado. Intentá nuevamente.";errorBox.classList.add("visible");}
-      }
-    },true);
   }
 
   async function recordHelp(request,context={}){
