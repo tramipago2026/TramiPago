@@ -9,6 +9,7 @@
   const OVERRIDES_KEY = "tramipago_service_overrides_v1";
   const ACTIVE_REQUEST_KEY = "tramipago_active_request_v1";
   const MAX_LOCAL_FILE_BYTES = Number(window.TRAMI_CONFIG?.maxLocalFileBytes || 1500000);
+  const DRAFT_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 
   const STATUS_LABELS = Object.freeze({
     draft: "Borrador",
@@ -52,7 +53,25 @@
   }
 
   function getRequests() {
-    return readJSON(REQUESTS_KEY, []);
+    const list = readJSON(REQUESTS_KEY, []);
+    const now = Date.now();
+    const kept = list.filter((request) => {
+      if (request?.status !== "draft") return true;
+      const timestamp = Date.parse(request.updatedAt || request.createdAt || "");
+      return !Number.isFinite(timestamp) || now - timestamp <= DRAFT_RETENTION_MS;
+    });
+    if (kept.length !== list.length) {
+      writeJSON(REQUESTS_KEY, kept);
+      try {
+        const active = JSON.parse(localStorage.getItem(ACTIVE_REQUEST_KEY) || "null");
+        if (active && !kept.some((request) => request.id === active.id || request.code === active.code)) {
+          localStorage.removeItem(ACTIVE_REQUEST_KEY);
+        }
+      } catch (_) {
+        localStorage.removeItem(ACTIVE_REQUEST_KEY);
+      }
+    }
+    return kept;
   }
 
   function saveRequests(requests) {
