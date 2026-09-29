@@ -14,13 +14,13 @@ async function helpUrl(){ await page.evaluate(()=>{window.__openedUrls=[];}); aw
 
 await goto("#/");
 ok((await page.locator(".nav-home").innerText()).trim().includes("Inicio"),"Botón Inicio sin texto esperado");
-ok((await page.locator(".nav-tracking").innerText()).trim().includes("Mi código"),"Botón Mi código sin texto esperado");
+ok((await page.locator(".nav-tracking").innerText()).trim().includes("Ver mi trámite"),"Botón Ver mi trámite sin texto esperado");
 ok((await page.locator(".nav-help").innerText()).trim().includes("Ayuda"),"Botón Ayuda sin texto esperado");
 let url=await helpUrl();
 ok(url.startsWith("https://wa.me/5491167083232?text="),"Ayuda de inicio no abre WhatsApp correcto");
 ok(decodeURIComponent(url).includes("TramiPago"),"Ayuda de inicio sin mensaje contextual");
 await page.click(".nav-tracking"); await page.waitForTimeout(100);
-ok(page.url().includes("#/seguimiento"),"Mi código no navega a seguimiento");
+ok(page.url().includes("#/seguimiento"),"Ver mi trámite no navega a seguimiento");
 ok(await page.locator("#tracking-form").count()===1,"Seguimiento no muestra formulario");
 
 const services=await page.evaluate(()=>window.TRAMI_SERVICES.filter(s=>s.active).map(s=>({id:s.id,name:s.name})));

@@ -134,7 +134,7 @@
 
   function isEligibleForBackend(request,tokenMap){
     if(tokenMap[request.id])return true;
-    if(request.serverId)return false; // No recrear una ficha si se cerró la pestaña y expiró su token.
+    if(request.serverId||request.code)return false; // No recrear una ficha si se perdió el token de una solicitud ya registrada.
     const created=Date.parse(request.createdAt||"");
     return Number.isFinite(created)&&created>=activationMs-1000;
   }
@@ -207,38 +207,26 @@
   async function ensureServerRecord(request,tokenMap){
     let meta=tokenMap[request.id]||null;
     if(meta?.code&&meta?.raw){
-      if(request.code!==meta.code||request.serverId!==meta.serverId){
-        request.code=meta.code;
-        request.serverId=meta.serverId||request.serverId||null;
-      }
+      if(request.code!==meta.code)request.code=meta.code;
       return meta;
     }
 
-    const contact=contactFor(request);
-    const isDraft=request.status==="draft";
+    const intendedStatus=request.status;
     const {data,error}=await client.functions.invoke("create-request",{
-      body:isDraft?{
+      body:{
         serviceId:request.serviceId,
         complete:false
-      }:{
-        serviceId:request.serviceId,
-        complete:true,
-        clientName:contact.clientName||"",
-        email:contact.email||"",
-        whatsapp:contact.whatsapp||"",
-        formData:payloadFor(request)
       }
     });
     if(error)throw error;
     if(data?.error)throw new Error(data.error);
     if(!data?.code||!data?.requestToken)throw new Error("El backend no devolvió los datos de la solicitud");
 
-    meta={raw:data.requestToken,code:data.code,serverId:data.requestId||null,serverStatus:data.status||null,lastSignature:"",paymentUploaded:false,files:{},persistedAt:Date.now()};
+    meta={raw:data.requestToken,code:data.code,serverStatus:data.status||null,lastSignature:"",paymentUploaded:false,files:{},persistedAt:Date.now()};
     tokenMap[request.id]=meta;
     saveTokens(tokenMap);
     request.code=data.code;
-    request.serverId=data.requestId||null;
-    request.status=DB_TO_UI[data.status]||request.status;
+    request.status=intendedStatus==="draft"?(DB_TO_UI[data.status]||"draft"):intendedStatus;
     request.createdAt=data.createdAt||request.createdAt;
     request.updatedAt=data.createdAt||request.updatedAt;
     if(data.amount!==null&&data.amount!==undefined&&Number.isFinite(Number(data.amount))&&request.pricing){request.pricing.total=Number(data.amount);}
@@ -270,6 +258,7 @@
     if(data?.error)throw new Error(data.error);
     meta.serverStatus=data?.status||meta.serverStatus;
     request.status=DB_TO_UI[data?.status]||request.status;
+    if(data?.amount!==null&&data?.amount!==undefined&&Number.isFinite(Number(data.amount))&&request.pricing)request.pricing.total=Number(data.amount);
     if(!helpContext)meta.lastSignature=signature;
   }
 
@@ -287,12 +276,13 @@
       form.set("receipt",file);
     }else{
       form.set("kind",kind);
+      form.set("fieldId",String(label||"file"));
       form.set("file",file);
     }
     const {data,error}=await client.functions.invoke(functionName,{body:form});
     if(error)throw error;
     if(data?.error)throw new Error(data.error);
-    return data?.storagePath||null;
+    return data?.ok===true;
   }
 
   async function syncAnswerFiles(request,meta){
@@ -303,9 +293,9 @@
       if(!value||typeof value!=="object"||!value.dataUrl||meta.files[fieldId])continue;
       const blob=dataUrlToBlob(value.dataUrl);
       const kind=/dni|documento/i.test(fieldId)?"dni":"supporting_document";
-      const path=await uploadBlob(meta,kind,value,blob,fieldId);
-      meta.files[fieldId]=path;
-      answers[fieldId]={name:value.name,size:value.size||blob.size,type:value.type||blob.type,storagePath:path};
+      const uploaded=await uploadBlob(meta,kind,value,blob,fieldId);
+      meta.files[fieldId]=uploaded;
+      answers[fieldId]={name:value.name,size:value.size||blob.size,type:value.type||blob.type,uploaded:true};
     }
   }
 
@@ -313,12 +303,12 @@
     const payment=request.payment;
     if(!payment?.dataUrl||meta.paymentUploaded)return;
     const blob=dataUrlToBlob(payment.dataUrl);
-    const path=await uploadBlob(meta,"payment_receipt",{
+    await uploadBlob(meta,"payment_receipt",{
       name:payment.receiptName||"comprobante",
       type:payment.type||blob.type
     },blob,"comprobante");
     meta.paymentUploaded=true;
-    request.payment={receiptName:payment.receiptName||"comprobante",size:payment.size||blob.size,type:payment.type||blob.type,storagePath:path};
+    request.payment={receiptName:payment.receiptName||"comprobante",size:payment.size||blob.size,type:payment.type||blob.type,uploaded:true};
     request.status="payment_review";
   }
 

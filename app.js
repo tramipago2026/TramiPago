@@ -791,7 +791,7 @@
   function renderConfirmationStage(service) {
     const request = getRequest(state.requestId);
     if (!request) return "";
-    const serverReady = Boolean(request.serverId);
+    const serverReady = Boolean(request.code);
     const syncError = String(request.backendSyncError || "");
     return `
       <div class="panel confirmation">

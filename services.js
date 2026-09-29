@@ -990,6 +990,7 @@
   });
 
   function injectArcaStyles() {
+    if (!document?.head) return;
     if (document.getElementById("tramipago-arca-family-styles")) return;
     const style = document.createElement("style");
     style.id = "tramipago-arca-family-styles";
@@ -1087,7 +1088,7 @@
   }
 
   function scheduleArcaEnhancement() {
-    window.setTimeout(enhanceArcaFamily, 0);
+    setTimeout(enhanceArcaFamily, 0);
   }
 
   injectArcaStyles();

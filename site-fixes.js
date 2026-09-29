@@ -99,17 +99,23 @@
         if (!["finalized", "cancelled"].includes(request.status)) return request;
         const closedAt = Date.parse(request.updatedAt || request.createdAt || "");
         if (!Number.isFinite(closedAt) || now - closedAt < RETENTION_MS) return request;
-        const copy = { ...request };
-        if (copy.payment?.dataUrl) { copy.payment = stripStoredFile(copy.payment); changed = true; }
-        if (copy.resultFile?.dataUrl) { copy.resultFile = stripStoredFile(copy.resultFile); changed = true; }
-        if (copy.answers && typeof copy.answers === "object") {
-          const answers = { ...copy.answers };
-          Object.keys(answers).forEach((key) => {
-            if (answers[key]?.dataUrl) { answers[key] = stripStoredFile(answers[key]); changed = true; }
-          });
-          copy.answers = answers;
-        }
-        return copy;
+        const whatsappDigits=String(request.verificationLast4||request.whatsapp||request.answers?.whatsapp||"").replace(/\D/g,"");
+        const verificationLast4=whatsappDigits.length>=4?whatsappDigits.slice(-4):"";
+        changed = true;
+        return {
+          id:request.id,
+          code:request.code,
+          serverId:request.serverId||null,
+          serviceId:request.serviceId,
+          serviceName:request.serviceName,
+          status:request.status,
+          createdAt:request.createdAt,
+          updatedAt:request.updatedAt,
+          verificationLast4,
+          result:request.result||"",
+          resultFile:request.resultFile?stripStoredFile(request.resultFile):null,
+          privacyRedactedAt:new Date().toISOString()
+        };
       });
       if (changed) localStorage.setItem(REQUESTS_KEY, JSON.stringify(next));
     } catch (_) {}
