@@ -40,18 +40,30 @@ jobs:
             'submit-correction','update-request-draft','log-client-error','request-help'
           ];
           for (const fn of functions) {
-            const cors = await fetch('https://injimzsxbnawnekybfpm.supabase.co/functions/v1/' + fn, {
+            for (const goodOrigin of ['https://tramipago.com.ar','https://www.tramipago.com.ar']) {
+              const cors = await fetch('https://injimzsxbnawnekybfpm.supabase.co/functions/v1/' + fn, {
+                method: 'OPTIONS',
+                headers: {
+                  'Origin': goodOrigin,
+                  'Access-Control-Request-Method': 'POST',
+                  'Access-Control-Request-Headers': 'content-type,apikey'
+                }
+              });
+              assert(cors.status >= 200 && cors.status < 300, fn + ': preflight falló: ' + cors.status);
+              assert(cors.headers.get('access-control-allow-origin') === goodOrigin,
+                fn + ': CORS no autoriza ' + goodOrigin + '; valor=' + cors.headers.get('access-control-allow-origin'));
+            }
+            const blocked = await fetch('https://injimzsxbnawnekybfpm.supabase.co/functions/v1/' + fn, {
               method: 'OPTIONS',
               headers: {
-                'Origin': 'https://tramipago.com.ar',
+                'Origin': 'https://example.invalid',
                 'Access-Control-Request-Method': 'POST',
                 'Access-Control-Request-Headers': 'content-type,apikey'
               }
             });
-            assert(cors.status >= 200 && cors.status < 300, fn + ': preflight falló: ' + cors.status);
-            assert(cors.headers.get('access-control-allow-origin') === 'https://tramipago.com.ar',
-              fn + ': CORS no autoriza tramipago.com.ar; valor=' + cors.headers.get('access-control-allow-origin'));
+            assert(!blocked.headers.get('access-control-allow-origin'),
+              fn + ': un origen ajeno recibió permiso CORS');
           }
-          console.log('PASS: dominio productivo, www y CORS de las 8 funciones de Supabase válidos');
+          console.log('PASS: dominio productivo, www y CORS estricto de las 8 funciones de Supabase válidos');
           NODE
 # Auditoría HTTP actualizada al dominio productivo tramipago.com.ar, 2026-09-29.
