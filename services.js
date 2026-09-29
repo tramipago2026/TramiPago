@@ -1088,7 +1088,7 @@
   }
 
   function scheduleArcaEnhancement() {
-    window.setTimeout(enhanceArcaFamily, 0);
+    setTimeout(enhanceArcaFamily, 0);
   }
 
   injectArcaStyles();
