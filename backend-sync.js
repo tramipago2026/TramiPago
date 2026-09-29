@@ -262,6 +262,7 @@
     if(data?.error)throw new Error(data.error);
     meta.serverStatus=data?.status||meta.serverStatus;
     request.status=DB_TO_UI[data?.status]||request.status;
+    if(data?.amount!==null&&data?.amount!==undefined&&Number.isFinite(Number(data.amount))&&request.pricing)request.pricing.total=Number(data.amount);
     if(!helpContext)meta.lastSignature=signature;
   }
 
