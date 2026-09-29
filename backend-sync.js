@@ -113,10 +113,15 @@
 
   async function hydrateTokens(){
     const current=tokens();
-    if(Object.keys(current).length)return current;
-    const persisted=await loadPersistedTokens();
-    if(Object.keys(persisted).length)sessionStorage.setItem(TOKENS_KEY,JSON.stringify(persisted));
-    return persisted;
+    const source=Object.keys(current).length?current:await loadPersistedTokens();
+    const validIds=new Set(requests().map(request=>request.id).filter(Boolean));
+    const filtered=Object.fromEntries(Object.entries(source).filter(([requestId])=>validIds.has(requestId)));
+    if(JSON.stringify(filtered)!==JSON.stringify(source)){
+      saveTokens(filtered);
+    }else if(!Object.keys(current).length&&Object.keys(filtered).length){
+      sessionStorage.setItem(TOKENS_KEY,JSON.stringify(filtered));
+    }
+    return filtered;
   }
 
   function saveRequests(value){writeJSON(REQUESTS_KEY,value);}
