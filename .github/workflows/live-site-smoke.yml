@@ -1,4 +1,4 @@
-name: Comprobar sitio publicado por HTTP
+name: Comprobar sitio productivo y conexión backend
 
 on:
   push:
@@ -20,8 +20,31 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verificar recursos y versiones desde GitHub Pages
+      - name: Verificar recursos y versiones en el dominio productivo
         env:
-          SITE_URL: https://tramipago2026.github.io/TramiPago/
+          SITE_URL: https://tramipago.com.ar/
         run: node tests/live-site-smoke.mjs
-# Auditoría HTTP solicitada tras limpieza del frontend municipal, 2026-09-19.
+      - name: Verificar HTTPS, www y CORS de Supabase
+        run: |
+          node - <<'NODE'
+          const assert = (ok, msg) => { if (!ok) throw new Error(msg); };
+          const root = await fetch('https://tramipago.com.ar/', { redirect: 'manual' });
+          assert(root.status >= 200 && root.status < 400, 'tramipago.com.ar no responde correctamente: ' + root.status);
+
+          const www = await fetch('https://www.tramipago.com.ar/', { redirect: 'manual' });
+          assert(www.status >= 200 && www.status < 400, 'www.tramipago.com.ar no responde correctamente: ' + www.status);
+
+          const cors = await fetch('https://injimzsxbnawnekybfpm.supabase.co/functions/v1/track-request', {
+            method: 'OPTIONS',
+            headers: {
+              'Origin': 'https://tramipago.com.ar',
+              'Access-Control-Request-Method': 'POST',
+              'Access-Control-Request-Headers': 'content-type,apikey'
+            }
+          });
+          assert(cors.status >= 200 && cors.status < 300, 'Preflight de Supabase falló: ' + cors.status);
+          assert(cors.headers.get('access-control-allow-origin') === 'https://tramipago.com.ar',
+            'CORS no autoriza tramipago.com.ar; valor=' + cors.headers.get('access-control-allow-origin'));
+          console.log('PASS: dominio productivo, www y CORS de Supabase válidos');
+          NODE
+# Auditoría HTTP actualizada al dominio productivo tramipago.com.ar, 2026-09-29.
