@@ -30,7 +30,7 @@ jobs:
           if(!pages.length)throw new Error('No hay páginas públicas');
           for(const p of pages){
             const s=fs.readFileSync(p,'utf8');
-            for(const needle of ['class="nav-home"','class="nav-tracking"','class="nav-help"','Mi código','wa.me/5491167083232','tramipago@gmail.com']){
+            for(const needle of ['class="nav-home"','class="nav-tracking"','class="nav-help"','Ver mi trámite','wa.me/5491167083232','tramipago@gmail.com']){
               if(!s.includes(needle))throw new Error(p+' no contiene '+needle);
             }
           }
