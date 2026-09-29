@@ -13,6 +13,6 @@ assert.ok(app.includes('data-action="whatsapp"')||index.includes('data-action="w
 assert.ok(services.includes('id:"atencion-abogado"')&&services.includes('abogado-art')&&services.includes('abogado-laboral'),"Familia de abogado incompleta");
 assert.ok(shell.includes(".shared-site-header")&&shell.includes(".header-legal")&&shell.includes(".main-nav"),"Shell compartido sin cabecera vigente");
 for(const [i,page] of pages.entries()){
-  for(const needle of ['class="nav-home"','class="nav-tracking"','class="nav-help"',"Ver mi trámite","wa.me/5491167083232"])assert.ok(page.includes(needle),"Página pública "+i+" sin "+needle);
+  for(const needle of ['class="nav-home"','class="nav-tracking"','class="nav-help"',"Ver mi trámite","wa.me/5491167083232","tramipago@gmail.com"])assert.ok(page.includes(needle),"Página pública "+i+" sin "+needle);
 }
 console.log("PASS: cabecera vigente, navegación, Ver mi trámite, WhatsApp y acceso a abogado presentes sin módulos históricos.");
