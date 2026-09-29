@@ -1,15 +1,5 @@
 (function(){
   "use strict";
-  if(document.querySelector('script[data-tramipago-backend="supabase"]'))return;
-  const script=document.createElement("script");
-  script.src="backend-sync.js?v=20260911-supabase-v1";
-  script.defer=true;
-  script.dataset.tramipagoBackend="supabase";
-  document.head.appendChild(script);
-})();
-
-(function(){
-  "use strict";
 
   const INTERVAL_MS=4000;
   const DESKTOP_BREAKPOINT=1120;
