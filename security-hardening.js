@@ -189,11 +189,12 @@
     form.set("code",meta.code);
     form.set("requestToken",meta.raw);
     form.set("kind",kind);
+    form.set("fieldId",String(label||"file"));
     form.set("file",file);
     const {data,error}=await client.functions.invoke("upload-file",{body:form});
     if(error)throw error;
     if(data?.error)throw new Error(data.error);
-    return data?.storagePath||null;
+    return data?.ok===true;
   }
 
   document.addEventListener("submit",async event=>{
@@ -225,8 +226,8 @@
           const file=element.files?.[0];
           if(file){
             const kind=/dni|documento/i.test(field.id)?"dni":"supporting_document";
-            const path=await uploadCorrectionFile(client,meta,kind,file,field.id);
-            patch[field.id]={name:file.name,size:file.size,type:file.type,storagePath:path};
+            await uploadCorrectionFile(client,meta,kind,file,field.id);
+            patch[field.id]={name:file.name,size:file.size,type:file.type,uploaded:true};
           }
         }else patch[field.id]=String(element.value||"").trim();
       }
