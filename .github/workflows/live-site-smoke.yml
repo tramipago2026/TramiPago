@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/live-site-smoke.yml'
+      - 'tests/live-site-smoke.mjs'
   schedule:
     - cron: '41 12,23 * * *'
   workflow_dispatch:
