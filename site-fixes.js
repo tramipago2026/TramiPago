@@ -195,46 +195,6 @@
     validate();
   }
 
-  function monthLabel(value) {
-    if (!/^\d{4}-\d{2}$/.test(value)) return value;
-    const [year, month] = value.split("-").map(Number);
-    return new Intl.DateTimeFormat("es-AR", { month:"long", year:"numeric" }).format(new Date(year, month - 1, 1));
-  }
-
-  function configureAnsesPeriod() {
-    const from = document.querySelector('input[name="periodFrom"]');
-    const to = document.querySelector('input[name="periodTo"]');
-    if (!from || !to || from.dataset.periodReady === "true") return;
-    from.dataset.periodReady = "true";
-    const now = new Date();
-    const max = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
-    const minDate = new Date(now.getFullYear(), now.getMonth()-5, 1);
-    const min = `${minDate.getFullYear()}-${String(minDate.getMonth()+1).padStart(2,"0")}`;
-    from.value = min; to.value = max; from.min = min; from.max = max; to.min = min; to.max = max;
-    const fromField = from.closest(".field");
-    const toField = to.closest(".field");
-    if (fromField) fromField.hidden = true;
-    if (toField) toField.hidden = true;
-    const formGrid = from.closest("form")?.querySelector(".form-grid");
-    if (formGrid && !formGrid.querySelector(".anses-period-note")) {
-      const note = document.createElement("div");
-      note.className = "anses-period-note";
-      note.innerHTML = `<strong>Período automático:</strong> ${monthLabel(min)} a ${monthLabel(max)}. No tenés que elegir fechas.`;
-      formGrid.insertAdjacentElement("afterbegin", note);
-    }
-  }
-
-  function markOfficialFeeIncluded() {
-    document.querySelectorAll(".service-summary-row").forEach((row) => {
-      const label = row.querySelector("span");
-      const value = row.querySelector("strong");
-      if (label && value && /costo oficial/i.test(label.textContent || "")) {
-        label.textContent = "Tasas oficiales";
-        value.textContent = "Incluidas";
-      }
-    });
-  }
-
   function enhancePaymentStage() {
     const form = document.getElementById("payment-form");
     if (!form) return;
