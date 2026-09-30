@@ -5,7 +5,14 @@ const server=spawn("python3",["-m","http.server","4173"],{stdio:"ignore"});
 await new Promise(r=>setTimeout(r,1200));
 const browser=await chromium.launch({headless:true});
 const page=await browser.newPage({viewport:{width:1440,height:1000}});
-await page.addInitScript(()=>{ window.__openedUrls=[]; window.open=(url)=>{window.__openedUrls.push(String(url)); return {opener:null,location:{replace(next){window.__openedUrls.push(String(next));}}};}; });
+await page.addInitScript(()=>{
+  window.__openedUrls=[];
+  window.__cspViolations=[];
+  document.addEventListener("securitypolicyviolation",event=>{
+    window.__cspViolations.push({directive:event.violatedDirective,blocked:event.blockedURI});
+  });
+  window.open=(url)=>{window.__openedUrls.push(String(url)); return {opener:null,location:{replace(next){window.__openedUrls.push(String(next));}}};};
+});
 const base="http://127.0.0.1:4173/index.html";
 const failures=[];
 const ok=(cond,msg)=>{if(!cond)failures.push(msg);};
@@ -92,6 +99,15 @@ for(const expected of ["ART","Accidentes","Sucesiones","laboral"])ok(new RegExp(
 url=await helpUrl();
 ok(url.startsWith("https://wa.me/5491167083232?text="),"Ayuda jurídica no abre WhatsApp correcto");
 ok(/abogado/i.test(decodeURIComponent(url)),"Ayuda jurídica sin contexto");
+
+const secondaryPages=["tramites.html","municipales.html","contacto.html","opiniones.html","arrepentimiento.html","baja-servicio.html","politica-privacidad.html","terminos-condiciones.html"];
+for(const target of secondaryPages){
+  await page.goto("http://127.0.0.1:4173/"+target,{waitUntil:"networkidle"});
+  await page.waitForTimeout(120);
+  ok(await page.locator("body").count()===1,"Página secundaria no renderiza: "+target);
+}
+const cspViolations=await page.evaluate(()=>window.__cspViolations||[]);
+ok(cspViolations.length===0,"Violaciones CSP detectadas: "+JSON.stringify(cspViolations));
 
 await browser.close(); server.kill();
 if(failures.length){ console.error("FAILURES",failures.length); for(const f of failures)console.error("-",f); process.exit(1); }
