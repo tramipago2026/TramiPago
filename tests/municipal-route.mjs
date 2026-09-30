@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const read=path=>fs.readFileSync(new URL(`../${path}`,import.meta.url),'utf8');
-const promos=read('promos.js'),search=read('catalog-search.js'),catalog=read('tramites.html'),page=read('municipales.html'),styles=read('site.css');
+const promos=read('promos.js'),search=read('catalog-search.js'),catalog=read('tramites.html'),page=read('municipales.html'),runtime=read('municipales-page.js'),styles=read('site.css');
 // Auditoría estática: no suplanta verificaciones con datos reales de contribuyentes.
 assert.match(promos,/promo-municipal-20260911\.webp[^\n]*href:["']municipales\.html["']/,'Anuncio municipal conduce a Municipales');
 assert.match(promos,/function ensureMunicipalEntry\(/,'Entrada municipal definida');
@@ -34,7 +34,7 @@ assert.match(page,/data-municipio="San Miguel"/,'Consulta identifica San Miguel'
 assert.match(page,/data-municipio="José C. Paz"/,'Consulta identifica José C. Paz');
 for(const campo of ['nombre','telefono','tramite']) assert.equal((page.match(new RegExp('name="'+campo+'"','g'))||[]).length,2,'Campo '+campo+' para ambos municipios');
 assert.match(page,/wa\.me\/5491167083232\?text=/,'Envío a WhatsApp existente');
-assert.match(page,/encodeURIComponent\(mensaje\)/,'Datos del formulario codificados en el mensaje');
+assert.match(runtime,/encodeURIComponent\(mensaje\)/,'Datos del formulario codificados en el mensaje');
 assert.doesNotMatch(page,/Consultar disponibilidad por WhatsApp|Abrir portal oficial de pagos ↗|Abrir sitio oficial del municipio ↗/,'Sin botones anteriores');
 assert.match(page,/municipal-consult-form \.municipal-send:hover/,'Hover del botón nuevo');
 console.log('PASS: oferta acotada, modalidad no confirmada, exclusión de faltas, selector, enlaces y catálogo.');
