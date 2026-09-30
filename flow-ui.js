@@ -149,44 +149,6 @@
     });
   }
 
-  function enhancePayment() {
-    const form = document.getElementById("payment-form");
-    if (!form) return;
-    const panel = form.closest(".panel");
-    if (!panel || panel.dataset.paymentReady === "true") return;
-
-    const config = window.TRAMI_CONFIG || {};
-    const alias = String(config.alias || "").trim();
-    const cvu = String(config.paymentCvu || "").trim();
-    const holder = String(config.paymentHolder || "").trim();
-    if (!alias && !cvu) return;
-
-    panel.querySelectorAll(".notice").forEach(function (notice) {
-      const text = notice.textContent || "";
-      if (/datos de pago:/i.test(text)) notice.remove();
-    });
-
-    const box = document.createElement("div");
-    box.className = "payment-access";
-    box.innerHTML = `
-      <div class="payment-transfer">
-        <strong class="payment-transfer-title">Transferencia</strong>
-        <div class="payment-data-list">
-          ${alias ? `<div class="payment-data-row"><span>Alias</span><strong>${alias}</strong></div>` : ""}
-          ${cvu ? `<div class="payment-data-row"><span>CVU</span><strong>${cvu}</strong></div>` : ""}
-          ${holder ? `<div class="payment-data-row"><span>Titular</span><strong>${holder}</strong></div>` : ""}
-        </div>
-        <button class="payment-copy" type="button" data-copy-payment>Copiá datos</button>
-        <p class="payment-hint">Transferí el total indicado arriba y después cargá el comprobante.</p>
-      </div>
-    `;
-
-    const summary = panel.querySelector(".summary-grid");
-    if (summary) summary.insertAdjacentElement("afterend", box);
-    else form.insertAdjacentElement("beforebegin", box);
-    panel.dataset.paymentReady = "true";
-  }
-
   async function copyPaymentData(button) {
     const config = window.TRAMI_CONFIG || {};
     const lines = [
