@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="es-AR">
 <head>
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://esm.sh; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://static.wixstatic.com https://josecpaz.gob.ar; connect-src 'self' https://injimzsxbnawnekybfpm.supabase.co https://mapas.msm.gov.ar; font-src 'self' data:; media-src 'self'; object-src 'none'; frame-src 'none'; worker-src 'self' blob:; base-uri 'none'; form-action 'self' https://wa.me mailto:; upgrade-insecure-requests">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Opiniones y comentarios de clientes de TramiPago."><title>Opiniones | TramiPago</title>
 <link rel="icon" href="assets/logo-tramipago.webp" type="image/webp" />
 <style>
@@ -30,5 +33,6 @@
         <section class="footer-menu-col"><h3>LEGAL</h3><a href="politica-privacidad.html">Política de Privacidad</a><a href="terminos-condiciones.html">Términos y Condiciones</a><a href="arrepentimiento.html">BOTÓN DE ARREPENTIMIENTO</a><a href="baja-servicio.html">BOTÓN DE BAJA DE SERVICIO</a><a href="https://www.argentina.gob.ar/servicio/iniciar-un-reclamo-ante-defensa-del-consumidor" target="_blank" rel="noopener noreferrer">Defensa del Consumidor</a></section>
       </div>
       <div class="footer-menu-bottom"><span>© 2026 TramiPago · Todos los derechos reservados</span><span>CUIT 20-25988733-0 · tramipago@gmail.com</span></div></div></footer>
-<script>(function(){const number='5491167083232';const form=document.getElementById('opinion-form');const success=document.getElementById('success');const params=new URLSearchParams(location.search);const codeInput=document.getElementById('codigo');const serviceSelect=document.getElementById('service');const codeParam=(params.get('codigo')||'').trim().toUpperCase();const serviceByPrefix={AP:'Antecedentes Penales',AN:'ANSES — CODEM + Certificación Negativa',IV:'Informe vehicular',AI:'ARBA / Inmobiliario',AC:'ARCA',AV:'ARCA',CC:'ARCA',RP:'ARCA',IR:'ARCA',AM:'ARCA',BM:'ARCA',RC:'ARCA',DF:'ARCA',AD:'ARCA',PA:'Partidas',PC:'Partidas',AS:'Asistencia Digital'};if(codeParam){codeInput.value=codeParam;const service=serviceByPrefix[codeParam.split('-')[0]];if(service)serviceSelect.value=service;}form.addEventListener('submit',e=>{e.preventDefault();if(!form.reportValidity())return;const data=new FormData(form);const service=String(data.get('service')||'').trim();const rating=String(data.get('rating')||'').trim();const code=String(data.get('codigo')||'').trim().toUpperCase();const comment=String(data.get('comentario')||'').trim();let msg='Hola, quiero dejar una opinión sobre TramiPago.';msg+=' Trámite: '+service+'.';msg+=' Calificación: '+rating+'/5.';if(code)msg+=' Código: '+code+'.';if(comment)msg+=' Comentario: '+comment;window.open('https://wa.me/'+number+'?text='+encodeURIComponent(msg),'_blank','noopener');success.hidden=false;});})();</script>
-<script src="whatsapp-context.js"></script></body></html>
+
+<script src="whatsapp-context.js"></script>  <script src="opiniones-page.js"></script>
+</body></html>
