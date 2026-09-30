@@ -14,7 +14,6 @@ on:
       - "footer-menu.js"
       - "index.html"
       - "services.js"
-      - "legal-landing-20260917.js"
       - "promos.js"
       - "site.css"
       - "ui.css"
@@ -28,11 +27,10 @@ on:
       - "politica-privacidad.html"
       - "terminos-condiciones.html"
       - "index-inline.js"
+      - "legal-request-page.js"
       - "municipales-page.js"
       - "contacto-page.js"
       - "opiniones-page.js"
-      - "arrepentimiento-page.js"
-      - "baja-servicio-page.js"
       - ".github/workflows/full-browser-audit.yml"
   workflow_dispatch:
 
