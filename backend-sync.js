@@ -102,7 +102,8 @@
   function tokens(){
     try{
       const current=sessionStorage.getItem(TOKENS_KEY);
-      return current?JSON.parse(current)||{}:{};
+      const parsed=current?JSON.parse(current)||{}:{};
+      return pruneTokenMap(parsed);
     }catch(_){return {};}
   }
 
@@ -127,13 +128,8 @@
   async function hydrateTokens(){
     const current=tokens();
     const source=Object.keys(current).length?current:await loadPersistedTokens();
-    const validIds=new Set(requests().map(request=>request.id).filter(Boolean));
-    const filtered=Object.fromEntries(Object.entries(source).filter(([requestId])=>validIds.has(requestId)));
-    if(JSON.stringify(filtered)!==JSON.stringify(source)){
-      saveTokens(filtered);
-    }else if(!Object.keys(current).length&&Object.keys(filtered).length){
-      sessionStorage.setItem(TOKENS_KEY,JSON.stringify(filtered));
-    }
+    const filtered=pruneTokenMap(source);
+    saveTokens(filtered);
     return filtered;
   }
 
