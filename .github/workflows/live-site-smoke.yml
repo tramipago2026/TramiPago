@@ -6,7 +6,7 @@ on:
       - '.github/workflows/live-site-smoke.yml'
       - 'tests/live-site-smoke.mjs'
   schedule:
-    - cron: '41 12,23 * * *'
+    - cron: '41 */6 * * *'
   workflow_dispatch:
 
 permissions:
@@ -21,6 +21,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Verificar contrato de seguridad frontend
+        run: node tests/security-contract.mjs
       - name: Verificar recursos y versiones en el dominio productivo
         env:
           SITE_URL: https://tramipago.com.ar/
