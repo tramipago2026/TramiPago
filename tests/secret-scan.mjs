@@ -10,7 +10,7 @@ const patterns=[
   {name:"GitHub classic token", re:new RegExp("gh"+"p_[A-Za-z0-9]{20,}","g")},
   {name:"GitHub fine-grained token", re:new RegExp("github_"+"pat_[A-Za-z0-9_]{20,}","g")},
   {name:"Private key", re:new RegExp("-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----","g")},
-  {name:"Service role assignment", re:new RegExp("SUPABASE_SERVICE_ROLE_KEY\\s*=\\s*[^\\s$][^\\r\\n]{15,}","g")}
+  {name:"Service role assignment", re:new RegExp("SUPABASE_SERVICE_ROLE_KEY[ \\t]*=[ \\t]*[\\\"\\\']?[^\\\"\\\'\\r\\n$][^\\r\\n]{15,}","g")}
 ];
 
 const findings=[];
