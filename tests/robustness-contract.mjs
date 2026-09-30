@@ -13,7 +13,7 @@ assert.ok(backend.includes("TRAMI_REPORT_ERROR")&&backend.includes("log-client-e
 assert.ok(backend.includes("recordHelp")&&backend.includes("TOKEN_DB_NAME")&&backend.includes("update-request-draft"),"Falta identidad persistente del trámite o ayuda contextual");
 assert.ok(app.includes("createDraftRequest")&&app.includes('status: "draft"')&&app.includes("missingFields"),"Falta borrador con código temprano y campos pendientes");
 assert.ok(app.includes("DRAFT_RETENTION_MS = 7 * 24 * 60 * 60 * 1000")&&app.includes("now - timestamp <= DRAFT_RETENTION_MS"),"Falta caducidad local de borradores a 7 días");
-assert.ok(backend.includes("validIds=new Set(requests().map")&&backend.includes("Object.entries(source).filter"),"Falta limpieza de tokens huérfanos");
+assert.ok(backend.includes("requestById=new Map(requests().filter")&&backend.includes("Object.entries(value&&typeof value===\\\"object\\\"?value:{}).filter"),"Falta limpieza de tokens huérfanos");
 assert.ok(whatsappContext.includes("request-help")&&whatsappContext.includes("Código:"),"Falta contexto único de WhatsApp");
 assert.ok(app.includes("openWhatsApp")&&app.includes("currentService"),"Falta ayuda contextual");
 assert.ok(services.includes('whatsappNumber: "5491167083232"')&&services.includes('contactEmail: "tramipago@gmail.com"'),"Contacto central inconsistente");
