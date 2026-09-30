@@ -31,8 +31,21 @@ jobs:
         run: |
           node - <<'NODE'
           const assert = (ok, msg) => { if (!ok) throw new Error(msg); };
+          const http = await fetch('http://tramipago.com.ar/', { redirect: 'manual' });
+          const redirectLocation = http.headers.get('location') || '';
+          assert([301,302,307,308].includes(http.status), 'HTTP no redirige: ' + http.status);
+          assert(redirectLocation.startsWith('https://'), 'HTTP no redirige a HTTPS: ' + redirectLocation);
+
           const root = await fetch('https://tramipago.com.ar/', { redirect: 'manual' });
           assert(root.status >= 200 && root.status < 400, 'tramipago.com.ar no responde correctamente: ' + root.status);
+          const csp = root.headers.get('content-security-policy') || '';
+          const xfo = (root.headers.get('x-frame-options') || '').toUpperCase();
+          assert(root.headers.get('strict-transport-security'), 'Falta Strict-Transport-Security');
+          assert((root.headers.get('x-content-type-options') || '').toLowerCase() === 'nosniff', 'Falta X-Content-Type-Options: nosniff');
+          assert(root.headers.get('referrer-policy'), 'Falta Referrer-Policy');
+          assert(root.headers.get('permissions-policy'), 'Falta Permissions-Policy');
+          assert(csp, 'Falta Content-Security-Policy como header HTTP real');
+          assert(xfo === 'DENY' || xfo === 'SAMEORIGIN' || /frame-ancestors\s+[^;]+/i.test(csp), 'Falta protección contra framing');
 
           const www = await fetch('https://www.tramipago.com.ar/', { redirect: 'manual' });
           assert(www.status >= 200 && www.status < 400, 'www.tramipago.com.ar no responde correctamente: ' + www.status);
