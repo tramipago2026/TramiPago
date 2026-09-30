@@ -1513,3 +1513,5 @@ body .site-header .lawyer-header-badge:is(:hover,:focus-visible){
   }
   body .site-header.lawyer-header-active .main-nav{grid-column:1/-1;grid-row:3}
 }
+
+body .site-header.lawyer-header-active .main-nav{transform:none!important}
