@@ -870,17 +870,22 @@ body .arca-family-page .arca-service-thumb { background:#e5f3f9!important; }
 .family-page:has(.family-heading img[src$="partidas-familia-final.webp"]) .family-service-card:nth-child(2)::before {
   background-image:url("assets/apostillado-visual.svg");
 }
+.family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card::before {
+  background-image:url("assets/abogado-fotos-20260918.avif");
+  background-size:100% 400%;
+  background-position-x:center;
+}
 .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card:nth-child(1)::before {
-  background-image:url("assets/promo-abogado-20260916.webp");
+  background-position-y:0%;
 }
 .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card:nth-child(2)::before {
-  background-image:url("assets/promo-abogado-20260916.webp");
+  background-position-y:33.333333%;
 }
 .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card:nth-child(3)::before {
-  background-image:url("assets/promo-abogado-20260916.webp");
+  background-position-y:66.666667%;
 }
 .family-page:has(.family-heading img[src$="promo-art-20260911.webp"]) .family-service-card:nth-child(4)::before {
-  background-image:url("assets/promo-abogado-20260916.webp");
+  background-position-y:100%;
 }
 
 /* Cabeceras: sustitución visual no destructiva de imágenes genéricas anteriores. */
@@ -1445,4 +1450,66 @@ body[data-view="home"] .home-catalog .home-municipal-entry:focus-visible{
   body[data-view="home"] .home-catalog .home-municipal-entry>b{
     font-size:clamp(7px,1.9vw,11px)!important;border-width:3px!important;
   }
+}
+
+
+/* Restauración puntual de la cabecera de Abogado. Solo se activa en la familia jurídica. */
+body .site-header.lawyer-header-active .header-inner{
+  grid-template-columns:135px minmax(230px,280px) minmax(250px,1fr) auto!important;
+  gap:14px!important;
+  align-items:center!important;
+}
+body .site-header .lawyer-header-badge[hidden]{display:none!important}
+body .site-header .lawyer-header-badge{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 62px;
+  align-items:center;
+  gap:8px;
+  min-height:76px;
+  padding:8px 10px;
+  color:#fff;
+  background:linear-gradient(115deg,#192734,#10191f);
+  border:2px solid #050505;
+  border-radius:13px;
+  box-shadow:0 3px 8px #0006;
+  text-decoration:none;
+}
+body .site-header .lawyer-header-badge-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+body .site-header .lawyer-header-badge-title{color:#fff;font-size:21px;font-weight:800;line-height:1.05}
+body .site-header .lawyer-header-badge-subtitle{color:#fff;font-size:13px;font-weight:600;line-height:1.2}
+body .site-header .lawyer-header-badge-subtitle em{color:#f7cf79;font-style:normal;font-weight:750}
+body .site-header .lawyer-header-badge-photo{
+  display:block;
+  width:60px;
+  height:62px;
+  border-radius:7px;
+  background:#0a2638 url("assets/abogado-cabecera-fotografica-20260918.png") 91% center / auto 120% no-repeat;
+}
+body .site-header .lawyer-header-badge:is(:hover,:focus-visible){
+  color:#fff;
+  outline:2px solid #050505;
+  outline-offset:2px;
+}
+@media(max-width:1040px){
+  body .site-header.lawyer-header-active .header-inner{
+    grid-template-columns:120px minmax(220px,260px) minmax(0,1fr)!important;
+  }
+  body .site-header.lawyer-header-active .brand{grid-column:1;grid-row:1}
+  body .site-header.lawyer-header-active .lawyer-header-badge{grid-column:2;grid-row:1}
+  body .site-header.lawyer-header-active .header-slogan{grid-column:3;grid-row:1}
+  body .site-header.lawyer-header-active .main-nav{grid-column:1/-1;grid-row:2}
+}
+@media(max-width:680px){
+  body .site-header.lawyer-header-active .header-inner{
+    grid-template-columns:90px minmax(0,1fr)!important;
+  }
+  body .site-header.lawyer-header-active .brand{grid-column:1;grid-row:1}
+  body .site-header.lawyer-header-active .header-slogan{grid-column:2;grid-row:1}
+  body .site-header.lawyer-header-active .lawyer-header-badge{
+    grid-column:1/-1;grid-row:2;
+    width:min(290px,100%);
+    justify-self:center;
+    min-height:66px;
+  }
+  body .site-header.lawyer-header-active .main-nav{grid-column:1/-1;grid-row:3}
 }
