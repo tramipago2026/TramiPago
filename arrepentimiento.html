@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="es-AR">
 <head>
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://esm.sh; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://static.wixstatic.com https://josecpaz.gob.ar; connect-src 'self' https://injimzsxbnawnekybfpm.supabase.co https://mapas.msm.gov.ar; font-src 'self' data:; media-src 'self'; object-src 'none'; frame-src 'none'; worker-src 'self' blob:; base-uri 'none'; form-action 'self' https://wa.me mailto:; upgrade-insecure-requests">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Solicitud de arrepentimiento de contratación en TramiPago.">
@@ -66,26 +69,6 @@
         <section class="footer-menu-col"><h3>LEGAL</h3><a href="politica-privacidad.html">Política de Privacidad</a><a href="terminos-condiciones.html">Términos y Condiciones</a><a href="arrepentimiento.html">BOTÓN DE ARREPENTIMIENTO</a><a href="baja-servicio.html">BOTÓN DE BAJA DE SERVICIO</a><a href="https://www.argentina.gob.ar/servicio/iniciar-un-reclamo-ante-defensa-del-consumidor" target="_blank" rel="noopener noreferrer">Defensa del Consumidor</a></section>
       </div>
       <div class="footer-menu-bottom"><span>© 2026 TramiPago · Todos los derechos reservados</span><span>CUIT 20-25988733-0 · tramipago@gmail.com</span></div></div></footer>
-<script>
-(function(){
-  const form=document.getElementById('withdrawal-form');
-  form.addEventListener('submit',function(event){
-    event.preventDefault();
-    if(!form.reportValidity()) return;
-    const data=new FormData(form);
-    const lines=[
-      'SOLICITUD DE ARREPENTIMIENTO - TramiPago',
-      'Nombre y apellido: '+String(data.get('nombre')||'').trim(),
-      'DNI: '+String(data.get('dni')||'').trim(),
-      'Correo: '+String(data.get('email')||'').trim(),
-      'WhatsApp: '+String(data.get('whatsapp')||'').trim(),
-      'Código de solicitud/trámite: '+(String(data.get('codigo')||'').trim()||'No informado'),
-      'Servicio: '+String(data.get('servicio')||'').trim(),
-      'Observaciones: '+(String(data.get('comentario')||'').trim()||'Sin observaciones'),
-      'Solicito ejercer el derecho de arrepentimiento respecto de la contratación indicada.'
-    ];
-    window.location.href='https://wa.me/5491167083232?text='+encodeURIComponent(lines.join('\n'));
-  });
-})();
-</script>
-<script src="whatsapp-context.js"></script></body></html>
+
+<script src="whatsapp-context.js"></script>  <script src="arrepentimiento-page.js"></script>
+</body></html>
