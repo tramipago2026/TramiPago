@@ -20,6 +20,8 @@ jobs:
           node-version: '22'
       - name: Verificar enlaces locales, imágenes y sintaxis JavaScript
         run: node tests/site-integrity.mjs
+      - name: Verificar que no se hayan versionado secretos
+        run: node tests/secret-scan.mjs
       - name: Verificar contrato de seguridad frontend
         run: node tests/security-contract.mjs
       - name: Verificar destinos de todas las tarjetas y estructura de todos los formularios
