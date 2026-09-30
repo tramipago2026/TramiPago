@@ -6,7 +6,7 @@
 
   const PROJECT_URL="https://injimzsxbnawnekybfpm.supabase.co";
   const PUBLISHABLE_KEY="sb_publishable__bYVmN8G7g1fJG28C0SN0g_WbRJ23Ua";
-  const SDK_URL="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.0/+esm";
+  const SDK_URL="https://esm.sh/@supabase/supabase-js@2.105.0";
   const REQUESTS_KEY="tramipago_requests_v1";
   const TOKENS_KEY="tramipago_request_tokens_v1";
   const START_KEY="tramipago_backend_started_at_v1";
@@ -15,6 +15,7 @@
   const MAX_FILE_BYTES=10*1024*1024;
   const TOKEN_DB_NAME="tramipago_private_tokens_v1";
   const TOKEN_DB_STORE="tokens";
+  const TOKEN_TTL_MS=30*24*60*60*1000;
 
   let client=null;
   let syncing=false;
@@ -105,9 +106,21 @@
     }catch(_){return {};}
   }
 
+  function pruneTokenMap(value){
+    const now=Date.now();
+    const requestById=new Map(requests().filter(item=>item?.id).map(item=>[item.id,item]));
+    return Object.fromEntries(Object.entries(value&&typeof value==="object"?value:{}).filter(([requestId,meta])=>{
+      const request=requestById.get(requestId);
+      if(!request||["finalized","cancelled"].includes(request.status))return false;
+      const persistedAt=Number(meta?.persistedAt||0);
+      return Number.isFinite(persistedAt)&&persistedAt>0&&(now-persistedAt)<=TOKEN_TTL_MS;
+    }));
+  }
+
   function saveTokens(value){
-    sessionStorage.setItem(TOKENS_KEY,JSON.stringify(value));
-    persistTokens(value);
+    const pruned=pruneTokenMap(value);
+    sessionStorage.setItem(TOKENS_KEY,JSON.stringify(pruned));
+    persistTokens(pruned);
     try{localStorage.removeItem(TOKENS_KEY);}catch(_){}
   }
 
