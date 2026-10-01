@@ -1,4 +1,4 @@
-name: Auditoría panel Admin TramiPago
+name: Auditoría panel Admin TramiPago (contrato local)
 
 on:
   push:
@@ -25,5 +25,5 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0
           npx playwright install --with-deps chromium
-      - name: Probar Admin completo
+      - name: Probar contrato del Admin con Supabase simulado
         run: node tests/admin-browser-audit.mjs
