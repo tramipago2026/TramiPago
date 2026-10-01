@@ -48,13 +48,10 @@ console.log(`Archivos inspeccionados: ${paths.length}; referencias estáticas ve
 if (errors.length) { for (const error of errors) console.error(`ERROR ${error}`); process.exitCode = 1; }
 else console.log('PASS: referencias locales y sintaxis JavaScript verificadas. No equivale a probar el sitio publicado.');
 
-const promoSvg=readFileSync(join(root,'assets','promo-tramite-online-20261001.svg'),'utf8');
-const promoSvgOk=/<svg\b/i.test(promoSvg)
-  && /CONSULTÁ POR/i.test(promoSvg)
-  && /TRÁMITE ONLINE/i.test(promoSvg)
-  && /Migraciones/i.test(promoSvg)
-  && /medidor de luz/i.test(promoSvg);
-if(!promoSvgOk){
-  console.error('ERROR promo-tramite-online-20261001.svg no contiene la publicidad online esperada.');
+const promoExact=readFileSync(join(root,'assets','promo-tramite-online-exact-20261001.png'));
+const promoPngOk=promoExact.length===2873972
+  && promoExact.subarray(0,8).toString('hex')==='89504e470d0a1a0a';
+if(!promoPngOk){
+  console.error('ERROR la publicidad exacta debe ser el PNG original de 2873972 bytes.');
   process.exitCode=1;
-}else console.log('PASS: publicidad de trámite online SVG verificada.');
+}else console.log('PASS: publicidad exacta PNG verificada por tamaño y firma.');

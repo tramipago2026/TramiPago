@@ -93,9 +93,9 @@ if(await next.count()&&await card.count()){
   for(let i=0;i<12;i++){
     const image=card.locator("img");
     const src=(await image.getAttribute("src"))||"";
-    if(src.includes("promo-tramite-online-20261001.svg")){
+    if(src.includes("promo-tramite-online-exact-20261001.png")){
       promoFound=true;
-      ok((await image.evaluate(img=>img.complete&&img.naturalWidth>0&&img.naturalHeight>0)),"Publicidad online nueva no decodifica como imagen");
+      ok((await image.evaluate(img=>img.complete&&img.naturalWidth===1254&&img.naturalHeight===1254)),"Publicidad exacta no carga con sus dimensiones originales 1254x1254");
       const visual=await image.evaluate(img=>{
         const c=document.createElement("canvas"); c.width=80; c.height=80;
         const ctx=c.getContext("2d"); ctx.drawImage(img,0,0,80,80);
