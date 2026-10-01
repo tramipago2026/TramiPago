@@ -33,3 +33,24 @@ for(let offset=0;offset<paths.length;offset+=concurrency){
 console.log(`Recursos publicados comprobados: ${checked}/${paths.length}.`);
 if(failures.length){for(const fail of failures)console.error(`ERROR ${fail}`);process.exitCode=1;}
 else console.log('PASS: HTML, JavaScript, CSS e imágenes existentes respondieron HTTP 200 y los cambios auditados constan en el sitio publicado. No se probaron formularios ni capturas visuales.');
+
+
+// VERIFICACION_PROMO_ONLINE_20261001: comprobación puntual del carrusel publicado.
+{
+  const home=await fetch(base,{redirect:'follow',headers:{'User-Agent':'TramiPago-promo-audit/1.0'}});
+  const html=await home.text();
+  const scriptMatch=html.match(/promos\.js\?v=[^"'<> ]+/);
+  if(!scriptMatch) failures.push('Producción no carga promos.js versionado.');
+  else {
+    const promoJsUrl=new URL(scriptMatch[0],base);
+    const promoJsResponse=await fetch(promoJsUrl,{headers:{'User-Agent':'TramiPago-promo-audit/1.0'}});
+    const promoJs=await promoJsResponse.text();
+    const fileName=['promo-tramite-online','20261001.svg'].join('-');
+    const promoPath=['assets',fileName].join('/');
+    if(!promoJs.includes(promoPath)) failures.push('promos.js publicado no referencia la publicidad online nueva.');
+    const assetResponse=await fetch(new URL(promoPath,base),{headers:{'User-Agent':'TramiPago-promo-audit/1.0'}});
+    const assetText=await assetResponse.text();
+    if(!assetResponse.ok) failures.push('Publicidad online nueva no responde HTTP 200: '+assetResponse.status);
+    if(!/<svg\b/i.test(assetText)||!/CONSULTÁ POR/i.test(assetText)||!/Migraciones/i.test(assetText)) failures.push('Publicidad online publicada no contiene el SVG visible esperado.');
+  }
+}
