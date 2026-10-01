@@ -47,3 +47,12 @@ for (const path of paths) {
 console.log(`Archivos inspeccionados: ${paths.length}; referencias estáticas verificadas: ${references.length}; errores: ${errors.length}.`);
 if (errors.length) { for (const error of errors) console.error(`ERROR ${error}`); process.exitCode = 1; }
 else console.log('PASS: referencias locales y sintaxis JavaScript verificadas. No equivale a probar el sitio publicado.');
+
+const promoAsset=readFileSync(join(root,'assets','promo-tramite-online-20260930.webp'));
+const promoIsWebP=promoAsset.length>=12
+  && promoAsset.subarray(0,4).toString('ascii')==='RIFF'
+  && promoAsset.subarray(8,12).toString('ascii')==='WEBP';
+if(!promoIsWebP){
+  console.error('ERROR promo-tramite-online-20260930.webp debe ser un WebP válido (RIFF....WEBP).');
+  process.exitCode=1;
+}else console.log('PASS: publicidad de trámite online tiene firma WebP válida.');
