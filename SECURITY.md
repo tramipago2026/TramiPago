@@ -15,3 +15,13 @@ Este repositorio contiene el frontend público de TramiPago. No deben almacenars
 
 ## Incidentes
 Ante una sospecha de exposición, rotar credenciales afectadas, revisar logs de Supabase y GitHub Actions y restaurar desde un commit validado.
+
+
+## Pendientes de hosting confirmados
+
+La auditoría productiva del 2026-10-01 confirmó que el dominio HTTPS responde correctamente, pero el hosting actual todavía acepta HTTP sin redirigir y no entrega HSTS, CSP, X-Content-Type-Options, Referrer-Policy, Permissions-Policy ni protección de framing como headers HTTP reales.
+
+Mientras el sitio siga en GitHub Pages:
+- activar **Settings → Pages → Enforce HTTPS** es obligatorio;
+- las CSP/referrer meta del HTML son defensa complementaria, no reemplazan headers HTTP;
+- el panel Admin no debe considerarse completamente endurecido a nivel hosting hasta corregir la redirección HTTP y los headers.
