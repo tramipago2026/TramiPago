@@ -252,7 +252,36 @@ async function updateStatus(status,form){
 }
 
 $("#login-form").addEventListener("submit",async event=>{event.preventDefault();if(LOCAL_MODE)return;$("#login-error").textContent="";const form=new FormData(event.currentTarget);const {error}=await supabase.auth.signInWithPassword({email:form.get("email"),password:form.get("password")});if(error){$("#login-error").textContent="Correo o contraseña incorrectos.";return;}await enterDashboard();});
-$("#mfa-form").addEventListener("submit",async event=>{event.preventDefault();$("#mfa-error").textContent="";const code=String(new FormData(event.currentTarget).get("code")||"").replace(/\D/g,"").slice(0,6);if(code.length!==6){$("#mfa-error").textContent="Ingresá el código de 6 dígitos.";return;}const {error}=await supabase.auth.mfa.verify({factorId:mfaFactorId,challengeId:mfaChallengeId,code});if(error){$("#mfa-error").textContent="Código incorrecto o vencido.";return;}event.currentTarget.reset();await enterDashboard();});
+$("#mfa-form").addEventListener("submit",async event=>{
+  event.preventDefault();
+  $("#mfa-error").textContent="";
+  const code=String(new FormData(event.currentTarget).get("code")||"").replace(/\D/g,"").slice(0,6);
+  if(code.length!==6){$("#mfa-error").textContent="Ingresá el código de 6 dígitos.";return;}
+
+  let {error}=await supabase.auth.mfa.verify({factorId:mfaFactorId,challengeId:mfaChallengeId,code});
+
+  // Supabase vincula cada challenge MFA con la IP que lo creó. Si la red cambia
+  // entre challenge y verify (VPN, proxy, cambio de conexión), reemitimos el
+  // challenge y reintentamos una sola vez sin debilitar el segundo factor.
+  if(error&&(error.code==="mfa_ip_address_mismatch"||/IP addresses mismatch/i.test(String(error.message||"")))){
+    const {data:challenge,error:challengeError}=await supabase.auth.mfa.challenge({factorId:mfaFactorId});
+    if(challengeError){
+      $("#mfa-error").textContent="Cambió la conexión de red. Volvé a intentar la verificación.";
+      return;
+    }
+    mfaChallengeId=challenge.id;
+    ({error}=await supabase.auth.mfa.verify({factorId:mfaFactorId,challengeId:mfaChallengeId,code}));
+  }
+
+  if(error){
+    $("#mfa-error").textContent=error.code==="mfa_ip_address_mismatch"
+      ?"Cambió la conexión de red. Ingresá un código nuevo de Google Authenticator."
+      :"Código incorrecto o vencido.";
+    return;
+  }
+  event.currentTarget.reset();
+  await enterDashboard();
+});
 $("#mfa-new-factor").addEventListener("click",enrollNewAuthenticator);
 
 $("#logout").addEventListener("click",async()=>{if(!LOCAL_MODE&&supabase)await supabase.auth.signOut();showLogin();});
