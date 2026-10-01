@@ -17,11 +17,16 @@ async function probe(path){
     checked++;
     if(path==='index.html'){
       const html=await response.text();
-      if(!html.includes('app.js?v=20260916-audit2'))failures.push('La portada publicada todavía no contiene la versión auditada de app.js.');
-      if(!html.includes('backend-sync.js?v='))failures.push('La portada publicada no carga backend-sync.js.');
+      const local=readFileSync('index.html','utf8');
+      const appSrc=(local.match(/<script src=["'](app\.js\?v=[^"']+)["']/)||[])[1];
+      const backendSrc=(local.match(/<script src=["'](backend-sync\.js\?v=[^"']+)["']/)||[])[1];
+      if(!appSrc||!html.includes(appSrc))failures.push('La portada publicada no coincide con la versión actual de app.js.');
+      if(!backendSrc||!html.includes(backendSrc))failures.push('La portada publicada no coincide con la versión actual de backend-sync.js.');
     }else if(path==='admin/index.html'){
       const html=await response.text();
-      if(!html.includes('app.js?v=20261001-admin-audit3'))failures.push('El Admin publicado todavía no carga la versión auditada de app.js.');
+      const local=readFileSync('admin/index.html','utf8');
+      const appSrc=(local.match(/src=["'](\.\/app\.js\?v=[^"']+)["']/)||[])[1];
+      if(!appSrc||!html.includes(appSrc))failures.push('El Admin publicado todavía no carga la versión actual de app.js.');
       if(html.includes('price-guard.js'))failures.push('El Admin publicado todavía carga price-guard.js obsoleto.');
       if(html.includes('id="mfa-new-factor"'))failures.push('El Admin publicado todavía ofrece asociar un factor MFA nuevo desde AAL1.');
     }else if(path==='extra-families.js'){
