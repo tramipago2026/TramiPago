@@ -89,6 +89,18 @@ if(await next.count()&&await card.count()){
   ok(seen.size>=5,"Carrusel no expone suficientes destinos");
   for(const href of seen){ if(href.startsWith("https://wa.me/"))ok(href.includes("5491167083232"),"Carrusel WhatsApp con número incorrecto"); else if(href.startsWith("#/"))ok(/#\/(tramite|familia)\//.test(href),"Carrusel con ruta interna inválida: "+href); else ok(/municipales\.html/.test(href),"Carrusel con destino inesperado: "+href); }
   console.log("CAROUSEL_DESTINATIONS",JSON.stringify([...seen]));
+  let promoFound=false;
+  for(let i=0;i<12;i++){
+    const image=card.locator("img");
+    const src=(await image.getAttribute("src"))||"";
+    if(src.includes("promo-tramite-online-20260930.webp")){
+      promoFound=true;
+      ok((await image.evaluate(img=>img.complete&&img.naturalWidth>0&&img.naturalHeight>0)),"Publicidad online nueva no decodifica como imagen");
+      break;
+    }
+    await next.click(); await page.waitForTimeout(80);
+  }
+  ok(promoFound,"Publicidad online nueva no aparece en el carrusel");
 }
 
 await goto("#/familia/atencion-abogado");
