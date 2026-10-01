@@ -48,6 +48,29 @@ async function boot(){
 
 function showLogin(message=""){$("#login-view").hidden=false;$("#mfa-view").hidden=true;$("#dashboard-view").hidden=true;$("#logout").hidden=true;$("#login-error").textContent=message;}
 
+
+async function enrollNewAuthenticator(){
+  $("#mfa-error").textContent="";
+  $("#mfa-enroll").hidden=true;
+  try{
+    const {data:enrolled,error:enrollError}=await supabase.auth.mfa.enroll({
+      factorType:"totp",
+      friendlyName:"TramiPago Admin "+new Date().toISOString().slice(0,10)
+    });
+    if(enrollError)throw enrollError;
+    const {data:challenge,error:challengeError}=await supabase.auth.mfa.challenge({factorId:enrolled.id});
+    if(challengeError)throw challengeError;
+    mfaFactorId=enrolled.id;
+    mfaChallengeId=challenge.id;
+    $("#mfa-enroll").hidden=false;
+    if(enrolled.totp?.qr_code)$("#mfa-qr").src=enrolled.totp.qr_code;
+    $("#mfa-secret").value=enrolled.totp?.secret||"";
+    $("#mfa-error").textContent="Escaneá el QR con Google Authenticator y luego ingresá el código de 6 dígitos.";
+  }catch(error){
+    $("#mfa-error").textContent=error?.message||"No se pudo configurar un autenticador nuevo.";
+  }
+}
+
 async function requireMfa(){
   const {data:aal,error:aalError}=await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
   if(aalError)throw aalError;
@@ -210,6 +233,7 @@ async function updateStatus(status,form){
 
 $("#login-form").addEventListener("submit",async event=>{event.preventDefault();if(LOCAL_MODE)return;$("#login-error").textContent="";const form=new FormData(event.currentTarget);const {error}=await supabase.auth.signInWithPassword({email:form.get("email"),password:form.get("password")});if(error){$("#login-error").textContent="Correo o contraseña incorrectos.";return;}await enterDashboard();});
 $("#mfa-form").addEventListener("submit",async event=>{event.preventDefault();$("#mfa-error").textContent="";const code=String(new FormData(event.currentTarget).get("code")||"").replace(/\D/g,"").slice(0,6);if(code.length!==6){$("#mfa-error").textContent="Ingresá el código de 6 dígitos.";return;}const {error}=await supabase.auth.mfa.verify({factorId:mfaFactorId,challengeId:mfaChallengeId,code});if(error){$("#mfa-error").textContent="Código incorrecto o vencido.";return;}event.currentTarget.reset();await enterDashboard();});
+$("#mfa-new-factor").addEventListener("click",enrollNewAuthenticator);
 
 $("#logout").addEventListener("click",async()=>{if(!LOCAL_MODE&&supabase)await supabase.auth.signOut();showLogin();});
 $("#refresh").addEventListener("click",async()=>{detailCache.clear();await loadRequests();});
