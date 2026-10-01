@@ -94,7 +94,7 @@ for(const service of services){
         if(await page.locator("#payment-form").count()){
           const receipt=page.locator('#payment-form input[type="file"]');
           if(service.id==="informe-vehicular"){
-            const largePng=readFileSync("assets/promo-tramite-online-exact-20261001.png");
+            const largePng=readFileSync(new URL("../assets/promo-tramite-online-exact-20261001.png",import.meta.url));
             await receipt.setInputFiles({name:"comprobante-grande.png",mimeType:"image/png",buffer:largePng});
             await page.waitForTimeout(900);
             const note=((await page.locator(".upload-optimizer-note").count())?await page.locator(".upload-optimizer-note").last().innerText():"");
