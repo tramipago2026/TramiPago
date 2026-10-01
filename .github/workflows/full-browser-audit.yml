@@ -14,7 +14,7 @@ on:
       - "footer-menu.js"
       - "index.html"
       - "services.js"
-      - "promos.js"
+      - "promos.js"\n      - "assets/promo-tramite-online-20260930.webp"
       - "site.css"
       - "ui.css"
       - "shared-site-shell.css"
