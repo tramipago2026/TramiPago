@@ -98,6 +98,7 @@ await page.goto("http://admin.tramipago.test:4174/admin/",{waitUntil:"domcontent
 await page.waitForTimeout(300);
 
 ok(await page.locator("#mfa-view").isVisible(),"MFA no se muestra para sesión AAL1");
+ok(await page.locator("#mfa-new-factor").count()===0,"El login AAL1 permite asociar un autenticador alternativo antes de validar el MFA existente");
 ok(await page.locator("#mfa-enroll").isVisible(),"No se muestra alta de autenticador nuevo");
 ok((await page.locator("#mfa-secret").inputValue())==="TESTSECRET123","No se expone clave TOTP para asociar Google Authenticator");
 await page.locator('#mfa-form input[name="code"]').fill("123456");
