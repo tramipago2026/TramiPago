@@ -56,5 +56,5 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Ejecutar auditoría práctica del sitio público
         run: node tests/full-browser-audit.mjs
-      - name: Ejecutar auditoría práctica del panel Admin
+      - name: Ejecutar contrato del panel Admin con Supabase simulado
         run: node tests/admin-browser-audit.mjs
