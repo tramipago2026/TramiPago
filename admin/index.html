@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>TramiPago | Administración</title>
+  <link rel="stylesheet" href="./styles.css?v=20261001-admin1">
+</head>
+<body>
+  <header class="topbar">
+    <div><strong>TramiPago</strong><span>Administración privada</span></div>
+    <button id="logout" class="secondary" type="button" hidden>Cerrar sesión</button>
+  </header>
+
+  <main id="app" class="shell" aria-live="polite">
+    <section id="login-view" class="login-card">
+      <h1>Ingresar</h1>
+      <p>Acceso exclusivo del administrador.</p>
+      <form id="login-form">
+        <label>Correo<input name="email" type="email" autocomplete="username" required></label>
+        <label>Contraseña<input name="password" type="password" autocomplete="current-password" required></label>
+        <button type="submit">Ingresar</button>
+        <p id="login-error" class="error" role="alert"></p>
+      </form>
+    </section>
+
+    <section id="mfa-view" class="login-card" hidden>
+      <h1>Verificación en dos pasos</h1>
+      <p>Ingresá el código de tu aplicación autenticadora.</p>
+      <div id="mfa-enroll" hidden>
+        <p>Configurá primero el segundo factor.</p>
+        <img id="mfa-qr" alt="Código QR para configurar MFA">
+        <label>Clave manual<input id="mfa-secret" type="text" readonly></label>
+      </div>
+      <form id="mfa-form">
+        <label>Código de 6 dígitos<input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required></label>
+        <button type="submit">Verificar</button>
+        <p id="mfa-error" class="error" role="alert"></p>
+      </form>
+    </section>
+
+    <section id="dashboard-view" hidden>
+      <div class="dashboard-head">
+        <div><h1>Solicitudes</h1><p>Pagos pendientes, trámites y seguimiento.</p></div>
+        <button id="refresh" class="secondary" type="button">Actualizar</button>
+      </div>
+
+      <div id="metrics" class="metrics"></div>
+
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Buscar código, trámite o WhatsApp" aria-label="Buscar solicitudes">
+        <select id="filter" aria-label="Filtrar por estado">
+          <option value="">Todos los estados</option>
+          <option value="__attention">Requieren atención</option>
+          <option value="draft">Borradores / incompletos</option>
+          <option value="awaiting_payment">Nuevo / esperando pago</option>
+          <option value="payment_review">Pago en revisión</option>
+          <option value="payment_confirmed">Pago confirmado</option>
+          <option value="in_progress">En proceso</option>
+          <option value="needs_info">Necesitamos información</option>
+          <option value="finalized">Finalizado</option>
+          <option value="cancelled">Anulado</option>
+        </select>
+      </div>
+
+      <div class="workspace">
+        <section class="queue" aria-label="Listado de solicitudes">
+          <div id="request-list"></div>
+        </section>
+        <section id="request-detail" class="detail empty">
+          Elegí una solicitud para abrir su ficha.
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./app.js?v=20261001-admin1"></script>
+  <script src="./price-guard.js?v=20261001-admin1"></script>
+  <script src="./price-catalog.js?v=20261001-admin1"></script>
+</body>
+</html>
