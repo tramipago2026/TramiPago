@@ -17,7 +17,7 @@
   // Estas piezas se activan únicamente cuando el archivo aprobado existe y carga.
   // Así GitHub Pages nunca muestra una imagen rota antes de que se suban los WebP.
   const approvedPromos=[
-    {image:"assets/promo-tramite-online-20261001.svg",alt:"Consultá por cualquier trámite online con TramiPago",message:"Quiero consultar por un trámite online."},
+    {image:"assets/promo-tramite-online-exact-20261001.png",alt:"Consultá por cualquier trámite online con TramiPago",message:"Quiero consultar por un trámite online."},
     {image:"assets/promo-arca-20260916.webp",alt:"ARCA y Monotributo: altas, bajas, modificaciones y facturación",href:"#/familia/arca-monotributo"},
     {image:"assets/promo-apostillas-20260916.webp",alt:"Apostillado y legalizaciones: consultas y gestiones documentales",href:"#/familia/legalizaciones-apostillas"},
     {image:"assets/promo-abogado-20260916.webp",alt:"Consultá con abogado: ART, laboral, accidentes y sucesiones",href:"#/familia/atencion-abogado"}
