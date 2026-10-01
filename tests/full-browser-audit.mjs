@@ -124,6 +124,16 @@ url=await helpUrl();
 ok(url.startsWith("https://wa.me/5491167083232?text="),"Ayuda jurídica no abre WhatsApp correcto");
 ok(/abogado/i.test(decodeURIComponent(url)),"Ayuda jurídica sin contexto");
 
+await goto("#/seguimiento");
+await page.evaluate(()=>{
+  const app=document.getElementById("app");
+  app.innerHTML='<section class="tracking-page"><div class="tracking-result"><div class="status-header"><p class="eyebrow">IV-001281-D4993304</p><span class="status-badge">Finalizado</span></div><div class="timeline"></div></div></section>';
+});
+await page.waitForTimeout(150);
+ok(await page.locator(".final-opinion-cta").count()===1,"Finalizado no muestra CTA de opinión");
+const opinionHref=(await page.locator(".final-opinion-cta a").getAttribute("href"))||"";
+ok(opinionHref.includes("opiniones.html?codigo=IV-001281-D4993304"),"CTA de opinión no conserva el código del trámite");
+
 const secondaryPages=["tramites.html","municipales.html","contacto.html","opiniones.html","arrepentimiento.html","baja-servicio.html","politica-privacidad.html","terminos-condiciones.html"];
 for(const target of secondaryPages){
   await page.goto("http://127.0.0.1:4173/"+target,{waitUntil:"networkidle"});
