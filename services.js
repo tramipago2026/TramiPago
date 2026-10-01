@@ -2,7 +2,7 @@
 (function () {
   const contactFields = [
     { id: "fullName", label: "Nombre y apellido", type: "text", required: true, autocomplete: "name" },
-    { id: "email", label: "Correo electrónico", type: "email", required: true, autocomplete: "email" },
+    { id: "email", label: "Correo electrónico", type: "email", required: true, placeholder: "Ej.: nombre@correo.com", autocomplete: "email" },
     { id: "whatsapp", label: "WhatsApp", type: "tel", required: true, placeholder: "Ej.: 11 1234-5678 (sin +54 9)", autocomplete: "tel" }
   ];
 
@@ -85,9 +85,9 @@
         { id: "argentineDniEligibility", label: "Confirmo que tengo DNI argentino vigente.", type: "checkbox", required: true },
         ...contactFields.slice(0, 1),
         { id: "birthDate", label: "Fecha de nacimiento", type: "date", required: true },
-        { id: "dni", label: "DNI", type: "text", required: true, inputmode: "numeric" },
-        { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-3" },
-        { id: "dniTransaction", label: "Número de trámite del DNI", type: "text", required: false, inputmode: "numeric" },
+        { id: "dni", label: "DNI", type: "text", required: true, inputmode: "numeric", placeholder: "Ej.: 12345678" },
+        { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-6" },
+        { id: "dniTransaction", label: "Número de trámite del DNI", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 12345678901" },
         { id: "dniFile", label: "Frente del DNI (alternativa al N.º de trámite)", type: "file", required: false, accept: "image/*" },
         { id: "address", label: "Domicilio (calle y número)", type: "text", required: true, autocomplete: "street-address" },
         { id: "locality", label: "Localidad", type: "text", required: true, autocomplete: "address-level2" },
@@ -95,7 +95,7 @@
         { id: "fatherFullName", label: "Nombre y apellido del padre", type: "text", required: true },
         { id: "motherFullName", label: "Nombre y apellido de la madre", type: "text", required: true },
         { id: "email", label: "Correo electrónico", type: "email", required: true, autocomplete: "email" },
-        { id: "emailConfirm", label: "Repetí el correo electrónico", type: "email", required: true, autocomplete: "off" },
+        { id: "emailConfirm", label: "Repetí el correo electrónico", type: "email", required: true, placeholder: "Ej.: nombre@correo.com", autocomplete: "off" },
         { id: "emailAccess", label: "Tengo acceso a este correo y puedo recibir allí los mensajes del organismo.", type: "checkbox", required: true },
         ...contactFields.slice(2),
         { id: "modality", label: "Modalidad", type: "select", required: true, options: [
@@ -147,7 +147,7 @@
       priceField: "serviceOption",
       priceOptions: [{ value: "constancias", label: "CODEM + Certificación Negativa", amount: 2000, duration: "Entrega en PDF por WhatsApp" }],
       fields: [
-        { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-3" },
+        { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-6" },
         ...contactFields.slice(2),
         authorizationField
       ]
@@ -167,7 +167,7 @@
       fields: [
         { id: "propertyDocument", label: "Foto de boleta o documento del inmueble", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
         { id: "propertyDistrict", label: "Partido", type: "text", required: false },
-        { id: "propertyNumber", label: "Partida", type: "text", required: false, inputmode: "numeric" },
+        { id: "propertyNumber", label: "Partida", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 123456" },
         ...contactFields.slice(2),
         authorizationField
       ],
@@ -219,10 +219,10 @@
           { value: "lc", label: "Libreta Cívica" },
           { value: "le", label: "Libreta de Enrolamiento" }
         ] },
-        { id: "documentNumber", label: "Número de documento", type: "text", required: false, inputmode: "numeric" },
+        { id: "documentNumber", label: "Número de documento", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 12345678" },
         { id: "registrationYearExact", label: "Año de inscripción", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 1985" },
         { id: "delegation", label: "Delegación donde fue inscripta", type: "text", required: false },
-        { id: "actNumber", label: "Número de acta", type: "text", required: false, inputmode: "numeric" },
+        { id: "actNumber", label: "Número de acta", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 1234" },
 
         { id: "registrationDistrict", label: "Partido donde fue inscripta", type: "text", required: false },
         { id: "registrationYearApprox", label: "Año exacto o aproximado", type: "text", required: false, placeholder: "Ej.: 1985 o 1984-1986" },
@@ -304,7 +304,7 @@
         { id: "sectionCirc", label: "Circunscripción / Sección (si la conocés)", type: "text", required: false },
         { id: "bookNumber", label: "Tomo (si lo conocés)", type: "text", required: false },
         { id: "actNumber", label: "Acta (si la conocés)", type: "text", required: false },
-        { id: "registrationYear", label: "Año de inscripción (si lo conocés)", type: "text", required: false, inputmode: "numeric" },
+        { id: "registrationYear", label: "Año de inscripción (si lo conocés)", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 1985" },
         { id: "creditCardAvailable", label: "Si elegí urgente, cuento con tarjeta de crédito para abonar el costo oficial.", type: "checkbox", required: false },
         { id: "previousAct", label: "Copia de una partida anterior (opcional)", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
         { id: "purpose", label: "¿Para qué trámite necesitás la partida? (opcional)", type: "text", required: false },
@@ -604,7 +604,7 @@
 
   const COMMON = Object.freeze({
     fullName: { id: "fullName", label: "Nombre y apellido / razón social", type: "text", required: true, autocomplete: "name" },
-    cuit: { id: "cuit", label: "CUIT", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-3" },
+    cuit: { id: "cuit", label: "CUIT", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-6" },
     email: { id: "email", label: "Correo electrónico", type: "email", required: true, autocomplete: "email" },
     whatsapp: { id: "whatsapp", label: "WhatsApp", type: "tel", required: true, placeholder: "Ej.: 11 1234-5678 (sin +54 9)", autocomplete: "tel" }
   });
@@ -730,7 +730,7 @@
         ...commonFields(),
         { id: "originPeriod", label: "Período / pago de origen", type: "text", required: true, placeholder: "Ej.: 2026-05" },
         { id: "originConcept", label: "Concepto donde figura el saldo o pago", type: "text", required: true },
-        { id: "originAmount", label: "Importe de origen", type: "text", required: true, inputmode: "numeric" },
+        { id: "originAmount", label: "Importe de origen", type: "text", required: true, inputmode: "numeric", placeholder: "Ej.: 35000" },
         { id: "destinationPeriod", label: "Período de destino", type: "text", required: true, placeholder: "Ej.: 2026-06" },
         { id: "destinationConcept", label: "Concepto de destino", type: "text", required: true },
         { id: "destinationSubconcept", label: "Subconcepto de destino (si corresponde)", type: "text", required: false },
@@ -757,7 +757,7 @@
         { id: "comboFrom", label: "Período desde", type: "month", required: true },
         { id: "comboTo", label: "Período hasta", type: "month", required: true },
         { id: "comboOriginPeriod", label: "Período/pago de origen (si lo conocés)", type: "text", required: false },
-        { id: "comboOriginAmount", label: "Importe del saldo o pago (si lo conocés)", type: "text", required: false, inputmode: "numeric" },
+        { id: "comboOriginAmount", label: "Importe del saldo o pago (si lo conocés)", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 35000" },
         { id: "comboDestinationPeriod", label: "Período al que querés aplicarlo (si lo conocés)", type: "text", required: false },
         { id: "comboDestinationConcept", label: "Concepto de destino (si lo conocés)", type: "text", required: false },
         { id: "comboReceipt", label: "Comprobante de pago (opcional)", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
@@ -794,11 +794,11 @@
         { id: "activityDescription", label: "Actividad que vas a realizar", type: "text", required: true, placeholder: "Describila brevemente" },
         { id: "activityStart", label: "Fecha de inicio de actividad", type: "date", required: true },
         { id: "activityAddress", label: "Domicilio donde realizás la actividad", type: "text", required: true },
-        { id: "estimatedIncome", label: "Ingresos brutos anuales estimados", type: "text", required: true, inputmode: "numeric" },
-        { id: "surface", label: "Superficie afectada en m² (si corresponde)", type: "text", required: false, inputmode: "numeric" },
-        { id: "energy", label: "Energía eléctrica anual en kWh (si corresponde)", type: "text", required: false, inputmode: "numeric" },
-        { id: "annualRent", label: "Alquileres anuales (si corresponde)", type: "text", required: false, inputmode: "numeric" },
-        { id: "maxUnitPrice", label: "Precio unitario máximo de venta (si corresponde)", type: "text", required: false, inputmode: "numeric" },
+        { id: "estimatedIncome", label: "Ingresos brutos anuales estimados", type: "text", required: true, inputmode: "numeric", placeholder: "Ej.: 6000000" },
+        { id: "surface", label: "Superficie afectada en m² (si corresponde)", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 25" },
+        { id: "energy", label: "Energía eléctrica anual en kWh (si corresponde)", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 1200" },
+        { id: "annualRent", label: "Alquileres anuales (si corresponde)", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 2400000" },
+        { id: "maxUnitPrice", label: "Precio unitario máximo de venta (si corresponde)", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 150000" },
         {
           id: "pensionSituation",
           label: "Situación previsional",
@@ -874,11 +874,11 @@
         ...commonFields(),
         { id: "activityStartDate", label: "Fecha de inicio de actividad", type: "date", required: true },
         { id: "currentCategory", label: "Categoría actual (si la conocés)", type: "text", required: false, placeholder: "Ej.: A, B, C..." },
-        { id: "income12Months", label: "Ingresos brutos de los últimos 12 meses", type: "text", required: true, inputmode: "numeric" },
-        { id: "recatSurface", label: "Superficie afectada en m² (si corresponde)", type: "text", required: false, inputmode: "numeric" },
-        { id: "recatEnergy", label: "Energía eléctrica de los últimos 12 meses en kWh (si corresponde)", type: "text", required: false, inputmode: "numeric" },
-        { id: "recatRent", label: "Alquileres devengados en los últimos 12 meses (si corresponde)", type: "text", required: false, inputmode: "numeric" },
-        { id: "recatMaxUnitPrice", label: "Precio unitario máximo de venta (si corresponde)", type: "text", required: false, inputmode: "numeric" },
+        { id: "income12Months", label: "Ingresos brutos de los últimos 12 meses", type: "text", required: true, inputmode: "numeric", placeholder: "Ej.: 6000000" },
+        { id: "recatSurface", label: "Superficie afectada en m² (si corresponde)", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 25" },
+        { id: "recatEnergy", label: "Energía eléctrica de los últimos 12 meses en kWh (si corresponde)", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 1200" },
+        { id: "recatRent", label: "Alquileres devengados en los últimos 12 meses (si corresponde)", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 2400000" },
+        { id: "recatMaxUnitPrice", label: "Precio unitario máximo de venta (si corresponde)", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 150000" },
         AUTHORIZATION
       ]
     },
@@ -1104,7 +1104,7 @@
 
   const contactFields=[
     {id:"fullName",label:"Nombre y apellido",type:"text",required:true,autocomplete:"name"},
-    {id:"email",label:"Correo electrónico",type:"email",required:false,autocomplete:"email"},
+    {id:"email",label:"Correo electrónico",type:"email",required:false,placeholder:"Ej.: nombre@correo.com",autocomplete:"email"},
     {id:"whatsapp",label:"WhatsApp",type:"tel",required:true,placeholder:"Ej.: 11 1234-5678 (sin +54 9)",autocomplete:"tel"}
   ];
 
