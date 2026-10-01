@@ -4,7 +4,9 @@ on:
   push:
     paths:
       - '.github/workflows/live-site-smoke.yml'
-      - 'tests/live-site-smoke.mjs'\n      - 'promos.js'\n      - 'assets/promo-tramite-online-20260930.webp'
+      - 'tests/live-site-smoke.mjs'
+      - 'promos.js'
+      - 'assets/promo-tramite-online-20260930.webp'
   schedule:
     - cron: '41 */6 * * *'
   workflow_dispatch:
