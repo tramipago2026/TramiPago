@@ -1324,6 +1324,15 @@
   const currentServices=Array.isArray(window.TRAMI_SERVICES)?window.TRAMI_SERVICES:[];
   window.TRAMI_SERVICES=currentServices.filter(item=>!replacedIds.has(item.id)).concat(services);
 
+  // Normalización de ayuda visible: todo campo de correo debe mostrar un ejemplo.
+  for(const service of window.TRAMI_SERVICES){
+    service.fields=(service.fields||[]).map(field=>
+      field?.type==="email"&&!String(field.placeholder||"").trim()
+        ? {...field,placeholder:"Ej.: nombre@correo.com"}
+        : field
+    );
+  }
+
   const currentFamilies=Array.isArray(window.TRAMI_FAMILIES)?window.TRAMI_FAMILIES:[];
   const familyIds=new Set(families.map(item=>item.id));
   window.TRAMI_FAMILIES=currentFamilies.filter(item=>!familyIds.has(item.id)).concat(families);
