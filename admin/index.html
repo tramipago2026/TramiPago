@@ -37,6 +37,7 @@
       <form id="mfa-form">
         <label>Código de 6 dígitos<input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required></label>
         <button type="submit">Verificar</button>
+        <button id="mfa-new-factor" class="secondary" type="button">Configurar nuevo autenticador</button>
         <p id="mfa-error" class="error" role="alert"></p>
       </form>
     </section>
@@ -76,7 +77,7 @@
     </section>
   </main>
 
-  <script type="module" src="./app.js?v=20261001-admin2"></script>
+  <script type="module" src="./app.js?v=20261001-admin-mfa-recovery1"></script>
   <script src="./price-guard.js?v=20261001-admin1"></script>
   <script src="./price-catalog.js?v=20261001-admin2"></script>
 </body>
