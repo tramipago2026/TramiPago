@@ -33,9 +33,11 @@
 
   async function getClient(){
     if(priceClient)return priceClient;
-    const {createClient}=await import(SDK_URL);
-    priceClient=createClient(PROJECT_URL,PUBLISHABLE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
-    return priceClient;
+    if(window.TRAMI_ADMIN_SUPABASE){
+      priceClient=window.TRAMI_ADMIN_SUPABASE;
+      return priceClient;
+    }
+    throw new Error("La sesión de administrador todavía no está disponible. Cerrá Tarifario y volvé a abrirlo.");
   }
 
   async function loadPrices(){
