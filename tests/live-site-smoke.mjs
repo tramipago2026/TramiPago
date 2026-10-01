@@ -3,8 +3,9 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join, extname } from 'node:path';
 const base = new URL(process.env.SITE_URL || 'https://tramipago2026.github.io/TramiPago/');
 const rootFiles = readdirSync('.').filter(file => ['.html','.js','.css'].includes(extname(file)));
+const adminFiles = readdirSync('admin').filter(file => ['.html','.js','.css'].includes(extname(file))).map(file => `admin/${file}`);
 const images = readdirSync('assets').filter(file => /\.(svg|png|jpe?g|webp)$/i.test(file)).map(file => `assets/${file}`);
-const paths = [...rootFiles,...images];
+const paths = [...rootFiles,...adminFiles,...images];
 const failures=[];
 let checked=0;
 const concurrency=5;
@@ -18,6 +19,11 @@ async function probe(path){
       const html=await response.text();
       if(!html.includes('app.js?v=20260916-audit2'))failures.push('La portada publicada todavía no contiene la versión auditada de app.js.');
       if(!html.includes('backend-sync.js?v='))failures.push('La portada publicada no carga backend-sync.js.');
+    }else if(path==='admin/index.html'){
+      const html=await response.text();
+      if(!html.includes('app.js?v=20261001-admin-audit3'))failures.push('El Admin publicado todavía no carga la versión auditada de app.js.');
+      if(html.includes('price-guard.js'))failures.push('El Admin publicado todavía carga price-guard.js obsoleto.');
+      if(html.includes('id="mfa-new-factor"'))failures.push('El Admin publicado todavía ofrece asociar un factor MFA nuevo desde AAL1.');
     }else if(path==='extra-families.js'){
       const code=await response.text();
       if(!code.includes('officialFeeExternal:true'))failures.push('La versión pública aún no separa los aranceles TAD.');
@@ -32,4 +38,4 @@ for(let offset=0;offset<paths.length;offset+=concurrency){
 }
 console.log(`Recursos publicados comprobados: ${checked}/${paths.length}.`);
 if(failures.length){for(const fail of failures)console.error(`ERROR ${fail}`);process.exitCode=1;}
-else console.log('PASS: HTML, JavaScript, CSS e imágenes existentes respondieron HTTP 200 y los cambios auditados constan en el sitio publicado. No se probaron formularios ni capturas visuales.');
+else console.log('PASS: sitio público y Admin publicados responden HTTP 200; versiones auditadas del Admin confirmadas. No se probaron credenciales reales ni formularios destructivos.');
