@@ -93,9 +93,21 @@ if(await next.count()&&await card.count()){
   for(let i=0;i<12;i++){
     const image=card.locator("img");
     const src=(await image.getAttribute("src"))||"";
-    if(src.includes("promo-tramite-online-20260930.webp")){
+    if(src.includes("promo-tramite-online-20261001.svg")){
       promoFound=true;
       ok((await image.evaluate(img=>img.complete&&img.naturalWidth>0&&img.naturalHeight>0)),"Publicidad online nueva no decodifica como imagen");
+      const visual=await image.evaluate(img=>{
+        const c=document.createElement("canvas"); c.width=80; c.height=80;
+        const ctx=c.getContext("2d"); ctx.drawImage(img,0,0,80,80);
+        const data=ctx.getImageData(0,0,80,80).data;
+        let min=255,max=0,sum=0,count=0;
+        for(let i=0;i<data.length;i+=4){
+          const y=(data[i]+data[i+1]+data[i+2])/3;
+          min=Math.min(min,y); max=Math.max(max,y); sum+=y; count++;
+        }
+        return {min,max,avg:sum/count};
+      });
+      ok(visual.max-visual.min>40 && visual.avg<245,"Publicidad online nueva se renderiza en blanco o sin contraste");
       break;
     }
     await next.click(); await page.waitForTimeout(80);
