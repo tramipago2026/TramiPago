@@ -334,6 +334,19 @@
       const transfer = new DataTransfer();
       transfer.items.add(optimized);
       input.files = transfer.files;
+
+      // El input pudo haber quedado con un customValidity/error calculado
+      // sobre el archivo original. Al reemplazarlo por el optimizado hay que
+      // limpiar ese estado y forzar una nueva validación con el archivo actual.
+      input.setCustomValidity("");
+      const formError = form?.querySelector(".form-error");
+      if (formError && /archivo.*(?:supera|máximo|limite|límite)/i.test(formError.textContent || "")) {
+        formError.textContent = "";
+        formError.classList.remove("visible");
+      }
+      input.dispatchEvent(new Event("input", { bubbles:true }));
+      input.dispatchEvent(new Event("change", { bubbles:true }));
+
       if (note) { note.textContent = `Imagen optimizada: ${(optimized.size/1000000).toFixed(1)} MB.`; note.className = "upload-optimizer-note is-ready"; }
     } catch (error) {
       input.value = "";
