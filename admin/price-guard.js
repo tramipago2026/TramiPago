@@ -8,7 +8,7 @@
       if(!label)continue;
       const text=(label.textContent||'').trim().toLowerCase();
       if(text==='importe'||text==='importe esperado'){
-        label.textContent='Importe esperado';
+        if(text!=='importe esperado') label.textContent='Importe esperado';
         return (field.querySelector('strong')?.textContent||'').trim()||'Sin importe';
       }
     }
