@@ -39,7 +39,7 @@ async function boot(){
     await loadRequests();return;
   }
   try{
-    const {createClient}=await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.0/+esm");
+    const {createClient}=await import("https://esm.sh/@supabase/supabase-js@2.105.0");
     supabase=createClient(PROJECT_URL,PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
     const {data:{session}}=await supabase.auth.getSession();
     if(session)await enterDashboard();else showLogin();
