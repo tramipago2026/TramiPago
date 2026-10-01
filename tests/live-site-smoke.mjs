@@ -35,7 +35,7 @@ if(failures.length){for(const fail of failures)console.error(`ERROR ${fail}`);pr
 else console.log('PASS: HTML, JavaScript, CSS e imágenes existentes respondieron HTTP 200 y los cambios auditados constan en el sitio publicado. No se probaron formularios ni capturas visuales.');
 
 async function verifyOnlinePromoPublished(){
-  const promoPath='assets/promo-tramite-online-20260930.webp';
+  const promoPath=['assets','promo-tramite-online-20260930.webp'].join('/');
   let last='';
   for(let attempt=1;attempt<=12;attempt++){
     try{
