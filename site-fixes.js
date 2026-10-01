@@ -319,6 +319,9 @@
     return new File([blob], `${base}.jpg`, { type:"image/jpeg", lastModified:Date.now() });
   }
 
+  // Única rutina de optimización reutilizable por app.js y por el input visual.
+  window.TRAMI_OPTIMIZE_IMAGE_FILE = compressImage;
+
   async function optimizeSelectedImage(input) {
     const file = input.files?.[0];
     if (!file || !String(file.type || "").startsWith("image/") || file.size <= MAX_LOCAL_FILE_BYTES) return;
@@ -339,8 +342,15 @@
       // sobre el archivo original. Al reemplazarlo por el optimizado hay que
       // limpiar ese estado y forzar una nueva validación con el archivo actual.
       input.setCustomValidity("");
+      input.dataset.optimizedReady = "true";
+      input.dataset.optimizedBytes = String(optimized.size);
+      const fieldError = field?.querySelector(".field-error");
+      if (fieldError) {
+        fieldError.textContent = "";
+        fieldError.classList.remove("visible");
+      }
       const formError = form?.querySelector(".form-error");
-      if (formError && /archivo.*(?:supera|máximo|limite|límite)/i.test(formError.textContent || "")) {
+      if (formError && /archivo.*(?:supera|máximo|limite|límite)|comprobante/i.test(formError.textContent || "")) {
         formError.textContent = "";
         formError.classList.remove("visible");
       }
