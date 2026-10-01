@@ -1,0 +1,58 @@
+name: Verificar publicidad online en producción
+
+on:
+  push:
+    paths:
+      - ".github/workflows/verify-promo-production.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+      - name: Instalar navegador
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Verificar carrusel real de tramipago.com.ar
+        run: |
+          node - <<'NODE'
+          const { chromium } = await import('playwright');
+          const browser = await chromium.launch({ headless:true });
+          const page = await browser.newPage({ viewport:{width:1440,height:1000} });
+          const target='promo-tramite-online-20260930.webp';
+          let found=false, detail='';
+          for(let attempt=1;attempt<=6&&!found;attempt++){
+            await page.goto('https://tramipago.com.ar/?verify='+Date.now()+'#/',{waitUntil:'networkidle'});
+            await page.waitForTimeout(1200);
+            const card=page.locator('.promo-rail-card');
+            const next=page.locator('.promo-rail-arrow.next');
+            if(await card.count()&&await next.count()){
+              for(let i=0;i<14;i++){
+                const img=card.locator('img');
+                const src=(await img.getAttribute('src'))||'';
+                const dims=await img.evaluate(el=>({complete:el.complete,w:el.naturalWidth,h:el.naturalHeight}));
+                if(src.includes(target)){
+                  detail=JSON.stringify({src,...dims});
+                  if(dims.complete&&dims.w>0&&dims.h>0)found=true;
+                  break;
+                }
+                await next.click();
+                await page.waitForTimeout(120);
+              }
+            }
+            if(!found)await page.waitForTimeout(5000);
+          }
+          await browser.close();
+          if(!found)throw new Error('La publicidad nueva no apareció cargada en el carrusel productivo. Último detalle: '+detail);
+          console.log('PASS_PROMO_PRODUCTION '+detail);
+          NODE
