@@ -373,7 +373,11 @@
   }
 
   function showInvalidSubmit(form){
-    if(!form||form.checkValidity())return false;
+    if(!form)return false;
+    // Revalidar archivos con el archivo actual. Esto limpia errores que pudieron
+    // quedar asociados a la imagen original antes de ser optimizada.
+    form.querySelectorAll('input[type="file"]').forEach(input=>validateField(input));
+    if(form.checkValidity())return false;
     const first=form.querySelector(":invalid");
     if(first)first.classList.add("user-touched");
     const error=form.querySelector(".form-error");
@@ -534,6 +538,7 @@
   });
 
   document.addEventListener("change",e=>{
+    if(e.target.matches?.('input[type="file"]'))validateField(e.target);
     const form=e.target.closest?.("#data-form");
     if(form){
       saveDraft(form);
