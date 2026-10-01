@@ -30,6 +30,8 @@ jobs:
         run: node tests/live-site-smoke.mjs
       - name: Verificar DNS, TLS y dominio productivo
         run: node tests/infrastructure-audit.mjs
+      - name: Verificar enlaces públicos y externos
+        run: node tests/external-link-audit.mjs
       - name: Verificar HTTPS, www y CORS de Supabase
         run: |
           node - <<'NODE'
