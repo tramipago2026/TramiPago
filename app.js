@@ -728,7 +728,7 @@
           <label for="${escapeHTML(field.id)}">${escapeHTML(field.label)}${requiredMark}</label>
           <input class="form-control" type="file" id="${escapeHTML(field.id)}" name="${escapeHTML(field.id)}"
             accept="${escapeHTML(field.accept || "")}" ${field.required && !value?.name ? "required" : ""} />
-          ${existing}<small>Archivo máximo: ${Math.round(MAX_LOCAL_FILE_BYTES / 100000) / 10} MB.</small>
+          ${existing}<small>${String(field.accept || "").includes("image") ? `Imágenes grandes: se optimizan automáticamente. PDF máximo: ${Math.round(MAX_LOCAL_FILE_BYTES / 100000) / 10} MB.` : `Archivo máximo: ${Math.round(MAX_LOCAL_FILE_BYTES / 100000) / 10} MB.`}</small>
         </div>
       `;
     }
@@ -770,7 +770,7 @@
           <div class="field field-full payment-file">
             <label for="receipt">Comprobante de pago *</label>
             <input class="form-control" type="file" id="receipt" name="receipt" accept="image/*,.pdf" required />
-            <small>Archivo máximo: ${Math.round(MAX_LOCAL_FILE_BYTES / 100000) / 10} MB.</small>
+            <small>Imágenes grandes: se optimizan automáticamente. PDF máximo: ${Math.round(MAX_LOCAL_FILE_BYTES / 100000) / 10} MB.</small>
           </div>
           <div class="form-error" role="alert"></div>
           ${renderActionBar("Revisar datos", "Informar pago")}
@@ -892,16 +892,29 @@
 
   async function fileToStoredFile(file) {
     if (!file) return null;
-    if (file.size > MAX_LOCAL_FILE_BYTES) {
-      throw new Error(`El archivo ${file.name} supera el límite permitido.`);
+    let storedFile = file;
+
+    // Las imágenes grandes se reducen antes de convertirlas a data URL.
+    // Así el trámite no depende de que el navegador haya reemplazado
+    // correctamente el FileList del input.
+    if (
+      String(storedFile.type || "").startsWith("image/") &&
+      storedFile.size > MAX_LOCAL_FILE_BYTES &&
+      typeof window.TRAMI_OPTIMIZE_IMAGE_FILE === "function"
+    ) {
+      storedFile = await window.TRAMI_OPTIMIZE_IMAGE_FILE(storedFile);
+    }
+
+    if (storedFile.size > MAX_LOCAL_FILE_BYTES) {
+      throw new Error(`El archivo ${storedFile.name} supera el límite permitido.`);
     }
     const dataUrl = await new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result);
-      reader.onerror = () => reject(new Error(`No se pudo leer ${file.name}.`));
-      reader.readAsDataURL(file);
+      reader.onerror = () => reject(new Error(`No se pudo leer ${storedFile.name}.`));
+      reader.readAsDataURL(storedFile);
     });
-    return { name: file.name, size: file.size, type: file.type, dataUrl };
+    return { name: storedFile.name, size: storedFile.size, type: storedFile.type, dataUrl };
   }
 
   async function collectFormData(form, service, existingValues = {}) {
