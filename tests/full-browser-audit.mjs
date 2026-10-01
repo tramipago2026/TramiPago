@@ -1,5 +1,6 @@
 import { chromium } from "playwright";
 import { spawn } from "node:child_process";
+import { readFileSync } from "node:fs";
 
 const server=spawn("python3",["-m","http.server","4173"],{stdio:"ignore"});
 await new Promise(r=>setTimeout(r,1200));
@@ -30,7 +31,7 @@ await page.click(".nav-tracking"); await page.waitForTimeout(100);
 ok(page.url().includes("#/seguimiento"),"Ver mi trámite no navega a seguimiento");
 ok(await page.locator("#tracking-form").count()===1,"Seguimiento no muestra formulario");
 
-const services=await page.evaluate(()=>window.TRAMI_SERVICES.filter(s=>s.active).map(s=>({id:s.id,name:s.name})));
+const services=await page.evaluate(()=>window.TRAMI_SERVICES.filter(s=>s.active).map(s=>({id:s.id,name:s.name,intakeOnly:Boolean(s.intakeOnly)})));
 const families=await page.evaluate(()=>window.TRAMI_FAMILIES.map(f=>({id:f.id,name:f.name})));
 console.log("ACTIVE_SERVICES",services.length,services.map(s=>s.id).join(","));
 for(const family of families){
@@ -78,7 +79,38 @@ for(const service of services){
   else ok(msg.includes(service.name)||msg.includes("trámite"),"WhatsApp sin contexto de servicio: "+service.id);
   const eligible=page.locator("#eligibility-form");
   if(await eligible.count()){ const valid=await fillVisibleForm(); ok(valid,"Elegibilidad inválida tras completar: "+service.id); if(valid){await eligible.locator('button[type="submit"]').click(); await page.waitForTimeout(120);} }
-  if(await page.locator("#data-form").count()){ const valid=await fillVisibleForm(); ok(valid,"Formulario de datos inválido tras completar: "+service.id); }
+  if(await page.locator("#data-form").count()){
+    const valid=await fillVisibleForm();
+    ok(valid,"Formulario de datos inválido tras completar: "+service.id);
+    if(valid){
+      await page.locator('#data-form button[type="submit"]').click();
+      await page.waitForTimeout(180);
+      const dataError=((await page.locator('#data-form .form-error').count())?await page.locator('#data-form .form-error').innerText():"").trim();
+      ok(!dataError,"Formulario rechazó datos de auditoría: "+service.id+" -> "+dataError);
+      if(service.intakeOnly){
+        ok(await page.locator(".confirmation").count()===1,"Consulta sin pago no llega a confirmación: "+service.id);
+      }else{
+        ok(await page.locator("#payment-form").count()===1,"Trámite pago no llega a pantalla de pago: "+service.id);
+        if(await page.locator("#payment-form").count()){
+          const receipt=page.locator('#payment-form input[type="file"]');
+          if(service.id==="informe-vehicular"){
+            const largePng=readFileSync("assets/promo-tramite-online-exact-20261001.png");
+            await receipt.setInputFiles({name:"comprobante-grande.png",mimeType:"image/png",buffer:largePng});
+            await page.waitForTimeout(900);
+            const note=((await page.locator(".upload-optimizer-note").count())?await page.locator(".upload-optimizer-note").last().innerText():"");
+            ok(!/supera|error|no se pudo/i.test(note),"Optimización de imagen grande reportó error: "+note);
+          }else{
+            await receipt.setInputFiles({name:"comprobante-prueba.png",mimeType:"image/png",buffer:tinyPng});
+          }
+          await page.locator('#payment-form button[type="submit"]').click();
+          await page.waitForTimeout(220);
+          const payError=((await page.locator('#payment-form .form-error').count())?await page.locator('#payment-form .form-error').innerText():"").trim();
+          ok(!payError,"Pago/comprobante rechazado en UI: "+service.id+" -> "+payError);
+          ok(await page.locator(".confirmation").count()===1,"Pago no llega a confirmación: "+service.id);
+        }
+      }
+    }
+  }
 }
 
 await goto("#/");
