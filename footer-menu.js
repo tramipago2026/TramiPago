@@ -328,7 +328,7 @@
     if(input.type==="file"&&input.files?.length){
       const file=input.files[0];
       if(file.size<1)message="El archivo está vacío.";
-      else if(file.size>MAX_UPLOAD_BYTES)message=`El archivo supera el máximo permitido de ${(MAX_UPLOAD_BYTES/1000000).toFixed(1)} MB.`;
+      else if(file.size>MAX_UPLOAD_BYTES&&!String(file.type||"").startsWith("image/"))message=`El archivo supera el máximo permitido de ${(MAX_UPLOAD_BYTES/1000000).toFixed(1)} MB.`;
       else if(file.type&&!ALLOWED_FILE_TYPES.has(file.type))message="Usá una imagen JPG, PNG, WebP o un PDF.";
     }
     setValidity(input,message);
