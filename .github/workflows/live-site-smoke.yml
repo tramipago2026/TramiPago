@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/live-site-smoke.yml'
       - 'tests/live-site-smoke.mjs'
+      - 'admin/**'
   schedule:
     - cron: '41 */6 * * *'
   workflow_dispatch:
