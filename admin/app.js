@@ -50,28 +50,6 @@ async function boot(){
 function showLogin(message=""){$("#login-view").hidden=false;$("#mfa-view").hidden=true;$("#dashboard-view").hidden=true;$("#logout").hidden=true;$("#login-error").textContent=message;}
 
 
-async function enrollNewAuthenticator(){
-  $("#mfa-error").textContent="";
-  $("#mfa-enroll").hidden=true;
-  try{
-    const {data:enrolled,error:enrollError}=await supabase.auth.mfa.enroll({
-      factorType:"totp",
-      friendlyName:"TramiPago Admin "+new Date().toISOString().slice(0,10)
-    });
-    if(enrollError)throw enrollError;
-    const {data:challenge,error:challengeError}=await supabase.auth.mfa.challenge({factorId:enrolled.id});
-    if(challengeError)throw challengeError;
-    mfaFactorId=enrolled.id;
-    mfaChallengeId=challenge.id;
-    $("#mfa-enroll").hidden=false;
-    if(enrolled.totp?.qr_code)$("#mfa-qr").src=enrolled.totp.qr_code;
-    $("#mfa-secret").value=enrolled.totp?.secret||"";
-    $("#mfa-error").textContent="Escaneá el QR con Google Authenticator y luego ingresá el código de 6 dígitos.";
-  }catch(error){
-    $("#mfa-error").textContent=error?.message||"No se pudo configurar un autenticador nuevo.";
-  }
-}
-
 async function requireMfa(){
   const {data:aal,error:aalError}=await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
   if(aalError)throw aalError;
@@ -208,7 +186,7 @@ async function renderDetail(id){
   const events=[...(item.request_events||[])].sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
   detail.innerHTML=`
     <div class="detail-head"><div><h2>${esc(item.tracking_code)}</h2><span class="badge ${item.status}">${esc(LABELS[item.status]||item.status)}</span></div><strong>${esc(item.services?.name||item.service_id)}</strong></div>
-    <div class="detail-grid"><div class="field"><small>Cliente</small><strong>${esc(item.client_name||"—")}</strong></div><div class="field"><small>WhatsApp</small><strong>${esc(item.whatsapp||"—")}</strong></div><div class="field"><small>Correo</small><strong>${esc(item.email||"—")}</strong></div><div class="field"><small>Importe</small><strong>${item.quoted_amount==null?"—":`$ ${Number(item.quoted_amount).toLocaleString("es-AR")}`}</strong></div><div class="field"><small>Solicitud</small><strong>${fmt(item.created_at)}</strong></div><div class="field"><small>Última actividad</small><strong>${fmt(item.last_activity_at||item.updated_at)}</strong></div><div class="field"><small>Etapa actual</small><strong>${esc(item.current_step||"—")}</strong></div><div class="field"><small>Avance</small><strong>${item.completion_percent==null?"—":`${Number(item.completion_percent)} %`}</strong></div><div class="field"><small>Plazo estimado</small><strong>${fmt(item.estimated_completion_at)}</strong></div></div>${item.missing_fields?.length?`<div class="field help-context"><small>Datos que todavía faltan</small><strong>${esc(item.missing_fields.join(" · "))}</strong></div>`:""}${item.help_context?`<div class="field help-context"><small>Última solicitud de ayuda</small><strong>${esc(item.help_context.step||"Trámite")} · ${fmt(item.help_context.requestedAt)}</strong><span>${esc(item.help_context.route||"")}</span></div>`:""}
+    <div class="detail-grid"><div class="field"><small>Cliente</small><strong>${esc(item.client_name||"—")}</strong></div><div class="field"><small>WhatsApp</small><strong>${esc(item.whatsapp||"—")}</strong></div><div class="field"><small>Correo</small><strong>${esc(item.email||"—")}</strong></div><div class="field"><small>Importe esperado</small><strong>${item.quoted_amount==null?"—":`$ ${Number(item.quoted_amount).toLocaleString("es-AR")}`}</strong></div><div class="field"><small>Solicitud</small><strong>${fmt(item.created_at)}</strong></div><div class="field"><small>Última actividad</small><strong>${fmt(item.last_activity_at||item.updated_at)}</strong></div><div class="field"><small>Etapa actual</small><strong>${esc(item.current_step||"—")}</strong></div><div class="field"><small>Avance</small><strong>${item.completion_percent==null?"—":`${Number(item.completion_percent)} %`}</strong></div><div class="field"><small>Plazo estimado</small><strong>${fmt(item.estimated_completion_at)}</strong></div></div>${item.missing_fields?.length?`<div class="field help-context"><small>Datos que todavía faltan</small><strong>${esc(item.missing_fields.join(" · "))}</strong></div>`:""}${item.help_context?`<div class="field help-context"><small>Última solicitud de ayuda</small><strong>${esc(item.help_context.step||"Trámite")} · ${fmt(item.help_context.requestedAt)}</strong><span>${esc(item.help_context.route||"")}</span></div>`:""}
     <h3>Datos del formulario</h3><div class="dynamic-data">${Object.entries(payload).map(([key,value])=>`<div class="field"><small>${esc(key)}</small><strong>${esc(value&&typeof value==="object"?(value.name||JSON.stringify(value)):Array.isArray(value)?value.join(", "):value)}</strong></div>`).join("")||"<p>Sin datos adicionales.</p>"}</div>
     <div class="files"><h3>Archivos</h3><div id="admin-file-list"><p>Cargando archivos…</p></div></div>
     <form id="status-form" class="status-controls"><h3>Cambiar estado</h3><label>Plazo aproximado<input name="estimated" type="datetime-local" value="${item.estimated_completion_at?new Date(item.estimated_completion_at).toISOString().slice(0,16):""}"></label><label>Observación para el cliente<textarea name="note" placeholder="Indicación breve y concreta">${esc(item.status_note||"")}</textarea></label><div class="status-buttons">${allowedNextStates(item).map(status=>`<button type="submit" name="status" value="${status}" data-status="${status}">${esc(LABELS[status])}</button>`).join("")||"<p class=\"empty-list\">No hay cambios de estado disponibles.</p>"}</div></form>
@@ -240,6 +218,11 @@ async function updateStatus(status,form){
   if(status==="needs_info"&&!note){window.alert("Indicá qué dato necesita corregirse.");return;}
   if(status==="cancelled"&&!note){window.alert("Indicá el motivo de la anulación. La solicitud no se elimina y queda auditada.");return;}
   const id=selectedId;
+  if(status==="payment_confirmed"){
+    const current=detailCache.get(id)||requests.find(item=>item.id===id);
+    const amount=current?.quoted_amount==null?"Sin importe":`$ ${Number(current.quoted_amount).toLocaleString("es-AR")}`;
+    if(!window.confirm(`Importe esperado: ${amount}\n\nConfirmá solamente si el comprobante coincide con este importe.`))return;
+  }
   if(LOCAL_MODE){
     try{await localJson(`/api/local/admin/requests/${encodeURIComponent(id)}`,{method:"PATCH",body:JSON.stringify({status,note,estimatedCompletionAt:estimated?new Date(estimated).toISOString():null})});}
     catch(error){window.alert(error.message);return;}
@@ -282,7 +265,6 @@ $("#mfa-form").addEventListener("submit",async event=>{
   event.currentTarget.reset();
   await enterDashboard();
 });
-$("#mfa-new-factor").addEventListener("click",enrollNewAuthenticator);
 
 $("#logout").addEventListener("click",async()=>{if(!LOCAL_MODE&&supabase)await supabase.auth.signOut();showLogin();});
 $("#refresh").addEventListener("click",async()=>{detailCache.clear();await loadRequests();});
