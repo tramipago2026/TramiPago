@@ -15,6 +15,7 @@ on:
       - "index.html"
       - "services.js"
       - "promos.js"
+      - "assets/promo-tramite-online-20260930.webp"
       - "site.css"
       - "ui.css"
       - "shared-site-shell.css"
