@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - "tests/full-browser-audit.mjs"
+      - "tests/admin-browser-audit.mjs"
+      - "admin/**"
       - "app.js"
       - "site-fixes.js"
       - "backend-sync.js"
@@ -52,5 +54,7 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0
           npx playwright install --with-deps chromium
-      - name: Ejecutar auditoría práctica
+      - name: Ejecutar auditoría práctica del sitio público
         run: node tests/full-browser-audit.mjs
+      - name: Ejecutar auditoría práctica del panel Admin
+        run: node tests/admin-browser-audit.mjs
