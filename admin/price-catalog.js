@@ -1,9 +1,6 @@
 (function(){
   "use strict";
 
-  const PROJECT_URL="https://injimzsxbnawnekybfpm.supabase.co";
-  const PUBLISHABLE_KEY="sb_publishable__bYVmN8G7g1fJG28C0SN0g_WbRJ23Ua";
-  const SDK_URL="https://esm.sh/@supabase/supabase-js@2.105.0";
   const fmt=value=>`$ ${Number(value||0).toLocaleString("es-AR")}`;
   const esc=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]));
   let priceClient=null;
