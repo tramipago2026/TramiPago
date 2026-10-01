@@ -204,15 +204,34 @@ async function renderDetail(id){
   selectedId=id;renderList();const detail=$("#request-detail");detail.classList.remove("empty");detail.innerHTML='<p class="empty-list">Cargando ficha…</p>';
   let item;try{item=await fetchRequestDetail(id);}catch(error){if(selectedId===id)detail.innerHTML=`<p class="error empty-list">${esc(error.message||"No se pudo cargar la ficha.")}</p>`;return;}
   if(selectedId!==id)return;
-  const payload=item.request_data?.[0]?.payload||{};const files=await Promise.all((item.request_files||[]).map(signedFileLink));if(selectedId!==id)return;
+  const payload=item.request_data?.[0]?.payload||{};
   const events=[...(item.request_events||[])].sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
   detail.innerHTML=`
     <div class="detail-head"><div><h2>${esc(item.tracking_code)}</h2><span class="badge ${item.status}">${esc(LABELS[item.status]||item.status)}</span></div><strong>${esc(item.services?.name||item.service_id)}</strong></div>
     <div class="detail-grid"><div class="field"><small>Cliente</small><strong>${esc(item.client_name||"—")}</strong></div><div class="field"><small>WhatsApp</small><strong>${esc(item.whatsapp||"—")}</strong></div><div class="field"><small>Correo</small><strong>${esc(item.email||"—")}</strong></div><div class="field"><small>Importe</small><strong>${item.quoted_amount==null?"—":`$ ${Number(item.quoted_amount).toLocaleString("es-AR")}`}</strong></div><div class="field"><small>Solicitud</small><strong>${fmt(item.created_at)}</strong></div><div class="field"><small>Última actividad</small><strong>${fmt(item.last_activity_at||item.updated_at)}</strong></div><div class="field"><small>Etapa actual</small><strong>${esc(item.current_step||"—")}</strong></div><div class="field"><small>Avance</small><strong>${item.completion_percent==null?"—":`${Number(item.completion_percent)} %`}</strong></div><div class="field"><small>Plazo estimado</small><strong>${fmt(item.estimated_completion_at)}</strong></div></div>${item.missing_fields?.length?`<div class="field help-context"><small>Datos que todavía faltan</small><strong>${esc(item.missing_fields.join(" · "))}</strong></div>`:""}${item.help_context?`<div class="field help-context"><small>Última solicitud de ayuda</small><strong>${esc(item.help_context.step||"Trámite")} · ${fmt(item.help_context.requestedAt)}</strong><span>${esc(item.help_context.route||"")}</span></div>`:""}
     <h3>Datos del formulario</h3><div class="dynamic-data">${Object.entries(payload).map(([key,value])=>`<div class="field"><small>${esc(key)}</small><strong>${esc(value&&typeof value==="object"?(value.name||JSON.stringify(value)):Array.isArray(value)?value.join(", "):value)}</strong></div>`).join("")||"<p>Sin datos adicionales.</p>"}</div>
-    <div class="files"><h3>Archivos</h3>${files.join("")||"<p>Sin archivos.</p>"}</div>
+    <div class="files"><h3>Archivos</h3><div id="admin-file-list"><p>Cargando archivos…</p></div></div>
     <form id="status-form" class="status-controls"><h3>Cambiar estado</h3><label>Plazo aproximado<input name="estimated" type="datetime-local" value="${item.estimated_completion_at?new Date(item.estimated_completion_at).toISOString().slice(0,16):""}"></label><label>Observación para el cliente<textarea name="note" placeholder="Indicación breve y concreta">${esc(item.status_note||"")}</textarea></label><div class="status-buttons">${allowedNextStates(item).map(status=>`<button type="submit" name="status" value="${status}" data-status="${status}">${esc(LABELS[status])}</button>`).join("")||"<p class=\"empty-list\">No hay cambios de estado disponibles.</p>"}</div></form>
     <div class="history"><h3>Historial</h3><ul>${events.map(event=>`<li><strong>${fmt(event.created_at)}</strong> · ${esc(LABELS[event.status]||event.event_type)}${event.note?` — ${esc(event.note)}`:""} <small>· ${event.created_by?"Administrador":"Sistema/cliente"}</small></li>`).join("")||"<li>Sin movimientos.</li>"}</ul></div>`;
+
+  const fileBox=$("#admin-file-list");
+  const rawFiles=item.request_files||[];
+  if(!rawFiles.length){
+    if(fileBox)fileBox.innerHTML="<p>Sin archivos.</p>";
+  }else{
+    Promise.all(rawFiles.map(async file=>{
+      try{
+        return await Promise.race([
+          signedFileLink(file),
+          new Promise(resolve=>setTimeout(()=>resolve(`<span>${esc(file.original_name||file.kind)} · enlace no disponible</span>`),6000))
+        ]);
+      }catch(_){
+        return `<span>${esc(file.original_name||file.kind)} · enlace no disponible</span>`;
+      }
+    })).then(files=>{
+      if(selectedId===id&&fileBox)fileBox.innerHTML=files.join("")||"<p>Sin archivos.</p>";
+    });
+  }
 }
 
 async function updateStatus(status,form){
