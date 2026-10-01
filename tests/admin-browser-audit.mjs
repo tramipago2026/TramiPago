@@ -145,4 +145,4 @@ if(failures.length){
   failures.forEach(f=>console.error("-",f));
   process.exit(1);
 }
-console.log("PASS ADMIN_BROWSER_AUDIT: MFA -> lista -> ficha -> archivo -> tarifario -> estados -> finalizado");
+console.log("PASS ADMIN_BROWSER_CONTRACT_MOCK: MFA -> lista -> ficha -> archivo -> tarifario -> estados -> finalizado");
