@@ -48,11 +48,13 @@ console.log(`Archivos inspeccionados: ${paths.length}; referencias estáticas ve
 if (errors.length) { for (const error of errors) console.error(`ERROR ${error}`); process.exitCode = 1; }
 else console.log('PASS: referencias locales y sintaxis JavaScript verificadas. No equivale a probar el sitio publicado.');
 
-const promoAsset=readFileSync(join(root,'assets','promo-tramite-online-20260930.webp'));
-const promoIsWebP=promoAsset.length>=12
-  && promoAsset.subarray(0,4).toString('ascii')==='RIFF'
-  && promoAsset.subarray(8,12).toString('ascii')==='WEBP';
-if(!promoIsWebP){
-  console.error('ERROR promo-tramite-online-20260930.webp debe ser un WebP válido (RIFF....WEBP).');
+const promoSvg=readFileSync(join(root,'assets','promo-tramite-online-20261001.svg'),'utf8');
+const promoSvgOk=/<svg\b/i.test(promoSvg)
+  && /CONSULTÁ POR/i.test(promoSvg)
+  && /TRÁMITE ONLINE/i.test(promoSvg)
+  && /Migraciones/i.test(promoSvg)
+  && /medidor de luz/i.test(promoSvg);
+if(!promoSvgOk){
+  console.error('ERROR promo-tramite-online-20261001.svg no contiene la publicidad online esperada.');
   process.exitCode=1;
-}else console.log('PASS: publicidad de trámite online tiene firma WebP válida.');
+}else console.log('PASS: publicidad de trámite online SVG verificada.');
