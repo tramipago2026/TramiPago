@@ -34,6 +34,7 @@
     draft: {},
     requestId: null,
     trackingCode: "",
+    trackingLast4: "",
     trackingResult: null,
     trackingError: "",
     returnHash: "#/"
@@ -826,7 +827,13 @@
                 <div class="field">
                   <label for="tracking-code">Código de solicitud</label>
                   <input class="form-control tracking-code" id="tracking-code" name="trackingCode"
-                    value="${escapeHTML(state.trackingCode)}" placeholder="AP-00125-X" autocomplete="off" required />
+                    value="${escapeHTML(state.trackingCode)}" placeholder="AP-000012-A1B2C3D4" autocomplete="off" required />
+                </div>
+                <div class="field">
+                  <label for="tracking-last4">Últimos 4 números del WhatsApp</label>
+                  <input class="form-control" id="tracking-last4" name="trackingLast4" inputmode="numeric"
+                    pattern="[0-9]{4}" maxlength="4" value="${escapeHTML(state.trackingLast4)}" placeholder="Ej.: 3232" autocomplete="off" required />
+                  <small>Se usan solo para verificar que el código corresponde a tu trámite.</small>
                 </div>
                 <div class="form-error ${state.trackingError ? "visible" : ""}" role="alert">${escapeHTML(state.trackingError)}</div>
                 <button class="button button-primary" type="submit">Consultar</button>
@@ -1209,6 +1216,8 @@
       const request = getRequest(state.requestId);
       if (request) {
         state.trackingCode = request.code;
+        const digits=String(request.verificationLast4||request.whatsapp||request.answers?.whatsapp||"").replace(/\D/g,"");
+        state.trackingLast4 = digits.length>=4 ? digits.slice(-4) : "";
         state.trackingResult = request;
       }
       return navigate("#/seguimiento");
@@ -1452,11 +1461,33 @@
 
     if (form.id === "tracking-form") {
       const code = form.elements.namedItem("trackingCode").value.trim().toUpperCase();
-      const request = getRequests().find((item) => item.code.toUpperCase() === code) || null;
+      const last4 = String(form.elements.namedItem("trackingLast4")?.value||"").replace(/\D/g,"").slice(-4);
       state.trackingCode = code;
-      state.trackingResult = request;
-      state.trackingError = request ? "" : "No encontramos una solicitud con ese código.";
-      render();
+      state.trackingLast4 = last4;
+      state.trackingResult = null;
+      state.trackingError = "";
+      if(last4.length!==4){
+        state.trackingError="Ingresá los últimos 4 números del WhatsApp.";
+        render();
+        return;
+      }
+      try{
+        const backend=window.TRAMIPAGO_BACKEND;
+        if(!backend?.lookupStatus)throw new Error("La consulta todavía no está disponible.");
+        const row=await backend.lookupStatus(code,last4);
+        if(!row){
+          state.trackingError="No encontramos una solicitud que coincida con esos datos.";
+          render();
+          return;
+        }
+        render();
+        window.setTimeout(()=>backend.showTrackedStatus?.(row),0);
+      }catch(error){
+        state.trackingError="No se pudo consultar el estado. Intentá nuevamente.";
+        render();
+        window.TRAMI_REPORT_ERROR?.(error,{action:"tracking-status",code});
+      }
+      return;
     }
   });
 
