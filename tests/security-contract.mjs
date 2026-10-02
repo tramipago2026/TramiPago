@@ -27,7 +27,12 @@ for(const path of htmls){
   assert.match(text,/frame-src 'none'/i,name+": frame-src no está bloqueado");
   assert.match(text,/base-uri 'none'/i,name+": base-uri no está bloqueado");
   assert.match(text,/connect-src 'self' https:\/\/injimzsxbnawnekybfpm\.supabase\.co/i,name+": connect-src no restringe Supabase");
-  assert.doesNotMatch(text,/<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/i,name+": contiene JavaScript inline");
+  for(const match of text.matchAll(/<script\b([^>]*)>[\s\S]*?<\/script>/gi)){
+    const attrs=match[1]||"";
+    const hasSrc=/\bsrc\s*=/i.test(attrs);
+    const isJsonLd=/\btype\s*=\s*["']application\/ld\+json["']/i.test(attrs);
+    assert.ok(hasSrc||isJsonLd,name+": contiene JavaScript inline");
+  }
   assert.doesNotMatch(text,/\son(?:click|load|error|submit|change|input)\s*=/i,name+": contiene handler inline");
   for(const match of text.matchAll(/<a\b[^>]*target=["']_blank["'][^>]*>/gi)){
     assert.match(match[0],/rel=["'][^"']*noopener/i,name+": target=_blank sin noopener");
