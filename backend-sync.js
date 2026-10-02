@@ -408,15 +408,32 @@
     return request;
   }
 
-  async function lookupStatus(code){
+  async function lookupStatus(code,last4Override=""){
     const local=findLocalByCode(code);
     const whatsapp=contactFor(local||{}).whatsapp||"";
-    const last4=String(whatsapp).replace(/\D/g,"").slice(-4);
+    const last4=String(last4Override||whatsapp).replace(/\D/g,"").slice(-4);
     if(last4.length!==4)return null;
     const {data,error}=await client.functions.invoke("track-request",{body:{code:String(code||"").trim().toUpperCase(),last4}});
     if(error)throw error;
     if(!data?.ok)return null;
-    return {tracking_code:data.code,status:data.status};
+    return {
+      tracking_code:data.code,
+      status:data.status,
+      service_name:data.serviceName||"",
+      status_note:data.statusNote||null,
+      estimated_completion_at:data.estimatedCompletionAt||null,
+      current_step:data.currentStep||null,
+      completion_percent:data.completionPercent??null,
+      created_at:data.createdAt||null,
+      updated_at:data.updatedAt||null
+    };
+  }
+
+  function showTrackedStatus(row){
+    if(!row)return false;
+    const local=updateLocalFromStatus(row)||findLocalByCode(row.tracking_code);
+    renderServerStatus(row,local);
+    return true;
   }
 
   async function recordHelp(request,context={}){
@@ -550,7 +567,7 @@
         auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
       });
       await hydrateTokens();
-      window.TRAMIPAGO_BACKEND={client,projectUrl:PROJECT_URL,sync:syncAll,flush:syncAll,lookupStatus,recordHelp,queueSync};
+      window.TRAMIPAGO_BACKEND={client,projectUrl:PROJECT_URL,sync:syncAll,flush:syncAll,lookupStatus,showTrackedStatus,recordHelp,queueSync};
       await syncAll();
     }catch(error){
       console.error("No se pudo iniciar Supabase para TramiPago:",error);
