@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /supabase/
+Disallow: /tests/
+
+Sitemap: https://tramipago.com.ar/sitemap.xml
