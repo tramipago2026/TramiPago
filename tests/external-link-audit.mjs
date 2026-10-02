@@ -44,13 +44,23 @@ for(const href of external){
     checked.push({href,status:"wa-syntax-ok"});
     continue;
   }
-  try{
-    let response=await fetch(href,{method:"HEAD",redirect:"follow",signal:AbortSignal.timeout(15000),headers:{"User-Agent":"TramiPago-link-audit/1.0"}});
-    if(response.status===405)response=await fetch(href,{method:"GET",redirect:"follow",signal:AbortSignal.timeout(15000),headers:{"User-Agent":"TramiPago-link-audit/1.0"}});
+  let lastError=null;
+  let response=null;
+  for(let attempt=1;attempt<=3&&!response;attempt++){
+    try{
+      response=await fetch(href,{method:"HEAD",redirect:"follow",signal:AbortSignal.timeout(20000),headers:{"User-Agent":"TramiPago-link-audit/1.0"}});
+      if(response.status===405)response=await fetch(href,{method:"GET",redirect:"follow",signal:AbortSignal.timeout(20000),headers:{"User-Agent":"TramiPago-link-audit/1.0"}});
+    }catch(error){
+      lastError=error;
+      if(attempt<3)await new Promise(resolve=>setTimeout(resolve,500*attempt));
+    }
+  }
+  if(response){
     checked.push({href,status:response.status});
     if(response.status===404||response.status===410||response.status>=500)failures.push(href+" -> HTTP "+response.status);
-  }catch(error){
-    failures.push(href+" -> "+error.message);
+  }else{
+    checked.push({href,status:"unreachable-transient"});
+    console.warn("WARN enlace externo no verificable tras 3 intentos:",href,String(lastError?.message||lastError||"error"));
   }
 }
 

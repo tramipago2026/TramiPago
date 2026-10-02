@@ -24,6 +24,8 @@ jobs:
         run: node tests/secret-scan.mjs
       - name: Verificar contrato de seguridad frontend
         run: node tests/security-contract.mjs
+      - name: Verificar contrato SEO, sitemap, canonical y robots
+        run: node tests/seo-contract.mjs
       - name: Verificar destinos de todas las tarjetas y estructura de todos los formularios
         run: node tests/catalog-form-contract.mjs
       - name: Verificar ejemplos y formatos de campos especiales
