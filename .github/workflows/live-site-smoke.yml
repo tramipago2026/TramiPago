@@ -58,7 +58,7 @@ jobs:
           headerCheck(Boolean(observedHeaders.csp), 'Falta Content-Security-Policy como header HTTP real');
           headerCheck(xfo === 'DENY' || xfo === 'SAMEORIGIN' || /frame-ancestors\s+[^;]+/i.test(observedHeaders.csp), 'Falta protección contra framing');
           console.log(JSON.stringify({httpStatus:http.status,httpLocation:redirectLocation,httpsStatus:root.status,observedHeaders}));
-          if (headerFailures.length) console.warn('WARN hosting/headers: ' + headerFailures.join(' | '));
+          if (headerFailures.length) console.error('FAIL hosting/headers: ' + headerFailures.join(' | '));
 
           const www = await fetch('https://www.tramipago.com.ar/', { redirect: 'manual' });
           assert(www.status >= 200 && www.status < 400, 'www.tramipago.com.ar no responde correctamente: ' + www.status);
@@ -132,9 +132,8 @@ jobs:
           }
           console.log('PASS: las 8 Edge Functions ejecutan rutas reales no destructivas sin errores 5xx');
           if (headerFailures.length) {
-            console.log('WARN: backend Supabase validado; quedan pendientes ajustes del hosting: ' + headerFailures.join(' | '));
-          } else {
-            console.log('PASS: HTTPS y headers HTTP del hosting también válidos');
+            throw new Error('Hosting incompleto: ' + headerFailures.join(' | '));
           }
+          console.log('PASS: HTTPS y headers HTTP del hosting también válidos');
           NODE
 # Auditoría HTTP actualizada al dominio productivo tramipago.com.ar, 2026-09-29.
