@@ -3,7 +3,7 @@ import {existsSync,readFileSync} from "node:fs";
 import vm from "node:vm";
 const manifest=JSON.parse(readFileSync("service-pages.json","utf8"));
 const source=readFileSync("services.js","utf8");
-const sandbox={location:{hash:""},window:{addEventListener(){}},document:{addEventListener(){},querySelector(){return null},querySelectorAll(){return[]},getElementById(){return null}}};sandbox.window.location=sandbox.location;
+const sandbox={location:{hash:""},setTimeout(){return 0},clearTimeout(){},window:{addEventListener(){}},document:{addEventListener(){},querySelector(){return null},querySelectorAll(){return[]},getElementById(){return null}}};sandbox.window.location=sandbox.location;
 vm.createContext(sandbox);new vm.Script(source).runInContext(sandbox);
 const active=sandbox.window.TRAMI_SERVICES.filter(s=>s.active);
 assert.equal(active.length,23,"Cantidad inesperada de servicios activos");
