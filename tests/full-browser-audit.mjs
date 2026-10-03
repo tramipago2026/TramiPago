@@ -24,6 +24,13 @@ await goto("#/");
 ok((await page.locator(".nav-home").innerText()).trim().includes("Inicio"),"Botón Inicio sin texto esperado");
 ok((await page.locator(".nav-tracking").innerText()).trim().includes("Ver mi trámite"),"Botón Ver mi trámite sin texto esperado");
 ok((await page.locator(".nav-help").innerText()).trim().includes("Ayuda"),"Botón Ayuda sin texto esperado");
+const footerCols=page.locator(".site-footer .footer-menu-col");
+ok(await footerCols.count()===2,"Footer debe tener exactamente 2 columnas");
+const footerHeadings=(await page.locator(".site-footer .footer-menu-col h3").allTextContents()).map(t=>t.trim());
+ok(JSON.stringify(footerHeadings)===JSON.stringify(["INFORMACIÓN LEGAL","DERECHOS DEL USUARIO"]),"Footer con encabezados inesperados: "+JSON.stringify(footerHeadings));
+const footerLinks=(await page.locator(".site-footer a").allTextContents()).map(t=>t.trim());
+for(const forbidden of ["Todos los trámites","Ver mi trámite","WhatsApp"])ok(!footerLinks.includes(forbidden),"Footer repite navegación superior: "+forbidden);
+
 let url=await helpUrl();
 ok(url.startsWith("https://wa.me/5491167083232?text="),"Ayuda de inicio no abre WhatsApp correcto");
 ok(decodeURIComponent(url).includes("TramiPago"),"Ayuda de inicio sin mensaje contextual");
