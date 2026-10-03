@@ -8,6 +8,7 @@
   const RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
   const MAX_LOCAL_FILE_BYTES = Number(window.TRAMI_CONFIG?.maxLocalFileBytes || 1500000);
   const IMAGE_TARGET_BYTES = Math.min(1200000, Math.max(700000, MAX_LOCAL_FILE_BYTES - 150000));
+  const SUPPORTED_IMAGE_TYPES = new Set(["image/jpeg","image/png","image/webp"]);
 
   function injectStyles() {
     if (document.getElementById("tramipago-site-review-styles")) return;
@@ -324,9 +325,19 @@
 
   async function optimizeSelectedImage(input) {
     const file = input.files?.[0];
-    if (!file || !String(file.type || "").startsWith("image/") || file.size <= MAX_LOCAL_FILE_BYTES) return;
+    if (!file) return;
+    const type = String(file.type || "").toLowerCase();
     const field = input.closest(".field");
     const note = field?.querySelector(".upload-optimizer-note");
+    if (type.startsWith("image/") && !SUPPORTED_IMAGE_TYPES.has(type)) {
+      input.value = "";
+      if (note) {
+        note.textContent = "Formato no permitido. Usá JPG, PNG o WebP.";
+        note.className = "upload-optimizer-note";
+      }
+      return;
+    }
+    if (!type.startsWith("image/") || file.size <= MAX_LOCAL_FILE_BYTES) return;
     const form = input.closest("form");
     const buttons = Array.from(form?.querySelectorAll('button[type="submit"]') || []);
     buttons.forEach((button) => button.disabled = true);
