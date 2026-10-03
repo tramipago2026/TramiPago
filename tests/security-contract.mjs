@@ -51,4 +51,11 @@ for(const path of files.filter(p=>[".js",".mjs",".html",".yml",".yaml"].includes
   assert.doesNotMatch(text,/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,name+": contiene clave privada");
 }
 
+const appJs=readFileSync(join(root,"app.js"),"utf8");
+const servicesJs=readFileSync(join(root,"services.js"),"utf8");
+assert.doesNotMatch(appJs,/accept=["']image\/\*/i,"app.js: el comprobante volvió a aceptar image/*");
+assert.doesNotMatch(servicesJs,/accept:\s*["']image\/\*/i,"services.js: volvió a aceptar image/*");
+assert.match(appJs,/image\/jpeg,image\/png,image\/webp,application\/pdf/,"app.js: faltan formatos explícitos del comprobante");
+assert.match(servicesJs,/image\/jpeg,image\/png,image\/webp/,"services.js: faltan formatos explícitos de imagen");
+
 console.log("PASS: CSP, JavaScript inline, sinks críticos y secretos del runtime verificados.");
