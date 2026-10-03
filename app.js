@@ -9,6 +9,12 @@
   const OVERRIDES_KEY = "tramipago_service_overrides_v1";
   const ACTIVE_REQUEST_KEY = "tramipago_active_request_v1";
   const MAX_LOCAL_FILE_BYTES = Number(window.TRAMI_CONFIG?.maxLocalFileBytes || 1500000);
+  const LOCAL_UPLOAD_TYPES = Object.freeze({
+    "image/jpeg": [".jpg", ".jpeg"],
+    "image/png": [".png"],
+    "image/webp": [".webp"],
+    "application/pdf": [".pdf"]
+  });
   const DRAFT_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 
   const STATUS_LABELS = Object.freeze({
@@ -770,7 +776,7 @@
         <form id="payment-form">
           <div class="field field-full payment-file">
             <label for="receipt">Comprobante de pago *</label>
-            <input class="form-control" type="file" id="receipt" name="receipt" accept="image/*,.pdf" required />
+            <input class="form-control" type="file" id="receipt" name="receipt" accept="image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" required />
             <small>Imágenes grandes: se optimizan automáticamente. PDF máximo: ${Math.round(MAX_LOCAL_FILE_BYTES / 100000) / 10} MB.</small>
           </div>
           <div class="form-error" role="alert"></div>
@@ -901,19 +907,33 @@
     if (!file) return null;
     let storedFile = file;
 
+    const originalType = String(storedFile.type || "").toLowerCase();
+    const originalName = String(storedFile.name || "").toLowerCase();
+    const originalExtensions = LOCAL_UPLOAD_TYPES[originalType];
+    if (!originalExtensions || !originalExtensions.some((ext) => originalName.endsWith(ext))) {
+      throw new Error("Formato no permitido. Usá JPG, PNG, WebP o PDF.");
+    }
+
     // Las imágenes grandes se reducen antes de convertirlas a data URL.
     // Así el trámite no depende de que el navegador haya reemplazado
     // correctamente el FileList del input.
     if (
-      String(storedFile.type || "").startsWith("image/") &&
+      originalType.startsWith("image/") &&
       storedFile.size > MAX_LOCAL_FILE_BYTES &&
       typeof window.TRAMI_OPTIMIZE_IMAGE_FILE === "function"
     ) {
       storedFile = await window.TRAMI_OPTIMIZE_IMAGE_FILE(storedFile);
     }
 
+    const finalType = String(storedFile.type || "").toLowerCase();
+    const finalName = String(storedFile.name || "").toLowerCase();
+    const finalExtensions = LOCAL_UPLOAD_TYPES[finalType];
+    if (!finalExtensions || !finalExtensions.some((ext) => finalName.endsWith(ext))) {
+      throw new Error("Formato no permitido. Usá JPG, PNG, WebP o PDF.");
+    }
+
     if (storedFile.size > MAX_LOCAL_FILE_BYTES) {
-      throw new Error(`El archivo ${storedFile.name} supera el límite permitido.`);
+      throw new Error(`El archivo ${storedFile.name} supera el límite permitido de 1,5 MB.`);
     }
     const dataUrl = await new Promise((resolve, reject) => {
       const reader = new FileReader();
