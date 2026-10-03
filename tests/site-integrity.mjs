@@ -49,7 +49,7 @@ for (const path of paths) {
 // Contrato de cache-busting: si cambia un asset compartido, su ?v= debe cambiar también.
 function gitBlobVersion(file){
   const buf=readFileSync(join(root,file));
-  const header=Buffer.from(`blob ${buf.length}\\0`);
+  const header=Buffer.from(`blob ${buf.length}\0`);
   return createHash('sha1').update(Buffer.concat([header,buf])).digest('hex').slice(0,12);
 }
 const footerVersion=gitBlobVersion('footer-menu.js');
