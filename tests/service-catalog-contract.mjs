@@ -7,7 +7,7 @@ const sandbox={location:{hash:""},setTimeout(){return 0},clearTimeout(){},window
 vm.createContext(sandbox);new vm.Script(source).runInContext(sandbox);
 const active=sandbox.window.TRAMI_SERVICES.filter(s=>s.active);
 assert.equal(active.length,23,"Cantidad inesperada de servicios activos");
-assert.deepEqual(Object.keys(manifest.services).sort(),active.map(s=>s.id).sort(),"Cada servicio activo debe tener una URL SEO propia");
+assert.equal(Object.keys(manifest.services).sort().join(","),Array.from(active,s=>s.id).sort().join(","),"Cada servicio activo debe tener una URL SEO propia");
 const sitemap=readFileSync("sitemap.xml","utf8");
 for(const service of active){
  const file=manifest.services[service.id]; assert.ok(existsSync(file),service.id+": falta landing "+file);
