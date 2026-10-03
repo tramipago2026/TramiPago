@@ -7,7 +7,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://esm.sh; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://injimzsxbnawnekybfpm.supabase.co wss://injimzsxbnawnekybfpm.supabase.co; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
   <title>TramiPago | Administración</title>
-  <link rel="stylesheet" href="./styles.css?v=20261001-admin1">
+  <link rel="stylesheet" href="./styles.css?v=20261002-admin-recovery1">
 </head>
 <body>
   <header class="topbar">
@@ -23,7 +23,19 @@
         <label>Correo<input name="email" type="email" autocomplete="username" required></label>
         <label>Contraseña<input name="password" type="password" autocomplete="current-password" required></label>
         <button type="submit">Ingresar</button>
+        <button id="forgot-password" class="link-button" type="button">Olvidé mi contraseña</button>
         <p id="login-error" class="error" role="alert"></p>
+      </form>
+    </section>
+
+    <section id="recovery-view" class="login-card" hidden>
+      <h1>Nueva contraseña</h1>
+      <p>Elegí una nueva contraseña para el acceso de administrador.</p>
+      <form id="recovery-form">
+        <label>Nueva contraseña<input name="password" type="password" autocomplete="new-password" minlength="10" required></label>
+        <label>Repetir contraseña<input name="passwordConfirm" type="password" autocomplete="new-password" minlength="10" required></label>
+        <button type="submit">Guardar contraseña</button>
+        <p id="recovery-error" class="error" role="alert"></p>
       </form>
     </section>
 
@@ -77,7 +89,7 @@
     </section>
   </main>
 
-  <script type="module" src="./app.js?v=20261001-admin-audit3"></script>
+  <script type="module" src="./app.js?v=20261002-admin-recovery1"></script>
   <script src="./price-catalog.js?v=20261001-admin-price2"></script>
 </body>
 </html>
