@@ -88,7 +88,7 @@
         { id: "dni", label: "DNI", type: "text", required: true, inputmode: "numeric", placeholder: "Ej.: 12345678" },
         { id: "cuil", label: "CUIL", type: "text", required: true, inputmode: "numeric", placeholder: "20-12345678-6" },
         { id: "dniTransaction", label: "Número de trámite del DNI", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 12345678901" },
-        { id: "dniFile", label: "Frente del DNI (alternativa al N.º de trámite)", type: "file", required: false, accept: "image/*" },
+        { id: "dniFile", label: "Frente del DNI (alternativa al N.º de trámite)", type: "file", required: false, accept: "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" },
         { id: "address", label: "Domicilio (calle y número)", type: "text", required: true, autocomplete: "street-address" },
         { id: "locality", label: "Localidad", type: "text", required: true, autocomplete: "address-level2" },
         { id: "district", label: "Partido o departamento", type: "text", required: false, placeholder: "Si corresponde" },
@@ -165,7 +165,7 @@
       priceField: "serviceOption",
       priceOptions: [{ value: "debt-plan", label: "Deuda + plancheta", amount: 15000, duration: "Sujeto a disponibilidad de ARBA" }],
       fields: [
-        { id: "propertyDocument", label: "Foto de boleta o documento del inmueble", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
+        { id: "propertyDocument", label: "Foto de boleta o documento del inmueble", type: "file", required: false, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
         { id: "propertyDistrict", label: "Partido", type: "text", required: false },
         { id: "propertyNumber", label: "Partida", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 123456" },
         ...contactFields.slice(2),
@@ -230,7 +230,7 @@
         { id: "secondPersonName", label: "Nombre y apellido de la otra persona (opcional)", type: "text", required: false },
         { id: "parentOne", label: "Nombre y apellido de un progenitor (opcional)", type: "text", required: false },
         { id: "parentTwo", label: "Nombre y apellido del otro progenitor (opcional)", type: "text", required: false },
-        { id: "previousAct", label: "Copia de una partida anterior (opcional)", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
+        { id: "previousAct", label: "Copia de una partida anterior (opcional)", type: "file", required: false, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
 
         { id: "purpose", label: "¿Para qué trámite necesitás la partida?", type: "text", required: false },
         { id: "fullName", label: "Tu nombre y apellido", type: "text", required: false, autocomplete: "name" },
@@ -306,7 +306,7 @@
         { id: "actNumber", label: "Acta (si la conocés)", type: "text", required: false },
         { id: "registrationYear", label: "Año de inscripción (si lo conocés)", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 1985" },
         { id: "creditCardAvailable", label: "Si elegí urgente, cuento con tarjeta de crédito para abonar el costo oficial.", type: "checkbox", required: false },
-        { id: "previousAct", label: "Copia de una partida anterior (opcional)", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
+        { id: "previousAct", label: "Copia de una partida anterior (opcional)", type: "file", required: false, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
         { id: "purpose", label: "¿Para qué trámite necesitás la partida? (opcional)", type: "text", required: false },
         ...contactFields,
         authorizationField
@@ -708,7 +708,7 @@
             { value: "saldo", label: "Saldos a favor" }
           ]
         },
-        { id: "ccmaReceipt", label: "Comprobante de pago (opcional)", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
+        { id: "ccmaReceipt", label: "Comprobante de pago (opcional)", type: "file", required: false, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
         { id: "ccmaNotes", label: "Detalle de lo que querés verificar (opcional)", type: "textarea", required: false },
         AUTHORIZATION
       ]
@@ -734,7 +734,7 @@
         { id: "destinationPeriod", label: "Período de destino", type: "text", required: true, placeholder: "Ej.: 2026-06" },
         { id: "destinationConcept", label: "Concepto de destino", type: "text", required: true },
         { id: "destinationSubconcept", label: "Subconcepto de destino (si corresponde)", type: "text", required: false },
-        { id: "reimputationReceipt", label: "Comprobante de pago (opcional)", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
+        { id: "reimputationReceipt", label: "Comprobante de pago (opcional)", type: "file", required: false, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
         { id: "reimputationNotes", label: "Aclaración (opcional)", type: "textarea", required: false },
         AUTHORIZATION
       ]
@@ -760,7 +760,7 @@
         { id: "comboOriginAmount", label: "Importe del saldo o pago (si lo conocés)", type: "text", required: false, inputmode: "numeric", placeholder: "Ej.: 35000" },
         { id: "comboDestinationPeriod", label: "Período al que querés aplicarlo (si lo conocés)", type: "text", required: false },
         { id: "comboDestinationConcept", label: "Concepto de destino (si lo conocés)", type: "text", required: false },
-        { id: "comboReceipt", label: "Comprobante de pago (opcional)", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
+        { id: "comboReceipt", label: "Comprobante de pago (opcional)", type: "file", required: false, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
         { id: "comboNotes", label: "¿Qué necesitás revisar o corregir?", type: "textarea", required: true },
         AUTHORIZATION
       ]
@@ -940,7 +940,7 @@
         { id: "currentData", label: "Dato actual", type: "text", required: true },
         { id: "newData", label: "Dato nuevo", type: "text", required: true },
         { id: "updateReason", label: "Motivo de la modificación", type: "textarea", required: true },
-        { id: "supportingDocument", label: "Documentación respaldatoria (si corresponde)", type: "file", required: false, accept: "image/*,.pdf,application/pdf" },
+        { id: "supportingDocument", label: "Documentación respaldatoria (si corresponde)", type: "file", required: false, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
         AUTHORIZATION
       ]
     }
