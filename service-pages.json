@@ -1,0 +1,38 @@
+{
+  "services": {
+    "antecedentes-penales": "antecedentes-penales.html",
+    "informe-vehicular": "informe-vehicular.html",
+    "constancias-anses": "constancias-anses.html",
+    "arba-inmobiliario": "arba-inmobiliario.html",
+    "partidas": "partidas.html",
+    "partidas-caba": "partidas-caba.html",
+    "asistencia-digital": "asistencia-digital.html",
+    "arca-constancia": "arca-constancia.html",
+    "arca-vep": "arca-vep.html",
+    "arca-ccma": "arca-ccma.html",
+    "arca-reimputacion": "arca-reimputacion.html",
+    "arca-informe-reimputacion": "arca-informe-reimputacion.html",
+    "arca-alta-monotributo": "arca-alta-monotributo.html",
+    "arca-baja-monotributo": "arca-baja-monotributo.html",
+    "arca-recategorizacion": "arca-recategorizacion.html",
+    "arca-dfe": "arca-dfe.html",
+    "arca-actualizacion": "arca-actualizacion.html",
+    "apostilla-tad": "apostilla-tad.html",
+    "legalizaciones": "legalizaciones.html",
+    "abogado-art": "reclamo-art.html",
+    "abogado-accidentes": "accidentes.html",
+    "abogado-sucesiones": "sucesiones.html",
+    "abogado-laboral": "consulta-laboral.html"
+  },
+  "families": {
+    "arca-monotributo": "arca.html",
+    "partidas-pba": "partidas.html",
+    "asistencia-digital": "asistencia-digital.html",
+    "legalizaciones-apostillas": "legalizaciones-apostillas.html",
+    "atencion-abogado": "consultas-abogado.html"
+  },
+  "municipal": {
+    "jose-c-paz": "tramites-municipales-jose-c-paz.html",
+    "san-miguel": "tramites-municipales-san-miguel.html"
+  }
+}
