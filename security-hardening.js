@@ -42,7 +42,7 @@
 
   function ensureTrackingVerificationField(){
     const form=document.getElementById("tracking-form");
-    if(!form||form.querySelector('[name="trackingPhoneLast4"]'))return;
+    if(!form||form.querySelector('[name="trackingLast4"]')||form.querySelector('[name="trackingPhoneLast4"]'))return;
     const codeInput=form.elements.namedItem("trackingCode");
     if(!(codeInput instanceof HTMLInputElement))return;
     codeInput.placeholder="AP-000012-A1B2C3D4";
@@ -151,6 +151,7 @@
   document.addEventListener("submit",async event=>{
     const form=event.target;
     if(!(form instanceof HTMLFormElement)||form.id!=="tracking-form")return;
+    if(form.elements.namedItem("trackingLast4"))return;
     event.preventDefault();
     event.stopImmediatePropagation();
     clearTrackingError(form);
