@@ -5,6 +5,9 @@ const domain="https://tramipago.com.ar";
 const publicHtml=readdirSync(".").filter(name=>name.endsWith(".html")).sort();
 const sitemap=readFileSync("sitemap.xml","utf8");
 const robots=readFileSync("robots.txt","utf8");
+const home=readFileSync("index.html","utf8");
+assert.match(home,/<h1\b[^>]*>[^<]*|<h1\b[^>]*>[\s\S]*?<\/h1>/i,"La portada debe conservar un H1 estático para usuarios y rastreadores");
+assert.match(home,/"@type":"WebSite"/i,"La portada debe declarar datos estructurados WebSite");
 
 assert.match(robots,/^User-agent:\s*\*/mi,"robots.txt no declara User-agent global");
 assert.match(robots,/Sitemap:\s*https:\/\/tramipago\.com\.ar\/sitemap\.xml/i,"robots.txt no apunta al sitemap canónico");
