@@ -9,6 +9,12 @@ const home=readFileSync("index.html","utf8");
 assert.match(home,/<h1\b[^>]*>[^<]*|<h1\b[^>]*>[\s\S]*?<\/h1>/i,"La portada debe conservar un H1 estático para usuarios y rastreadores");
 assert.match(home,/"@type":"WebSite"/i,"La portada debe declarar datos estructurados WebSite");
 
+const favicon=readFileSync("favicon.png");
+assert.equal(favicon.subarray(0,8).toString("hex"),"89504e470d0a1a0a","favicon.png debe ser un PNG válido");
+assert.equal(favicon.readUInt32BE(16),96,"favicon.png debe medir 96 px de ancho");
+assert.equal(favicon.readUInt32BE(20),96,"favicon.png debe medir 96 px de alto");
+assert.match(home,/<link\s+rel=["']icon["'][^>]+href=["']\/favicon\.png["'][^>]+type=["']image\/png["'][^>]*>/i,"La portada debe declarar /favicon.png como image/png");
+
 assert.match(robots,/^User-agent:\s*\*/mi,"robots.txt no declara User-agent global");
 assert.match(robots,/Sitemap:\s*https:\/\/tramipago\.com\.ar\/sitemap\.xml/i,"robots.txt no apunta al sitemap canónico");
 assert.doesNotMatch(sitemap,/#/,"sitemap.xml no debe contener rutas hash");

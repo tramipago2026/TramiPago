@@ -5,7 +5,7 @@ const base = new URL(process.env.SITE_URL || 'https://tramipago2026.github.io/Tr
 const rootFiles = readdirSync('.').filter(file => ['.html','.js','.css'].includes(extname(file)));
 const adminFiles = readdirSync('admin').filter(file => ['.html','.js','.css'].includes(extname(file))).map(file => `admin/${file}`);
 const images = readdirSync('assets').filter(file => /\.(svg|png|jpe?g|webp)$/i.test(file)).map(file => `assets/${file}`);
-const paths = [...rootFiles,...adminFiles,...images];
+const paths = [...rootFiles,...adminFiles,...images,"favicon.png"];
 const failures=[];
 let checked=0;
 const concurrency=5;
@@ -51,6 +51,11 @@ async function probe(path){
     }else if(path==='extra-families.js'){
       const code=await response.text();
       if(!code.includes('officialFeeExternal:true'))failures.push('La versión pública aún no separa los aranceles TAD.');
+    }else if(path==='favicon.png'){
+      const bytes=Buffer.from(await response.arrayBuffer());
+      if((response.headers.get('content-type')||'').toLowerCase().split(';')[0]!=='image/png')failures.push('favicon.png público no responde como image/png.');
+      if(bytes.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')failures.push('favicon.png público no tiene firma PNG válida.');
+      if(bytes.readUInt32BE(16)!==96||bytes.readUInt32BE(20)!==96)failures.push('favicon.png público no mide 96x96.');
     }else if(path==='backend-sync.js'){
       const code=await response.text();
       if(!code.includes('sessionStorage.setItem(TOKENS_KEY'))failures.push('La versión pública aún conserva el puente anterior.');
