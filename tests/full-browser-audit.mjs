@@ -182,6 +182,41 @@ for(const target of secondaryPages){
 const cspViolations=await page.evaluate(()=>window.__cspViolations||[]);
 ok(cspViolations.length===0,"Violaciones CSP detectadas: "+JSON.stringify(cspViolations));
 
+// CONTROL 3 responsive: verificación real contra producción en viewport móvil estrecho.
+await page.setViewportSize({width:390,height:844});
+async function auditMobileProduction(target, expectedText="", ctaText=""){
+  await page.goto(target,{waitUntil:"domcontentloaded"});
+  await page.waitForTimeout(500);
+  const mobile=await page.evaluate(()=>{
+    const viewportWidth=window.innerWidth;
+    const docWidth=document.documentElement.scrollWidth;
+    const bodyWidth=document.body.scrollWidth;
+    const offenders=Array.from(document.querySelectorAll("body *")).filter(el=>{
+      const style=getComputedStyle(el);
+      if(style.position==="fixed"||style.position==="sticky")return false;
+      const rect=el.getBoundingClientRect();
+      return rect.width>0&&(rect.right>viewportWidth+2||rect.left<-2);
+    }).slice(0,12).map(el=>({tag:el.tagName,className:String(el.className||"").slice(0,100),left:el.getBoundingClientRect().left,right:el.getBoundingClientRect().right}));
+    return {viewportWidth,docWidth,bodyWidth,offenders};
+  });
+  ok(mobile.viewportWidth===390,"Viewport móvil inesperado en "+target+": "+mobile.viewportWidth);
+  ok(mobile.docWidth<=392&&mobile.bodyWidth<=392,"Desborde horizontal móvil en "+target+": "+JSON.stringify(mobile));
+  const h1=page.locator("h1:visible").first();
+  ok(await h1.count()===1,"H1 no visible en móvil: "+target);
+  if(expectedText&&await h1.count()) ok((await h1.innerText()).toLowerCase().includes(expectedText.toLowerCase()),"H1 móvil inesperado en "+target+": "+await h1.innerText());
+  const footer=page.locator("footer:visible").first();
+  ok(await footer.count()===1,"Footer no visible en móvil: "+target);
+  if(ctaText){
+    const cta=page.getByRole("link",{name:ctaText,exact:true}).first();
+    ok(await cta.count()===1&&await cta.isVisible(),"CTA no visible en móvil: "+target+" -> "+ctaText);
+  }
+  console.log("MOBILE_PRODUCTION_OK",target,JSON.stringify(mobile));
+}
+await auditMobileProduction("https://tramipago.com.ar/");
+await auditMobileProduction("https://tramipago.com.ar/antecedentes-penales.html","Antecedentes Penales","Iniciar gestión");
+await auditMobileProduction("https://tramipago.com.ar/sucesiones.html","sucesiones","Enviar consulta");
+await auditMobileProduction("https://tramipago.com.ar/consulta-laboral.html","Consulta laboral","Enviar consulta");
+
 await browser.close(); server.kill();
 if(failures.length){ console.error("FAILURES",failures.length); for(const f of failures)console.error("-",f); process.exit(1); }
 console.log("PASS FULL_BROWSER_AUDIT services="+services.length+" families="+families.length);
