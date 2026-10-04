@@ -8,6 +8,13 @@ const robots=readFileSync("robots.txt","utf8");
 const home=readFileSync("index.html","utf8");
 assert.match(home,/<h1\b[^>]*>[^<]*|<h1\b[^>]*>[\s\S]*?<\/h1>/i,"La portada debe conservar un H1 estático para usuarios y rastreadores");
 assert.match(home,/"@type":"WebSite"/i,"La portada debe declarar datos estructurados WebSite");
+assert.match(home,/<title>TramiPago\s*[|:-]/i,"El title principal debe comenzar con la marca TramiPago");
+assert.match(home,/<meta[^>]+name=["']description["'][^>]+content=["'][^"']*TramiPago[^"']*servicio privado[^"']*Argentina[^"']*["']/i,"La meta description debe definir a TramiPago como servicio privado en Argentina");
+assert.match(home,/<h1\b[^>]*>[^<]*TramiPago[^<]*<\/h1>/i,"El H1 principal debe incluir la marca TramiPago");
+assert.match(home,/TramiPago es un servicio privado de gestión y asistencia para realizar trámites online en Argentina/i,"La portada debe explicar visiblemente qué es TramiPago");
+assert.match(home,/"@type":"Organization"[\s\S]*?"@id":"https:\/\/tramipago\.com\.ar\/#organization"[\s\S]*?"name":"TramiPago"/i,"Organization debe identificar de forma estable a TramiPago");
+assert.match(home,/"description":"TramiPago es un servicio privado de gestión y asistencia para realizar trámites online en Argentina/i,"Organization debe describir claramente la marca");
+assert.match(home,/"@type":"WebSite"[\s\S]*?"publisher":\{"@id":"https:\/\/tramipago\.com\.ar\/#organization"\}/i,"WebSite debe publicar la misma entidad Organization");
 
 const favicon=readFileSync("favicon.png");
 assert.equal(favicon.subarray(0,8).toString("hex"),"89504e470d0a1a0a","favicon.png debe ser un PNG válido");
