@@ -182,6 +182,37 @@ for(const target of secondaryPages){
 const cspViolations=await page.evaluate(()=>window.__cspViolations||[]);
 ok(cspViolations.length===0,"Violaciones CSP detectadas: "+JSON.stringify(cspViolations));
 
+// CONTROL 3 responsive: verificación real contra producción en viewport móvil estrecho.
+await page.setViewportSize({width:390,height:844});
+async function auditMobileProduction(target, expectedText){
+  await page.goto(target,{waitUntil:"domcontentloaded"});
+  await page.waitForTimeout(500);
+  const mobile=await page.evaluate(()=>{
+    const viewportWidth=window.innerWidth;
+    const docWidth=document.documentElement.scrollWidth;
+    const bodyWidth=document.body.scrollWidth;
+    const offenders=Array.from(document.querySelectorAll("body *")).filter(el=>{
+      const style=getComputedStyle(el);
+      if(style.position==="fixed"||style.position==="sticky")return false;
+      const rect=el.getBoundingClientRect();
+      return rect.width>0&&(rect.right>viewportWidth+2||rect.left<-2);
+    }).slice(0,12).map(el=>({tag:el.tagName,className:String(el.className||"").slice(0,100),left:el.getBoundingClientRect().left,right:el.getBoundingClientRect().right}));
+    return {viewportWidth,docWidth,bodyWidth,offenders};
+  });
+  ok(mobile.viewportWidth===390,"Viewport móvil inesperado en "+target+": "+mobile.viewportWidth);
+  ok(mobile.docWidth<=392&&mobile.bodyWidth<=392,"Desborde horizontal móvil en "+target+": "+JSON.stringify(mobile));
+  const h1=page.locator("h1").first();
+  ok(await h1.count()===1&&await h1.isVisible(),"H1 no visible en móvil: "+target);
+  if(expectedText) ok((await h1.innerText()).toLowerCase().includes(expectedText.toLowerCase()),"H1 móvil inesperado en "+target+": "+await h1.innerText());
+  const footer=page.locator(".site-footer");
+  ok(await footer.count()===1&&await footer.isVisible(),"Footer no visible en móvil: "+target);
+  console.log("MOBILE_PRODUCTION_OK",target,JSON.stringify(mobile));
+}
+await auditMobileProduction("https://tramipago.com.ar/","trámites");
+await auditMobileProduction("https://tramipago.com.ar/antecedentes-penales.html","Antecedentes Penales");
+await auditMobileProduction("https://tramipago.com.ar/sucesiones.html","sucesiones");
+await auditMobileProduction("https://tramipago.com.ar/consulta-laboral.html","Consulta laboral");
+
 await browser.close(); server.kill();
 if(failures.length){ console.error("FAILURES",failures.length); for(const f of failures)console.error("-",f); process.exit(1); }
 console.log("PASS FULL_BROWSER_AUDIT services="+services.length+" families="+families.length);
