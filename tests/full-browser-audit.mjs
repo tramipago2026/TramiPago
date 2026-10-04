@@ -202,8 +202,13 @@ async function auditMobileProduction(target, expectedText="", ctaText=""){
   ok(mobile.viewportWidth===390,"Viewport móvil inesperado en "+target+": "+mobile.viewportWidth);
   ok(mobile.docWidth<=392&&mobile.bodyWidth<=392,"Desborde horizontal móvil en "+target+": "+JSON.stringify(mobile));
   const h1=page.locator("h1:visible").first();
-  ok(await h1.count()===1,"H1 no visible en móvil: "+target);
-  if(expectedText&&await h1.count()) ok((await h1.innerText()).toLowerCase().includes(expectedText.toLowerCase()),"H1 móvil inesperado en "+target+": "+await h1.innerText());
+  if(expectedText){
+    ok(await h1.count()===1,"H1 no visible en móvil: "+target);
+    if(await h1.count()) ok((await h1.innerText()).toLowerCase().includes(expectedText.toLowerCase()),"H1 móvil inesperado en "+target+": "+await h1.innerText());
+  }else if(new URL(target).pathname==="/"){
+    ok(await page.locator(".home-tile:visible").count()>=8,"Tarjetas principales no visibles en la portada móvil");
+    ok(await page.getByText("TramiPago: trámites online con asistencia y seguimiento",{exact:true}).count()===0,"El bloque SEO visible no debe reaparecer en la portada");
+  }
   const footer=page.locator("footer:visible").first();
   ok(await footer.count()===1,"Footer no visible en móvil: "+target);
   if(ctaText){

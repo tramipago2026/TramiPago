@@ -339,10 +339,6 @@
     app.innerHTML = `
       <section class="home-catalog" aria-label="Trámites y categorías">
         <div class="container">
-          <h1 class="home-section-title">TramiPago: trámites online con asistencia y seguimiento</h1>
-          <p>TramiPago es un servicio privado de gestión y asistencia para realizar trámites online en Argentina, con atención personalizada y seguimiento. Podés consultar Antecedentes Penales, constancias ANSES, servicios de ARCA y Monotributo, partidas, informes vehiculares, legalizaciones, apostillas y trámites municipales de José C. Paz y San Miguel.</p>
-          <p>Las páginas informativas explican requisitos y alcance; cuando el servicio está activo, el botón de inicio abre el formulario correspondiente dentro del mismo circuito de TramiPago. Los trámites con seguimiento generan un código para consultar su estado sin crear una cuenta.</p>
-          <p><a href="tramites.html">Ver todos los trámites</a> · <a href="municipales.html">Trámites municipales</a> · <a href="contacto.html">Contacto y ayuda</a></p>
           <div class="home-direct-row">${directs}</div>
           <div class="home-family-row">${families}</div>
         </div>
