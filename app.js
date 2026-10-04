@@ -400,6 +400,22 @@
     `;
   }
 
+  function renderEstadoCivilCard() {
+    const service = getService("certificacion-estado-civil");
+    if (!service?.active) return "";
+    return `
+      <button class="partidas-type-card partidas-type-certificate" type="button"
+        data-action="select-service" data-service-id="certificacion-estado-civil"
+        aria-label="Certificación de Estado Civil">
+        <span class="partidas-type-media" aria-hidden="true"><img src="assets/partidas-familia-final.webp" alt="" /></span>
+        <span class="catalog-card-info">
+          <span class="catalog-card-title">Certificación de Estado Civil</span>
+          <span class="catalog-card-subtitle">Certificado RENAPER</span>
+        </span>
+      </button>
+    `;
+  }
+
   function renderPartidasFamily() {
     const partType = state.partidasType;
     const selectedType = PARTIDAS_TYPE_CARDS.find((item) => item.value === partType) || null;
@@ -409,19 +425,22 @@
         <div class="container partidas-selector-shell">
           <button class="button button-secondary family-back" type="button" data-action="back-home">Volver</button>
           <div class="partidas-selector-heading">
-            <h1>Elegí el tipo de partida</h1>
-            <p>Primero indicá qué partida necesitás.</p>
+            <h1>Partidas y Certificados</h1>
+            <p>Elegí el trámite que necesitás.</p>
           </div>
           <div class="partidas-type-grid">
             ${PARTIDAS_TYPE_CARDS.map((item) => renderPartidaTypeCard(item)).join("")}
+            ${renderEstadoCivilCard()}
           </div>
-          <div class="partidas-flow-steps" aria-label="Pasos del trámite">
-            <span><strong>1.</strong> Tipo de partida</span>
-            <span class="partidas-flow-arrow" aria-hidden="true">→</span>
-            <span><strong>2.</strong> Jurisdicción</span>
-            <span class="partidas-flow-arrow" aria-hidden="true">→</span>
-            <span><strong>3.</strong> Datos</span>
-          </div>
+          ${partType ? `
+            <div class="partidas-flow-steps" aria-label="Pasos del trámite">
+              <span><strong>1.</strong> Tipo de partida</span>
+              <span class="partidas-flow-arrow" aria-hidden="true">→</span>
+              <span><strong>2.</strong> Jurisdicción</span>
+              <span class="partidas-flow-arrow" aria-hidden="true">→</span>
+              <span><strong>3.</strong> Datos</span>
+            </div>
+          ` : ""}
           ${partType ? `
             <div class="partidas-type-section">
               <div class="partidas-type-heading">

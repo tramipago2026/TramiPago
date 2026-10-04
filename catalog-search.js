@@ -52,7 +52,7 @@
     });
     services.forEach(service=>{
       if(!service?.id||service.active===false||directIds.has(service.id))return;
-      const inFamily=families.some(family=>(family.serviceIds||[]).includes(service.id));if(inFamily)return;
+      const inFamily=families.some(family=>(family.serviceIds||[]).includes(service.id));if(inFamily&&service.id!=='certificacion-estado-civil')return;
       entries.push({type:'Trámite',title:service.name,description:service.shortDescription||service.description||'',href:`#/tramite/${encodeURIComponent(service.id)}`,text:[service.name,service.shortDescription,service.description,...(service.components||[]),...(service.requirements||[])].join(' ')});
     });
     return entries.map(entry=>({...entry,search:normalize(entry.text)}));

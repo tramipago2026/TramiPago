@@ -40,11 +40,51 @@
     },
     {
       id: "partidas-pba",
-      name: "Partidas",
-      description: "Partidas de la Provincia de Buenos Aires y Ciudad Autónoma de Buenos Aires.",
+      name: "Partidas y Certificados",
+      description: "Partidas de la Provincia de Buenos Aires y Ciudad Autónoma de Buenos Aires, y certificados de alcance nacional.",
       image: "assets/partidas-familia-final.webp",
-      serviceIds: ["partidas", "partidas-caba"]
+      serviceIds: ["partidas", "partidas-caba", "certificacion-estado-civil"]
     }
+    ,{
+      id: "certificacion-estado-civil",
+      codePrefix: "EC",
+      name: "Certificación de Estado Civil",
+      shortDescription: "Certificación RENAPER del último estado civil declarado.",
+      description: "Solicitud digital por TAD para certificar el último estado civil declarado ante RENAPER. TramiPago prepara y acompaña la gestión sin solicitar contraseñas.",
+      resultDelivery: "authority-platform",
+      active: true,
+      intakeOnly: true,
+      officialInfoDate: "2026-10-04",
+      requirements: [
+        "Último ejemplar vigente del DNI del titular.",
+        "Acceso a TAD mediante una opción de autenticación habilitada por el organismo.",
+        "Si solicita un familiar directo, documentación que acredite el vínculo.",
+        "Si actúa una persona apoderada, poder otorgado por el titular con las formalidades exigidas."
+      ],
+      components: [
+        "Certificación del último estado civil declarado ante RENAPER.",
+        "Arancel oficial RENAPER: $8.000, abonado por el canal oficial.",
+        "El expediente se genera dentro de los 10 días hábiles posteriores al pago.",
+        "La respuesta se informa dentro de los 25 días hábiles siguientes a la generación del expediente."
+      ],
+      officialFee: 8000,
+      officialFeeExternal: true,
+      priceOptions: [],
+      fields: [
+        { id: "applicantRole", label: "¿Quién solicita la certificación?", type: "choice", required: true, options: [
+          { value: "holder", label: "Titular" },
+          { value: "direct-family", label: "Familiar directo" },
+          { value: "attorney", label: "Apoderado/a" }
+        ] },
+        { id: "recordHolderFullName", label: "Nombre y apellido del titular", type: "text", required: true },
+        { id: "dni", label: "DNI del titular", type: "text", required: true, inputmode: "numeric", placeholder: "Ej.: 12345678" },
+        { id: "purpose", label: "Organismo o trámite donde vas a presentar la certificación", type: "text", required: true },
+        { id: "supportingDocument", label: "Documentación respaldatoria (si corresponde)", type: "file", required: false, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
+        ...contactFields,
+        authorizationField
+      ]
+    }
+
     ,{
       id: "asistencia-digital",
       name: "Asistencia Digital",

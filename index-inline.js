@@ -1,7 +1,7 @@
 (function(){
       "use strict";
       const REQUESTS_KEY="tramipago_requests_v1";
-      const cardMeta={"antecedentes-penales":{title:"Antecedentes Penales",subtitle:"Certificado Online"},"constancias-anses":{title:"ANSES",subtitle:"CODEM + Negativa"},"arca-monotributo":{title:"ARCA",subtitle:"Monotributo / VEP"},"informe-vehicular":{title:"Informe Vehicular",subtitle:"Dominio + Infracciones + Patentes"},"partidas-pba":{title:"Partidas",subtitle:"PBA / CABA"},"arba-inmobiliario":{title:"ARBA / Inmobiliario",subtitle:"Deuda + Plancheta"},"asistencia-digital":{title:"Asistencia Digital",subtitle:"ANSES / ARCA / Mi Argentina"}};
+      const cardMeta={"antecedentes-penales":{title:"Antecedentes Penales",subtitle:"Certificado Online"},"constancias-anses":{title:"ANSES",subtitle:"CODEM + Negativa"},"arca-monotributo":{title:"ARCA",subtitle:"Monotributo / VEP"},"informe-vehicular":{title:"Informe Vehicular",subtitle:"Dominio + Infracciones + Patentes"},"partidas-pba":{title:"Partidas y Certificados",subtitle:"PBA / CABA / RENAPER"},"arba-inmobiliario":{title:"ARBA / Inmobiliario",subtitle:"Deuda + Plancheta"},"asistencia-digital":{title:"Asistencia Digital",subtitle:"ANSES / ARCA / Mi Argentina"}};
       function normalize(value){return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();}
       function readRequests(){try{return JSON.parse(localStorage.getItem(REQUESTS_KEY)||"[]");}catch(_){return[];}}
       function getRequestByCode(code){const normalized=String(code||"").trim().toUpperCase();return readRequests().find(item=>String(item.code||"").toUpperCase()===normalized)||null;}
