@@ -97,8 +97,8 @@
     rail.setAttribute("aria-label","Publicidades de TramiPago");
     rail.innerHTML=`
       <div class="promo-rail-inner">
-        <a class="promo-rail-card" href="#" aria-label="TramiPago, trámites online y asistencia personalizada">
-          <span class="promo-rail-media"><img src="assets/promo-general-20260911.webp" width="1000" height="1000" decoding="sync" alt="TramiPago, trámites online y asistencia personalizada"></span>
+        <a class="promo-rail-card" href="#" aria-label="Trámites online con gestión simple y acompañamiento personalizado">
+          <span class="promo-rail-media"><img src="assets/carousel-v1/promo-tramites-online-v1.webp" width="1000" height="1000" decoding="sync" alt="Trámites online con gestión simple y acompañamiento personalizado"></span>
         </a>
         <div class="promo-rail-controls">
           <button class="promo-rail-arrow prev" type="button" aria-label="Publicidad anterior">‹</button>
