@@ -1,0 +1,41 @@
+name: Construir assets carrusel V1
+on:
+  push:
+    branches:
+      - control3-carrusel-v1-final-20261005
+    paths:
+      - 'tmp-carousel/*.b64'
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: control3-carrusel-v1-final-20261005
+      - name: Esperar set completo y reconstruir imágenes
+        shell: bash
+        run: |
+          set -euo pipefail
+          count=$(find tmp-carousel -maxdepth 1 -type f -name '*.b64' 2>/dev/null | wc -l)
+          echo "Piezas recibidas: $count/9"
+          if [ "$count" -ne 9 ]; then
+            exit 0
+          fi
+          for src in tmp-carousel/*.b64; do
+            name=$(basename "$src" .b64)
+            base64 -d "$src" > "assets/$name"
+            test -s "assets/$name"
+            head -c 4 "assets/$name" | grep -q 'RIFF'
+            dd if="assets/$name" bs=1 skip=8 count=4 status=none | grep -q 'WEBP'
+          done
+          rm -rf tmp-carousel
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets tmp-carousel
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Construir imágenes finales del carrusel V1"
+          git push
