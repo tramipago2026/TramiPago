@@ -14,25 +14,32 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: control3-carrusel-v1-final-20261005
-      - name: Esperar set completo y reconstruir imágenes
+      - name: Convertir set aprobado del carrusel
         shell: bash
         run: |
           set -euo pipefail
-          count=$(find tmp-carousel -maxdepth 1 -type f -name '*.b64.part*' 2>/dev/null | wc -l)
-          echo "Fragmentos recibidos: $count/18"
-          if [ "$count" -ne 18 ]; then
-            exit 0
-          fi
-          for part0 in tmp-carousel/*.b64.part0; do
-            base="${part0%.part0}"
-            name=$(basename "$base" .b64)
-            cat "$base".part0 "$base".part1 | base64 -d > "assets/$name"
-            test -s "assets/$name"
-            head -c 4 "assets/$name" | grep -q 'RIFF'
-            dd if="assets/$name" bs=1 skip=8 count=4 status=none | grep -q 'WEBP'
-          done
+          test "$(find tmp-carousel -maxdepth 1 -type f -name 'promo-v1-*.png' | wc -l)" -eq 9
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          srcdir=Path("tmp-carousel")
+          outdir=Path("assets")
+          for src in sorted(srcdir.glob("promo-v1-*.png")):
+              im=Image.open(src).convert("RGB")
+              if im.width != im.height:
+                  raise SystemExit(f"No cuadrada: {src} {im.size}")
+              im=im.resize((600,600), Image.Resampling.LANCZOS)
+              out=outdir/(src.stem+".webp")
+              im.save(out,"WEBP",quality=82,method=6)
+              chk=Image.open(out)
+              if chk.size != (600,600):
+                  raise SystemExit(f"Dimensión incorrecta: {out} {chk.size}")
+              print(out, out.stat().st_size)
+          PY
           test "$(find assets -maxdepth 1 -type f -name 'promo-v1-*.webp' | wc -l)" -eq 9
           rm -rf tmp-carousel
+          git rm .github/workflows/build-carousel-assets.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add assets tmp-carousel
