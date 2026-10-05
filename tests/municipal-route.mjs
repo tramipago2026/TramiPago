@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 const read=path=>fs.readFileSync(new URL(`../${path}`,import.meta.url),'utf8');
 const promos=read('promos.js'),search=read('catalog-search.js'),catalog=read('tramites.html'),page=read('municipales.html'),runtime=read('municipales-page.js'),styles=read('site.css');
 // Auditoría estática: no suplanta verificaciones con datos reales de contribuyentes.
-assert.match(promos,/promo-municipal-20260911\.webp[^\n]*href:["']municipales\.html["']/,'Anuncio municipal conduce a Municipales');
+assert.match(promos,/promo-deuda-municipal-v1\.webp[^\n]*href:["']municipales\.html#elegir-municipio["']/,'Anuncio municipal final conduce al selector de Municipales');
 assert.match(promos,/function ensureMunicipalEntry\(/,'Entrada municipal definida');
 assert.match(promos,/ensureMunicipalEntry\(\);/,'Entrada municipal montada');
 assert.match(promos,/link\.href=["']municipales\.html#elegir-municipio["']/,'Entrada municipal vinculada al selector');
@@ -26,7 +26,7 @@ assert.doesNotMatch(page,/Consulta y pago de tasas, multas y boletas/,'Sin prome
 assert.match(styles,/f3de14_b18f1125127b4cc0a399602aa63de1b2~mv2\.png/,'Imagen usada por la tarjeta municipal');
 assert.match(styles,/home-municipal-entry>b:hover/,'Texto del botón cambia al pasar el cursor');
 assert.ok(fs.existsSync(new URL('../assets/logo-tramipago.webp',import.meta.url)),'Logo');
-assert.ok(fs.existsSync(new URL('../assets/promo-municipal-20260911.webp',import.meta.url)),'Imagen municipal del carrusel');
+assert.ok(fs.existsSync(new URL('../assets/carousel-v1/promo-deuda-municipal-v1.webp',import.meta.url)),'Imagen municipal final del carrusel');
 assert.doesNotMatch(styles,/municipal-20260918\.avif/,'Sin recurso municipal obsoleto en CSS');
 assert.equal((page.match(/class="municipal-consult-form"/g)||[]).length,2,'Un formulario por municipio');
 assert.equal((page.match(/class="action primary municipal-send"/g)||[]).length,2,'Un botón Enviar consulta por municipio');

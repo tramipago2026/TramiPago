@@ -71,10 +71,61 @@ console.log(`Archivos inspeccionados: ${paths.length}; referencias estáticas ve
 if (errors.length) { for (const error of errors) console.error(`ERROR ${error}`); process.exitCode = 1; }
 else console.log('PASS: referencias locales y sintaxis JavaScript verificadas. No equivale a probar el sitio publicado.');
 
-const promoExact=readFileSync(join(root,'assets','promo-tramite-online-exact-20261001.png'));
-const promoPngOk=promoExact.length===2873972
-  && promoExact.subarray(0,8).toString('hex')==='89504e470d0a1a0a';
-if(!promoPngOk){
-  console.error('ERROR la publicidad exacta debe ser el PNG original de 2873972 bytes.');
-  process.exitCode=1;
-}else console.log('PASS: publicidad exacta PNG verificada por tamaño y firma.');
+const carouselNames=[
+  'promo-tramites-online-v1.webp',
+  'promo-arca-monotributo-v1.webp',
+  'promo-apostillado-legalizaciones-v1.webp',
+  'promo-consulta-abogado-v1.webp',
+  'promo-informe-vehicular-v1.webp',
+  'promo-antecedentes-penales-v1.webp',
+  'promo-deuda-municipal-v1.webp',
+  'promo-cualquier-tramite-v1.webp',
+  'promo-estado-civil-v1.webp'
+];
+const carouselAsset=name=>['assets','carousel-v1',name].join('/');
+function webpDimensions(buffer){
+  for(let i=20;i<buffer.length-10;i++){
+    if(buffer[i]===0x9d&&buffer[i+1]===0x01&&buffer[i+2]===0x2a){
+      return [buffer.readUInt16LE(i+3)&0x3fff,buffer.readUInt16LE(i+5)&0x3fff];
+    }
+  }
+  return [0,0];
+}
+for(const name of carouselNames){
+  const asset=carouselAsset(name);
+  const buffer=readFileSync(join(root,'assets','carousel-v1',name));
+  const webpOk=buffer.subarray(0,4).toString('ascii')==='RIFF'
+    && buffer.subarray(8,12).toString('ascii')==='WEBP';
+  const [width,height]=webpDimensions(buffer);
+  if(!webpOk||width!==1000||height!==1000){
+    console.error(`ERROR pieza final del carrusel inválida: ${asset} (${width}x${height})`);
+    process.exitCode=1;
+  }
+}
+const promosSource=readFileSync(join(root,'promos.js'),'utf8');
+for(const name of carouselNames){
+  const asset=carouselAsset(name);
+  if(!promosSource.includes(asset)){
+    console.error(`ERROR promos.js no referencia pieza final: ${asset}`);
+    process.exitCode=1;
+  }
+}
+const oldPromoRefs=[
+  'promo-general-20260911.webp',
+  'promo-vehicular-20260911.webp',
+  'promo-antecedentes-20260911.webp',
+  'promo-municipal-20260911.webp',
+  'promo-art-20260911.webp',
+  'promo-tramite-online-exact-20261001.png',
+  'promo-certificacion-estado-civil-20261004.webp',
+  'promo-arca-20260916.webp',
+  'promo-apostillas-20260916.webp',
+  'promo-abogado-20260916.webp'
+];
+for(const oldRef of oldPromoRefs){
+  if(promosSource.includes(oldRef)){
+    console.error(`ERROR promos.js todavía referencia una pieza anterior: ${oldRef}`);
+    process.exitCode=1;
+  }
+}
+console.log('PASS: carrusel V1 referencia exclusivamente 9 piezas finales WebP de 1000x1000.');

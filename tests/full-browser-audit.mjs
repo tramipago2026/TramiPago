@@ -128,30 +128,30 @@ if(await next.count()&&await card.count()){
   ok(seen.size>=5,"Carrusel no expone suficientes destinos");
   for(const href of seen){ if(href.startsWith("https://wa.me/"))ok(href.includes("5491167083232"),"Carrusel WhatsApp con número incorrecto"); else if(href.startsWith("#/"))ok(/#\/(tramite|familia)\//.test(href),"Carrusel con ruta interna inválida: "+href); else ok(/municipales\.html/.test(href),"Carrusel con destino inesperado: "+href); }
   console.log("CAROUSEL_DESTINATIONS",JSON.stringify([...seen]));
-  let promoFound=false;
-  for(let i=0;i<12;i++){
+  const carouselBase=["assets","carousel-v1"].join("/")+"/";
+  const expectedCarouselSources=[
+    "promo-tramites-online-v1.webp",
+    "promo-arca-monotributo-v1.webp",
+    "promo-apostillado-legalizaciones-v1.webp",
+    "promo-consulta-abogado-v1.webp",
+    "promo-informe-vehicular-v1.webp",
+    "promo-antecedentes-penales-v1.webp",
+    "promo-deuda-municipal-v1.webp",
+    "promo-cualquier-tramite-v1.webp",
+    "promo-estado-civil-v1.webp"
+  ].map(name=>carouselBase+name);
+  const seenImages=new Set();
+  for(let i=0;i<18;i++){
     const image=card.locator("img");
     const src=(await image.getAttribute("src"))||"";
-    if(src.includes("promo-tramite-online-exact-20261001.png")){
-      promoFound=true;
-      ok((await image.evaluate(img=>img.complete&&img.naturalWidth===1254&&img.naturalHeight===1254)),"Publicidad exacta no carga con sus dimensiones originales 1254x1254");
-      const visual=await image.evaluate(img=>{
-        const c=document.createElement("canvas"); c.width=80; c.height=80;
-        const ctx=c.getContext("2d"); ctx.drawImage(img,0,0,80,80);
-        const data=ctx.getImageData(0,0,80,80).data;
-        let min=255,max=0,sum=0,count=0;
-        for(let i=0;i<data.length;i+=4){
-          const y=(data[i]+data[i+1]+data[i+2])/3;
-          min=Math.min(min,y); max=Math.max(max,y); sum+=y; count++;
-        }
-        return {min,max,avg:sum/count};
-      });
-      ok(visual.max-visual.min>40 && visual.avg<245,"Publicidad online nueva se renderiza en blanco o sin contraste");
-      break;
-    }
-    await next.click(); await page.waitForTimeout(80);
+    if(src)seenImages.add(src);
+    ok((await image.evaluate(img=>img.complete&&img.naturalWidth===1000&&img.naturalHeight===1000)),"Pieza del carrusel no carga a 1000x1000: "+src);
+    await next.click();
+    await page.waitForTimeout(60);
   }
-  ok(promoFound,"Publicidad online nueva no aparece en el carrusel");
+  for(const expected of expectedCarouselSources)ok(seenImages.has(expected),"Falta pieza final del carrusel: "+expected);
+  for(const src of seenImages)ok(expectedCarouselSources.includes(src),"Carrusel muestra pieza vieja o inesperada: "+src);
+  ok(seenImages.size===9,"Carrusel final no contiene exactamente 9 piezas: "+seenImages.size);
 }
 
 await goto("#/familia/atencion-abogado");

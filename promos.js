@@ -6,46 +6,19 @@
   let timer=null;
   let index=0;
 
-  const originalPromos=[
-    {image:"assets/promo-general-20260911.webp",alt:"TramiPago, trámites online y asistencia personalizada",message:"Quiero consultar por un trámite."},
-    {image:"assets/promo-vehicular-20260911.webp",alt:"Informe vehicular de TramiPago",href:"#/tramite/informe-vehicular"},
-    {image:"assets/promo-antecedentes-20260911.webp",alt:"Antecedentes Penales de TramiPago",href:"#/tramite/antecedentes-penales"},
-    {image:"assets/promo-municipal-20260911.webp",alt:"Trámites municipales de San Miguel y José C. Paz: elegir municipio y gestión",href:"municipales.html"},
-    {image:"assets/promo-art-20260911.webp",alt:"Consulta por accidente de trabajo o ART",message:"Quiero consultar por un accidente de trabajo o ART."}
+  const promos=[
+    {image:"assets/carousel-v1/promo-tramites-online-v1.webp",alt:"Trámites online con gestión simple y acompañamiento personalizado",message:"Quiero consultar por un trámite online."},
+    {image:"assets/carousel-v1/promo-arca-monotributo-v1.webp",alt:"ARCA y Monotributo: altas, bajas y modificaciones",href:"#/familia/arca-monotributo"},
+    {image:"assets/carousel-v1/promo-apostillado-legalizaciones-v1.webp",alt:"Apostillado y legalizaciones con revisión, carga y seguimiento",href:"#/familia/legalizaciones-apostillas"},
+    {image:"assets/carousel-v1/promo-consulta-abogado-v1.webp",alt:"Consulta con abogado: ART, laboral, accidentes y sucesiones",href:"#/familia/atencion-abogado"},
+    {image:"assets/carousel-v1/promo-informe-vehicular-v1.webp",alt:"Informe vehicular: dominio, infracciones y patentes",href:"#/tramite/informe-vehicular"},
+    {image:"assets/carousel-v1/promo-antecedentes-penales-v1.webp",alt:"Antecedentes penales con gestión simple, rápida y segura",href:"#/tramite/antecedentes-penales"},
+    {image:"assets/carousel-v1/promo-deuda-municipal-v1.webp",alt:"Consulta de deuda e impuestos municipales de José C. Paz y San Miguel",href:"municipales.html#elegir-municipio"},
+    {image:"assets/carousel-v1/promo-cualquier-tramite-v1.webp",alt:"Consultá por cualquier trámite con acompañamiento de TramiPago",message:"Quiero consultar por cualquier trámite."},
+    {image:"assets/carousel-v1/promo-estado-civil-v1.webp",alt:"Certificación de Estado Civil con gestión y seguimiento personalizado",href:"#/tramite/certificacion-estado-civil"}
   ];
 
-  // Estas piezas se activan únicamente cuando el archivo aprobado existe y carga.
-  // Así GitHub Pages nunca muestra una imagen rota antes de que se suban los WebP.
-  const approvedPromos=[
-    {image:"assets/promo-tramite-online-exact-20261001.png",alt:"Consultá por cualquier trámite online con TramiPago",message:"Quiero consultar por un trámite online."},
-    {image:"assets/promo-certificacion-estado-civil-20261004.webp",alt:"Certificación de Estado Civil con gestión y seguimiento de TramiPago",href:"#/tramite/certificacion-estado-civil"},
-    {image:"assets/promo-arca-20260916.webp",alt:"ARCA y Monotributo: altas, bajas, modificaciones y facturación",href:"#/familia/arca-monotributo"},
-    {image:"assets/promo-apostillas-20260916.webp",alt:"Apostillado y legalizaciones: consultas y gestiones documentales",href:"#/familia/legalizaciones-apostillas"},
-    {image:"assets/promo-abogado-20260916.webp",alt:"Consultá con abogado: ART, laboral, accidentes y sucesiones",href:"#/familia/atencion-abogado"}
-  ];
-  const verifiedImages=new Set();
-  let promos=originalPromos.slice();
-
-  function updateAvailablePromos(){
-    const lawyerReady=verifiedImages.has("assets/promo-abogado-20260916.webp");
-    promos=approvedPromos.filter(item=>verifiedImages.has(item.image)).concat(
-      originalPromos.filter(item=>!lawyerReady||item.image!=="assets/promo-art-20260911.webp")
-    );
-    if(index>=promos.length)index=0;
-    setContent();
-  }
-
-  originalPromos.forEach(item=>{const image=new Image();image.src=item.image;});
-  approvedPromos.forEach(item=>{
-    const image=new Image();
-    image.onload=()=>{
-      if(!image.naturalWidth||!image.naturalHeight)return;
-      verifiedImages.add(item.image);
-      updateAvailablePromos();
-    };
-    image.onerror=()=>{};
-    image.src=item.image;
-  });
+  promos.forEach(item=>{const image=new Image();image.src=item.image;});
 
   function isHome(){return !location.hash||location.hash==="#/";}
   function isDesktop(){return window.innerWidth>=DESKTOP_BREAKPOINT;}
@@ -124,8 +97,8 @@
     rail.setAttribute("aria-label","Publicidades de TramiPago");
     rail.innerHTML=`
       <div class="promo-rail-inner">
-        <a class="promo-rail-card" href="#" aria-label="TramiPago, trámites online y asistencia personalizada">
-          <span class="promo-rail-media"><img src="assets/promo-general-20260911.webp" width="1000" height="1000" decoding="sync" alt="TramiPago, trámites online y asistencia personalizada"></span>
+        <a class="promo-rail-card" href="#" aria-label="Trámites online con gestión simple y acompañamiento personalizado">
+          <span class="promo-rail-media"><img src="assets/carousel-v1/promo-tramites-online-v1.webp" width="1000" height="1000" decoding="sync" alt="Trámites online con gestión simple y acompañamiento personalizado"></span>
         </a>
         <div class="promo-rail-controls">
           <button class="promo-rail-arrow prev" type="button" aria-label="Publicidad anterior">‹</button>
