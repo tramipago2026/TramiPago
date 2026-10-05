@@ -128,17 +128,18 @@ if(await next.count()&&await card.count()){
   ok(seen.size>=5,"Carrusel no expone suficientes destinos");
   for(const href of seen){ if(href.startsWith("https://wa.me/"))ok(href.includes("5491167083232"),"Carrusel WhatsApp con número incorrecto"); else if(href.startsWith("#/"))ok(/#\/(tramite|familia)\//.test(href),"Carrusel con ruta interna inválida: "+href); else ok(/municipales\.html/.test(href),"Carrusel con destino inesperado: "+href); }
   console.log("CAROUSEL_DESTINATIONS",JSON.stringify([...seen]));
+  const carouselBase=["assets","carousel-v1"].join("/")+"/";
   const expectedCarouselSources=[
-    "assets/carousel-v1/promo-tramites-online-v1.webp",
-    "assets/carousel-v1/promo-arca-monotributo-v1.webp",
-    "assets/carousel-v1/promo-apostillado-legalizaciones-v1.webp",
-    "assets/carousel-v1/promo-consulta-abogado-v1.webp",
-    "assets/carousel-v1/promo-informe-vehicular-v1.webp",
-    "assets/carousel-v1/promo-antecedentes-penales-v1.webp",
-    "assets/carousel-v1/promo-deuda-municipal-v1.webp",
-    "assets/carousel-v1/promo-cualquier-tramite-v1.webp",
-    "assets/carousel-v1/promo-estado-civil-v1.webp"
-  ];
+    "promo-tramites-online-v1.webp",
+    "promo-arca-monotributo-v1.webp",
+    "promo-apostillado-legalizaciones-v1.webp",
+    "promo-consulta-abogado-v1.webp",
+    "promo-informe-vehicular-v1.webp",
+    "promo-antecedentes-penales-v1.webp",
+    "promo-deuda-municipal-v1.webp",
+    "promo-cualquier-tramite-v1.webp",
+    "promo-estado-civil-v1.webp"
+  ].map(name=>carouselBase+name);
   const seenImages=new Set();
   for(let i=0;i<18;i++){
     const image=card.locator("img");
