@@ -19,14 +19,14 @@ jobs:
         run: |
           set -euo pipefail
           count=$(find tmp-carousel -maxdepth 1 -type f -name '*.b64.part*' 2>/dev/null | wc -l)
-          echo "Fragmentos recibidos: $count/36"
-          if [ "$count" -ne 36 ]; then
+          echo "Fragmentos recibidos: $count/18"
+          if [ "$count" -ne 18 ]; then
             exit 0
           fi
           for part0 in tmp-carousel/*.b64.part0; do
             base="${part0%.part0}"
             name=$(basename "$base" .b64)
-            cat "$base".part0 "$base".part1 "$base".part2 "$base".part3 | base64 -d > "assets/$name"
+            cat "$base".part0 "$base".part1 | base64 -d > "assets/$name"
             test -s "assets/$name"
             head -c 4 "assets/$name" | grep -q 'RIFF'
             dd if="assets/$name" bs=1 skip=8 count=4 status=none | grep -q 'WEBP'
