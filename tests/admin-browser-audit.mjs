@@ -14,6 +14,7 @@ const ok=(cond,msg)=>{if(!cond)failures.push(msg);};
 
 const mockModule = `
 let aal="aal1";
+let mfaVerified=false;
 const request={
   id:"req-audit-1",
   tracking_code:"IV-001281-D4993304",
@@ -78,12 +79,17 @@ export function createClient(){
       getUser:async()=>({data:{user:{id:"user-1",email:"tramipago@gmail.com"}}}),
       signOut:async()=>({error:null}),
       signInWithPassword:async()=>({error:null}),
+      refreshSession:async()=>{
+        globalThis.__mfaRefreshCalls=(globalThis.__mfaRefreshCalls||0)+1;
+        if(mfaVerified)aal="aal2";
+        return {data:{session:{user:{id:"user-1"}}},error:null};
+      },
       mfa:{
         getAuthenticatorAssuranceLevel:async()=>({data:{currentLevel:aal},error:null}),
         listFactors:async()=>({data:{totp:[],phone:[]},error:null}),
         enroll:async()=>({data:{id:"factor-new",totp:{qr_code:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E",secret:"TESTSECRET123"}},error:null}),
         challenge:async()=>({data:{id:"challenge-1"},error:null}),
-        verify:async()=>{aal="aal2";return {data:{},error:null};}
+        verify:async()=>{mfaVerified=true;return {data:{},error:null};}
       }
     },
     from:builder,
@@ -105,6 +111,7 @@ await page.locator('#mfa-form input[name="code"]').fill("123456");
 await page.locator('#mfa-form button[type="submit"]').click();
 
 await page.waitForSelector("#dashboard-view:not([hidden])",{timeout:3000});
+ok(await page.evaluate(()=>globalThis.__mfaRefreshCalls===1),"MFA verificado no refresca la sesión antes de abrir el panel");
 ok(await page.locator("#request-list .request-row").count()===1,"Admin no carga listado de solicitudes");
 
 await page.locator("#request-list .request-row").click();
