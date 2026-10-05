@@ -71,17 +71,18 @@ console.log(`Archivos inspeccionados: ${paths.length}; referencias estáticas ve
 if (errors.length) { for (const error of errors) console.error(`ERROR ${error}`); process.exitCode = 1; }
 else console.log('PASS: referencias locales y sintaxis JavaScript verificadas. No equivale a probar el sitio publicado.');
 
-const carouselAssets=[
-  'assets/carousel-v1/promo-tramites-online-v1.webp',
-  'assets/carousel-v1/promo-arca-monotributo-v1.webp',
-  'assets/carousel-v1/promo-apostillado-legalizaciones-v1.webp',
-  'assets/carousel-v1/promo-consulta-abogado-v1.webp',
-  'assets/carousel-v1/promo-informe-vehicular-v1.webp',
-  'assets/carousel-v1/promo-antecedentes-penales-v1.webp',
-  'assets/carousel-v1/promo-deuda-municipal-v1.webp',
-  'assets/carousel-v1/promo-cualquier-tramite-v1.webp',
-  'assets/carousel-v1/promo-estado-civil-v1.webp'
+const carouselNames=[
+  'promo-tramites-online-v1.webp',
+  'promo-arca-monotributo-v1.webp',
+  'promo-apostillado-legalizaciones-v1.webp',
+  'promo-consulta-abogado-v1.webp',
+  'promo-informe-vehicular-v1.webp',
+  'promo-antecedentes-penales-v1.webp',
+  'promo-deuda-municipal-v1.webp',
+  'promo-cualquier-tramite-v1.webp',
+  'promo-estado-civil-v1.webp'
 ];
+const carouselAsset=name=>['assets','carousel-v1',name].join('/');
 function webpDimensions(buffer){
   for(let i=20;i<buffer.length-10;i++){
     if(buffer[i]===0x9d&&buffer[i+1]===0x01&&buffer[i+2]===0x2a){
@@ -90,8 +91,9 @@ function webpDimensions(buffer){
   }
   return [0,0];
 }
-for(const asset of carouselAssets){
-  const buffer=readFileSync(join(root,asset));
+for(const name of carouselNames){
+  const asset=carouselAsset(name);
+  const buffer=readFileSync(join(root,'assets','carousel-v1',name));
   const webpOk=buffer.subarray(0,4).toString('ascii')==='RIFF'
     && buffer.subarray(8,12).toString('ascii')==='WEBP';
   const [width,height]=webpDimensions(buffer);
@@ -101,7 +103,8 @@ for(const asset of carouselAssets){
   }
 }
 const promosSource=readFileSync(join(root,'promos.js'),'utf8');
-for(const asset of carouselAssets){
+for(const name of carouselNames){
+  const asset=carouselAsset(name);
   if(!promosSource.includes(asset)){
     console.error(`ERROR promos.js no referencia pieza final: ${asset}`);
     process.exitCode=1;
