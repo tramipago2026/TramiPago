@@ -24,6 +24,7 @@ let mfaFactorId="";
 let mfaChallengeId="";
 let errorCount24h=0;
 const detailCache=new Map();
+const MFA_RELOAD_GUARD="tramipago:mfa-reload-once";
 
 async function localJson(path,options={}){
   const response=await fetch(path,{cache:"no-store",headers:{"Content-Type":"application/json",...(options.headers||{})},...options});
@@ -78,12 +79,46 @@ async function requireMfa(){
   return false;
 }
 
+async function finishMfaTransition(){
+  let refreshError=null;
+  try{
+    const refreshed=await supabase.auth.refreshSession();
+    refreshError=refreshed.error||null;
+  }catch(error){refreshError=error;}
+
+  let aal=null;
+  let aalError=null;
+  try{
+    const result=await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    aal=result.data;
+    aalError=result.error||null;
+  }catch(error){aalError=error;}
+
+  if(!aalError&&aal?.currentLevel==="aal2"){
+    sessionStorage.removeItem(MFA_RELOAD_GUARD);
+    await enterDashboard();
+    return;
+  }
+
+  if(sessionStorage.getItem(MFA_RELOAD_GUARD)!=="1"){
+    sessionStorage.setItem(MFA_RELOAD_GUARD,"1");
+    location.reload();
+    return;
+  }
+
+  sessionStorage.removeItem(MFA_RELOAD_GUARD);
+  $("#mfa-error").textContent=refreshError||aalError
+    ?"El código fue aceptado, pero no se pudo actualizar la sesión. Volvé a iniciar sesión."
+    :"El código fue aceptado, pero la sesión no alcanzó el nivel de seguridad requerido. Volvé a iniciar sesión.";
+}
+
 async function enterDashboard(){
   const {data:{user}}=await supabase.auth.getUser();
   if(!user){showLogin();return;}
   const {data:admin,error}=await supabase.from("admin_users").select("user_id").eq("user_id",user.id).maybeSingle();
   if(error||!admin){await supabase.auth.signOut();showLogin("La cuenta no tiene permiso de administrador.");return;}
   try{if(!(await requireMfa()))return;}catch(error){showLogin("No se pudo validar la verificación en dos pasos.");return;}
+  sessionStorage.removeItem(MFA_RELOAD_GUARD);
   $("#login-view").hidden=true;$("#mfa-view").hidden=true;$("#dashboard-view").hidden=false;$("#logout").hidden=false;await loadRequests();
 }
 
@@ -234,7 +269,7 @@ async function updateStatus(status,form){
   detailCache.delete(id);await loadRequests();
 }
 
-$("#login-form").addEventListener("submit",async event=>{event.preventDefault();if(LOCAL_MODE)return;$("#login-error").textContent="";const form=new FormData(event.currentTarget);const {error}=await supabase.auth.signInWithPassword({email:form.get("email"),password:form.get("password")});if(error){$("#login-error").textContent="Correo o contraseña incorrectos.";return;}await enterDashboard();});
+$("#login-form").addEventListener("submit",async event=>{event.preventDefault();if(LOCAL_MODE)return;$("#login-error").textContent="";const form=new FormData(event.currentTarget);const {error}=await supabase.auth.signInWithPassword({email:form.get("email"),password:form.get("password")});if(error){$("#login-error").textContent="Correo o contraseña incorrectos.";return;}sessionStorage.removeItem(MFA_RELOAD_GUARD);await enterDashboard();});
 $("#mfa-form").addEventListener("submit",async event=>{
   event.preventDefault();
   $("#mfa-error").textContent="";
@@ -263,10 +298,10 @@ $("#mfa-form").addEventListener("submit",async event=>{
     return;
   }
   event.currentTarget.reset();
-  await enterDashboard();
+  await finishMfaTransition();
 });
 
-$("#logout").addEventListener("click",async()=>{if(!LOCAL_MODE&&supabase)await supabase.auth.signOut();showLogin();});
+$("#logout").addEventListener("click",async()=>{if(!LOCAL_MODE&&supabase)await supabase.auth.signOut();sessionStorage.removeItem(MFA_RELOAD_GUARD);showLogin();});
 $("#refresh").addEventListener("click",async()=>{detailCache.clear();await loadRequests();});
 $("#search").addEventListener("input",renderList);$("#filter").addEventListener("change",renderList);
 $("#request-list").addEventListener("click",event=>{const row=event.target.closest("[data-id]");if(row)renderDetail(row.dataset.id);});
