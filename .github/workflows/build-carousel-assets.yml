@@ -4,7 +4,7 @@ on:
     branches:
       - control3-carrusel-v1-final-20261005
     paths:
-      - 'tmp-carousel/**'
+      - 'tmp-carousel/READY'
 permissions:
   contents: write
 jobs:
