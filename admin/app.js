@@ -1,6 +1,6 @@
 const LOCAL_MODE=["localhost","127.0.0.1","::1"].includes(location.hostname);
-const PROJECT_URL="https://injimzsxbnawnekybfpm.supabase.co";
-const PUBLISHABLE_KEY="sb_publishable__bYVmN8G7g1fJG28C0SN0g_WbRJ23Ua";
+const PROJECT_URL="https://nfckhymmncpztqvdkygt.supabase.co";
+const PUBLISHABLE_KEY="sb_publishable_0-apHqscFH--ivfMVzRuGw_dMgEEqqN";
 const LABELS={
   draft:"Borrador",
   payment_pending:"Esperando pago",
