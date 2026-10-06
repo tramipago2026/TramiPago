@@ -5,7 +5,7 @@
   const TOKENS_KEY="tramipago_request_tokens_v1";
   const CORRECTION_KEY="tramipago_backend_correction_request_v1";
   const STORAGE_BUCKET="request-files";
-  const MAX_FILE_BYTES=10*1024*1024;
+  const MAX_FILE_BYTES=1500000;
 
   const DB_TO_UI={
     awaiting_payment:"payment_pending",
