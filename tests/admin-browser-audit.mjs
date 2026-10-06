@@ -10,6 +10,9 @@ const browser=await chromium.launch({
 });
 const page=await browser.newPage({viewport:{width:1440,height:1000}});
 const failures=[];
+const adminSource=await (await fetch("http://admin.tramipago.test:4174/admin/app.js")).text();
+ok(adminSource.includes("@supabase/supabase-js@2.117.2"),"Admin no usa la versión lockless esperada de Supabase JS");
+ok(!adminSource.includes("@supabase/supabase-js@2.105.0"),"Admin conserva Supabase JS 2.105.0 con riesgo de bloqueo de Auth");
 const ok=(cond,msg)=>{if(!cond)failures.push(msg);};
 
 const mockModule = `
