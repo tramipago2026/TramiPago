@@ -5,7 +5,7 @@
   const TOKENS_KEY="tramipago_request_tokens_v1";
   const TOKEN_DB_NAME="tramipago_private_tokens_v1";
   const TOKEN_DB_STORE="tokens";
-  const PROJECT_URL="https://injimzsxbnawnekybfpm.supabase.co";
+  const PROJECT_URL="https://nfckhymmncpztqvdkygt.supabase.co";
   const PUBLISHABLE_KEY="sb_publishable__bYVmN8G7g1fJG28C0SN0g_WbRJ23Ua";
 
   function read(storage,key,fallback){
