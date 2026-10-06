@@ -4,15 +4,15 @@
   const LOCAL_BACKEND_DISABLED=["localhost","127.0.0.1","::1"].includes(location.hostname)||window.__TRAMIPAGO_DISABLE_BACKEND===true;
   if(LOCAL_BACKEND_DISABLED)return;
 
-  const PROJECT_URL="https://injimzsxbnawnekybfpm.supabase.co";
-  const PUBLISHABLE_KEY="sb_publishable__bYVmN8G7g1fJG28C0SN0g_WbRJ23Ua";
+  const PROJECT_URL="https://nfckhymmncpztqvdkygt.supabase.co";
+  const PUBLISHABLE_KEY="sb_publishable_0-apHqscFH--ivfMVzRuGw_dMgEEqqN";
   const SDK_URL="https://esm.sh/@supabase/supabase-js@2.105.0";
   const REQUESTS_KEY="tramipago_requests_v1";
   const TOKENS_KEY="tramipago_request_tokens_v1";
   const START_KEY="tramipago_backend_started_at_v1";
   const CORRECTION_KEY="tramipago_backend_correction_request_v1";
   const STORAGE_BUCKET="request-files";
-  const MAX_FILE_BYTES=10*1024*1024;
+  const MAX_FILE_BYTES=1500000;
   const TOKEN_DB_NAME="tramipago_private_tokens_v1";
   const TOKEN_DB_STORE="tokens";
   const TOKEN_TTL_MS=30*24*60*60*1000;
