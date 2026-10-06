@@ -41,7 +41,7 @@ async function boot(){
   }
   try{
     const {createClient}=await import("https://esm.sh/@supabase/supabase-js@2.105.0");
-    supabase=createClient(PROJECT_URL,PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+    supabase=createClient(PROJECT_URL,PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:sessionStorage,detectSessionInUrl:false}});
     window.TRAMI_ADMIN_SUPABASE=supabase;
     const {data:{session}}=await supabase.auth.getSession();
     if(session)await enterDashboard();else showLogin();
