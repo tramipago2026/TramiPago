@@ -59,3 +59,7 @@ assert.match(appJs,/image\/jpeg,image\/png,image\/webp,application\/pdf/,"app.js
 assert.match(servicesJs,/image\/jpeg,image\/png,image\/webp/,"services.js: faltan formatos explícitos de imagen");
 
 console.log("PASS: CSP, JavaScript inline, sinks críticos y secretos del runtime verificados.");
+
+const adminApp=readFileSync(join(root,"admin/app.js"),"utf8");
+assert.match(adminApp,/storage:\s*sessionStorage/,"Admin session must be tab-scoped");
+assert.match(adminApp,/detectSessionInUrl:\s*false/,"Admin must ignore auth tokens in URL");
