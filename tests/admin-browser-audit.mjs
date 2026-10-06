@@ -81,15 +81,21 @@ export function createClient(){
       signInWithPassword:async()=>({error:null}),
       refreshSession:async()=>{
         globalThis.__mfaRefreshCalls=(globalThis.__mfaRefreshCalls||0)+1;
-        if(mfaVerified)aal="aal2";
         return {data:{session:{user:{id:"user-1"}}},error:null};
       },
       mfa:{
         getAuthenticatorAssuranceLevel:async()=>({data:{currentLevel:aal},error:null}),
         listFactors:async()=>({data:{totp:[],phone:[]},error:null}),
         enroll:async()=>({data:{id:"factor-new",totp:{qr_code:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E",secret:"TESTSECRET123"}},error:null}),
-        challenge:async()=>({data:{id:"challenge-1"},error:null}),
-        verify:async()=>{mfaVerified=true;return {data:{},error:null};}
+        challenge:async()=>{
+          globalThis.__mfaChallengeCalls=(globalThis.__mfaChallengeCalls||0)+1;
+          return {data:{id:"challenge-"+globalThis.__mfaChallengeCalls},error:null};
+        },
+        verify:async()=>{
+          mfaVerified=true;
+          setTimeout(()=>{aal="aal2";},60);
+          return {data:{},error:null};
+        }
       }
     },
     from:builder,
@@ -111,7 +117,8 @@ await page.locator('#mfa-form input[name="code"]').fill("123456");
 await page.locator('#mfa-form button[type="submit"]').click();
 
 await page.waitForSelector("#dashboard-view:not([hidden])",{timeout:3000});
-ok(await page.evaluate(()=>globalThis.__mfaRefreshCalls===1),"MFA verificado no refresca la sesión antes de abrir el panel");
+ok(await page.evaluate(()=>(globalThis.__mfaRefreshCalls||0)===0),"MFA ejecuta refreshSession manual después de verify");
+ok(await page.evaluate(()=>globalThis.__mfaChallengeCalls===1),"MFA crea un segundo challenge después de verificar correctamente");
 ok(await page.locator("#request-list .request-row").count()===1,"Admin no carga listado de solicitudes");
 
 await page.locator("#request-list .request-row").click();
