@@ -39,7 +39,7 @@ async function boot(){
     await loadRequests();return;
   }
   try{
-    const {createClient}=await import("https://esm.sh/@supabase/supabase-js@2.105.0");
+    const {createClient}=await import("https://esm.sh/@supabase/supabase-js@2.117.2");
     supabase=createClient(PROJECT_URL,PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:sessionStorage,detectSessionInUrl:false}});
     window.TRAMI_ADMIN_SUPABASE=supabase;
     const {data:{session}}=await supabase.auth.getSession();
