@@ -43,7 +43,7 @@
       name: "Partidas y Certificados",
       description: "Partidas de la Provincia de Buenos Aires y Ciudad Autónoma de Buenos Aires, y certificados de alcance nacional.",
       image: "assets/partidas-familia-final.webp",
-      serviceIds: ["partidas", "partidas-caba", "certificacion-estado-civil", "certificado-domicilio-pba"]
+      serviceIds: ["partidas", "partidas-caba", "certificacion-estado-civil"]
     }
     ,{
       id: "asistencia-digital",
@@ -374,7 +374,7 @@
       shortDescription: "Declaración Jurada de Domicilio PBA — Provincia de Buenos Aires.",
       description: "Trámite online personal con asistencia y seguimiento de TramiPago. La validación ante el organismo la realiza siempre el titular y TramiPago no solicita claves, contraseñas ni códigos.",
       resultDelivery: "authority-platform",
-      active: true,
+      active: false,
       intakeOnly: false,
       officialInfoDate: "2026-10-07",
       internalAgency: "Registro Provincial de las Personas de la Provincia de Buenos Aires",
