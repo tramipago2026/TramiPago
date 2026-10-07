@@ -101,6 +101,38 @@ await page.locator('input[name="civilJurisdiction"][value="pba"]').check();
 await page.waitForTimeout(80);
 ok(await page.locator(".estado-civil-caba-notice").count()===0,"Aviso CABA persiste al elegir PBA");
 ok(await page.locator('input[name="dniFront"]').isVisible(),"Soltería PBA no continúa al formulario");
+
+// Certificado de Domicilio PBA: acceso directo, precio final y formulario sin credenciales.
+await goto("#/familia/partidas-pba");
+const domicilioCard=page.locator('[data-service-id="certificado-domicilio-pba"]');
+ok(await domicilioCard.count()===1,"Partidas y Certificados no muestra Certificado de Domicilio");
+const domicilioCardText=(await domicilioCard.innerText()).replace(/\s+/g," ");
+ok(domicilioCardText.includes("Certificado de Domicilio"),"Tarjeta Domicilio sin título");
+ok(domicilioCardText.includes("Provincia de Buenos Aires"),"Tarjeta Domicilio sin subtítulo PBA");
+ok(domicilioCardText.includes("20.000"),"Tarjeta Domicilio no muestra $20.000");
+
+await goto("#/");
+const searchInput=page.locator("#tramipago-search-input");
+ok(await searchInput.count()===1,"Buscador principal no disponible");
+if(await searchInput.count()){
+  await searchInput.fill("certificado domicilio");
+  await page.waitForTimeout(100);
+  const result=page.locator('.catalog-search-result[href="#/tramite/certificado-domicilio-pba"]');
+  ok(await result.count()===1,"Buscador no encuentra Certificado de Domicilio");
+}
+
+await goto("#/tramite/certificado-domicilio-pba");
+const domicilioForm=page.locator("#data-form");
+ok(await domicilioForm.count()===1,"Certificado de Domicilio no muestra formulario directo");
+const domicilioText=(await page.locator(".process-shell").innerText()).replace(/\s+/g," ");
+ok(domicilioText.includes("20.000"),"Certificado de Domicilio no muestra precio final $20.000");
+ok(!domicilioText.includes("8.700"),"Certificado de Domicilio expone comercialmente la tasa oficial de $8.700");
+for(const id of ["dni","declaredAddress","addressStreet","addressNumber","addressLocality","addressDistrict","destinationEntity","hasOfficialKey","adultDeclaration","selfDeclaration"]){
+  ok(await page.locator(`[name="${id}"]`).count()>0,"Falta campo Domicilio: "+id);
+}
+ok(await page.locator('input[type="password"]').count()===0,"Certificado de Domicilio solicita contraseña");
+ok(await page.locator('[name*="password" i],[name*="claveFiscal" i],[name*="claveAnses" i],[name*="otp" i]').count()===0,"Certificado de Domicilio incluye campos de credenciales");
+
 for(const service of services){
   await goto("#/tramite/"+service.id);
   ok(await page.locator(".process-shell,.service-page,.panel").count()>0,"Trámite no renderiza: "+service.id);
@@ -162,7 +194,8 @@ if(await next.count()&&await card.count()){
     "promo-antecedentes-penales-v1.webp",
     "promo-deuda-municipal-v1.webp",
     "promo-cualquier-tramite-v1.webp",
-    "promo-estado-civil-v1.webp"
+    "promo-estado-civil-v1.webp",
+    "promo-certificado-domicilio-pba-v1.svg"
   ].map(name=>carouselBase+name);
   const seenImages=new Set();
   for(let i=0;i<18;i++){
@@ -175,7 +208,7 @@ if(await next.count()&&await card.count()){
   }
   for(const expected of expectedCarouselSources)ok(seenImages.has(expected),"Falta pieza final del carrusel: "+expected);
   for(const src of seenImages)ok(expectedCarouselSources.includes(src),"Carrusel muestra pieza vieja o inesperada: "+src);
-  ok(seenImages.size===9,"Carrusel final no contiene exactamente 9 piezas: "+seenImages.size);
+  ok(seenImages.size===10,"Carrusel final no contiene exactamente 10 piezas: "+seenImages.size);
 }
 
 await goto("#/familia/atencion-abogado");
