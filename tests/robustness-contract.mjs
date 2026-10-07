@@ -13,6 +13,7 @@ assert.ok(backend.includes("TRAMI_REPORT_ERROR")&&backend.includes("log-client-e
 assert.ok(backend.includes("recordHelp")&&backend.includes("TOKEN_DB_NAME")&&backend.includes("update-request-draft"),"Falta identidad persistente del trámite o ayuda contextual");
 assert.ok(app.includes("createDraftRequest")&&app.includes('status: "draft"')&&app.includes("missingFields"),"Falta borrador con código temprano y campos pendientes");
 assert.ok(app.includes("DRAFT_RETENTION_MS = 7 * 24 * 60 * 60 * 1000")&&app.includes("now - timestamp <= DRAFT_RETENTION_MS"),"Falta caducidad local de borradores a 7 días");
+assert.ok(app.includes('code: service.deferDraftUntilSubmit ? "" : buildCode(service.codePrefix)'),"Los trámites diferidos deben recibir el código real del backend");
 assert.ok(
   backend.includes("function pruneTokenMap") &&
   backend.includes("requestById.get(requestId)") &&
