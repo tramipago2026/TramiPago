@@ -115,10 +115,15 @@ await goto("#/");
 const searchInput=page.locator("#tramipago-search-input");
 ok(await searchInput.count()===1,"Buscador principal no disponible");
 if(await searchInput.count()){
-  await searchInput.fill("certificado domicilio");
+  for(const query of ["certificado de domicilio","domicilio","declaración jurada de domicilio","certificado domicilio pba"]){
+    await searchInput.fill(query);
+    await page.waitForTimeout(100);
+    const result=page.locator('.catalog-search-result[href="#/tramite/certificado-domicilio-pba"]');
+    ok(await result.count()===1,"Buscador no encuentra Certificado de Domicilio con: "+query);
+  }
+  await searchInput.fill("Partidas y Certificados");
   await page.waitForTimeout(100);
-  const result=page.locator('.catalog-search-result[href="#/tramite/certificado-domicilio-pba"]');
-  ok(await result.count()===1,"Buscador no encuentra Certificado de Domicilio");
+  ok(await page.locator('.catalog-search-result[href="#/familia/partidas-pba"]').count()===1,"Buscador no encuentra Partidas y Certificados");
 }
 
 await goto("#/tramite/certificado-domicilio-pba");
