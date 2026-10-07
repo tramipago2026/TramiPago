@@ -119,7 +119,7 @@
     .partidas-type-heading { margin:0 0 13px;text-align:center; }
     .partidas-type-heading h2 { margin:0 0 3px;color:var(--navy-deep);font-size:1.1rem; }
     .partidas-type-heading p { margin:0;color:var(--text-muted);font-size:.9rem; }
-    .partidas-type-grid { display:grid;grid-template-columns:repeat(4,154px);justify-content:center;gap:14px;align-items:stretch; }
+    .partidas-type-grid { display:flex;flex-wrap:wrap;justify-content:center;gap:14px;align-items:stretch;width:100%;max-width:490px;margin:0 auto; }
     .partidas-type-media { padding:0; }
     .partidas-type-media img { display:block;width:100%;height:100%;object-fit:cover;object-position:center; }
     .partidas-type-birth .partidas-type-media { background:linear-gradient(145deg,#e7f6ff,#bde8ff); }
@@ -129,7 +129,7 @@
     .partidas-type-card.is-unavailable { cursor:default;filter:saturate(.65);opacity:.68; }
     .partidas-type-card.is-unavailable:hover,.partidas-type-card.is-unavailable:focus-visible { box-shadow:0 5px 16px var(--shadow-soft);transform:none; }
     .partidas-caba-note { max-width:650px;margin:0 auto 14px;padding:9px 12px;color:var(--navy-deep);background:#fff7eb;border:1px solid #efc57c;border-radius:8px;font-size:.82rem;line-height:1.35;text-align:center; }
-    @media(max-width:760px){.partidas-type-grid{grid-template-columns:repeat(2,minmax(0,154px))}.partidas-jurisdiction-grid{grid-template-columns:repeat(2,minmax(0,154px))}}
+    @media(max-width:760px){.partidas-type-grid{display:grid;grid-template-columns:repeat(2,minmax(0,154px));max-width:none;margin:0 auto}.partidas-jurisdiction-grid{grid-template-columns:repeat(2,minmax(0,154px))}}
     @media(max-width:390px){.partidas-jurisdiction-grid,.partidas-type-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.partidas-jurisdiction-card,.partidas-type-card{width:100%}.partidas-flow-steps{gap:5px;font-size:.72rem;flex-wrap:wrap}}
     .confirmation { max-width:760px;margin:18px auto 42px;padding:20px 22px; }
     .confirmation .confirmation-icon { width:46px;height:46px;margin:0 auto 9px;font-size:1.45rem; }
@@ -177,13 +177,13 @@
   <script src="services.js?v=20261004-estado-civil1"></script>
   <script src="site-fixes.js?v=20261001-upload-fix3"></script>
   <script src="footer-menu.js?v=eecfeb7acfe8"></script>
-  <script src="app.js?v=20261004-estado-civil1"></script>
+  <script src="app.js?v=20261007-partidas-visual1"></script>
   <script src="catalog-search.js?v=20261004-estado-civil1"></script>
   <script src="promos.js?v=20261005-carousel-v1"></script>
   <script src="security-hardening.js?v=20261002-tracking-single1"></script>
   <script src="backend-sync.js?v=20261002-tracking-fix1"></script>
   
 <script src="whatsapp-context.js"></script>  <script src="lawyer-header-badge.js?v=20260930-restore1"></script>
-<script src="index-inline.js?v=20261004-estado-civil1"></script>
+<script src="index-inline.js?v=20261007-partidas-visual1"></script>
 </body>
 </html>
