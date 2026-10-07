@@ -70,5 +70,18 @@ for(const id of ["civilRequestType","civilJurisdiction","dniFront","dniBack","pu
   assert.ok(civil.fields.some(field=>field.id===id),`Falta campo Estado Civil: ${id}`);
 }
 assert.ok(civil.fields.find(field=>field.id==="civilRequestType")?.options?.some(o=>o.value==="single"),"Falta opción Soltería");
+
+const domicilio=byId.get("certificado-domicilio-pba");
+assert.ok(domicilio,"Falta servicio Certificado de Domicilio PBA");
+assert.equal(domicilio.name,"Certificado de Domicilio","Nombre comercial de Domicilio incorrecto");
+assert.equal(Number(domicilio.officialFee),8700,"Tasa oficial interna de Domicilio inesperada");
+assert.equal(domicilio.officialFeeIncluded,true,"La tasa oficial de Domicilio debe estar incluida en el precio final");
+assert.equal(Number(domicilio.priceOptions?.[0]?.amount),20000,"Precio final Domicilio debe ser $20.000");
+for(const id of ["dni","declaredAddress","addressStreet","addressNumber","addressLocality","addressDistrict","destinationEntity","hasOfficialKey","adultDeclaration","selfDeclaration"]){
+  assert.ok(domicilio.fields.some(field=>field.id===id),`Falta campo Domicilio: ${id}`);
+}
+for(const forbidden of ["password","username","claveAnses","claveFiscal","verificationCode","otp"]){
+  assert.ok(!domicilio.fields.some(field=>String(field.id).toLowerCase()===forbidden.toLowerCase()),`Domicilio no debe solicitar credenciales: ${forbidden}`);
+}
 console.log(`PASS: ${directs.length} tarjetas directas, ${families.length} familias, ${services.length} formularios configurados, ${fieldsChecked} campos y ${optionsChecked} opciones; destinos e imágenes locales consistentes.`);
 console.log('LÍMITE: validación estática de configuración; no prueba enlaces externos, envío a Supabase ni simetría visual.');

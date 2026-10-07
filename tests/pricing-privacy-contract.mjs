@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 const read=name=>readFileSync(name,"utf8");
 
 const services=read("services.js");
-for(const [id,amount] of [["apostilla-tad",20000],["legalizaciones",15000],["certificacion-estado-civil",15000]]){
+for(const [id,amount] of [["apostilla-tad",20000],["legalizaciones",15000],["certificacion-estado-civil",15000],["certificado-domicilio-pba",20000]]){
   assert.ok(services.includes(`id:"${id}"`)||services.includes(`id: "${id}"`),`${id}: debe existir en el catálogo consolidado`);
   assert.ok(services.includes(`amount:${amount}`)||services.includes(`amount: ${amount}`),`${id}: honorario esperado ausente`);
 }
@@ -15,7 +15,8 @@ assert.doesNotMatch(read("certificacion-estado-civil.html"),/\$8\.000|8\.000\s*p
 
 const app=read("app.js");
 assert.match(app,/!service\.officialFeeExternal\s*&&/,"los honorarios externos no desactivan el servicio");
-assert.match(app,/const total = service\.officialFeeExternal/,"no sumar el VEP al pago de TramiPago");
+assert.match(app,/const total = service\.officialFeeIncluded/,"debe soportar tasas oficiales incluidas sin sumarlas dos veces");
+assert.match(app,/: service\.officialFeeExternal/,"debe conservar el tratamiento de aranceles oficiales externos");
 assert.match(app,/Total TramiPago \(sin arancel oficial\)/,"separación visible en pantalla de pago");
 assert.match(app,/No transfieras ese arancel a TramiPago/,"advertencia de pago");
 

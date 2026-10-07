@@ -43,7 +43,7 @@
       name: "Partidas y Certificados",
       description: "Partidas de la Provincia de Buenos Aires y Ciudad Autónoma de Buenos Aires, y certificados de alcance nacional.",
       image: "assets/partidas-familia-final.webp",
-      serviceIds: ["partidas", "partidas-caba", "certificacion-estado-civil"]
+      serviceIds: ["partidas", "partidas-caba", "certificacion-estado-civil", "certificado-domicilio-pba"]
     }
     ,{
       id: "asistencia-digital",
@@ -363,6 +363,56 @@
         { id: "thirdPartyDocument", label: "Vínculo o autorización del tercero", type: "file", required: false, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
         { id: "purpose", label: "Organismo o trámite donde vas a presentar la documentación", type: "text", required: true },
         ...contactFields,
+        authorizationField
+      ]
+    }
+
+    ,{
+      id: "certificado-domicilio-pba",
+      codePrefix: "CD",
+      name: "Certificado de Domicilio",
+      shortDescription: "Declaración Jurada de Domicilio PBA — Provincia de Buenos Aires.",
+      description: "Trámite online personal con asistencia y seguimiento de TramiPago. La validación ante el organismo la realiza siempre el titular y TramiPago no solicita claves, contraseñas ni códigos.",
+      resultDelivery: "authority-platform",
+      active: true,
+      intakeOnly: false,
+      officialInfoDate: "2026-10-07",
+      internalAgency: "Registro Provincial de las Personas de la Provincia de Buenos Aires",
+      requirements: [
+        "Ser mayor de edad.",
+        "Realizar el trámite para sí mismo.",
+        "Tener DNI.",
+        "Declarar un domicilio de la Provincia de Buenos Aires.",
+        "Contar con clave ANSES o clave fiscal para la validación personal en el canal oficial."
+      ],
+      components: [
+        "Preparación de los datos necesarios para la Declaración Jurada de Domicilio.",
+        "Asistencia durante el trámite online.",
+        "Seguimiento de la gestión.",
+        "La validación personal ante el organismo corresponde siempre al titular."
+      ],
+      officialFee: 8700,
+      officialFeeIncluded: true,
+      priceOptions: [
+        { value: "gestion", label: "Certificado de Domicilio PBA", amount: 20000, duration: "Trámite online con asistencia y seguimiento" }
+      ],
+      fields: [
+        ...contactFields,
+        { id: "dni", label: "DNI", type: "text", required: true, inputmode: "numeric", placeholder: "Ej.: 12345678" },
+        { id: "declaredAddress", label: "Domicilio completo a declarar", type: "text", required: true, placeholder: "Ej.: Calle 1234, José C. Paz, Buenos Aires" },
+        { id: "addressStreet", label: "Calle", type: "text", required: true },
+        { id: "addressNumber", label: "Número", type: "text", required: true, inputmode: "numeric", placeholder: "Ej.: 1234" },
+        { id: "addressFloorUnit", label: "Piso / departamento (si corresponde)", type: "text", required: false },
+        { id: "addressLocality", label: "Localidad", type: "text", required: true },
+        { id: "addressDistrict", label: "Partido", type: "text", required: true },
+        { id: "postalCode", label: "Código postal (si corresponde)", type: "text", required: false, placeholder: "Ej.: 1665" },
+        { id: "destinationEntity", label: "Entidad u organismo donde presentarás el certificado", type: "text", required: true },
+        { id: "hasOfficialKey", label: "¿Tenés clave ANSES o clave fiscal?", type: "choice", required: true, noDefault: true, options: [
+          { value: "yes", label: "Sí" },
+          { value: "no", label: "No" }
+        ] },
+        { id: "adultDeclaration", label: "Confirmo que soy mayor de edad.", type: "checkbox", required: true },
+        { id: "selfDeclaration", label: "Confirmo que realizo este trámite para mí mismo/a.", type: "checkbox", required: true },
         authorizationField
       ]
     }

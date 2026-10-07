@@ -15,7 +15,8 @@
     {image:"assets/carousel-v1/promo-antecedentes-penales-v1.webp",alt:"Antecedentes penales con gestión simple, rápida y segura",href:"#/tramite/antecedentes-penales"},
     {image:"assets/carousel-v1/promo-deuda-municipal-v1.webp",alt:"Consulta de deuda e impuestos municipales de José C. Paz y San Miguel",href:"municipales.html#elegir-municipio"},
     {image:"assets/carousel-v1/promo-cualquier-tramite-v1.webp",alt:"Consultá por cualquier trámite con acompañamiento de TramiPago",message:"Quiero consultar por cualquier trámite."},
-    {image:"assets/carousel-v1/promo-estado-civil-v1.webp",alt:"Certificación de Estado Civil con gestión y seguimiento personalizado",href:"#/tramite/certificacion-estado-civil"}
+    {image:"assets/carousel-v1/promo-estado-civil-v1.webp",alt:"Certificación de Estado Civil con gestión y seguimiento personalizado",href:"#/tramite/certificacion-estado-civil"},
+    {image:"assets/carousel-v1/promo-certificado-domicilio-pba-v1.webp",alt:"Certificado de Domicilio PBA, trámite online con asistencia y seguimiento por $20.000",href:"#/tramite/certificado-domicilio-pba"}
   ];
 
   promos.forEach(item=>{const image=new Image();image.src=item.image;});

@@ -175,11 +175,13 @@
     const option = selectedPriceOption(service, values);
     const officialFee = service.officialFee;
     const serviceFee = option?.amount ?? null;
-    const total = service.officialFeeExternal
+    const total = service.officialFeeIncluded
       ? (serviceFee !== null && serviceFee !== undefined ? Number(serviceFee) : null)
-      : officialFee !== null && officialFee !== undefined && serviceFee !== null && serviceFee !== undefined
-        ? Number(officialFee) + Number(serviceFee)
-        : null;
+      : service.officialFeeExternal
+        ? (serviceFee !== null && serviceFee !== undefined ? Number(serviceFee) : null)
+        : officialFee !== null && officialFee !== undefined && serviceFee !== null && serviceFee !== undefined
+          ? Number(officialFee) + Number(serviceFee)
+          : null;
 
     return {
       officialFee,
@@ -416,6 +418,25 @@
     `;
   }
 
+  function renderDomicilioCard() {
+    const service = getService("certificado-domicilio-pba");
+    if (!service?.active) return "";
+    return `
+      <button class="partidas-type-card partidas-type-domicilio" type="button"
+        data-action="select-service" data-service-id="certificado-domicilio-pba"
+        aria-label="Certificado de Domicilio Provincia de Buenos Aires">
+        <span class="partidas-type-media" aria-hidden="true">
+          <img src="assets/partidas-pba-jurisdiccion-v5.webp" alt="" />
+          <span class="partidas-type-price-badge">$20.000</span>
+        </span>
+        <span class="catalog-card-info">
+          <span class="catalog-card-title">Certificado de Domicilio</span>
+          <span class="catalog-card-subtitle">Provincia de Buenos Aires</span>
+        </span>
+      </button>
+    `;
+  }
+
   function renderPartidasFamily() {
     const partType = state.partidasType;
     const selectedType = PARTIDAS_TYPE_CARDS.find((item) => item.value === partType) || null;
@@ -431,6 +452,7 @@
           <div class="partidas-type-grid">
             ${PARTIDAS_TYPE_CARDS.map((item) => renderPartidaTypeCard(item)).join("")}
             ${renderEstadoCivilCard()}
+            ${renderDomicilioCard()}
           </div>
           ${partType ? `
             <div class="partidas-flow-steps" aria-label="Pasos del trámite">
@@ -615,9 +637,14 @@
   }
 
   function renderDataStage(service) {
-    const civilPrice = service.id === "certificacion-estado-civil"
+    const visiblePrice = service.id === "certificacion-estado-civil"
       ? selectedPriceOption(service, state.draft)?.amount
-      : null;
+      : service.id === "certificado-domicilio-pba"
+        ? getPricing(service, state.draft).total
+        : null;
+    const visiblePriceLabel = service.id === "certificado-domicilio-pba"
+      ? "Precio final TramiPago"
+      : "Servicio TramiPago";
     const partTypePreset = service.id === "partidas"
       ? (sessionStorage.getItem("tramipago_partidas_prefill_v1") || "")
       : service.id === "partidas-caba"
@@ -628,7 +655,7 @@
     return `
       <div class="panel">
         <div class="panel-header"><h2>Completá tus datos</h2></div>
-        ${civilPrice != null ? `<div class="notice estado-civil-price"><strong>Servicio TramiPago: ${formatARS(civilPrice)}</strong></div>` : ""}
+        ${visiblePrice != null ? `<div class="notice estado-civil-price"><strong>${escapeHTML(visiblePriceLabel)}: ${formatARS(visiblePrice)}</strong></div>` : ""}
         <div class="service-quick-summary">
           <strong>${escapeHTML(service.shortDescription || service.name)}</strong>
           <span>Completá los campos y tocá Siguiente.</span>
