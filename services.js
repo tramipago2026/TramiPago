@@ -371,7 +371,7 @@
       id: "certificado-domicilio-pba",
       codePrefix: "CD",
       name: "Certificado de Domicilio",
-      shortDescription: "Declaración Jurada de Domicilio de la Provincia de Buenos Aires.",
+      shortDescription: "Declaración Jurada de Domicilio PBA — Provincia de Buenos Aires.",
       description: "Trámite online personal con asistencia y seguimiento de TramiPago. La validación ante el organismo la realiza siempre el titular y TramiPago no solicita claves, contraseñas ni códigos.",
       resultDelivery: "authority-platform",
       active: true,
