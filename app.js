@@ -628,10 +628,10 @@
     return `
       <div class="panel">
         <div class="panel-header"><h2>Completá tus datos</h2></div>
+        ${civilPrice != null ? `<div class="notice estado-civil-price"><strong>Servicio TramiPago: ${formatARS(civilPrice)}</strong></div>` : ""}
         <div class="service-quick-summary">
           <strong>${escapeHTML(service.shortDescription || service.name)}</strong>
           <span>Completá los campos y tocá Siguiente.</span>
-          ${civilPrice != null ? `<span><strong>Servicio TramiPago: ${formatARS(civilPrice)}</strong></span>` : ""}
         </div>
         <form id="data-form" novalidate>
           ${partTypePreset ? `<input type="hidden" name="partType" value="${escapeHTML(partTypePreset)}" />` : ""}
@@ -646,7 +646,12 @@
   function setEstadoCivilField(form, fieldId, visible, required = false) {
     const nodes = Array.from(form.querySelectorAll(`[name="${fieldId}"]`));
     const wrapper = nodes[0]?.closest(".field, .choice-field");
-    if (wrapper) wrapper.hidden = !visible;
+    if (wrapper) {
+      wrapper.hidden = !visible;
+      if (visible) wrapper.style.removeProperty("display");
+      else wrapper.style.setProperty("display", "none", "important");
+      wrapper.setAttribute("aria-hidden", visible ? "false" : "true");
+    }
     nodes.forEach((node) => {
       node.disabled = !visible;
       node.required = Boolean(visible && required);
