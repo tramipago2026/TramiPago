@@ -237,7 +237,7 @@
     const now = new Date().toISOString();
     const request = {
       id: createId(),
-      code: buildCode(service.codePrefix),
+      code: service.deferDraftUntilSubmit ? "" : buildCode(service.codePrefix),
       serviceId: service.id,
       serviceName: service.name,
       clientName: values.fullName || "",
