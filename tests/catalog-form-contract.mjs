@@ -58,5 +58,17 @@ for(const service of services){
     if(service.priceOptions.length>1)assert.ok(service.fields.some(f=>f.id===service.priceField),`Selección de precio sin campo: ${service.id}`);
   }
 }
+const civil=byId.get("certificacion-estado-civil");
+assert.ok(civil,"Falta servicio Estado Civil");
+assert.equal(civil.name,"Estado Civil","Nombre comercial de Estado Civil incorrecto");
+assert.equal(civil.intakeOnly,false,"Estado Civil debe usar circuito de pago");
+assert.equal(civil.deferDraftUntilSubmit,true,"CABA no debe crear borrador antes de una variante válida");
+assert.equal(Number(civil.officialFee),8000,"Tasa oficial interna inesperada");
+assert.equal(civil.officialFeeExternal,true,"La tasa oficial debe quedar separada del honorario");
+assert.equal(Number(civil.priceOptions?.[0]?.amount),15000,"Honorario Estado Civil debe ser $15.000");
+for(const id of ["civilRequestType","civilJurisdiction","dniFront","dniBack","purpose"]){
+  assert.ok(civil.fields.some(field=>field.id===id),`Falta campo Estado Civil: ${id}`);
+}
+assert.ok(civil.fields.find(field=>field.id==="civilRequestType")?.options?.some(o=>o.value==="single"),"Falta opción Soltería");
 console.log(`PASS: ${directs.length} tarjetas directas, ${families.length} familias, ${services.length} formularios configurados, ${fieldsChecked} campos y ${optionsChecked} opciones; destinos e imágenes locales consistentes.`);
 console.log('LÍMITE: validación estática de configuración; no prueba enlaces externos, envío a Supabase ni simetría visual.');

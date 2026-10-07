@@ -4,12 +4,14 @@ import assert from "node:assert/strict";
 const read=name=>readFileSync(name,"utf8");
 
 const services=read("services.js");
-for(const [id,amount] of [["apostilla-tad",20000],["legalizaciones",15000]]){
+for(const [id,amount] of [["apostilla-tad",20000],["legalizaciones",15000],["certificacion-estado-civil",15000]]){
   assert.ok(services.includes(`id:"${id}"`)||services.includes(`id: "${id}"`),`${id}: debe existir en el catálogo consolidado`);
   assert.ok(services.includes(`amount:${amount}`)||services.includes(`amount: ${amount}`),`${id}: honorario esperado ausente`);
 }
 assert.match(services,/officialFeeExternal\s*:\s*true/,"las tasas oficiales externas deben quedar separadas");
 assert.match(services,/arancel oficial[\s\S]{0,220}(aparte|se paga aparte)/i,"debe explicitarse que el arancel oficial se paga aparte");
+assert.doesNotMatch(read("tramites.html"),/Partidas y Certificados[\s\S]{0,220}RENAPER/i,"la tarjeta comercial de Partidas y Certificados no debe mostrar RENAPER");
+assert.doesNotMatch(read("certificacion-estado-civil.html"),/\$8\.000|8\.000\s*pesos/i,"la tasa oficial no debe mostrarse como precio comercial en la landing");
 
 const app=read("app.js");
 assert.match(app,/!service\.officialFeeExternal\s*&&/,"los honorarios externos no desactivan el servicio");

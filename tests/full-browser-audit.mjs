@@ -77,6 +77,30 @@ async function fillVisibleForm(){
   return valid;
 }
 
+// Estado Civil: bifurcación específica sin crear un flujo paralelo.
+await goto("#/tramite/certificacion-estado-civil");
+const civilForm=page.locator("#data-form");
+ok(await civilForm.count()===1,"Estado Civil no muestra formulario");
+let civilText=(await page.locator(".process-shell").innerText()).replace(/\s+/g," ");
+ok(civilText.includes("15.000"),"Estado Civil no muestra honorario TramiPago $15.000");
+ok(!civilText.includes("8.000"),"Estado Civil muestra comercialmente la tasa oficial de $8.000");
+ok(!(await page.locator('input[name="civilJurisdiction"]').first().isVisible()),"Estado Civil pide jurisdicción antes de elegir Soltería");
+await page.locator('input[name="civilRequestType"][value="certification"]').check();
+await page.waitForTimeout(80);
+ok(!(await page.locator('input[name="civilJurisdiction"]').first().isVisible()),"Certificación de Estado Civil no debe pedir PBA/CABA");
+ok(await page.locator('input[name="dniFront"]').isVisible()&&await page.locator('input[name="dniBack"]').isVisible(),"Certificación no muestra DNI frente/dorso");
+await page.locator('input[name="civilRequestType"][value="single"]').check();
+await page.waitForTimeout(80);
+ok(await page.locator('input[name="civilJurisdiction"]').first().isVisible(),"Soltería no muestra selector PBA/CABA");
+await page.locator('input[name="civilJurisdiction"][value="caba"]').check();
+await page.waitForTimeout(80);
+ok(await page.locator(".estado-civil-caba-notice").count()===1,"CABA no muestra aviso de trámite inexistente");
+ok((await page.locator(".estado-civil-caba-notice").innerText()).includes("no expide certificado de soltería"),"Aviso CABA incorrecto");
+ok(await page.locator('#data-form button[type="submit"]').isDisabled(),"CABA permite iniciar soltería indebidamente");
+await page.locator('input[name="civilJurisdiction"][value="pba"]').check();
+await page.waitForTimeout(80);
+ok(await page.locator(".estado-civil-caba-notice").count()===0,"Aviso CABA persiste al elegir PBA");
+ok(await page.locator('input[name="dniFront"]').isVisible(),"Soltería PBA no continúa al formulario");
 for(const service of services){
   await goto("#/tramite/"+service.id);
   ok(await page.locator(".process-shell,.service-page,.panel").count()>0,"Trámite no renderiza: "+service.id);

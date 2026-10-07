@@ -316,38 +316,52 @@
     ,{
       id: "certificacion-estado-civil",
       codePrefix: "EC",
-      name: "Certificación de Estado Civil",
-      shortDescription: "Certificación RENAPER del último estado civil declarado.",
-      description: "Solicitud digital por TAD para certificar el último estado civil declarado ante RENAPER. TramiPago prepara y acompaña la gestión sin solicitar contraseñas.",
+      name: "Estado Civil",
+      shortDescription: "Certificación de Estado Civil o constancia de soltería, según corresponda.",
+      description: "Elegí si necesitás una Certificación de Estado Civil o acreditar soltería. TramiPago reutiliza el mismo flujo y te guía según el caso, sin solicitar contraseñas.",
       resultDelivery: "authority-platform",
       active: true,
-      intakeOnly: true,
-      officialInfoDate: "2026-10-04",
+      intakeOnly: false,
+      deferDraftUntilSubmit: true,
+      officialInfoDate: "2026-10-06",
+      internalAgency: "RENAPER",
       requirements: [
-        "Último ejemplar vigente del DNI del titular.",
-        "Acceso a TAD mediante una opción de autenticación habilitada por el organismo.",
-        "Si solicita un familiar directo, documentación que acredite el vínculo.",
-        "Si actúa una persona apoderada, poder otorgado por el titular con las formalidades exigidas."
+        "DNI vigente del titular.",
+        "Organismo o trámite donde se presentará la documentación.",
+        "Para soltería en Provincia de Buenos Aires, partida o acta de nacimiento cuando corresponda.",
+        "Si actúa un tercero, documentación que acredite vínculo o autorización."
       ],
       components: [
-        "Certificación del último estado civil declarado ante RENAPER.",
-        "Arancel oficial RENAPER: $8.000, abonado por el canal oficial.",
-        "El expediente se genera dentro de los 10 días hábiles posteriores al pago.",
-        "La respuesta se informa dentro de los 25 días hábiles siguientes a la generación del expediente."
+        "Certificación de Estado Civil de alcance nacional.",
+        "Constancia negativa de matrimonio para Provincia de Buenos Aires.",
+        "CABA no expide certificado de soltería ni certificado negativo de matrimonio."
       ],
       officialFee: 8000,
       officialFeeExternal: true,
-      priceOptions: [],
+      priceOptions: [
+        { value: "gestion", label: "Gestión Estado Civil", amount: 15000, duration: "Gestión online" }
+      ],
       fields: [
-        { id: "applicantRole", label: "¿Quién solicita la certificación?", type: "choice", required: true, options: [
+        { id: "civilRequestType", label: "¿Qué necesitás?", type: "choice", required: true, noDefault: true, options: [
+          { value: "certification", label: "Certificación de Estado Civil" },
+          { value: "single", label: "Constancia / certificado de soltería" }
+        ] },
+        { id: "civilJurisdiction", label: "¿Dónde necesitás acreditar la inexistencia de matrimonio?", type: "choice", required: false, noDefault: true, options: [
+          { value: "pba", label: "Provincia de Buenos Aires" },
+          { value: "caba", label: "CABA" }
+        ] },
+        { id: "applicantRole", label: "¿Quién solicita?", type: "choice", required: true, options: [
           { value: "holder", label: "Titular" },
           { value: "direct-family", label: "Familiar directo" },
           { value: "attorney", label: "Apoderado/a" }
         ] },
         { id: "recordHolderFullName", label: "Nombre y apellido del titular", type: "text", required: true },
         { id: "dni", label: "DNI del titular", type: "text", required: true, inputmode: "numeric", placeholder: "Ej.: 12345678" },
-        { id: "purpose", label: "Organismo o trámite donde vas a presentar la certificación", type: "text", required: true },
-        { id: "supportingDocument", label: "Documentación respaldatoria (si corresponde)", type: "file", required: false, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
+        { id: "dniFront", label: "DNI vigente — frente", type: "file", required: true, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
+        { id: "dniBack", label: "DNI vigente — dorso", type: "file", required: true, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
+        { id: "birthCertificate", label: "Partida / acta de nacimiento (si corresponde)", type: "file", required: false, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
+        { id: "thirdPartyDocument", label: "Vínculo o autorización del tercero", type: "file", required: false, accept: "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" },
+        { id: "purpose", label: "Organismo o trámite donde vas a presentar la documentación", type: "text", required: true },
         ...contactFields,
         authorizationField
       ]
