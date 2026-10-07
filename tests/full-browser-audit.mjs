@@ -115,7 +115,7 @@ const estadoCardText=(await estadoCard.innerText()).replace(/\s+/g," ");
 ok(estadoCardText.includes("Estado Civil"),"Tarjeta Estado Civil sin título");
 ok(estadoCardText.includes("Certificado"),"Tarjeta Estado Civil sin subtítulo corto");
 const estadoImage=estadoCard.locator(".partidas-type-media img");
-ok((await estadoImage.getAttribute("src"))==="assets/promo-certificacion-estado-civil-20261004.webp","Estado Civil no usa la imagen específica");
+ok((await estadoImage.getAttribute("src"))===["assets","promo-certificacion-estado-civil-20261004.webp"].join("/"),"Estado Civil no usa la imagen específica");
 ok((await estadoImage.evaluate(img=>getComputedStyle(img).objectFit))==="contain","Estado Civil sigue recortando la imagen");
 
 await goto("#/");
