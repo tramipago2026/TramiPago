@@ -1,0 +1,12 @@
+import { chromium } from "playwright";
+const browser=await chromium.launch({headless:true});
+const page=await browser.newPage({viewport:{width:1280,height:900}});
+await page.goto("https://tramipago.com.ar/#/seguimiento",{waitUntil:"domcontentloaded"});
+await page.waitForSelector("#tracking-form",{timeout:20000});
+await page.locator('#tracking-code').fill("EC-001296-4E0317F4");
+await page.locator('#tracking-last4').fill("1111");
+await page.locator('#tracking-form button[type="submit"]').click();
+await page.waitForFunction(()=>document.querySelector(".tracking-result")?.textContent?.includes("Estado Civil"),null,{timeout:20000});
+const text=(await page.locator(".tracking-result").innerText()).replace(/\s+/g," ");
+console.log("TRACKING_REAL",text);
+await browser.close();
