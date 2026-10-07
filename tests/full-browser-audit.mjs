@@ -195,7 +195,7 @@ if(await next.count()&&await card.count()){
     "promo-deuda-municipal-v1.webp",
     "promo-cualquier-tramite-v1.webp",
     "promo-estado-civil-v1.webp",
-    "promo-certificado-domicilio-pba-v1.svg"
+    "promo-certificado-domicilio-pba-v1.webp"
   ].map(name=>carouselBase+name);
   const seenImages=new Set();
   for(let i=0;i<18;i++){
