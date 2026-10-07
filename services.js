@@ -401,11 +401,11 @@
         { id: "dni", label: "DNI", type: "text", required: true, inputmode: "numeric", placeholder: "Ej.: 12345678" },
         { id: "declaredAddress", label: "Domicilio completo a declarar", type: "text", required: true, placeholder: "Ej.: Calle 1234, José C. Paz, Buenos Aires" },
         { id: "addressStreet", label: "Calle", type: "text", required: true },
-        { id: "addressNumber", label: "Número", type: "text", required: true, inputmode: "numeric" },
+        { id: "addressNumber", label: "Número", type: "text", required: true, inputmode: "numeric", placeholder: "Ej.: 1234" },
         { id: "addressFloorUnit", label: "Piso / departamento (si corresponde)", type: "text", required: false },
         { id: "addressLocality", label: "Localidad", type: "text", required: true },
         { id: "addressDistrict", label: "Partido", type: "text", required: true },
-        { id: "postalCode", label: "Código postal (si corresponde)", type: "text", required: false },
+        { id: "postalCode", label: "Código postal (si corresponde)", type: "text", required: false, placeholder: "Ej.: 1665" },
         { id: "destinationEntity", label: "Entidad u organismo donde presentarás el certificado", type: "text", required: true },
         { id: "hasOfficialKey", label: "¿Tenés clave ANSES o clave fiscal?", type: "choice", required: true, noDefault: true, options: [
           { value: "yes", label: "Sí" },
