@@ -80,8 +80,7 @@ const carouselNames=[
   'promo-antecedentes-penales-v1.webp',
   'promo-deuda-municipal-v1.webp',
   'promo-cualquier-tramite-v1.webp',
-  'promo-estado-civil-v1.webp',
-  'promo-certificado-domicilio-pba-v1.webp'
+  'promo-estado-civil-v1.webp'
 ];
 const carouselAsset=name=>['assets','carousel-v1',name].join('/');
 function webpDimensions(buffer){
@@ -129,4 +128,4 @@ for(const oldRef of oldPromoRefs){
     process.exitCode=1;
   }
 }
-console.log('PASS: carrusel V1 referencia exclusivamente 10 piezas finales WebP de 1000x1000.');
+console.log('PASS: carrusel V1 referencia exclusivamente 9 piezas finales WebP de 1000x1000.');

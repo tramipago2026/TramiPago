@@ -6,7 +6,7 @@ const source=readFileSync("services.js","utf8");
 const sandbox={location:{hash:""},setTimeout(){return 0},clearTimeout(){},window:{addEventListener(){}},document:{addEventListener(){},querySelector(){return null},querySelectorAll(){return[]},getElementById(){return null}}};sandbox.window.location=sandbox.location;
 vm.createContext(sandbox);new vm.Script(source).runInContext(sandbox);
 const active=sandbox.window.TRAMI_SERVICES.filter(s=>s.active);
-assert.equal(active.length,25,"Cantidad inesperada de servicios activos");
+assert.equal(active.length,24,"Cantidad inesperada de servicios activos");
 assert.equal(Object.keys(manifest.services).sort().join(","),Array.from(active,s=>s.id).sort().join(","),"Cada servicio activo debe tener una URL SEO propia");
 const sitemap=readFileSync("sitemap.xml","utf8");
 for(const service of active){

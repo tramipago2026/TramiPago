@@ -40,8 +40,15 @@ for(const file of publicHtml){
     ||(html.match(/<link\s+href=["']([^"']+)["']\s+rel=["']canonical["'][^>]*>/i)||[])[1];
   const expected=file==="index.html"?domain+"/":domain+"/"+file;
   assert.equal(canonical,expected,file+": canonical ausente o incorrecto");
-  assert.match(html,/<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*index[^"']*follow[^"']*["']/i,file+": falta meta robots index,follow");
-  assert.ok(sitemapUrls.includes(expected),file+": falta en sitemap.xml");
+  const robotsMeta=(html.match(/<meta[^>]+name=["']robots["'][^>]+content=["']([^"']+)["'][^>]*>/i)||[])[1]||"";
+  const isNoIndex=/\bnoindex\b/i.test(robotsMeta);
+  if(isNoIndex){
+    assert.ok(!sitemapUrls.includes(expected),file+": una página noindex no debe figurar en sitemap.xml");
+  }else{
+    assert.match(robotsMeta,/\bindex\b/i,file+": falta meta robots index");
+    assert.match(robotsMeta,/\bfollow\b/i,file+": falta meta robots follow");
+    assert.ok(sitemapUrls.includes(expected),file+": falta en sitemap.xml");
+  }
 }
 
 for(const url of sitemapUrls){
