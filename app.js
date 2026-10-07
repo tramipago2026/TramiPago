@@ -648,7 +648,7 @@
     const wrapper = nodes[0]?.closest(".field, .choice-field");
     if (wrapper) {
       wrapper.hidden = !visible;
-      if (visible) wrapper.style.removeProperty("display");
+      if (visible) wrapper.style.setProperty("display", wrapper.matches("fieldset") ? "block" : "grid", "important");
       else wrapper.style.setProperty("display", "none", "important");
       wrapper.setAttribute("aria-hidden", visible ? "false" : "true");
     }
