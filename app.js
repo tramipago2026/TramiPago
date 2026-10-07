@@ -409,8 +409,8 @@
         aria-label="Certificación de Estado Civil">
         <span class="partidas-type-media" aria-hidden="true"><img src="assets/partidas-familia-final.webp" alt="" /></span>
         <span class="catalog-card-info">
-          <span class="catalog-card-title">Certificación de Estado Civil</span>
-          <span class="catalog-card-subtitle">Certificado RENAPER</span>
+          <span class="catalog-card-title">Estado Civil</span>
+          <span class="catalog-card-subtitle">Certificación</span>
         </span>
       </button>
     `;
