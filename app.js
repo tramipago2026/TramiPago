@@ -614,6 +614,9 @@
   }
 
   function renderDataStage(service) {
+    const civilPrice = service.id === "certificacion-estado-civil"
+      ? selectedPriceOption(service, state.draft)?.amount
+      : null;
     const partTypePreset = service.id === "partidas"
       ? (sessionStorage.getItem("tramipago_partidas_prefill_v1") || "")
       : service.id === "partidas-caba"
@@ -627,6 +630,7 @@
         <div class="service-quick-summary">
           <strong>${escapeHTML(service.shortDescription || service.name)}</strong>
           <span>Completá los campos y tocá Siguiente.</span>
+          ${civilPrice != null ? `<span><strong>Servicio TramiPago: ${formatARS(civilPrice)}</strong></span>` : ""}
         </div>
         <form id="data-form" novalidate>
           ${partTypePreset ? `<input type="hidden" name="partType" value="${escapeHTML(partTypePreset)}" />` : ""}
@@ -692,7 +696,7 @@
             ${(field.options || []).map((option, index) => `
               <label class="choice-option compact-choice">
                 <input type="radio" name="${escapeHTML(field.id)}" value="${escapeHTML(option.value)}"
-                  ${(value === option.value || (!value && index === 0)) ? "checked" : ""} ${required} />
+                  ${(value === option.value || (!field.noDefault && !value && index === 0)) ? "checked" : ""} ${required} />
                 <span><strong>${escapeHTML(option.label)}</strong></span>
               </label>
             `).join("")}
@@ -978,6 +982,20 @@
         values[field.id] = element.value.trim();
       }
     }
+    if (service.id === "certificacion-estado-civil") {
+      const type = String(values.civilRequestType || "");
+      const jurisdiction = String(values.civilJurisdiction || "");
+      if (type === "certification") {
+        delete values.civilJurisdiction;
+        delete values.birthCertificate;
+        values.internalAgency = "RENAPER";
+        values.procedureVariant = "certification";
+      } else if (type === "single" && jurisdiction === "pba") {
+        values.internalAgency = "Registro de las Personas de la Provincia de Buenos Aires";
+        values.procedureVariant = "single-pba";
+      }
+      if (values.applicantRole === "holder") delete values.thirdPartyDocument;
+    }
     return values;
   }
 
@@ -1001,6 +1019,28 @@
         return service.rules.message || "Completá una de las alternativas requeridas.";
       }
     }
+    if (service.id === "certificacion-estado-civil") {
+      const type = String(values.civilRequestType || "");
+      const jurisdiction = String(values.civilJurisdiction || "");
+      if (!["certification", "single"].includes(type)) {
+        return "Elegí si necesitás Certificación de Estado Civil o constancia de soltería.";
+      }
+      if (!["holder", "direct-family", "attorney"].includes(String(values.applicantRole || ""))) {
+        return "Indicá quién solicita el trámite.";
+      }
+      if (!hasValue(values.dniFront) || !hasValue(values.dniBack)) {
+        return "Cargá el frente y el dorso del DNI vigente.";
+      }
+      if (type === "single") {
+        if (!jurisdiction) return "Elegí Provincia de Buenos Aires o CABA.";
+        if (jurisdiction === "caba") return "El Registro Civil de CABA no expide certificado de soltería ni certificado negativo de matrimonio.";
+        if (jurisdiction !== "pba") return "La jurisdicción seleccionada no está disponible.";
+      }
+      if (values.applicantRole !== "holder" && !hasValue(values.thirdPartyDocument)) {
+        return "Cargá la documentación que acredite el vínculo o la autorización del tercero.";
+      }
+    }
+
     if (service.id === "partidas-caba") {
       const type = values.partType;
       const mode = values.requestMode;
@@ -1046,13 +1086,19 @@
     state.draft = {};
 
     let pending = activePendingRequest(serviceId);
-    if (!pending) pending = createDraftRequest(service);
+    if (!pending && !service.deferDraftUntilSubmit) pending = createDraftRequest(service);
 
-    state.requestId = pending.id;
-    state.draft = { ...(pending.answers || {}) };
-    state.step = pending.status === "payment_pending"
-      ? "payment"
-      : (pending.currentStep === "eligibility" && service.eligibility?.required ? "eligibility" : "data");
+    if (pending) {
+      state.requestId = pending.id;
+      state.draft = { ...(pending.answers || {}) };
+      state.step = pending.status === "payment_pending"
+        ? "payment"
+        : (pending.currentStep === "eligibility" && service.eligibility?.required ? "eligibility" : "data");
+    } else {
+      state.requestId = null;
+      state.draft = {};
+      state.step = "data";
+    }
 
     navigate(`#/tramite/${serviceId}`);
   }
@@ -1061,7 +1107,14 @@
     const service = getService(serviceId);
     if (!service) return;
     let pending = activePendingRequest(serviceId);
-    if (!pending) pending = createDraftRequest(service);
+    if (!pending && !service.deferDraftUntilSubmit) pending = createDraftRequest(service);
+
+    if (!pending) {
+      state.requestId = null;
+      state.draft = {};
+      state.step = "data";
+      return;
+    }
 
     state.requestId = pending.id;
     state.draft = { ...(pending.answers || {}) };
@@ -1227,6 +1280,19 @@
       return navigate(`#/familia/${state.familyId}`);
     }
 
+    if (action === "estado-civil-back") return navigate(state.returnHash || "#/");
+    if (action === "estado-civil-certification") {
+      const form = document.getElementById("data-form");
+      const input = form?.querySelector('input[name="civilRequestType"][value="certification"]');
+      if (input) input.checked = true;
+      const jurisdictionInputs = form ? Array.from(form.querySelectorAll('input[name="civilJurisdiction"]')) : [];
+      jurisdictionInputs.forEach((node) => { node.checked = false; });
+      state.draft.civilRequestType = "certification";
+      delete state.draft.civilJurisdiction;
+      enhanceEstadoCivil();
+      return;
+    }
+
     if (action === "select-service") return startService(trigger.dataset.serviceId);
     if (action === "back-home") return navigate("#/");
     if (action === "back-tracking") return navigate("#/seguimiento");
@@ -1363,6 +1429,7 @@
   app.addEventListener("change", (event) => {
     const form = event.target.closest?.("#data-form");
     if (!form) return;
+    if (state.serviceId === "certificacion-estado-civil") enhanceEstadoCivil();
     clearTimeout(draftSyncTimer);
     draftSyncTimer = window.setTimeout(() => snapshotDraftForm(form), 250);
   });
