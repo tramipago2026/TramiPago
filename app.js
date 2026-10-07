@@ -409,10 +409,10 @@
       <button class="partidas-type-card partidas-type-certificate" type="button"
         data-action="select-service" data-service-id="certificacion-estado-civil"
         aria-label="Certificación de Estado Civil">
-        <span class="partidas-type-media" aria-hidden="true"><img src="assets/partidas-familia-final.webp" alt="" /></span>
+        <span class="partidas-type-media" aria-hidden="true"><img src="assets/promo-certificacion-estado-civil-20261004.webp" alt="" /></span>
         <span class="catalog-card-info">
           <span class="catalog-card-title">Estado Civil</span>
-          <span class="catalog-card-subtitle">Certificación</span>
+          <span class="catalog-card-subtitle">Certificado</span>
         </span>
       </button>
     `;
@@ -430,8 +430,8 @@
           <span class="partidas-type-price-badge">$20.000</span>
         </span>
         <span class="catalog-card-info">
-          <span class="catalog-card-title">Certificado de Domicilio</span>
-          <span class="catalog-card-subtitle">Provincia de Buenos Aires</span>
+          <span class="catalog-card-title">Domicilio PBA</span>
+          <span class="catalog-card-subtitle">Certificado</span>
         </span>
       </button>
     `;

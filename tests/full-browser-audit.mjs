@@ -107,9 +107,16 @@ await goto("#/familia/partidas-pba");
 const domicilioCard=page.locator('[data-service-id="certificado-domicilio-pba"]');
 ok(await domicilioCard.count()===1,"Partidas y Certificados no muestra Certificado de Domicilio");
 const domicilioCardText=(await domicilioCard.innerText()).replace(/\s+/g," ");
-ok(domicilioCardText.includes("Certificado de Domicilio"),"Tarjeta Domicilio sin título");
-ok(domicilioCardText.includes("Provincia de Buenos Aires"),"Tarjeta Domicilio sin subtítulo PBA");
+ok(domicilioCardText.includes("Domicilio PBA"),"Tarjeta Domicilio sin título corto");
+ok(domicilioCardText.includes("Certificado"),"Tarjeta Domicilio sin subtítulo corto");
 ok(domicilioCardText.includes("20.000"),"Tarjeta Domicilio no muestra $20.000");
+const estadoCard=page.locator('[data-service-id="certificacion-estado-civil"]');
+const estadoCardText=(await estadoCard.innerText()).replace(/\s+/g," ");
+ok(estadoCardText.includes("Estado Civil"),"Tarjeta Estado Civil sin título");
+ok(estadoCardText.includes("Certificado"),"Tarjeta Estado Civil sin subtítulo corto");
+const estadoImage=estadoCard.locator(".partidas-type-media img");
+ok((await estadoImage.getAttribute("src"))===["assets","promo-certificacion-estado-civil-20261004.webp"].join("/"),"Estado Civil no usa la imagen específica");
+ok((await estadoImage.evaluate(img=>getComputedStyle(img).objectFit))==="contain","Estado Civil sigue recortando la imagen");
 
 await goto("#/");
 const searchInput=page.locator("#tramipago-search-input");
