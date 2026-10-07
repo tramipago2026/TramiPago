@@ -543,6 +543,7 @@
         </div>
       </section>
     `;
+    if (service.id === "certificacion-estado-civil") setTimeout(enhanceEstadoCivil, 0);
   }
 
   function renderStage(service) {
@@ -642,6 +643,53 @@
     `;
   }
 
+  function setEstadoCivilField(form, fieldId, visible, required = false) {
+    const nodes = Array.from(form.querySelectorAll(`[name="${fieldId}"]`));
+    const wrapper = nodes[0]?.closest(".field, .choice-field");
+    if (wrapper) wrapper.hidden = !visible;
+    nodes.forEach((node) => {
+      node.disabled = !visible;
+      node.required = Boolean(visible && required);
+    });
+  }
+
+  function enhanceEstadoCivil() {
+    if (state.serviceId !== "certificacion-estado-civil" || state.step !== "data") return;
+    const form = document.getElementById("data-form");
+    if (!form) return;
+
+    const type = String(form.elements.namedItem("civilRequestType")?.value || "");
+    const jurisdiction = String(form.elements.namedItem("civilJurisdiction")?.value || "");
+    const role = String(form.elements.namedItem("applicantRole")?.value || "holder");
+    const isCertification = type === "certification";
+    const isSingle = type === "single";
+    const isPba = isSingle && jurisdiction === "pba";
+    const isCaba = isSingle && jurisdiction === "caba";
+    const detailsReady = isCertification || isPba;
+
+    setEstadoCivilField(form, "civilRequestType", true, true);
+    setEstadoCivilField(form, "civilJurisdiction", isSingle, isSingle);
+    for (const id of ["applicantRole","recordHolderFullName","dni","dniFront","dniBack","purpose","fullName","email","whatsapp","authorization"]) {
+      setEstadoCivilField(form, id, detailsReady, detailsReady);
+    }
+    setEstadoCivilField(form, "birthCertificate", isPba, false);
+    setEstadoCivilField(form, "thirdPartyDocument", detailsReady && role !== "holder", detailsReady && role !== "holder");
+
+    const submit = form.querySelector('button[type="submit"]');
+    if (submit) submit.disabled = !detailsReady || isCaba;
+
+    let notice = form.querySelector(".estado-civil-caba-notice");
+    if (isCaba) {
+      if (!notice) {
+        notice = document.createElement("div");
+        notice.className = "notice estado-civil-caba-notice";
+        notice.innerHTML = '<strong>CABA no expide certificado de soltería ni certificado negativo de matrimonio.</strong><p>No vamos a iniciar un trámite inexistente. Podés volver atrás o elegir Certificación de Estado Civil.</p><div class="hero-actions"><button class="button button-secondary" type="button" data-action="estado-civil-back">Volver atrás</button><button class="button button-primary" type="button" data-action="estado-civil-certification">Elegir Certificación de Estado Civil</button></div>';
+        form.querySelector(".step-actions")?.before(notice);
+      }
+    } else {
+      notice?.remove();
+    }
+  }
   function renderCorrectionStage(service) {
     const request = getRequest(state.requestId);
     if (!request) return "";
