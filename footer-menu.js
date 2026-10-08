@@ -441,11 +441,28 @@
     if(meta)meta.innerHTML=`<strong>Datos del trámite</strong><span>Parte ${next+1} de ${total}</span>`;
     const controls=form.querySelector(".form-stage-controls");
     if(controls){
-      controls.querySelector("[data-stage-prev]").hidden=next===0;
-      controls.querySelector("[data-stage-next]").hidden=next===total-1;
+      const prevButton=controls.querySelector("[data-stage-prev]");
+      const nextButton=controls.querySelector("[data-stage-next]");
+      if(prevButton){
+        const hidePrev=next===0;
+        prevButton.hidden=hidePrev;
+        prevButton.style.display=hidePrev?"none":"";
+        prevButton.setAttribute("aria-hidden",hidePrev?"true":"false");
+      }
+      if(nextButton){
+        const hideNext=next===total-1;
+        nextButton.hidden=hideNext;
+        nextButton.style.display=hideNext?"none":"";
+        nextButton.setAttribute("aria-hidden",hideNext?"true":"false");
+      }
     }
     const actions=form.querySelector(".step-actions");
-    if(actions)actions.hidden=next!==total-1;
+    if(actions){
+      const showFinal=next===total-1;
+      actions.hidden=!showFinal;
+      actions.style.display=showFinal?"":"none";
+      actions.setAttribute("aria-hidden",showFinal?"false":"true");
+    }
   }
 
   function setupFormStages(){
