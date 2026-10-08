@@ -651,6 +651,7 @@
         ? (state.draft.partType || sessionStorage.getItem("tramipago_partidas_caba_prefill_v1") || "")
         : "";
     const fields = (service.fields || []).filter((field) => !(partTypePreset && field.id === "partType"));
+    const advanceLabel = service.id === "certificacion-estado-civil" ? "Continuar" : "Siguiente";
 
     return `
       <div class="panel">
@@ -658,13 +659,13 @@
         ${visiblePrice != null ? `<div class="notice estado-civil-price"><strong>${escapeHTML(visiblePriceLabel)}: ${formatARS(visiblePrice)}</strong></div>` : ""}
         <div class="service-quick-summary">
           <strong>${escapeHTML(service.shortDescription || service.name)}</strong>
-          <span>Completá los campos y tocá Siguiente.</span>
+          <span>Completá los campos y tocá ${advanceLabel}.</span>
         </div>
         <form id="data-form" novalidate>
           ${partTypePreset ? `<input type="hidden" name="partType" value="${escapeHTML(partTypePreset)}" />` : ""}
           <div class="form-grid">${fields.map((field) => renderField(field, service)).join("")}</div>
           <div class="form-error" role="alert"></div>
-          ${renderActionBar("Atrás", "Siguiente")}
+          ${renderActionBar("Atrás", advanceLabel)}
         </form>
       </div>
     `;
