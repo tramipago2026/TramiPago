@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const read=path=>fs.readFileSync(new URL(`../${path}`,import.meta.url),'utf8');
-const promos=read('promos.js'),search=read('catalog-search.js'),catalog=read('tramites.html'),page=read('municipales.html'),runtime=read('municipales-page.js'),styles=read('site.css');
+const promos=read('promos.js'),search=read('catalog-search.js'),catalog=read('tramites.html'),catalogRuntime=read('tramites-catalog.js'),page=read('municipales.html'),runtime=read('municipales-page.js'),styles=read('site.css');
 // Auditoría estática: no suplanta verificaciones con datos reales de contribuyentes.
 assert.match(promos,/promo-deuda-municipal-v1\.webp[^\n]*href:["']municipales\.html#elegir-municipio["']/,'Anuncio municipal final conduce al selector de Municipales');
 assert.match(promos,/function ensureMunicipalEntry\(/,'Entrada municipal definida');
@@ -10,10 +10,10 @@ assert.match(promos,/link\.href=["']municipales\.html#elegir-municipio["']/,'Ent
 assert.match(promos,/<b>Seleccioná tu municipio<\/b>/,'Botón municipal con rótulo solicitado');
 assert.match(search,/title:["']Trámites municipales: San Miguel y José C\. Paz["']/,'Municipales indexados en buscador');
 assert.match(search,/href:["']municipales\.html["']/,'Buscador conduce a Municipales');
-assert.match(catalog,/<h2>Trámites municipales — San Miguel y José C\. Paz<\/h2>/,'Municipales en catálogo');
-assert.match(catalog,/href="municipales\.html"/,'Catálogo municipal vinculado');
-assert.match(catalog,/href="index\.html#\/familia\/legalizaciones-apostillas"/,'Legalizaciones en catálogo');
-assert.match(catalog,/href="index\.html#\/familia\/atencion-abogado"/,'Abogados en catálogo');
+assert.match(catalog,/tramites-catalog\.js/,'Catálogo dinámico cargado');
+assert.match(catalogRuntime,/name:"Trámites municipales"/,'Municipales en catálogo');
+assert.match(catalogRuntime,/href:"municipales\.html"/,'Catálogo municipal vinculado');
+assert.ok(catalogRuntime.includes('href:"/#/tramite/"+encodeURIComponent(service.id)'),'Servicios conducen a la ficha operativa individual');
 assert.match(page,/id="elegir-municipio"/,'Formulario selector visible');
 assert.match(page,/name="municipio" value="jose-paz"/,'Opción José C. Paz');
 assert.match(page,/name="municipio" value="san-miguel"/,'Opción San Miguel');
