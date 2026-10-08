@@ -227,6 +227,21 @@ for(const target of secondaryPages){
 const cspViolations=await page.evaluate(()=>window.__cspViolations||[]);
 ok(cspViolations.length===0,"Violaciones CSP detectadas: "+JSON.stringify(cspViolations));
 
+// Chat 02 — tramites.html funciona como catálogo, sin tarifario general.
+await page.goto("http://127.0.0.1:4173/tramites.html",{waitUntil:"networkidle"});
+await page.waitForTimeout(150);
+const catalogCards=page.locator("#tramites-catalog-grid .card");
+ok(await catalogCards.count()===services.length+1,"Catálogo no refleja servicios activos + municipales");
+const catalogText=(await page.locator("main").innerText()).replace(/\s+/g," ");
+ok(!catalogText.includes("$"),"tramites.html vuelve a mostrar precios agrupados");
+const catalogActions=page.locator("#tramites-catalog-grid .action");
+ok(await catalogActions.count()===services.length+1,"Faltan botones del catálogo");
+for(const label of await catalogActions.allTextContents())ok(label.trim()==="Ver trámite","CTA del catálogo distinto de Ver trámite: "+label);
+for(const card of await catalogCards.all()){
+  ok((await card.locator("h2").innerText()).trim().length>0,"Tarjeta de catálogo sin nombre");
+  ok((await card.locator("p").innerText()).trim().length>0,"Tarjeta de catálogo sin descripción");
+}
+
 // CONTROL 3 responsive: verificación real contra producción en viewport móvil estrecho.
 await page.setViewportSize({width:390,height:844});
 async function auditMobileProduction(target, expectedText="", ctaText=""){
