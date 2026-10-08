@@ -78,29 +78,12 @@ async function requireMfa(){
   return false;
 }
 
-async function waitForAal2AfterVerify(timeoutMs=3000){
-  const deadline=Date.now()+timeoutMs;
-  let lastError=null;
-  do{
-    try{
-      const {data,error}=await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-      if(error)lastError=error;
-      else if(data?.currentLevel==="aal2")return {ok:true,error:null};
-    }catch(error){lastError=error;}
-    await new Promise(resolve=>setTimeout(resolve,100));
-  }while(Date.now()<deadline);
-  return {ok:false,error:lastError};
-}
-
-async function finishMfaTransition(){
-  const result=await waitForAal2AfterVerify();
-  if(result.ok){
-    await enterDashboard({mfaVerified:true});
-    return;
-  }
-  $("#mfa-error").textContent=result.error
-    ?"El código fue aceptado, pero no se pudo confirmar la sesión segura. Cerrá sesión y volvé a ingresar."
-    :"El código fue aceptado, pero el navegador no recibió la sesión AAL2. Cerrá sesión y volvé a ingresar.";
+function finishMfaTransition(){
+  // mfa.verify() ya persistió la sesión promovida a AAL2. Reiniciar el
+  // documento evita depender de la propagación en memoria del cliente Auth:
+  // boot() vuelve a leer la sesión persistida y requireMfa() exige AAL2 antes
+  // de mostrar el panel.
+  window.location.replace("/admin/");
 }
 
 async function enterDashboard({mfaVerified=false}={}){
@@ -293,7 +276,7 @@ $("#mfa-form").addEventListener("submit",async event=>{
     return;
   }
   event.currentTarget.reset();
-  await finishMfaTransition();
+  finishMfaTransition();
 });
 
 $("#logout").addEventListener("click",async()=>{if(!LOCAL_MODE&&supabase)await supabase.auth.signOut();showLogin();});
