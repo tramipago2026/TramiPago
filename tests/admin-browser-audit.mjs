@@ -16,8 +16,7 @@ ok(adminSource.includes("@supabase/supabase-js@2.117.2"),"Admin no usa la versi�
 ok(!adminSource.includes("@supabase/supabase-js@2.105.0"),"Admin conserva Supabase JS 2.105.0 con riesgo de bloqueo de Auth");
 
 const mockModule = `
-let aal="aal1";
-let mfaVerified=false;
+let aal=sessionStorage.getItem("mock-aal")==="aal2"?"aal2":"aal1";
 const request={
   id:"req-audit-1",
   tracking_code:"IV-001281-D4993304",
@@ -88,16 +87,22 @@ export function createClient(){
       },
       mfa:{
         getAuthenticatorAssuranceLevel:async()=>({data:{currentLevel:aal},error:null}),
-        listFactors:async()=>({data:{totp:[],phone:[]},error:null}),
+        listFactors:async()=>({data:{totp:[{id:"factor-verified",status:"verified"}],phone:[]},error:null}),
         enroll:async()=>({data:{id:"factor-new",totp:{qr_code:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E",secret:"TESTSECRET123"}},error:null}),
         challenge:async()=>{
-          globalThis.__mfaChallengeCalls=(globalThis.__mfaChallengeCalls||0)+1;
-          return {data:{id:"challenge-"+globalThis.__mfaChallengeCalls},error:null};
+          const count=Number(sessionStorage.getItem("mock-challenge-count")||"0")+1;
+          sessionStorage.setItem("mock-challenge-count",String(count));
+          return {data:{id:"challenge-"+count},error:null};
         },
-        verify:async()=>{
-          mfaVerified=true;
-          setTimeout(()=>{aal="aal2";},60);
-          return {data:{},error:null};
+        verify:async({code})=>{
+          const count=Number(sessionStorage.getItem("mock-verify-count")||"0")+1;
+          sessionStorage.setItem("mock-verify-count",String(count));
+          if(code==="000000"){
+            return {data:{},error:{code:"mfa_totp_verify_failed",message:"Invalid TOTP code"}};
+          }
+          aal="aal2";
+          sessionStorage.setItem("mock-aal","aal2");
+          return {data:{access_token:"mock-aal2-token"},error:null};
         }
       }
     },
@@ -114,15 +119,30 @@ await page.waitForTimeout(300);
 
 ok(await page.locator("#mfa-view").isVisible(),"MFA no se muestra para sesión AAL1");
 ok(await page.locator("#mfa-new-factor").count()===0,"El login AAL1 permite asociar un autenticador alternativo antes de validar el MFA existente");
-ok(await page.locator("#mfa-enroll").isVisible(),"No se muestra alta de autenticador nuevo");
-ok((await page.locator("#mfa-secret").inputValue())==="TESTSECRET123","No se expone clave TOTP para asociar Google Authenticator");
-await page.locator('#mfa-form input[name="code"]').fill("123456");
-await page.locator('#mfa-form button[type="submit"]').click();
+ok(await page.locator("#mfa-enroll").isHidden(),"Se intenta enrolar otro autenticador aunque ya existe un factor TOTP verificado");
 
+await page.locator('#mfa-form input[name="code"]').fill("000000");
+await page.locator('#mfa-form button[type="submit"]').click();
+await page.waitForTimeout(100);
+ok(await page.locator("#mfa-view").isVisible(),"Un código MFA incorrecto permitió salir de la pantalla MFA");
+ok(await page.locator("#dashboard-view").isHidden(),"Un código MFA incorrecto permitió abrir el panel");
+ok((await page.locator("#mfa-error").innerText()).includes("Código incorrecto o vencido"),"No se informa el rechazo del código MFA inválido");
+
+await page.locator('#mfa-form input[name="code"]').fill("123456");
+const navigation=page.waitForNavigation({waitUntil:"domcontentloaded",timeout:3000});
+await page.locator('#mfa-form button[type="submit"]').click();
+await navigation;
 await page.waitForSelector("#dashboard-view:not([hidden])",{timeout:3000});
+
 ok(await page.evaluate(()=>(globalThis.__mfaRefreshCalls||0)===0),"MFA ejecuta refreshSession manual después de verify");
-ok(await page.evaluate(()=>globalThis.__mfaChallengeCalls===1),"MFA crea un segundo challenge después de verificar correctamente");
-ok(await page.locator("#request-list .request-row").count()===1,"Admin no carga listado de solicitudes");
+ok(await page.evaluate(()=>Number(sessionStorage.getItem("mock-challenge-count")||"0")===1),"MFA crea un segundo challenge sin error de IP");
+ok(await page.evaluate(()=>Number(sessionStorage.getItem("mock-verify-count")||"0")===2),"La prueba no ejercitó rechazo y aceptación MFA");
+ok(new URL(page.url()).pathname==="/admin/","MFA válido no navega automáticamente al Admin");
+ok(await page.locator("#request-list .request-row").count()===1,"Admin no carga listado de solicitudes después de la navegación MFA");
+
+await page.reload({waitUntil:"domcontentloaded"});
+await page.waitForSelector("#dashboard-view:not([hidden])",{timeout:3000});
+ok(await page.locator("#mfa-view").isHidden(),"Una sesión AAL2 existente vuelve a pedir MFA después de recargar");
 
 await page.locator("#request-list .request-row").click();
 await page.waitForSelector('#request-detail h2',{timeout:2000});
