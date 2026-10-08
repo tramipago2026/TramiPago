@@ -70,7 +70,7 @@ async function fillVisibleForm(){
     }
     const next=form.locator("[data-stage-next]:visible");
     const finalSubmit=form.locator('.step-actions button[type="submit"]:visible');
-    ok((await next.count())+(await finalSubmit.count())<=1,"Formulario muestra dos botones de avance simultáneos");
+    ok((await next.count())+(await finalSubmit.count())===1,"Formulario debe mostrar exactamente un botón de avance visible");
     if(await next.count()){await next.click();await page.waitForTimeout(60);continue;}
     break;
   }
