@@ -468,6 +468,10 @@
   function setupFormStages(){
     const form=document.getElementById("data-form");
     if(!form||form.dataset.stagesReady==="true")return;
+    if(location.hash==="#/tramite/certificacion-estado-civil"){
+      form.dataset.stagesReady="true";
+      return;
+    }
     const grid=form.querySelector(".form-grid");
     if(!grid)return;
     const items=[...grid.children].filter(node=>node.matches?.(".field,.choice-field,.form-check,.email-pair")&&!node.classList.contains("draft-save-status")&&!node.classList.contains("draft-restored-note"));
