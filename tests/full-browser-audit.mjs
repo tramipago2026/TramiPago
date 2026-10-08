@@ -102,13 +102,22 @@ await page.waitForTimeout(80);
 ok(await page.locator(".estado-civil-caba-notice").count()===0,"Aviso CABA persiste al elegir PBA");
 ok(await page.locator('input[name="dniFront"]').isVisible(),"Soltería PBA no continúa al formulario");
 
-// Certificado de Domicilio PBA: permanece pendiente de Chat 06 y no debe mostrarse como trámite activo.
+// Certificado de Domicilio PBA: activo y visible dentro de Partidas y Certificados.
 await goto("#/familia/partidas-pba");
-ok(await page.locator('[data-service-id="certificado-domicilio-pba"]').count()===0,"Domicilio pendiente no debe mostrarse en Partidas y Certificados");
+ok(await page.locator('[data-service-id="certificado-domicilio-pba"]').count()===1,"Domicilio no aparece en Partidas y Certificados");
 const estadoCard=page.locator('[data-service-id="certificacion-estado-civil"]');
 ok(await estadoCard.count()===1,"Estado Civil debe seguir visible");
 const estadoImage=estadoCard.locator(".partidas-type-media img");
 ok((await estadoImage.getAttribute("src"))===["assets","estado-civil-card-v1.webp"].join("/"),"Estado Civil no usa la imagen específica nueva");
+
+await goto("#/tramite/certificado-domicilio-pba");
+const domicilioForm=page.locator("#data-form");
+ok(await domicilioForm.count()===1,"Certificado de Domicilio no muestra formulario");
+const domicilioText=(await page.locator(".process-shell").innerText()).replace(/\s+/g," ");
+ok(domicilioText.includes("20.000"),"Certificado de Domicilio no muestra precio final $20.000");
+for(const field of ["dni","declaredAddress","addressStreet","addressNumber","addressLocality","addressDistrict","destinationEntity"]){
+  ok(await page.locator('[name="'+field+'"]').count()===1,"Domicilio no muestra campo "+field);
+}
 
 await goto("#/");
 const searchInput=page.locator("#tramipago-search-input");
@@ -116,7 +125,7 @@ ok(await searchInput.count()===1,"Buscador principal no disponible");
 if(await searchInput.count()){
   await searchInput.fill("certificado de domicilio");
   await page.waitForTimeout(100);
-  ok(await page.locator('.catalog-search-result[href="#/tramite/certificado-domicilio-pba"]').count()===0,"Domicilio pendiente aparece en el buscador");
+  ok(await page.locator('.catalog-search-result[href="#/tramite/certificado-domicilio-pba"]').count()===1,"Buscador no encuentra Certificado de Domicilio");
   await searchInput.fill("Partidas y Certificados");
   await page.waitForTimeout(100);
   ok(await page.locator('.catalog-search-result[href="#/familia/partidas-pba"]').count()===1,"Buscador no encuentra Partidas y Certificados");
