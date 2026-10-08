@@ -480,8 +480,8 @@
     const controls=document.createElement("div");
     controls.className="form-stage-controls";
     controls.innerHTML='<button class="button button-secondary" type="button" data-stage-prev>Anterior</button><button class="button button-primary" type="button" data-stage-next>Continuar</button>';
-    const error=form.querySelector(".form-error");
-    if(error)error.insertAdjacentElement("beforebegin",controls);else form.appendChild(controls);
+    const actions=form.querySelector(".step-actions");
+    if(actions)actions.insertAdjacentElement("beforebegin",controls);else form.appendChild(controls);
     form.dataset.stagesReady="true";
     form.dataset.stageTotal=String(total);
     showFormStage(form,0);
