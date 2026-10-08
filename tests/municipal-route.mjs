@@ -13,7 +13,7 @@ assert.match(search,/href:["']municipales\.html["']/,'Buscador conduce a Municip
 assert.match(catalog,/tramites-catalog\.js/,'Catálogo dinámico cargado');
 assert.match(catalogRuntime,/name:"Trámites municipales"/,'Municipales en catálogo');
 assert.match(catalogRuntime,/href:"municipales\.html"/,'Catálogo municipal vinculado');
-assert.match(catalogRuntime,/href:"\/#\/tramite\/"+encodeURIComponent\(service\.id\)/,'Servicios conducen a la ficha operativa individual');
+assert.ok(catalogRuntime.includes('href:"/#/tramite/"+encodeURIComponent(service.id)'),'Servicios conducen a la ficha operativa individual');
 assert.match(page,/id="elegir-municipio"/,'Formulario selector visible');
 assert.match(page,/name="municipio" value="jose-paz"/,'Opción José C. Paz');
 assert.match(page,/name="municipio" value="san-miguel"/,'Opción San Miguel');
