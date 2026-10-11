@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 const read=path=>fs.readFileSync(new URL(`../${path}`,import.meta.url),'utf8');
 const promos=read('promos.js'),search=read('catalog-search.js'),catalog=read('tramites.html'),catalogRuntime=read('tramites-catalog.js'),page=read('municipales.html'),runtime=read('municipales-page.js'),styles=read('site.css');
 // Auditoría estática: no suplanta verificaciones con datos reales de contribuyentes.
-assert.match(promos,/promo-deuda-municipal-v1\.webp[^\n]*href:["']municipales\.html#elegir-municipio["']/,'Anuncio municipal final conduce al selector de Municipales');
+assert.doesNotMatch(promos,/promo-deuda-municipal-v1\.webp/,'La promo municipal no debe aparecer en el carrusel de la home');
 assert.match(promos,/function ensureMunicipalEntry\(/,'Entrada municipal definida');
-assert.match(promos,/ensureMunicipalEntry\(\);/,'Entrada municipal montada');
+assert.doesNotMatch(promos,/\n\s*ensureMunicipalEntry\(\);/,'La entrada municipal no debe montarse en la home');
 assert.match(promos,/link\.href=["']municipales\.html#elegir-municipio["']/,'Entrada municipal vinculada al selector');
 assert.match(promos,/<b>Seleccioná tu municipio<\/b>/,'Botón municipal con rótulo solicitado');
 assert.match(search,/title:["']Trámites municipales: San Miguel y José C\. Paz["']/,'Municipales indexados en buscador');
