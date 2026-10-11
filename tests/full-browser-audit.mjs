@@ -192,7 +192,6 @@ if(await next.count()&&await card.count()){
     "promo-consulta-abogado-v1.webp",
     "promo-informe-vehicular-v1.webp",
     "promo-antecedentes-penales-v1.webp",
-    "promo-deuda-municipal-v1.webp",
     "promo-cualquier-tramite-v1.webp",
     "promo-estado-civil-v1.webp"
   ].map(name=>carouselBase+name);
@@ -207,7 +206,7 @@ if(await next.count()&&await card.count()){
   }
   for(const expected of expectedCarouselSources)ok(seenImages.has(expected),"Falta pieza final del carrusel: "+expected);
   for(const src of seenImages)ok(expectedCarouselSources.includes(src),"Carrusel muestra pieza vieja o inesperada: "+src);
-  ok(seenImages.size===9,"Carrusel final no contiene exactamente 9 piezas: "+seenImages.size);
+  ok(seenImages.size===8,"Carrusel final no contiene exactamente 8 piezas: "+seenImages.size);
 }
 
 await goto("#/familia/atencion-abogado");

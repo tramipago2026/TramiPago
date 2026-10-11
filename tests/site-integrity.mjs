@@ -78,7 +78,6 @@ const carouselNames=[
   'promo-consulta-abogado-v1.webp',
   'promo-informe-vehicular-v1.webp',
   'promo-antecedentes-penales-v1.webp',
-  'promo-deuda-municipal-v1.webp',
   'promo-cualquier-tramite-v1.webp',
   'promo-estado-civil-v1.webp'
 ];
@@ -128,4 +127,5 @@ for(const oldRef of oldPromoRefs){
     process.exitCode=1;
   }
 }
-console.log('PASS: carrusel V1 referencia exclusivamente 9 piezas finales WebP de 1000x1000.');
+if(promosSource.includes('assets/carousel-v1/promo-deuda-municipal-v1.webp')){ console.error('ERROR la promo municipal retirada volvió al carrusel'); process.exitCode=1; }
+console.log('PASS: carrusel V1 referencia exclusivamente 8 piezas finales WebP de 1000x1000 y excluye la promo municipal retirada.');

@@ -37,5 +37,5 @@ assert.match(page,/wa\.me\/5491167083232\?text=/,'Envío a WhatsApp existente');
 assert.match(runtime,/encodeURIComponent\(mensaje\)/,'Datos del formulario codificados en el mensaje');
 assert.doesNotMatch(page,/Consultar disponibilidad por WhatsApp|Abrir portal oficial de pagos ↗|Abrir sitio oficial del municipio ↗/,'Sin botones anteriores');
 assert.match(page,/municipal-consult-form \.municipal-send:hover/,'Hover del botón nuevo');
-console.log('PASS: oferta acotada, modalidad no confirmada, exclusión de faltas, selector, enlaces y catálogo.');
+console.log('PASS: municipios conservados en catálogo/página, pero retirados de portada y carrusel.');
 console.log('Límite: revisión estática; no prueba en navegador, operaciones reales ni pagos.');
