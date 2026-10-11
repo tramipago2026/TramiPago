@@ -13,7 +13,6 @@
     {image:"assets/carousel-v1/promo-consulta-abogado-v1.webp",alt:"Consulta con abogado: ART, laboral, accidentes y sucesiones",href:"#/familia/atencion-abogado"},
     {image:"assets/carousel-v1/promo-informe-vehicular-v1.webp",alt:"Informe vehicular: dominio, infracciones y patentes",href:"#/tramite/informe-vehicular"},
     {image:"assets/carousel-v1/promo-antecedentes-penales-v1.webp",alt:"Antecedentes penales con gestión simple, rápida y segura",href:"#/tramite/antecedentes-penales"},
-    {image:"assets/carousel-v1/promo-deuda-municipal-v1.webp",alt:"Consulta de deuda e impuestos municipales de José C. Paz y San Miguel",href:"municipales.html#elegir-municipio"},
     {image:"assets/carousel-v1/promo-cualquier-tramite-v1.webp",alt:"Consultá por cualquier trámite con acompañamiento de TramiPago",message:"Quiero consultar por cualquier trámite."},
     {image:"assets/carousel-v1/promo-estado-civil-v1.webp",alt:"Certificación de Estado Civil con gestión y seguimiento personalizado",href:"#/tramite/certificacion-estado-civil"},
   ];
@@ -137,7 +136,6 @@
     const catalog=document.querySelector(".home-catalog");
     if(!main||!catalog)return;
     ensureHomeHeading();
-    ensureMunicipalEntry();
     const rail=current||createRail();
     if(isDesktop()){
       document.body.classList.add("promo-rail-layout");
