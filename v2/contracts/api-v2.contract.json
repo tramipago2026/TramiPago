@@ -1,0 +1,168 @@
+{
+  "name": "TramiPago V2 — Contrato compartido Chat 11 ↔ Chat 12",
+  "version": "2026-10-11.d13-c12-draft1",
+  "status": "BORRADOR_NO_IMPLEMENTADO",
+  "audience": "Revisión y pruebas en staging únicamente",
+  "frontend": {
+    "repository": "tramipago2026/TramiPago",
+    "branch": "v2/opcion-c-directiva13",
+    "basePath": "/v2/",
+    "visualDesign": "Opción C aprobada; inalterable sin autorización"
+  },
+  "backend": {
+    "repository": "tramipago2026/TramiPago-web",
+    "branch": "v2-mysql-chat12-integration",
+    "apiOriginProposed": "https://api.tramipago.com.ar",
+    "databaseEngine": "MySQL real",
+    "databaseProvider": "NO_SELECCIONADO",
+    "auth": "Better Auth o equivalente sujeto a validación",
+    "api": "Cloudflare Workers + Hono sujeto a validación",
+    "storage": "Backblaze B2 privado candidato",
+    "notifications": "Resend sujeto a verificación",
+    "backup": "dump MySQL cifrado + restauración verificada; R2 externo candidato"
+  },
+  "security": {
+    "frontendDirectSqlAccess": false,
+    "protectedRoutesAuth": [
+      "cliente: credencial temporal/autorización vinculada",
+      "admin: sesión robusta + MFA TOTP obligatorio"
+    ],
+    "mustNeverIncludeInFrontend": [
+      "secretos MySQL",
+      "MFA/TOTP",
+      "secretos B2/R2",
+      "claves de Resend",
+      "tokens privados de otras solicitudes"
+    ],
+    "liveOperationsEnabled": false,
+    "testOnly": true
+  },
+  "proposedOperations": [
+    {
+      "key": "create-request",
+      "method": "POST",
+      "path": "/v2/requests/drafts",
+      "auth": "rate_limit",
+      "result": "id+tracking_code+capability segura; antes de consentimiento no persistir PII",
+      "status": "PENDIENTE"
+    },
+    {
+      "key": "update-request-draft",
+      "method": "PATCH",
+      "path": "/v2/requests/{id}/draft",
+      "auth": "capability+validación",
+      "result": "estado de borrador",
+      "status": "PENDIENTE"
+    },
+    {
+      "key": "upload-file",
+      "method": "POST",
+      "path": "/v2/requests/{id}/files",
+      "auth": "capability+validaciones server-side",
+      "result": "referencia privada de archivo",
+      "status": "PENDIENTE"
+    },
+    {
+      "key": "confirm-payment",
+      "method": "POST",
+      "path": "/v2/requests/{id}/payment-proof",
+      "auth": "capability+validación+revisión",
+      "result": "payment_review, nunca aprobación automática por mera carga",
+      "status": "PENDIENTE"
+    },
+    {
+      "key": "submit-correction",
+      "method": "POST",
+      "path": "/v2/requests/{id}/corrections",
+      "auth": "capability",
+      "result": "evento y actualización segura",
+      "status": "PENDIENTE"
+    },
+    {
+      "key": "track-request",
+      "method": "POST",
+      "path": "/v2/requests/lookup",
+      "auth": "código + verificación del titular + rate limit",
+      "result": "estado autorizado sin filtrar PII de terceros",
+      "status": "PENDIENTE"
+    },
+    {
+      "key": "request-help",
+      "method": "POST",
+      "path": "/v2/requests/{id}/help",
+      "auth": "capability+rate_limit",
+      "result": "evento de ayuda",
+      "status": "PENDIENTE"
+    },
+    {
+      "key": "log-client-error",
+      "method": "POST",
+      "path": "/v2/telemetry/client-errors",
+      "auth": "rate_limit+sanitización",
+      "result": "registro sin PII",
+      "status": "PENDIENTE"
+    },
+    {
+      "key": "admin-access",
+      "method": "*",
+      "path": "/v2/admin/*",
+      "auth": "sesión admin+MFA TOTP + roles server-side",
+      "result": "funciones administrativas autorizadas",
+      "status": "PENDIENTE"
+    }
+  ],
+  "states": [
+    "draft",
+    "awaiting_payment",
+    "payment_review",
+    "payment_confirmed",
+    "in_progress",
+    "needs_info",
+    "finalized",
+    "cancelled"
+  ],
+  "invariants": [
+    "IDs/tracking_code estables",
+    "ningún código real generado por el frontend",
+    "precio final siempre resuelto por servidor",
+    "permisos desde API, no frontend",
+    "sin documentos reales en TEST",
+    "transiciones auditadas y autorizadas",
+    "archivos privados, metadatos+hash MySQL",
+    "notificaciones fallidas no interrumpen solicitud",
+    "idempotencia de creación/subida/comprobante",
+    "prevención IDOR/BOLA, SQLi, XSS, CSRF, replay y fuerza bruta",
+    "sin secretos en repositorio"
+  ],
+  "gates": [
+    {
+      "name": "proveedor MySQL gratuito verificado (límites, tarjeta, TLS, backup)",
+      "status": "VERIFICAR"
+    },
+    {
+      "name": "contrato API y esquema MySQL versionado",
+      "status": "PENDIENTE"
+    },
+    {
+      "name": "Auth MFA y autorización cliente/admin",
+      "status": "PENDIENTE"
+    },
+    {
+      "name": "Storage B2 privado con validaciones",
+      "status": "PENDIENTE"
+    },
+    {
+      "name": "prueba E2E con datos sintéticos",
+      "status": "PENDIENTE"
+    },
+    {
+      "name": "dump cifrado + restauración aislada",
+      "status": "PENDIENTE"
+    },
+    {
+      "name": "validación independiente producción (solo tras aprobación cutover)",
+      "status": "BLOQUEADO_AUTORIZACION"
+    }
+  ],
+  "productionCutover": "PROHIBIDO sin autorización expresa + CONTROL 3"
+}
