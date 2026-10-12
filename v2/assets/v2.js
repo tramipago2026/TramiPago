@@ -142,6 +142,52 @@
     const result = qs("[data-v2-created]", form.closest(".content") || document);
     const submit = qs('button[type="submit"]', form);
 
+    function currentSession() {
+      try {
+        const value = JSON.parse(sessionStorage.getItem("tramipago-v2-current") || "null");
+        return value && value.serviceId === serviceId ? value : null;
+      } catch { return null; }
+    }
+
+    function renderCreated(current) {
+      if (!result || !current) return;
+      result.hidden = false;
+      const code = qs("[data-v2-tracking-code]", result);
+      if (code) code.textContent = current.trackingCode;
+      const link = qs("[data-v2-track-link]", result);
+      if (link) link.href = "/v2/seguimiento/?codigo=" + encodeURIComponent(current.trackingCode);
+      let draftForm = qs("[data-v2-draft-form]", result);
+      if (!draftForm) {
+        draftForm = document.createElement("form");
+        draftForm.className = "vertical";
+        draftForm.dataset.v2DraftForm = "";
+        draftForm.innerHTML = '<label>Nota de prueba para el borrador<textarea name="notes" maxlength="1000" rows="3" placeholder="Dato sintético para comprobar guardado"></textarea></label><button class="button" type="submit">Guardar borrador de prueba</button><div class="status-box" data-v2-draft-message hidden aria-live="polite"></div>';
+        result.append(draftForm);
+        draftForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const active = currentSession();
+          if (!active) return;
+          const notes = String(new FormData(draftForm).get("notes") || "").trim();
+          const draftMessage = qs("[data-v2-draft-message]", draftForm);
+          try {
+            const saved = await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/draft", {
+              method: "PATCH",
+              headers: {
+                "Idempotency-Key": randomKey("draft-" + active.requestId),
+                "X-Request-Capability": active.capability,
+              },
+              body: JSON.stringify({ currentStep: "datos", payload: { notes } }),
+            });
+            setMessage(draftMessage, "Borrador guardado en MySQL. Paso: " + saved.currentStep + ".", "success");
+          } catch {
+            setMessage(draftMessage, "No se pudo guardar el borrador de prueba.", "error");
+          }
+        });
+      }
+    }
+
+    renderCreated(currentSession());
+
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
@@ -175,13 +221,13 @@
         }));
 
         setMessage(output, "Solicitud de prueba creada correctamente.", "success");
-        if (result) {
-          result.hidden = false;
-          const code = qs("[data-v2-tracking-code]", result);
-          if (code) code.textContent = created.trackingCode;
-          const link = qs("[data-v2-track-link]", result);
-          if (link) link.href = "/v2/seguimiento/?codigo=" + encodeURIComponent(created.trackingCode);
-        }
+        renderCreated({
+          requestId: created.id,
+          capability: created.capability,
+          trackingCode: created.trackingCode,
+          serviceId,
+          serviceName,
+        });
         form.reset();
       } catch (error) {
         setMessage(output, error.status === 404
@@ -225,12 +271,57 @@
           noteNode.textContent = response.statusNote || "";
           noteNode.hidden = !response.statusNote;
         }
+        const missing = Array.isArray(response.missingFields) ? response.missingFields : [];
         if (missingNode) {
-          const missing = Array.isArray(response.missingFields) ? response.missingFields : [];
           missingNode.textContent = missing.length ? "Información pendiente: " + missing.join(", ") : "";
           missingNode.hidden = !missing.length;
         }
-        if (output) output.hidden = false;
+        if (output) {
+          output.hidden = false;
+          const old = qs("[data-v2-correction-form]", output);
+          if (old) old.remove();
+          let current = null;
+          try { current = JSON.parse(sessionStorage.getItem("tramipago-v2-current") || "null"); } catch {}
+          const requestedCode = String(data.get("trackingCode") || "").trim().toUpperCase();
+          if (response.canCorrect && missing.length && current?.trackingCode?.toUpperCase() === requestedCode && current?.capability) {
+            const correction = document.createElement("form");
+            correction.className = "vertical";
+            correction.dataset.v2CorrectionForm = "";
+            for (const field of missing) {
+              const label = document.createElement("label");
+              label.textContent = "Corregir: " + field;
+              const input = document.createElement("input");
+              input.name = field; input.required = true; input.maxLength = 1000;
+              label.append(input); correction.append(label);
+            }
+            const save = document.createElement("button");
+            save.type = "submit"; save.className = "button"; save.textContent = "Enviar corrección de prueba";
+            correction.append(save);
+            const msg = document.createElement("div");
+            msg.className = "status-box"; msg.hidden = true; msg.setAttribute("aria-live","polite");
+            correction.append(msg);
+            correction.addEventListener("submit", async (ev) => {
+              ev.preventDefault();
+              const fd = new FormData(correction);
+              const payload = Object.fromEntries(missing.map((field) => [field, String(fd.get(field) || "").trim()]));
+              try {
+                const updated = await api("/v2/requests/" + encodeURIComponent(current.requestId) + "/corrections", {
+                  method: "POST",
+                  headers: {
+                    "Idempotency-Key": randomKey("correction-" + current.requestId),
+                    "X-Request-Capability": current.capability,
+                  },
+                  body: JSON.stringify({ payload }),
+                });
+                setMessage(msg, "Corrección recibida. Nuevo estado: " + statusLabel(updated.status) + ".", "success");
+                if (statusNode) statusNode.textContent = statusLabel(updated.status);
+              } catch {
+                setMessage(msg, "No se pudo enviar la corrección.", "error");
+              }
+            });
+            output.append(correction);
+          }
+        }
       } catch (error) {
         if (statusNode) statusNode.textContent = error.status === 429
           ? "Demasiados intentos. Probá más tarde."
@@ -238,6 +329,45 @@
         if (noteNode) noteNode.hidden = true;
         if (missingNode) missingNode.hidden = true;
         if (output) output.hidden = false;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+
+  function initHelp() {
+    const form = qs("[data-v2-help-form]");
+    if (!form) return;
+    const output = qs("[data-v2-help-message]");
+    let current = null;
+    try { current = JSON.parse(sessionStorage.getItem("tramipago-v2-current") || "null"); } catch {}
+    const button = qs('button[type="submit"]', form);
+    if (!current?.requestId || !current?.capability) {
+      button.disabled = true;
+      setMessage(output, "Primero creá una solicitud de prueba para asociar la consulta.", "info");
+      return;
+    }
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const data = new FormData(form);
+      button.disabled = true;
+      try {
+        await api("/v2/requests/" + encodeURIComponent(current.requestId) + "/help", {
+          method: "POST",
+          headers: {
+            "Idempotency-Key": randomKey("help-" + current.requestId),
+            "X-Request-Capability": current.capability,
+          },
+          body: JSON.stringify({
+            topic: String(data.get("topic") || "").trim(),
+            message: String(data.get("message") || "").trim(),
+          }),
+        });
+        setMessage(output, "Consulta de prueba registrada en el trámite.", "success");
+        form.reset();
+      } catch {
+        setMessage(output, "No se pudo registrar la consulta de prueba.", "error");
       } finally {
         button.disabled = false;
       }
@@ -281,4 +411,5 @@
   initServicePage();
   initStartForm();
   initTracking();
+  initHelp();
 })();
