@@ -1,0 +1,2485 @@
+{
+  "version": "2026-10-12.v1-main-reuse",
+  "source": {
+    "repository": "tramipago2026/TramiPago",
+    "ref": "main",
+    "file": "services.js",
+    "commit": "69b44c56f5b0d38589cd95b4861eb30d2ae15a90"
+  },
+  "policy": "Reutilización técnica de campos V1 aprobados; no contiene tasas oficiales ni se usa como fuente de información oficial.",
+  "services": {
+    "antecedentes-penales": {
+      "name": "Antecedentes Penales",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "adultEligibility",
+          "label": "Confirmo que soy mayor de 18 años.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "argentineDniEligibility",
+          "label": "Confirmo que tengo DNI argentino vigente.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "birthDate",
+          "label": "Fecha de nacimiento",
+          "type": "date",
+          "required": true
+        },
+        {
+          "id": "dni",
+          "label": "DNI",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: 12345678",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "cuil",
+          "label": "CUIL",
+          "type": "text",
+          "required": true,
+          "placeholder": "20-12345678-6",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "dniTransaction",
+          "label": "Número de trámite del DNI",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 12345678901",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "dniFile",
+          "label": "Frente del DNI (alternativa al N.º de trámite)",
+          "type": "file",
+          "required": false,
+          "accept": "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+        },
+        {
+          "id": "address",
+          "label": "Domicilio (calle y número)",
+          "type": "text",
+          "required": true,
+          "autocomplete": "street-address"
+        },
+        {
+          "id": "locality",
+          "label": "Localidad",
+          "type": "text",
+          "required": true,
+          "autocomplete": "address-level2"
+        },
+        {
+          "id": "district",
+          "label": "Partido o departamento",
+          "type": "text",
+          "required": false,
+          "placeholder": "Si corresponde"
+        },
+        {
+          "id": "fatherFullName",
+          "label": "Nombre y apellido del padre",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "motherFullName",
+          "label": "Nombre y apellido de la madre",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "emailConfirm",
+          "label": "Repetí el correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "off"
+        },
+        {
+          "id": "emailAccess",
+          "label": "Tengo acceso a este correo y puedo recibir allí los mensajes del organismo.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "modality",
+          "label": "Modalidad",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "one-hour",
+              "label": "1 hora — $20.000"
+            },
+            {
+              "value": "six-hours",
+              "label": "6 horas — $15.000"
+            }
+          ]
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": {
+        "anyOf": [
+          "dniTransaction",
+          "dniFile"
+        ],
+        "message": "Ingresá el número de trámite del DNI o cargá una foto del frente."
+      }
+    },
+    "informe-vehicular": {
+      "name": "Informe Vehicular",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "vehicleType",
+          "label": "Tipo de vehículo",
+          "type": "choice",
+          "required": true,
+          "options": [
+            {
+              "value": "automotor",
+              "label": "Automotor"
+            },
+            {
+              "value": "moto",
+              "label": "Moto"
+            }
+          ]
+        },
+        {
+          "id": "patent",
+          "label": "Dominio (patente)",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: AB 123 CD"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "constancias-anses": {
+      "name": "Constancias ANSES",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "cuil",
+          "label": "CUIL",
+          "type": "text",
+          "required": true,
+          "placeholder": "20-12345678-6",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "serviceFeeAcceptance",
+          "label": "Entiendo y acepto que el importe abonado corresponde al servicio prestado por TramiPago, que puede incluir gestión, asistencia, acompañamiento y, cuando corresponda, entrega.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "arba-inmobiliario": {
+      "name": "ARBA / Inmobiliario",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "propertyDocument",
+          "label": "Foto de boleta o documento del inmueble",
+          "type": "file",
+          "required": false,
+          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+        },
+        {
+          "id": "propertyDistrict",
+          "label": "Partido",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "propertyNumber",
+          "label": "Partida",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 123456",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": {
+        "oneOfGroups": [
+          [
+            "propertyDocument"
+          ],
+          [
+            "propertyDistrict",
+            "propertyNumber"
+          ]
+        ],
+        "message": "Subí una foto donde figure el inmueble o completá Partido y Partida."
+      }
+    },
+    "partidas": {
+      "name": "Partidas PBA",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "partType",
+          "label": "¿Qué partida necesitás?",
+          "type": "choice",
+          "required": true,
+          "options": [
+            {
+              "value": "birth",
+              "label": "Nacimiento"
+            },
+            {
+              "value": "marriage",
+              "label": "Matrimonio"
+            },
+            {
+              "value": "cohabitation",
+              "label": "Unión convivencial"
+            },
+            {
+              "value": "death",
+              "label": "Defunción"
+            }
+          ]
+        },
+        {
+          "id": "dataMode",
+          "label": "¿Tenés los datos de la partida?",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "with-data",
+              "label": "Tengo los datos — $15.000"
+            },
+            {
+              "value": "without-data",
+              "label": "No tengo los datos — $20.000"
+            }
+          ]
+        },
+        {
+          "id": "recordHolderFullName",
+          "label": "Nombre y apellido del titular",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "gender",
+          "label": "Sexo / género del titular",
+          "type": "select",
+          "required": false,
+          "options": [
+            {
+              "value": "female",
+              "label": "Femenino"
+            },
+            {
+              "value": "male",
+              "label": "Masculino"
+            },
+            {
+              "value": "x",
+              "label": "X / no binario"
+            }
+          ]
+        },
+        {
+          "id": "documentType",
+          "label": "Tipo de documento",
+          "type": "select",
+          "required": false,
+          "options": [
+            {
+              "value": "dni",
+              "label": "DNI"
+            },
+            {
+              "value": "lc",
+              "label": "Libreta Cívica"
+            },
+            {
+              "value": "le",
+              "label": "Libreta de Enrolamiento"
+            }
+          ]
+        },
+        {
+          "id": "documentNumber",
+          "label": "Número de documento",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 12345678",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "registrationYearExact",
+          "label": "Año de inscripción",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 1985",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "delegation",
+          "label": "Delegación donde fue inscripta",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "actNumber",
+          "label": "Número de acta",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 1234",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "registrationDistrict",
+          "label": "Partido donde fue inscripta",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "registrationYearApprox",
+          "label": "Año exacto o aproximado",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 1985 o 1984-1986"
+        },
+        {
+          "id": "bookNumber",
+          "label": "Número de tomo (si lo conocés)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "secondPersonName",
+          "label": "Nombre y apellido de la otra persona (opcional)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "parentOne",
+          "label": "Nombre y apellido de un progenitor (opcional)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "parentTwo",
+          "label": "Nombre y apellido del otro progenitor (opcional)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "previousAct",
+          "label": "Copia de una partida anterior (opcional)",
+          "type": "file",
+          "required": false,
+          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+        },
+        {
+          "id": "purpose",
+          "label": "¿Para qué trámite necesitás la partida?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "fullName",
+          "label": "Tu nombre y apellido",
+          "type": "text",
+          "required": false,
+          "autocomplete": "name"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": false,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "partidasEligibility",
+          "label": "Confirmo que soy mayor de 18 años y que la partida es propia o tengo interés legítimo para solicitarla.",
+          "type": "checkbox",
+          "required": false
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "partidas-caba": {
+      "name": "Partidas CABA",
+      "intakeOnly": true,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "partType",
+          "label": "¿Qué partida necesitás?",
+          "type": "choice",
+          "required": true,
+          "options": [
+            {
+              "value": "birth",
+              "label": "Nacimiento"
+            },
+            {
+              "value": "marriage",
+              "label": "Matrimonio"
+            },
+            {
+              "value": "cohabitation",
+              "label": "Unión convivencial"
+            },
+            {
+              "value": "death",
+              "label": "Defunción"
+            }
+          ]
+        },
+        {
+          "id": "requestMode",
+          "label": "Modalidad / canal",
+          "type": "choice",
+          "required": true,
+          "options": [
+            {
+              "value": "regular",
+              "label": "Regular — nacimiento, matrimonio o defunción"
+            },
+            {
+              "value": "urgent",
+              "label": "Urgente — nacimiento, matrimonio o defunción"
+            },
+            {
+              "value": "union-review",
+              "label": "Unión convivencial — revisión de canal oficial"
+            }
+          ]
+        },
+        {
+          "id": "adultEligibility",
+          "label": "Confirmo que soy mayor de 18 años.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "mibaAccess",
+          "label": "Tengo usuario y clave miBA.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "officialEmailProvider",
+          "label": "Tengo acceso a un correo Gmail, Hotmail o Yahoo para recibir comunicaciones del organismo.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "recordHolderFullName",
+          "label": "Nombre y apellido del titular",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "secondPersonName",
+          "label": "Nombre y apellido de la otra persona (matrimonio / unión convivencial)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "eventDate",
+          "label": "Fecha del acontecimiento",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 15/08/1985 o agosto de 1985"
+        },
+        {
+          "id": "sectionCirc",
+          "label": "Circunscripción / Sección (si la conocés)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "bookNumber",
+          "label": "Tomo (si lo conocés)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "actNumber",
+          "label": "Acta (si la conocés)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "registrationYear",
+          "label": "Año de inscripción (si lo conocés)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 1985",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "creditCardAvailable",
+          "label": "Si elegí urgente, cuento con tarjeta de crédito para abonar el costo oficial.",
+          "type": "checkbox",
+          "required": false
+        },
+        {
+          "id": "previousAct",
+          "label": "Copia de una partida anterior (opcional)",
+          "type": "file",
+          "required": false,
+          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+        },
+        {
+          "id": "purpose",
+          "label": "¿Para qué trámite necesitás la partida? (opcional)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "certificacion-estado-civil": {
+      "name": "Estado Civil",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": true,
+      "fields": [
+        {
+          "id": "civilRequestType",
+          "label": "¿Qué necesitás?",
+          "type": "choice",
+          "required": true,
+          "noDefault": true,
+          "options": [
+            {
+              "value": "certification",
+              "label": "Certificación de Estado Civil"
+            },
+            {
+              "value": "single",
+              "label": "Constancia / certificado de soltería"
+            }
+          ]
+        },
+        {
+          "id": "civilJurisdiction",
+          "label": "¿Dónde necesitás acreditar la inexistencia de matrimonio?",
+          "type": "choice",
+          "required": false,
+          "noDefault": true,
+          "options": [
+            {
+              "value": "pba",
+              "label": "Provincia de Buenos Aires"
+            },
+            {
+              "value": "caba",
+              "label": "CABA"
+            }
+          ]
+        },
+        {
+          "id": "applicantRole",
+          "label": "¿Quién solicita?",
+          "type": "choice",
+          "required": true,
+          "options": [
+            {
+              "value": "holder",
+              "label": "Titular"
+            },
+            {
+              "value": "direct-family",
+              "label": "Familiar directo"
+            },
+            {
+              "value": "attorney",
+              "label": "Apoderado/a"
+            }
+          ]
+        },
+        {
+          "id": "recordHolderFullName",
+          "label": "Nombre y apellido del titular",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "dni",
+          "label": "DNI del titular",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: 12345678",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "dniFront",
+          "label": "DNI vigente — frente",
+          "type": "file",
+          "required": true,
+          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+        },
+        {
+          "id": "dniBack",
+          "label": "DNI vigente — dorso",
+          "type": "file",
+          "required": true,
+          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+        },
+        {
+          "id": "birthCertificate",
+          "label": "Partida / acta de nacimiento (si corresponde)",
+          "type": "file",
+          "required": false,
+          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+        },
+        {
+          "id": "thirdPartyDocument",
+          "label": "Vínculo o autorización del tercero",
+          "type": "file",
+          "required": false,
+          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+        },
+        {
+          "id": "purpose",
+          "label": "Organismo o trámite donde vas a presentar la documentación",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "certificado-domicilio-pba": {
+      "name": "Certificado de Domicilio",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "dni",
+          "label": "DNI",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: 12345678",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "declaredAddress",
+          "label": "Domicilio completo a declarar",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: Calle 1234, José C. Paz, Buenos Aires"
+        },
+        {
+          "id": "addressStreet",
+          "label": "Calle",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "addressNumber",
+          "label": "Número",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: 1234",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "addressFloorUnit",
+          "label": "Piso / departamento (si corresponde)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "addressLocality",
+          "label": "Localidad",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "addressDistrict",
+          "label": "Partido",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "postalCode",
+          "label": "Código postal (si corresponde)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 1665"
+        },
+        {
+          "id": "destinationEntity",
+          "label": "Entidad u organismo donde presentarás el certificado",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "hasOfficialKey",
+          "label": "¿Tenés clave ANSES o clave fiscal?",
+          "type": "choice",
+          "required": true,
+          "noDefault": true,
+          "options": [
+            {
+              "value": "yes",
+              "label": "Sí"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            }
+          ]
+        },
+        {
+          "id": "adultDeclaration",
+          "label": "Confirmo que soy mayor de edad.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "selfDeclaration",
+          "label": "Confirmo que realizo este trámite para mí mismo/a.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "asistencia-digital": {
+      "name": "Asistencia Digital",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "platform",
+          "label": "¿Con qué acceso necesitás ayuda?",
+          "type": "choice",
+          "required": true,
+          "options": [
+            {
+              "value": "anses",
+              "label": "ANSES"
+            },
+            {
+              "value": "arca",
+              "label": "ARCA"
+            },
+            {
+              "value": "miargentina",
+              "label": "Mi Argentina"
+            }
+          ]
+        },
+        {
+          "id": "assistanceType",
+          "label": "¿Qué necesitás hacer?",
+          "type": "choice",
+          "required": true,
+          "options": [
+            {
+              "value": "generate",
+              "label": "Generar acceso"
+            },
+            {
+              "value": "recover",
+              "label": "Recuperar acceso"
+            }
+          ]
+        },
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "serviceFeeAcceptance",
+          "label": "Entiendo y acepto que el importe abonado corresponde al servicio de gestión, asistencia, acompañamiento y/o entrega, según corresponda, brindado por TramiPago.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "arca-constancia": {
+      "name": "Constancia ARCA",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido / razón social",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "cuit",
+          "label": "CUIT",
+          "type": "text",
+          "required": true,
+          "placeholder": "20-12345678-6",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "constanciaType",
+          "label": "¿Qué constancia necesitás?",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "inscripcion",
+              "label": "Constancia de inscripción / opción"
+            },
+            {
+              "value": "cuit",
+              "label": "Constancia de CUIT"
+            },
+            {
+              "value": "f184",
+              "label": "Formulario 184"
+            },
+            {
+              "value": "credencial",
+              "label": "Credencial de pago"
+            }
+          ]
+        },
+        {
+          "id": "serviceFeeAcceptance",
+          "label": "Entiendo y acepto que el importe abonado corresponde al servicio prestado por TramiPago, que puede incluir gestión, asistencia, acompañamiento y, cuando corresponda, entrega.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "arca-vep": {
+      "name": "Generar VEP",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido / razón social",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "cuit",
+          "label": "CUIT",
+          "type": "text",
+          "required": true,
+          "placeholder": "20-12345678-6",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "vepTax",
+          "label": "Impuesto / obligación",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: Monotributo, IVA, Ganancias"
+        },
+        {
+          "id": "vepPeriod",
+          "label": "Período",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: 2026-08"
+        },
+        {
+          "id": "vepConcept",
+          "label": "Concepto",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "vepSubconcept",
+          "label": "Subconcepto",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "vepAmount",
+          "label": "Importe",
+          "type": "text",
+          "required": false,
+          "placeholder": "Si lo conocés",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "vepNotes",
+          "label": "Aclaración adicional (opcional)",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "serviceFeeAcceptance",
+          "label": "Entiendo y acepto que el importe abonado corresponde al servicio prestado por TramiPago, que puede incluir gestión, asistencia, acompañamiento y, cuando corresponda, entrega.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "arca-ccma": {
+      "name": "Informe de deuda y saldos CCMA",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido / razón social",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "cuit",
+          "label": "CUIT",
+          "type": "text",
+          "required": true,
+          "placeholder": "20-12345678-6",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "ccmaFrom",
+          "label": "Período desde",
+          "type": "month",
+          "required": true
+        },
+        {
+          "id": "ccmaTo",
+          "label": "Período hasta",
+          "type": "month",
+          "required": true
+        },
+        {
+          "id": "ccmaScope",
+          "label": "¿Qué querés revisar?",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "todo",
+              "label": "Deuda, pagos, intereses y saldos"
+            },
+            {
+              "value": "deuda",
+              "label": "Deuda e intereses"
+            },
+            {
+              "value": "pagos",
+              "label": "Pagos registrados"
+            },
+            {
+              "value": "saldo",
+              "label": "Saldos a favor"
+            }
+          ]
+        },
+        {
+          "id": "ccmaReceipt",
+          "label": "Comprobante de pago (opcional)",
+          "type": "file",
+          "required": false,
+          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+        },
+        {
+          "id": "ccmaNotes",
+          "label": "Detalle de lo que querés verificar (opcional)",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "serviceFeeAcceptance",
+          "label": "Entiendo y acepto que el importe abonado corresponde al servicio prestado por TramiPago, que puede incluir gestión, asistencia, acompañamiento y, cuando corresponda, entrega.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "arca-reimputacion": {
+      "name": "Reimputación de pagos",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido / razón social",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "cuit",
+          "label": "CUIT",
+          "type": "text",
+          "required": true,
+          "placeholder": "20-12345678-6",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "originPeriod",
+          "label": "Período / pago de origen",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: 2026-05"
+        },
+        {
+          "id": "originConcept",
+          "label": "Concepto donde figura el saldo o pago",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "originAmount",
+          "label": "Importe de origen",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: 35000",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "destinationPeriod",
+          "label": "Período de destino",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: 2026-06"
+        },
+        {
+          "id": "destinationConcept",
+          "label": "Concepto de destino",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "destinationSubconcept",
+          "label": "Subconcepto de destino (si corresponde)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "reimputationReceipt",
+          "label": "Comprobante de pago (opcional)",
+          "type": "file",
+          "required": false,
+          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+        },
+        {
+          "id": "reimputationNotes",
+          "label": "Aclaración (opcional)",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "serviceFeeAcceptance",
+          "label": "Entiendo y acepto que el importe abonado corresponde al servicio prestado por TramiPago, que puede incluir gestión, asistencia, acompañamiento y, cuando corresponda, entrega.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "arca-informe-reimputacion": {
+      "name": "Informe + reimputación",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido / razón social",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "cuit",
+          "label": "CUIT",
+          "type": "text",
+          "required": true,
+          "placeholder": "20-12345678-6",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "comboFrom",
+          "label": "Período desde",
+          "type": "month",
+          "required": true
+        },
+        {
+          "id": "comboTo",
+          "label": "Período hasta",
+          "type": "month",
+          "required": true
+        },
+        {
+          "id": "comboOriginPeriod",
+          "label": "Período/pago de origen (si lo conocés)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "comboOriginAmount",
+          "label": "Importe del saldo o pago (si lo conocés)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 35000",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "comboDestinationPeriod",
+          "label": "Período al que querés aplicarlo (si lo conocés)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "comboDestinationConcept",
+          "label": "Concepto de destino (si lo conocés)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "comboReceipt",
+          "label": "Comprobante de pago (opcional)",
+          "type": "file",
+          "required": false,
+          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+        },
+        {
+          "id": "comboNotes",
+          "label": "¿Qué necesitás revisar o corregir?",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "serviceFeeAcceptance",
+          "label": "Entiendo y acepto que el importe abonado corresponde al servicio prestado por TramiPago, que puede incluir gestión, asistencia, acompañamiento y, cuando corresponda, entrega.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "arca-alta-monotributo": {
+      "name": "Alta en el Monotributo",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido / razón social",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "cuit",
+          "label": "CUIT",
+          "type": "text",
+          "required": true,
+          "placeholder": "20-12345678-6",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "activityType",
+          "label": "Tipo principal de actividad",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "services",
+              "label": "Locaciones / prestaciones de servicios"
+            },
+            {
+              "value": "goods",
+              "label": "Venta de cosas muebles"
+            },
+            {
+              "value": "other",
+              "label": "Otra actividad"
+            }
+          ]
+        },
+        {
+          "id": "activityDescription",
+          "label": "Actividad que vas a realizar",
+          "type": "text",
+          "required": true,
+          "placeholder": "Describila brevemente"
+        },
+        {
+          "id": "activityStart",
+          "label": "Fecha de inicio de actividad",
+          "type": "date",
+          "required": true
+        },
+        {
+          "id": "activityAddress",
+          "label": "Domicilio donde realizás la actividad",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "estimatedIncome",
+          "label": "Ingresos brutos anuales estimados",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: 6000000",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "surface",
+          "label": "Superficie afectada en m² (si corresponde)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 25",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "energy",
+          "label": "Energía eléctrica anual en kWh (si corresponde)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 1200",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "annualRent",
+          "label": "Alquileres anuales (si corresponde)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 2400000",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "maxUnitPrice",
+          "label": "Precio unitario máximo de venta (si corresponde)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 150000",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "pensionSituation",
+          "label": "Situación previsional",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "employee",
+              "label": "Trabajo en relación de dependencia"
+            },
+            {
+              "value": "retired",
+              "label": "Jubilado/a"
+            },
+            {
+              "value": "monotax-only",
+              "label": "Aportes por Monotributo"
+            },
+            {
+              "value": "other",
+              "label": "Otra situación"
+            }
+          ]
+        },
+        {
+          "id": "socialWork",
+          "label": "Obra social (si corresponde)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "serviceFeeAcceptance",
+          "label": "Entiendo y acepto que el importe abonado corresponde al servicio prestado por TramiPago, que puede incluir gestión, asistencia, acompañamiento y, cuando corresponda, entrega.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "arca-baja-monotributo": {
+      "name": "Baja en el Monotributo",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido / razón social",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "cuit",
+          "label": "CUIT",
+          "type": "text",
+          "required": true,
+          "placeholder": "20-12345678-6",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "bajaReason",
+          "label": "Motivo de la baja",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "cese",
+              "label": "Cese de actividades"
+            },
+            {
+              "value": "renuncia",
+              "label": "Renuncia al régimen"
+            },
+            {
+              "value": "exclusion",
+              "label": "Exclusión"
+            },
+            {
+              "value": "other",
+              "label": "Otro motivo"
+            }
+          ]
+        },
+        {
+          "id": "bajaMonth",
+          "label": "Mes desde el que dejás la actividad",
+          "type": "month",
+          "required": true
+        },
+        {
+          "id": "bajaMonthPaid",
+          "label": "¿El mes en que solicitás la baja está pago?",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "yes",
+              "label": "Sí"
+            },
+            {
+              "value": "no",
+              "label": "No / no estoy seguro"
+            }
+          ]
+        },
+        {
+          "id": "bajaNotes",
+          "label": "Aclaración (opcional)",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "serviceFeeAcceptance",
+          "label": "Entiendo y acepto que el importe abonado corresponde al servicio prestado por TramiPago, que puede incluir gestión, asistencia, acompañamiento y, cuando corresponda, entrega.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "arca-recategorizacion": {
+      "name": "Recategorización",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido / razón social",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "cuit",
+          "label": "CUIT",
+          "type": "text",
+          "required": true,
+          "placeholder": "20-12345678-6",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "activityStartDate",
+          "label": "Fecha de inicio de actividad",
+          "type": "date",
+          "required": true
+        },
+        {
+          "id": "currentCategory",
+          "label": "Categoría actual (si la conocés)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: A, B, C..."
+        },
+        {
+          "id": "income12Months",
+          "label": "Ingresos brutos de los últimos 12 meses",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: 6000000",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "recatSurface",
+          "label": "Superficie afectada en m² (si corresponde)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 25",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "recatEnergy",
+          "label": "Energía eléctrica de los últimos 12 meses en kWh (si corresponde)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 1200",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "recatRent",
+          "label": "Alquileres devengados en los últimos 12 meses (si corresponde)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 2400000",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "recatMaxUnitPrice",
+          "label": "Precio unitario máximo de venta (si corresponde)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Ej.: 150000",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "serviceFeeAcceptance",
+          "label": "Entiendo y acepto que el importe abonado corresponde al servicio prestado por TramiPago, que puede incluir gestión, asistencia, acompañamiento y, cuando corresponda, entrega.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "arca-dfe": {
+      "name": "Domicilio Fiscal Electrónico",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido / razón social",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "cuit",
+          "label": "CUIT",
+          "type": "text",
+          "required": true,
+          "placeholder": "20-12345678-6",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "dfeAction",
+          "label": "¿Qué necesitás hacer?",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "constitute",
+              "label": "Constituir el Domicilio Fiscal Electrónico"
+            },
+            {
+              "value": "update",
+              "label": "Actualizar correo y/o celular"
+            }
+          ]
+        },
+        {
+          "id": "serviceFeeAcceptance",
+          "label": "Entiendo y acepto que el importe abonado corresponde al servicio prestado por TramiPago, que puede incluir gestión, asistencia, acompañamiento y, cuando corresponda, entrega.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "arca-actualizacion": {
+      "name": "Actualización de datos ARCA",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido / razón social",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "cuit",
+          "label": "CUIT",
+          "type": "text",
+          "required": true,
+          "placeholder": "20-12345678-6",
+          "inputmode": "numeric"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "dataKind",
+          "label": "Tipo de dato que querés modificar",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "registral",
+              "label": "Dato registral personal / razón social"
+            },
+            {
+              "value": "activity",
+              "label": "Actividad económica"
+            },
+            {
+              "value": "activity-address",
+              "label": "Domicilio de actividad"
+            },
+            {
+              "value": "other",
+              "label": "Otro dato"
+            }
+          ]
+        },
+        {
+          "id": "currentData",
+          "label": "Dato actual",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "newData",
+          "label": "Dato nuevo",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "updateReason",
+          "label": "Motivo de la modificación",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "supportingDocument",
+          "label": "Documentación respaldatoria (si corresponde)",
+          "type": "file",
+          "required": false,
+          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+        },
+        {
+          "id": "serviceFeeAcceptance",
+          "label": "Entiendo y acepto que el importe abonado corresponde al servicio prestado por TramiPago, que puede incluir gestión, asistencia, acompañamiento y, cuando corresponda, entrega.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar el trámite solicitado.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "apostilla-tad": {
+      "name": "Apostillado",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "documentType",
+          "label": "Tipo de documento",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "civil",
+              "label": "Partida / documento de estado civil"
+            },
+            {
+              "value": "education",
+              "label": "Título, analítico o certificado de estudios"
+            },
+            {
+              "value": "notarial",
+              "label": "Documento notarial"
+            },
+            {
+              "value": "judicial",
+              "label": "Documento judicial"
+            },
+            {
+              "value": "license",
+              "label": "Certificado de legalidad de licencia de conducir"
+            },
+            {
+              "value": "other",
+              "label": "Otro documento público argentino"
+            }
+          ]
+        },
+        {
+          "id": "destinationCountry",
+          "label": "País donde se presentará",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "documentFile",
+          "label": "Documento a revisar (PDF)",
+          "type": "file",
+          "required": true,
+          "accept": "application/pdf,.pdf"
+        },
+        {
+          "id": "notes",
+          "label": "Aclaración (opcional)",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": false,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar esta solicitud.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "legalizaciones": {
+      "name": "Legalizaciones",
+      "intakeOnly": false,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "legalizationType",
+          "label": "¿Qué necesitás legalizar?",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "civil-international",
+              "label": "Partida / documento de estado civil"
+            },
+            {
+              "value": "education",
+              "label": "Título, analítico o certificado"
+            },
+            {
+              "value": "public-document",
+              "label": "Otro documento público"
+            },
+            {
+              "value": "other",
+              "label": "No estoy seguro / otro"
+            }
+          ]
+        },
+        {
+          "id": "documentType",
+          "label": "Tipo de documento",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej.: partida de nacimiento, título secundario, certificado"
+        },
+        {
+          "id": "issuingAuthority",
+          "label": "Organismo o entidad que lo emitió",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "originProvince",
+          "label": "Provincia de origen",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "destinationCountry",
+          "label": "País donde se presentará (si corresponde)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "documentFile",
+          "label": "Documento a revisar (PDF)",
+          "type": "file",
+          "required": true,
+          "accept": "application/pdf,.pdf"
+        },
+        {
+          "id": "notes",
+          "label": "Aclaración (opcional)",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": false,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "authorization",
+          "label": "Leí y acepto los Términos y Condiciones y la Política de Privacidad. Autorizo a TramiPago a utilizar mis datos y documentos únicamente para gestionar esta solicitud.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "abogado-art": {
+      "name": "Reclamo ART / accidente laboral",
+      "intakeOnly": true,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "caseType",
+          "label": "Motivo de la consulta",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "work-accident",
+              "label": "Accidente de trabajo"
+            },
+            {
+              "value": "itinere",
+              "label": "Accidente in itinere"
+            },
+            {
+              "value": "occupational-disease",
+              "label": "Enfermedad profesional"
+            },
+            {
+              "value": "art-claim",
+              "label": "Reclamo o problema con la ART"
+            },
+            {
+              "value": "other",
+              "label": "Otro relacionado con ART"
+            }
+          ]
+        },
+        {
+          "id": "eventDate",
+          "label": "Fecha aproximada del hecho (opcional)",
+          "type": "date",
+          "required": false
+        },
+        {
+          "id": "notes",
+          "label": "Contanos brevemente qué pasó",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": false,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "authorization",
+          "label": "Autorizo a TramiPago a utilizar estos datos para coordinar y derivar mi consulta al profesional abogado que corresponda.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "abogado-accidentes": {
+      "name": "Accidentes",
+      "intakeOnly": true,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "caseType",
+          "label": "Tipo de accidente",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "traffic",
+              "label": "Accidente de tránsito"
+            },
+            {
+              "value": "other",
+              "label": "Otro accidente no laboral"
+            }
+          ]
+        },
+        {
+          "id": "eventDate",
+          "label": "Fecha aproximada del accidente",
+          "type": "date",
+          "required": false
+        },
+        {
+          "id": "notes",
+          "label": "Contanos brevemente qué pasó",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": false,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "authorization",
+          "label": "Autorizo a TramiPago a utilizar estos datos para coordinar y derivar mi consulta al profesional abogado que corresponda.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "abogado-sucesiones": {
+      "name": "Sucesiones",
+      "intakeOnly": true,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "province",
+          "label": "Provincia donde se tramitaría o tramita",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "caseState",
+          "label": "Situación",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "new",
+              "label": "Quiero iniciar una sucesión"
+            },
+            {
+              "value": "started",
+              "label": "La sucesión ya está iniciada"
+            },
+            {
+              "value": "question",
+              "label": "Tengo una consulta antes de iniciarla"
+            }
+          ]
+        },
+        {
+          "id": "notes",
+          "label": "Contanos brevemente qué necesitás",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": false,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "authorization",
+          "label": "Autorizo a TramiPago a utilizar estos datos para coordinar y derivar mi consulta al profesional abogado que corresponda.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    },
+    "abogado-laboral": {
+      "name": "Consulta laboral",
+      "intakeOnly": true,
+      "deferDraftUntilSubmit": false,
+      "fields": [
+        {
+          "id": "caseType",
+          "label": "Motivo de la consulta",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "dismissal",
+              "label": "Despido"
+            },
+            {
+              "value": "salary",
+              "label": "Diferencias salariales / pagos pendientes"
+            },
+            {
+              "value": "unregistered",
+              "label": "Trabajo no registrado"
+            },
+            {
+              "value": "telegram",
+              "label": "Telegrama / comunicación laboral"
+            },
+            {
+              "value": "other",
+              "label": "Otra consulta laboral"
+            }
+          ]
+        },
+        {
+          "id": "notes",
+          "label": "Contanos brevemente qué necesitás consultar",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "fullName",
+          "label": "Nombre y apellido",
+          "type": "text",
+          "required": true,
+          "autocomplete": "name"
+        },
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": false,
+          "placeholder": "Ej.: nombre@correo.com",
+          "autocomplete": "email"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Ej.: 11 1234-5678 (sin +54 9)",
+          "autocomplete": "tel"
+        },
+        {
+          "id": "authorization",
+          "label": "Autorizo a TramiPago a utilizar estos datos para coordinar y derivar mi consulta al profesional abogado que corresponda.",
+          "type": "checkbox",
+          "required": true
+        }
+      ],
+      "rules": null
+    }
+  }
+}
