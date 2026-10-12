@@ -1,0 +1,112 @@
+{
+  "reference": "Portada-v2(2).png",
+  "referenceSha256": "b51c03bf44b6d3d5c09a38319b06ec4848b4d10e876c7ea1c84c6c681c0c8bb8",
+  "extraction": "Deterministic pixel-preserving crops from the approved reference. No generated substitutes.",
+  "assets": [
+    {
+      "path": "v2/assets/antecedentes-opcion-c.webp",
+      "sourceBox": [
+        107,
+        477,
+        464,
+        628
+      ],
+      "bytes": 59118,
+      "sha256": "89edb75ae53fe996d9802408b3369a22f93aa4a0ff822fc3a64fa01ed138bbf5"
+    },
+    {
+      "path": "v2/assets/anses-opcion-c.webp",
+      "sourceBox": [
+        481,
+        477,
+        829,
+        628
+      ],
+      "bytes": 56460,
+      "sha256": "d5e87e2a6d21d7569687479f327ddc1a5cfcfc2e2feb6528b771f89b8403dcce"
+    },
+    {
+      "path": "v2/assets/vehicular-opcion-c.webp",
+      "sourceBox": [
+        846,
+        477,
+        1194,
+        628
+      ],
+      "bytes": 62886,
+      "sha256": "557462d65a7f9c1120da9eafa8e1fc5521a66a4a09261a107541ca03801484f4"
+    },
+    {
+      "path": "v2/assets/arba-opcion-c.webp",
+      "sourceBox": [
+        1212,
+        477,
+        1566,
+        628
+      ],
+      "bytes": 77504,
+      "sha256": "77efbaa830359766cda493948b49a34ba84e6228e71e82b9ca1f431b0c5c3d5e"
+    },
+    {
+      "path": "v2/assets/partidas-opcion-c.webp",
+      "sourceBox": [
+        107,
+        680,
+        464,
+        818
+      ],
+      "bytes": 58608,
+      "sha256": "4bc2648a8109c82c1b8371186f510ab41a5e989bb8f993aca7e930c36af085ff"
+    },
+    {
+      "path": "v2/assets/arca-opcion-c.webp",
+      "sourceBox": [
+        481,
+        680,
+        829,
+        818
+      ],
+      "bytes": 47956,
+      "sha256": "57872fab6ef86163078519469cacd912c68664a90515efe6d5091138bf8c7221"
+    },
+    {
+      "path": "v2/assets/apostillas-opcion-c.webp",
+      "sourceBox": [
+        846,
+        680,
+        1194,
+        818
+      ],
+      "bytes": 66218,
+      "sha256": "83cc8bff9690404bde5ec613773ea84071531e69c15b0d6f3b71a89a54f259a2"
+    },
+    {
+      "path": "v2/assets/art-opcion-c.webp",
+      "sourceBox": [
+        1212,
+        680,
+        1566,
+        818
+      ],
+      "bytes": 54340,
+      "sha256": "8e1cf157bce5ee289a91a45ae58cc7a55f4873c8060b7003a660fde477e6e9a4"
+    },
+    {
+      "path": "v2/assets/logo-horizontal-opcion-c.webp",
+      "sourceBox": [
+        168,
+        2,
+        519,
+        65
+      ],
+      "bytes": 32680,
+      "sha256": "cef0a6cdf25650cd4b0af9f6403c47a8132aa096f60882b4e04b56033e6116fc"
+    },
+    {
+      "path": "v2/assets/hero-opcion-c-aprobada.jpg",
+      "bytes": 98526,
+      "sha256": "ef9b10a9da84f4734f9fda1f976393ffe8041174627348fb8e40b76afaaeaa5c",
+      "source": "Original recovered ZIP; bytes unchanged"
+    }
+  ]
+}
