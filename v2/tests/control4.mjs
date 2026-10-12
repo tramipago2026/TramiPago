@@ -5,6 +5,7 @@ import {fileURLToPath} from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = JSON.parse(readFileSync(path.join(root, "rutas-v2.json"), "utf8"));
+const officialData = JSON.parse(readFileSync(path.join(root, "data", "official-services-2026-10-12.json"), "utf8"));
 assert.equal(manifest.status, "STAGING_EN_CONSTRUCCION", "Estado V2 inesperado");
 const paths = [
   ...manifest.primary.map(x => x.href),
