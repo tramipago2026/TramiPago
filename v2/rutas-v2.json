@@ -1,6 +1,6 @@
 {
-  "version": "directiva13-2026-10-11",
-  "status": "BORRADOR_NO_PUBLICAR",
+  "version": "directiva13-2026-10-12-staging-functional",
+  "status": "STAGING_EN_CONSTRUCCION",
   "primary": [
     {
       "label": "Inicio",
@@ -239,5 +239,8 @@
     "/v2/politica-privacidad/",
     "/v2/arrepentimiento/",
     "/v2/baja-servicio/"
+  ],
+  "internalPages": [
+    "/v2/admin/"
   ]
 }
