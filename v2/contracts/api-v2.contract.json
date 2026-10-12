@@ -1,7 +1,7 @@
 {
   "name": "TramiPago V2 — Contrato compartido Chat 11 ↔ Chat 12",
-  "version": "2026-10-11.d13-c12-draft3",
-  "status": "BORRADOR_IMPLEMENTACION_STAGING",
+  "version": "2026-10-12.d13-c12-draft4",
+  "status": "STAGING_FUNCIONAL_CORE_B2_PENDIENTE",
   "audience": "Revisión y pruebas en staging únicamente",
   "frontend": {
     "repository": "tramipago2026/TramiPago",
@@ -14,10 +14,10 @@
     "branch": "v2-mysql-chat12-integration",
     "apiOriginProposed": "https://api.tramipago.com.ar",
     "databaseEngine": "MySQL real",
-    "databaseProvider": "Aiven Free MySQL — validado documentalmente; servicio TEST y conexión pendientes",
-    "auth": "Better Auth o equivalente sujeto a validación",
-    "api": "Cloudflare Workers + Hono sujeto a validación",
-    "storage": "Backblaze B2 privado candidato",
+    "databaseProvider": "Aiven Free MySQL — TEST real validado",
+    "auth": "Better Auth 1.7.7 self-hosted — validado en Worker staging con TOTP",
+    "api": "Cloudflare Workers + Hono + Hyperdrive — staging real validado",
+    "storage": "Backblaze B2 privado — código de integración listo; bucket/key TEST pendientes de intervención humana",
     "notifications": "Resend sujeto a verificación",
     "backup": "dump MySQL cifrado + restauración verificada; Google Drive candidato sin cargo; R2 no apto bajo regla sin facturación obligatoria",
     "zeroCostAudit": "backend-v2/docs/COSTO-CERO-2026-10-11.md (repositorio backend)"
@@ -45,7 +45,7 @@
       "path": "/v2/requests/drafts",
       "auth": "rate_limit",
       "result": "id+tracking_code+capability segura; antes de consentimiento no persistir PII",
-      "status": "IMPLEMENTACION_CONTRATO"
+      "status": "STAGING_E2E_OK"
     },
     {
       "key": "update-request-draft",
@@ -53,7 +53,7 @@
       "path": "/v2/requests/{id}/draft",
       "auth": "capability+validación",
       "result": "estado de borrador",
-      "status": "IMPLEMENTACION_CONTRATO"
+      "status": "STAGING_E2E_OK"
     },
     {
       "key": "upload-file",
@@ -61,7 +61,7 @@
       "path": "/v2/requests/{id}/files",
       "auth": "capability+validaciones server-side",
       "result": "referencia privada de archivo",
-      "status": "IMPLEMENTACION_CONTRATO"
+      "status": "CODIGO_STAGING_LISTO_B2_PENDIENTE"
     },
     {
       "key": "confirm-payment",
@@ -69,7 +69,7 @@
       "path": "/v2/requests/{id}/payment-proof",
       "auth": "capability+validación+revisión",
       "result": "payment_review, nunca aprobación automática por mera carga",
-      "status": "IMPLEMENTACION_CONTRATO"
+      "status": "STAGING_E2E_OK"
     },
     {
       "key": "submit-correction",
@@ -77,7 +77,7 @@
       "path": "/v2/requests/{id}/corrections",
       "auth": "capability",
       "result": "evento y actualización segura",
-      "status": "IMPLEMENTACION_CONTRATO"
+      "status": "STAGING_E2E_OK"
     },
     {
       "key": "track-request",
@@ -85,7 +85,7 @@
       "path": "/v2/requests/lookup",
       "auth": "código + verificación del titular + rate limit",
       "result": "estado autorizado sin filtrar PII de terceros",
-      "status": "IMPLEMENTACION_CONTRATO"
+      "status": "STAGING_E2E_OK"
     },
     {
       "key": "request-help",
@@ -93,7 +93,7 @@
       "path": "/v2/requests/{id}/help",
       "auth": "capability+rate_limit",
       "result": "evento de ayuda",
-      "status": "IMPLEMENTACION_CONTRATO"
+      "status": "STAGING_E2E_OK"
     },
     {
       "key": "log-client-error",
@@ -101,7 +101,7 @@
       "path": "/v2/telemetry/client-errors",
       "auth": "rate_limit+sanitización",
       "result": "registro sin PII",
-      "status": "IMPLEMENTACION_CONTRATO"
+      "status": "STAGING_E2E_OK"
     },
     {
       "key": "admin-access",
@@ -109,7 +109,7 @@
       "path": "/v2/admin/*",
       "auth": "sesión admin+MFA TOTP + roles server-side",
       "result": "funciones administrativas autorizadas",
-      "status": "IMPLEMENTACION_CONTRATO"
+      "status": "STAGING_E2E_OK"
     }
   ],
   "states": [
@@ -138,23 +138,23 @@
   "gates": [
     {
       "name": "proveedor MySQL gratuito verificado (límites, tarjeta, TLS, backup)",
-      "status": "VERIFICADO_DOCUMENTALMENTE_PENDIENTE_TEST"
+      "status": "VERIFICADO_STAGING_REAL"
     },
     {
       "name": "contrato API y esquema MySQL versionado",
-      "status": "EN_CURSO_DRAFT3"
+      "status": "DRAFT4_CORE_IMPLEMENTADO"
     },
     {
       "name": "Auth MFA y autorización cliente/admin",
-      "status": "EN_CURSO_CODIGO_STAGING"
+      "status": "VERIFICADO_STAGING_REAL"
     },
     {
       "name": "Storage B2 privado con validaciones",
-      "status": "PENDIENTE"
+      "status": "CODIGO_LISTO_PENDIENTE_BUCKET_CREDENCIALES_TEST"
     },
     {
       "name": "prueba E2E con datos sintéticos",
-      "status": "PENDIENTE"
+      "status": "CORE_OK_ARCHIVOS_B2_PENDIENTE"
     },
     {
       "name": "dump cifrado + restauración aislada",
