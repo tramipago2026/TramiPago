@@ -12,8 +12,9 @@
 .home-opcion-c .site-header nav a{font-weight:400;padding:14px 0 9px;border-bottom:2px solid transparent}
 .home-opcion-c .site-header nav a[aria-current=page]{font-weight:700}
 .home-opcion-c .hero{position:relative;display:block;background:none;max-width:1336px;min-height:362px;margin:0 auto}
+.home-opcion-c .hero:before,.home-opcion-c .hero:after{content:none}
 .home-opcion-c .hero-copy{position:relative;z-index:2;display:block;width:655px;padding:18px 0 14px;max-width:100%}
-.home-opcion-c .hero h1{font-size:62px;line-height:.91;font-weight:800;letter-spacing:-2px;margin:2px 0 13px}
+.home-opcion-c .hero h1{font-size:62px;line-height:.91;font-weight:800;letter-spacing:-2px;margin:2px 0 4px}
 .home-opcion-c .hero h1 span{color:#0876ff;line-height:1.02}
 .home-opcion-c .hero p{font-size:23px;line-height:1.1;margin:0 0 12px;letter-spacing:-.3px}
 .home-opcion-c .hero form{align-items:center;gap:12px;border:0;min-height:58px;padding:6px 9px 6px 20px;border-radius:12px;box-shadow:0 5px 18px #1280dc30}
