@@ -164,8 +164,9 @@
 }
 
 /* Keep the whole logo inside the header, including at browser zoom boundaries. */
-.home-opcion-c .site-header{min-height:86px;padding:10px 0;overflow:visible}
-.home-opcion-c .brand{min-width:0;flex:0 1 351px}
+.home-opcion-c .site-header{min-height:86px;padding:10px 0;overflow:visible;z-index:20;isolation:isolate}
+.home-opcion-c .brand{min-width:0;flex:0 1 351px;position:relative;z-index:1}
+.home-opcion-c .site-header nav{position:relative;z-index:0}
 .home-opcion-c .brand img{display:block;width:100%;max-width:351px;height:auto;object-fit:contain}
 .home-opcion-c .hero-shell{min-height:448px}
 .home-opcion-c .hero-visual{top:86px}
