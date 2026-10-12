@@ -167,7 +167,8 @@
 .home-opcion-c .site-header{min-height:86px;padding:10px 0;overflow:visible;z-index:20;isolation:isolate}
 .home-opcion-c .brand{min-width:0;flex:0 1 351px;position:relative;z-index:1;display:block;aspect-ratio:351/63}
 .home-opcion-c .site-header nav{position:relative;z-index:0}
-.home-opcion-c .brand img{display:block;position:absolute;left:-2.279202%;top:0;width:104.558405%;max-width:none;height:auto;transform:translateY(-8.988764%);object-fit:contain}
+/* Exclude excess transparent padding from pointer hits, keeping all artwork plus a safety pixel. */
+.home-opcion-c .brand img{display:block;position:absolute;left:-2.279202%;top:0;width:104.558405%;max-width:none;height:auto;transform:translateY(-8.988764%);object-fit:contain;clip-path:inset(12.359551% 2.724796% 13.483146% 1.907357%)}
 .home-opcion-c .hero-shell{min-height:448px}
 .home-opcion-c .hero-visual{top:86px}
 @media(max-width:1100px){.home-opcion-c .brand{flex-basis:290px}.home-opcion-c .brand img{height:auto}}
