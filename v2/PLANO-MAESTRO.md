@@ -1,6 +1,6 @@
 # TramiPago V2 — Plano Maestro | Directiva 13
 
-**Estado:** BORRADOR TÉCNICO EN DESARROLLO, sin publicación.
+**Estado:** V2 TÉCNICA EN STAGING AISLADO. No publicada en producción ni integrada a V1.
 **Referencia visual inalterable:** `Portada-v2.png` entregada por el usuario el 11/10/2026, opción C (híbrido V1 + propuesta profesional B).
 **Marco:** chat 00, chat 11, controles 2/3/4, Directiva 13. El diseño aprobado NO se altera sin propuesta y aceptación explícitas.
 
@@ -9,8 +9,8 @@
 - Rama de trabajo: `v2/opcion-c-directiva13` (no es `main`).
 - Ubicación exclusiva del código nuevo: `/v2/**` y pruebas específicas V2.
 - No tocar `index.html`, `app.js`, `services.js`, `site.css`, `admin/**`, configuraciones de publicación, DNS, Cloudflare ni backend de V1.
-- No publicar ni crear/desplegar un entorno público sin autorización adicional. V2 permanecerá fuera de la rama productiva.
-- No usar PII real en pruebas. No conectar pagos, archivos, correo, autenticación o base productivos hasta disponer de adaptador y ambiente TEST validados. Backend definitivo V2 se coordina con chat 12: MySQL real (no Firestore), API propia y separación de Auth/Storage. Consultar `v2/INTEGRACION-CHAT11-CHAT12.md`; tecnología/proveedores sujetos a viabilidad gratuita y pruebas. Chat 09 queda como antecedente de la propuesta Firestore reemplazada para V2.
+- Staging V2 aislado está autorizado y operativo fuera de la rama productiva. Producción/cutover, `main`, V1 y DNS productivo requieren autorización expresa y permanecen fuera de alcance.
+- No usar PII real en pruebas. V2 usa ambiente TEST aislado: MySQL Aiven + Worker/Hyperdrive + Better Auth/MFA. B2 y Resend permanecen fail-closed mientras no existan credenciales TEST. No conectar recursos productivos de V1. Consultar `v2/INTEGRACION-CHAT11-CHAT12.md`; Chat 09 queda como antecedente de la propuesta Firestore reemplazada para V2.
 - No indexación mientras esté en pruebas: futuras páginas V2 incorporarán `noindex,nofollow` hasta autorización de publicación.
 
 ## 2. Arquitectura funcional y orden
@@ -65,8 +65,8 @@ Origen consultado en lectura: `services.js`, `service-pages.json`, `tramites-cat
 5. Ficha de trámite
 6. Formulario de etapas (campos particulares por configuración, controles accesibles)
 7. Revisión previa al pago (resumen, monto final, consentimiento)
-8. Pago / carga de comprobante (bloqueado en TEST sin backend)
-9. Confirmación y código (sólo desde respuesta real backend)
+8. Pago / carga de comprobante (etapa backend operativa; carga de archivo fail-closed hasta configurar B2 TEST)
+9. Confirmación y código (respuesta real del backend V2 TEST)
 10. Seguimiento (código, estado, correcciones; no respuestas simuladas como reales)
 11. Buscador / resultados
 12. Ayuda y contacto
@@ -77,7 +77,7 @@ Origen consultado en lectura: `services.js`, `service-pages.json`, `tramites-cat
 - Reutilizar patrones operativos validados, no duplicar motor en cada servicio; motor de pasos genérico y definición tipada por servicio.
 - Cada paso requiere validación de cliente y de servidor, control de archivos, consentimiento y reglas del trámite.
 - **Modo TEST** sin peticiones a backend de producción; no emitir comprobantes, pagos, códigos ni confirmaciones ficticias.
-- Contrato frontend/backend V2 se acuerda con chat 12 mediante `v2/contracts/api-v2.contract.json` y `v2/INTEGRACION-CHAT11-CHAT12.md`. Las rutas de API son borradores no implementados; pagos, emails, documentos y seguimiento reales permanecen bloqueados hasta pruebas integrales.
+- Contrato frontend/backend V2 se versiona en `v2/contracts/api-v2.contract.json` y `v2/INTEGRACION-CHAT11-CHAT12.md`. API core, borradores, revisión/envío, seguimiento, ayuda, correcciones, flujo de pago y Admin están implementados y validados en staging TEST. Documentos B2 y envío Resend permanecen bloqueados por credenciales externas pendientes.
 
 ## 7. Matriz CONTROL 4
 | Elemento | Destino | Regla |
@@ -97,14 +97,19 @@ Origen consultado en lectura: `services.js`, `service-pages.json`, `tramites-cat
 1. Inventario y destinos de enlaces; archivos/rutas existentes; no enlaces a V1 inadvertidos.
 2. Prueba estática de navegación y duplicaciones de propósito; tabulación/accesibilidad; móvil/escritorio.
 3. Pruebas de formularios con datos sintéticos: campos, validación, errores, resumen.
-4. Integración E2E TEST con Auth/API/archivos y rollback controlado (coord. chat 09).
+4. Integración E2E TEST con Auth/API y rollback controlado; archivos B2 se validarán cuando exista bucket/credenciales TEST.
 5. CONTROL 3 sólo cuando hay despliegue autorizado: código+pruebas, despliegue real, verificación independiente.
 6. No cerrar ni habilitar contratar hasta disponer de requisitos oficiales CONTROL 2 y servicio backend real verificado.
 
-## 9. Próxima iteración
-Crear fuente de rutas V2, generador de páginas, componentes de navegación y tests; contrastar fidelidad de portada con la imagen aprobada sin transformar la imagen en interfaz estática ni cambiar el diseño. Fotografía de portada separada en alta calidad **no localizada aún** en el repositorio; conservar imagen de referencia y declarar el bloqueo antes de cerrar el hero.
-
-**Estado al iniciar:** rama V2 creada, plano maestro definido en borrador; ni sitio completo ni navegación E2E acreditados todavía.
+## 9. Estado de la iteración actual — 12/10/2026
+- Fuente de rutas, páginas, navegación, buscador, formularios compartidos, seguimiento, ayuda, flujo de pago y Admin V2: construidos.
+- CONTROL 4 frontend: SUCCESS.
+- Staging real: activo en Worker V2 aislado.
+- Live Preview E2E: 142 rutas HTML + 78 enlaces/assets + 25 servicios: SUCCESS.
+- Browser E2E cliente → Worker → MySQL: SUCCESS.
+- Admin Browser E2E + MFA: SUCCESS.
+- La captura aprobada `Portada-v2.png` fue recuperada en la Biblioteca del proyecto, pero la fotografía de portada separada en alta calidad **no fue localizada**. No recortar ni inventar un reemplazo sin autorización.
+- B2, Resend, CA de Aiven para TLS directo estricto, backup externo persistente y producción/cutover permanecen como dependencias externas o humanas.
 
 ## 10. Integración aprobada con chat 12 (11/10/2026)
 
