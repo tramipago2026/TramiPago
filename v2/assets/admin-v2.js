@@ -9,11 +9,14 @@
   const list=q("[data-admin-list]"), detail=q("[data-admin-detail]");
   const statusForm=q("[data-admin-status-form]"), filter=q("[data-admin-status-filter]");
   const logout=q("[data-admin-logout]");
+  const resultForm=q("[data-admin-result-form]");
+  const resultState=q("[data-admin-result-state]");
+  const resultMessage=q("[data-admin-result-message]");
   const notificationList=q("[data-admin-notifications]");
   let selectedId=null, role=null;
 
   async function request(path, options={}) {
-    const response=await fetch(path,{credentials:"same-origin",...options,headers:{Accept:"application/json",...(options.body?{"Content-Type":"application/json"}:{}),...(options.headers||{})}});
+    const response=await fetch(path,{credentials:"same-origin",...options,headers:{Accept:"application/json",...(options.body && !(options.body instanceof FormData)?{"Content-Type":"application/json"}:{}),...(options.headers||{})}});
     const raw=await response.text(); let data=null;
     if(raw){try{data=JSON.parse(raw)}catch{data={error:"invalid_response"}}}
     if(!response.ok){const e=new Error(data?.error||"request_failed");e.status=response.status;e.code=data?.code||data?.error;e.data=data;throw e}
@@ -72,7 +75,22 @@
       events.append(ul);
       wrap.append(files,events);detail.replaceChildren(wrap);
       statusForm.hidden=role==="viewer";
-    }catch{detail.textContent="No se pudo cargar el detalle.";statusForm.hidden=true}
+      resultForm.hidden=role==="viewer";
+      if(role!=="viewer"){
+        const uploadButton=q('button[type="submit"]',resultForm);
+        try{
+          const health=await request("/v2/health/dependencies");
+          const ready=health?.dependencies?.b2==="configured";
+          uploadButton.disabled=!ready;
+          resultState.textContent=ready
+            ?"B2 privado disponible. El archivo quedará asociado como resultado de esta solicitud."
+            :"Backblaze B2 todavía no está configurado; la entrega permanece bloqueada de forma segura.";
+        }catch{
+          uploadButton.disabled=true;
+          resultState.textContent="No se pudo verificar el almacenamiento privado.";
+        }
+      }
+    }catch{detail.textContent="No se pudo cargar el detalle.";statusForm.hidden=true;resultForm.hidden=true}
   }
   async function loadNotifications(){
     notificationList.textContent="Cargando…";
@@ -123,6 +141,33 @@
       secretNode.textContent="";enrollSecret.hidden=true;enrollVerify.reset();await session();
     }catch{msg("Código inválido. Revisá el autenticador e intentá nuevamente.","error")}
   });
+  resultForm.addEventListener("submit",async e=>{
+    e.preventDefault(); if(!selectedId)return;
+    const file=new FormData(resultForm).get("file");
+    if(!(file instanceof File))return;
+    const body=new FormData();body.set("file",file);
+    const button=q('button[type="submit"]',resultForm);button.disabled=true;
+    try{
+      const uploaded=await request("/v2/admin/requests/"+encodeURIComponent(selectedId)+"/result",{
+        method:"POST",
+        headers:{"Idempotency-Key":"admin-result-"+selectedId+"-"+Date.now()},
+        body,
+      });
+      msg("Resultado privado cargado.","success");
+      resultMessage.textContent="Archivo registrado: "+uploaded.fileId;
+      resultMessage.dataset.kind="success";resultMessage.hidden=false;
+      resultForm.reset();await loadDetail(selectedId);
+    }catch(e){
+      resultMessage.textContent=e.status===503
+        ?"B2 todavía no está disponible en STAGING."
+        :"No se pudo cargar el resultado.";
+      resultMessage.dataset.kind="error";resultMessage.hidden=false;
+    }finally{
+      const health=await request("/v2/health/dependencies").catch(()=>null);
+      button.disabled=health?.dependencies?.b2!=="configured";
+    }
+  });
+
   statusForm.addEventListener("submit",async e=>{
     e.preventDefault(); if(!selectedId)return;
     const fd=new FormData(statusForm);
