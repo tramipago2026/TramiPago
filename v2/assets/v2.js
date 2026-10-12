@@ -184,6 +184,74 @@
           }
         });
       }
+
+      if (!qs("[data-v2-upload-form]", result)) {
+        const uploadForm = document.createElement("form");
+        uploadForm.className = "vertical";
+        uploadForm.dataset.v2UploadForm = "";
+        uploadForm.innerHTML = '<h3>Archivos de prueba</h3><p data-v2-storage-state class="muted">Verificando almacenamiento privado…</p><label>Tipo<select name="kind"><option value="supporting_document">Documento de apoyo</option><option value="payment_receipt">Comprobante de pago</option></select></label><label>Archivo PDF/JPEG/PNG<input name="file" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required></label><button class="button" type="submit">Subir archivo de prueba</button><div class="status-box" data-v2-upload-message hidden aria-live="polite"></div>';
+        result.append(uploadForm);
+        const state = qs("[data-v2-storage-state]", uploadForm);
+        const uploadButton = qs('button[type="submit"]', uploadForm);
+        api("/v2/health/dependencies", { method: "GET" })
+          .then((health) => {
+            const ready = health?.dependencies?.b2 === "configured";
+            uploadButton.disabled = !ready;
+            state.textContent = ready
+              ? "Almacenamiento privado B2 disponible en STAGING."
+              : "Carga real pendiente: Backblaze B2 todavía no está configurado. El resto del flujo continúa operativo.";
+          })
+          .catch(() => {
+            uploadButton.disabled = true;
+            state.textContent = "No se pudo verificar el almacenamiento; carga deshabilitada de forma segura.";
+          });
+
+        uploadForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const active = currentSession();
+          if (!active) return;
+          const fd = new FormData(uploadForm);
+          const file = fd.get("file");
+          const kind = String(fd.get("kind") || "supporting_document");
+          const uploadMessage = qs("[data-v2-upload-message]", uploadForm);
+          if (!(file instanceof File)) return;
+          uploadButton.disabled = true;
+          const body = new FormData();
+          body.set("file", file);
+          body.set("kind", kind);
+          try {
+            const uploaded = await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/files", {
+              method: "POST",
+              headers: {
+                "Idempotency-Key": randomKey("file-" + active.requestId),
+                "X-Request-Capability": active.capability,
+              },
+              body,
+            });
+            if (kind === "payment_receipt") {
+              const payment = await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/payment-proof", {
+                method: "POST",
+                headers: {
+                  "Idempotency-Key": randomKey("payment-" + active.requestId),
+                  "X-Request-Capability": active.capability,
+                },
+                body: JSON.stringify({ fileId: uploaded.fileId }),
+              });
+              setMessage(uploadMessage, "Comprobante privado recibido. Estado: " + statusLabel(payment.status) + ".", "success");
+            } else {
+              setMessage(uploadMessage, "Archivo privado de prueba recibido correctamente.", "success");
+            }
+            uploadForm.reset();
+          } catch (error) {
+            setMessage(uploadMessage, error.status === 503
+              ? "Almacenamiento privado todavía no disponible en STAGING."
+              : "No se pudo subir el archivo de prueba.", "error");
+          } finally {
+            const health = await api("/v2/health/dependencies", { method: "GET" }).catch(() => null);
+            uploadButton.disabled = health?.dependencies?.b2 !== "configured";
+          }
+        });
+      }
     }
 
     renderCreated(currentSession());
