@@ -121,8 +121,23 @@
     const form = qs("[data-v2-request-form]");
     if (!form) return;
 
-    const serviceId = form.dataset.serviceId || "";
-    const serviceName = form.dataset.serviceName || serviceId;
+    const pathMatch = location.pathname.match(/\/v2\/tramites\/([^/]+)\/iniciar\/?$/);
+    const serviceId = form.dataset.serviceId || pathMatch?.[1] || "";
+    let serviceName = form.dataset.serviceName || serviceId;
+    const titleNode = qs("[data-v2-service-title]");
+    const backLink = qs("[data-v2-service-back]");
+    try {
+      const manifest = await fetch("/v2/rutas-v2.json", { cache: "no-store" }).then((r) => r.json());
+      const service = (manifest.services || []).find((item) => item.id === serviceId);
+      if (service) {
+        serviceName = service.name;
+        if (titleNode) titleNode.textContent = "Iniciar " + service.name;
+        if (backLink) {
+          backLink.href = service.href;
+          backLink.textContent = "← " + service.name;
+        }
+      }
+    } catch {}
     const output = qs("[data-v2-form-message]", form.closest(".content") || document);
     const result = qs("[data-v2-created]", form.closest(".content") || document);
     const submit = qs('button[type="submit"]', form);
