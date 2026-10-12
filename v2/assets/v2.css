@@ -19,3 +19,5 @@
 .verified-facts{max-width:820px;margin:22px 0;padding:18px;border:1px solid var(--line);border-radius:12px;background:#f8fbff}
 .verified-facts h2{margin-top:0}.verified-facts ul{padding-left:22px}.verified-facts li{margin:8px 0}
 .wide-admin{grid-column:1/-1}
+
+.choice-field{border:1px solid var(--line);border-radius:10px;padding:12px;margin:0}.choice-field legend{font-weight:700;padding:0 5px}.choice-field .check-row{margin-top:8px}.form-grid small.muted{display:block;margin-top:5px}.form-grid fieldset.wide{grid-column:1/-1}
