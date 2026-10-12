@@ -1,7 +1,7 @@
 {
   "name": "TramiPago V2 — Contrato compartido Chat 11 ↔ Chat 12",
-  "version": "2026-10-11.d13-c12-draft2",
-  "status": "BORRADOR_NO_IMPLEMENTADO",
+  "version": "2026-10-11.d13-c12-draft3",
+  "status": "BORRADOR_IMPLEMENTACION_STAGING",
   "audience": "Revisión y pruebas en staging únicamente",
   "frontend": {
     "repository": "tramipago2026/TramiPago",
@@ -45,7 +45,7 @@
       "path": "/v2/requests/drafts",
       "auth": "rate_limit",
       "result": "id+tracking_code+capability segura; antes de consentimiento no persistir PII",
-      "status": "PENDIENTE"
+      "status": "IMPLEMENTACION_CONTRATO"
     },
     {
       "key": "update-request-draft",
@@ -53,7 +53,7 @@
       "path": "/v2/requests/{id}/draft",
       "auth": "capability+validación",
       "result": "estado de borrador",
-      "status": "PENDIENTE"
+      "status": "IMPLEMENTACION_CONTRATO"
     },
     {
       "key": "upload-file",
@@ -61,7 +61,7 @@
       "path": "/v2/requests/{id}/files",
       "auth": "capability+validaciones server-side",
       "result": "referencia privada de archivo",
-      "status": "PENDIENTE"
+      "status": "IMPLEMENTACION_CONTRATO"
     },
     {
       "key": "confirm-payment",
@@ -69,7 +69,7 @@
       "path": "/v2/requests/{id}/payment-proof",
       "auth": "capability+validación+revisión",
       "result": "payment_review, nunca aprobación automática por mera carga",
-      "status": "PENDIENTE"
+      "status": "IMPLEMENTACION_CONTRATO"
     },
     {
       "key": "submit-correction",
@@ -77,7 +77,7 @@
       "path": "/v2/requests/{id}/corrections",
       "auth": "capability",
       "result": "evento y actualización segura",
-      "status": "PENDIENTE"
+      "status": "IMPLEMENTACION_CONTRATO"
     },
     {
       "key": "track-request",
@@ -85,7 +85,7 @@
       "path": "/v2/requests/lookup",
       "auth": "código + verificación del titular + rate limit",
       "result": "estado autorizado sin filtrar PII de terceros",
-      "status": "PENDIENTE"
+      "status": "IMPLEMENTACION_CONTRATO"
     },
     {
       "key": "request-help",
@@ -93,7 +93,7 @@
       "path": "/v2/requests/{id}/help",
       "auth": "capability+rate_limit",
       "result": "evento de ayuda",
-      "status": "PENDIENTE"
+      "status": "IMPLEMENTACION_CONTRATO"
     },
     {
       "key": "log-client-error",
@@ -101,7 +101,7 @@
       "path": "/v2/telemetry/client-errors",
       "auth": "rate_limit+sanitización",
       "result": "registro sin PII",
-      "status": "PENDIENTE"
+      "status": "IMPLEMENTACION_CONTRATO"
     },
     {
       "key": "admin-access",
@@ -109,7 +109,7 @@
       "path": "/v2/admin/*",
       "auth": "sesión admin+MFA TOTP + roles server-side",
       "result": "funciones administrativas autorizadas",
-      "status": "PENDIENTE"
+      "status": "IMPLEMENTACION_CONTRATO"
     }
   ],
   "states": [
@@ -142,11 +142,11 @@
     },
     {
       "name": "contrato API y esquema MySQL versionado",
-      "status": "PENDIENTE"
+      "status": "EN_CURSO_DRAFT3"
     },
     {
       "name": "Auth MFA y autorización cliente/admin",
-      "status": "PENDIENTE"
+      "status": "EN_CURSO_CODIGO_STAGING"
     },
     {
       "name": "Storage B2 privado con validaciones",
@@ -165,5 +165,227 @@
       "status": "BLOQUEADO_AUTORIZACION"
     }
   ],
-  "productionCutover": "PROHIBIDO sin autorización expresa + CONTROL 3"
+  "productionCutover": "PROHIBIDO sin autorización expresa + CONTROL 3",
+  "http": {
+    "contentType": "application/json",
+    "credentials": "include para Auth/Admin; capability header para flujo cliente",
+    "idempotencyHeader": "Idempotency-Key requerido en create/update/upload/payment/correction/help",
+    "capabilityHeader": "X-Request-Capability para operaciones cliente ligadas a una solicitud",
+    "cors": "orígenes explícitos solamente"
+  },
+  "errorModel": {
+    "shape": {
+      "error": "string",
+      "code": "string",
+      "message": "string opcional",
+      "requestId": "string opcional",
+      "details": "objeto opcional no sensible"
+    },
+    "statusCodes": {
+      "400": "validation_error",
+      "401": "unauthenticated|invalid_capability",
+      "403": "forbidden|mfa_enrollment_required",
+      "404": "not_found",
+      "409": "conflict|idempotency_conflict|invalid_transition",
+      "413": "file_too_large",
+      "415": "unsupported_media_type",
+      "429": "rate_limited|account_temporarily_locked",
+      "500": "internal_error",
+      "503": "dependency_unavailable"
+    }
+  },
+  "operationSchemas": {
+    "create-request": {
+      "request": {
+        "serviceId": "string",
+        "contact": {
+          "name": "string",
+          "email": "string opcional",
+          "whatsapp": "string"
+        },
+        "consent": "boolean"
+      },
+      "response": {
+        "id": "uuid",
+        "trackingCode": "string",
+        "capability": "secreto efímero entregado una vez",
+        "status": "draft"
+      },
+      "rules": [
+        "precio final resuelto en servidor",
+        "no persistir PII antes de consentimiento",
+        "idempotente"
+      ]
+    },
+    "update-request-draft": {
+      "request": {
+        "currentStep": "string",
+        "payload": "objeto validado por esquema del servicio"
+      },
+      "response": {
+        "id": "uuid",
+        "status": "draft",
+        "currentStep": "string",
+        "completionPercent": "0..100"
+      },
+      "rules": [
+        "capability ligada a request",
+        "whitelist de campos por servicio",
+        "idempotente"
+      ]
+    },
+    "upload-file": {
+      "request": {
+        "fieldId": "string",
+        "kind": "enum",
+        "file": "multipart/form-data"
+      },
+      "response": {
+        "fileId": "uuid",
+        "kind": "enum",
+        "sizeBytes": "number",
+        "sha256": "hex"
+      },
+      "rules": [
+        "MIME+extensión+firma+tamaño server-side",
+        "Storage privado",
+        "idempotente"
+      ]
+    },
+    "confirm-payment": {
+      "request": {
+        "fileId": "uuid de comprobante",
+        "declaredAmount": "number opcional"
+      },
+      "response": {
+        "status": "payment_review"
+      },
+      "rules": [
+        "nunca aprobar pago automáticamente por carga",
+        "auditar evento",
+        "idempotente"
+      ]
+    },
+    "submit-correction": {
+      "request": {
+        "payload": "objeto parcial",
+        "fileIds": "uuid[] opcional"
+      },
+      "response": {
+        "status": "payment_review|in_progress según estado previo",
+        "eventId": "number"
+      },
+      "rules": [
+        "sólo campos solicitados",
+        "capability válida",
+        "idempotente"
+      ]
+    },
+    "track-request": {
+      "request": {
+        "trackingCode": "string",
+        "verification": "dato secundario o capability renovada"
+      },
+      "response": {
+        "status": "enum",
+        "statusNote": "string opcional",
+        "estimatedCompletionAt": "datetime opcional",
+        "missingFields": "array",
+        "canCorrect": "boolean"
+      },
+      "rules": [
+        "no filtrar PII",
+        "rate limit fuerte",
+        "respuesta uniforme ante códigos inválidos"
+      ]
+    },
+    "request-help": {
+      "request": {
+        "topic": "string",
+        "message": "string"
+      },
+      "response": {
+        "accepted": "boolean",
+        "eventId": "number"
+      },
+      "rules": [
+        "sanitización",
+        "rate limit",
+        "idempotente"
+      ]
+    },
+    "log-client-error": {
+      "request": {
+        "code": "string opcional",
+        "message": "string",
+        "context": "objeto sanitizado"
+      },
+      "response": {
+        "accepted": "boolean"
+      },
+      "rules": [
+        "sin PII/tokens/secretos",
+        "rate limit",
+        "truncar payload"
+      ]
+    },
+    "admin-access": {
+      "request": {
+        "auth": "Better Auth session cookie + TOTP obligatorio"
+      },
+      "response": {
+        "userId": "string",
+        "role": "owner|admin|operator|viewer"
+      },
+      "rules": [
+        "usuario activo en admin_users",
+        "twoFactorEnabled=true",
+        "autorización server-side por rol",
+        "auditoría de mutaciones"
+      ]
+    }
+  },
+  "authContract": {
+    "basePath": "/v2/auth",
+    "provider": "Better Auth 1.7.7 self-hosted",
+    "primaryLogin": "email+password",
+    "adminMfa": "TOTP obligatorio, issuer TramiPago",
+    "cookies": "HttpOnly + Secure; SameSite por defecto seguro; prefijo tramipago-v2",
+    "secrets": [
+      "BETTER_AUTH_SECRET sólo secret store",
+      "TOTP secret nunca frontend salvo URI de enrolamiento entregada al usuario autenticado"
+    ],
+    "adminGate": [
+      "sesión válida",
+      "admin_users.active",
+      "mfa_required",
+      "twoFactorEnabled"
+    ]
+  },
+  "migrationContract": {
+    "scopeInitial": "TEST_ONLY",
+    "preserve": [
+      "request IDs",
+      "tracking_code",
+      "estados",
+      "timestamps",
+      "relaciones",
+      "eventos"
+    ],
+    "doNotMigrateInitially": [
+      "auth.users",
+      "admin_users",
+      "bytes Storage"
+    ],
+    "scripts": [
+      "backend-v2/migration/export-supabase-test.mjs",
+      "backend-v2/migration/import-test-to-mysql.mjs"
+    ],
+    "failClosed": [
+      "TEST_REQUEST_IDS obligatorio",
+      "manifest.scope=TEST_ONLY",
+      "rollback transaccional ante error",
+      "destino con requests existentes bloqueado por defecto"
+    ]
+  }
 }
