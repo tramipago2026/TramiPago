@@ -6,6 +6,7 @@ import {fileURLToPath} from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = JSON.parse(readFileSync(path.join(root, "rutas-v2.json"), "utf8"));
 const officialData = JSON.parse(readFileSync(path.join(root, "data", "official-services-2026-10-12.json"), "utf8"));
+const formSchema = JSON.parse(readFileSync(path.join(root, "data", "form-schema-v2.json"), "utf8"));
 assert.equal(manifest.status, "STAGING_EN_CONSTRUCCION", "Estado V2 inesperado");
 const paths = [
   ...manifest.primary.map(x => x.href),
@@ -37,6 +38,11 @@ for (const url of unique) {
   }
 }
 assert.equal(manifest.services.length, 25, "Inventario de fichas inesperado");
+assert.equal(Object.keys(formSchema.services || {}).length, 25, "Inventario de esquemas de formulario inesperado");
+for (const service of manifest.services) {
+  assert.ok(formSchema.services[service.id], "Falta esquema para " + service.id);
+  assert.ok(Array.isArray(formSchema.services[service.id].fields) && formSchema.services[service.id].fields.length > 0, "Esquema sin campos: " + service.id);
+}
 assert.equal(manifest.families.length, 5, "Inventario de familias inesperado");
 for (const service of manifest.services) {
   const formPath = path.join(root, service.href.slice(4), "iniciar", "index.html");
@@ -48,4 +54,4 @@ assert.ok(trackingHtml.includes("data-v2-tracking-form"), "Seguimiento V2 no fun
 const adminHtml = readFileSync(path.join(root, "admin", "index.html"), "utf8");
 assert.ok(adminHtml.includes("data-admin-login-form"), "Admin V2 sin login");
 assert.ok(adminHtml.includes("data-admin-enroll-form"), "Admin V2 sin enrolamiento MFA");
-console.log("PASS CONTROL 4: " + unique.length + " rutas, " + internalLinks + " enlaces/recursos locales verificados; sin escapes V1.");
+console.log("PASS CONTROL 4: " + unique.length + " rutas, 25 esquemas de formulario y " + internalLinks + " enlaces/recursos locales verificados; sin escapes V1.");
