@@ -1,6 +1,6 @@
 {
   "name": "TramiPago V2 — Contrato compartido Chat 11 ↔ Chat 12",
-  "version": "2026-10-11.d13-c12-draft1",
+  "version": "2026-10-11.d13-c12-draft2",
   "status": "BORRADOR_NO_IMPLEMENTADO",
   "audience": "Revisión y pruebas en staging únicamente",
   "frontend": {
@@ -14,12 +14,13 @@
     "branch": "v2-mysql-chat12-integration",
     "apiOriginProposed": "https://api.tramipago.com.ar",
     "databaseEngine": "MySQL real",
-    "databaseProvider": "NO_SELECCIONADO",
+    "databaseProvider": "Aiven Free MySQL — validado documentalmente; servicio TEST y conexión pendientes",
     "auth": "Better Auth o equivalente sujeto a validación",
     "api": "Cloudflare Workers + Hono sujeto a validación",
     "storage": "Backblaze B2 privado candidato",
     "notifications": "Resend sujeto a verificación",
-    "backup": "dump MySQL cifrado + restauración verificada; R2 externo candidato"
+    "backup": "dump MySQL cifrado + restauración verificada; Google Drive candidato sin cargo; R2 no apto bajo regla sin facturación obligatoria",
+    "zeroCostAudit": "backend-v2/docs/COSTO-CERO-2026-10-11.md (repositorio backend)"
   },
   "security": {
     "frontendDirectSqlAccess": false,
@@ -137,7 +138,7 @@
   "gates": [
     {
       "name": "proveedor MySQL gratuito verificado (límites, tarjeta, TLS, backup)",
-      "status": "VERIFICAR"
+      "status": "VERIFICADO_DOCUMENTALMENTE_PENDIENTE_TEST"
     },
     {
       "name": "contrato API y esquema MySQL versionado",
