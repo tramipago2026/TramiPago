@@ -591,6 +591,45 @@
           let current = null;
           try { current = JSON.parse(sessionStorage.getItem("tramipago-v2-current") || "null"); } catch {}
           const requestedCode = String(data.get("trackingCode") || "").trim().toUpperCase();
+          const previousResults = qs("[data-v2-result-downloads]", output);
+          if (previousResults) previousResults.remove();
+          if (Array.isArray(response.results) && response.results.length && response.resultAccessToken) {
+            const downloads = document.createElement("div");
+            downloads.dataset.v2ResultDownloads = "";
+            const heading = document.createElement("h3");
+            heading.textContent = "Resultado disponible";
+            downloads.append(heading);
+            for (const item of response.results) {
+              const button = document.createElement("button");
+              button.type = "button";
+              button.className = "button";
+              button.textContent = "Descargar " + (item.name || "resultado");
+              button.addEventListener("click", async () => {
+                button.disabled = true;
+                try {
+                  const fileResponse = await fetch("/v2/results/" + encodeURIComponent(item.fileId), {
+                    credentials: "same-origin",
+                    headers: { "X-Result-Access": response.resultAccessToken },
+                  });
+                  if (!fileResponse.ok) throw new Error("download_failed");
+                  const blob = await fileResponse.blob();
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = item.name || "tramipago-resultado";
+                  a.click();
+                  setTimeout(() => URL.revokeObjectURL(url), 1000);
+                } catch {
+                  setMessage(noteNode, "No se pudo descargar el resultado. Volvé a consultar el estado para renovar el acceso.", "error");
+                } finally {
+                  button.disabled = false;
+                }
+              });
+              downloads.append(button);
+            }
+            output.append(downloads);
+          }
+
           if (response.canCorrect && missing.length && current?.trackingCode?.toUpperCase() === requestedCode && current?.capability) {
             const correction = document.createElement("form");
             correction.className = "vertical";
