@@ -129,6 +129,7 @@
   }
 
   function validateServiceRules(form, schema) {
+    if (schema?.blockedConditions?.some(condition => matchesCondition(form, condition))) return "Esta opción no está disponible en el flujo actual. Elegí otra opción o pedinos ayuda.";
     if (!schema?.rules) return null;
     const rules = schema.rules;
     if (Array.isArray(rules.anyOf) && !rules.anyOf.some((id) => fieldHasValue(form, id))) {
@@ -236,16 +237,20 @@
     return label;
   }
 
+  function matchesCondition(form, condition) {
+    if (condition.all) return condition.all.every(item => matchesCondition(form, item));
+    if (condition.any) return condition.any.some(item => matchesCondition(form, item));
+    const controls = qsa('[name="' + CSS.escape(condition.field) + '"]', form);
+    const selected = controls.find(node => node.type === "radio" ? node.checked : true)?.value || "";
+    return condition.values ? condition.values.includes(selected) : condition.notEquals !== undefined ? Boolean(selected) && selected !== condition.notEquals : selected === condition.equals;
+  }
+
   function applyFieldConditions(form, schema) {
     const value = (id) => {
       const controls = qsa('[name="' + CSS.escape(id) + '"]', form);
       return controls.find(node => node.type === "radio" ? node.checked : true)?.value || "";
     };
-    const matches = condition => {
-      if (condition.all) return condition.all.every(matches);
-      const selected = value(condition.field);
-      return condition.values ? condition.values.includes(selected) : condition.notEquals !== undefined ? Boolean(selected) && selected !== condition.notEquals : selected === condition.equals;
-    };
+    const matches = condition => matchesCondition(form, condition);
     for (const [id, condition] of Object.entries(schema.fieldConditions || {})) {
       const wrapper = qs('[data-v2-field="' + CSS.escape(id) + '"]', form);
       if (!wrapper) continue;
@@ -254,6 +259,20 @@
       for (const input of qsa("input,select,textarea", wrapper)) {
         input.disabled = !visible || input.dataset.v2Unavailable === "true";
         input.required = visible && !input.disabled && input.dataset.v2Required === "true";
+      }
+    }
+    for (const [id, condition] of Object.entries(schema.fieldRequirements || {})) {
+      const wrapper = qs('[data-v2-field="' + CSS.escape(id) + '"]', form);
+      const field = schema.fields.find(item => item.id === id);
+      if (!wrapper || !field) continue;
+      const required = Boolean(field.required || matches(condition));
+      for (const input of qsa("input,select,textarea", wrapper)) {
+        input.required = !wrapper.hidden && !input.disabled && required;
+        if (input.type === "file") input.dataset.originalRequired = required ? "true" : "false";
+      }
+      if (!field.required && !schema.fieldConditions?.[id] && !["fullName", "name", "email", "whatsapp", "authorization"].includes(id)) {
+        const target = qs(required ? '[data-v2-group="service"]' : "[data-v2-optional-fields]", form);
+        if (target && wrapper.parentElement !== target) target.append(wrapper);
       }
     }
     // When the applicant is the holder, ask their name once.
@@ -265,6 +284,8 @@
       name.disabled = holder;
       if (holder) name.value = value("recordHolderFullName");
     }
+    const optional = qs(".request-optional", form);
+    if (optional) optional.hidden = !qsa("[data-v2-field]", optional).some(node => !node.hidden);
   }
 
   async function renderServiceSchema(form, serviceId) {
@@ -291,6 +312,7 @@
       legend.textContent = title;
       const fields = document.createElement("div");
       fields.className = "request-fields";
+      fields.dataset.v2Group = key;
       group.append(legend, fields);
       form.append(group);
       groups.set(key, fields);
@@ -304,6 +326,7 @@
     optionalTitle.textContent = "Agregar información opcional";
     const optionalFields = document.createElement("div");
     optionalFields.className = "request-fields";
+    optionalFields.dataset.v2OptionalFields = "";
     optional.append(optionalTitle, optionalFields);
     form.insertBefore(optional, groups.get("consent").parentElement);
     const contact = new Set(["fullName", "name", "whatsapp", "email", "emailAccess"]);
@@ -324,7 +347,7 @@
       group.append(control);
     }
     for (const fields of groups.values()) if (!fields.children.length) fields.parentElement.remove();
-    if (!optionalFields.children.length) optional.remove();
+    if (!optionalFields.children.length && !Object.keys(schema.fieldRequirements || {}).length) optional.remove();
     if (!b2Ready && schema.fields.some(field => field.type === "file")) {
       const notice = document.createElement("p");
       notice.className = "notice";

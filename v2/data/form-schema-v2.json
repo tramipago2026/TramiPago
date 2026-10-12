@@ -570,6 +570,136 @@
             }
           ]
         }
+      },
+      "fieldRequirements": {
+        "recordHolderFullName": {
+          "all": [
+            {
+              "field": "partType",
+              "values": [
+                "birth",
+                "marriage",
+                "cohabitation",
+                "death"
+              ]
+            },
+            {
+              "field": "dataMode",
+              "values": [
+                "with-data",
+                "without-data"
+              ]
+            }
+          ]
+        },
+        "gender": {
+          "all": [
+            {
+              "field": "partType",
+              "values": [
+                "birth",
+                "marriage",
+                "cohabitation",
+                "death"
+              ]
+            },
+            {
+              "field": "dataMode",
+              "values": [
+                "with-data",
+                "without-data"
+              ]
+            }
+          ]
+        },
+        "purpose": {
+          "all": [
+            {
+              "field": "partType",
+              "values": [
+                "birth",
+                "marriage",
+                "cohabitation",
+                "death"
+              ]
+            },
+            {
+              "field": "dataMode",
+              "values": [
+                "with-data",
+                "without-data"
+              ]
+            }
+          ]
+        },
+        "fullName": {
+          "all": [
+            {
+              "field": "partType",
+              "values": [
+                "birth",
+                "marriage",
+                "cohabitation",
+                "death"
+              ]
+            },
+            {
+              "field": "dataMode",
+              "values": [
+                "with-data",
+                "without-data"
+              ]
+            }
+          ]
+        },
+        "partidasEligibility": {
+          "all": [
+            {
+              "field": "partType",
+              "values": [
+                "birth",
+                "marriage",
+                "cohabitation",
+                "death"
+              ]
+            },
+            {
+              "field": "dataMode",
+              "values": [
+                "with-data",
+                "without-data"
+              ]
+            }
+          ]
+        },
+        "documentType": {
+          "field": "dataMode",
+          "equals": "with-data"
+        },
+        "documentNumber": {
+          "field": "dataMode",
+          "equals": "with-data"
+        },
+        "registrationYearExact": {
+          "field": "dataMode",
+          "equals": "with-data"
+        },
+        "delegation": {
+          "field": "dataMode",
+          "equals": "with-data"
+        },
+        "actNumber": {
+          "field": "dataMode",
+          "equals": "with-data"
+        },
+        "registrationDistrict": {
+          "field": "dataMode",
+          "equals": "without-data"
+        },
+        "registrationYearApprox": {
+          "field": "dataMode",
+          "equals": "without-data"
+        }
       }
     },
     "partidas-caba": {
@@ -746,7 +876,81 @@
           "field": "requestMode",
           "equals": "urgent"
         }
-      }
+      },
+      "fieldRequirements": {
+        "eventDate": {
+          "any": [
+            {
+              "field": "partType",
+              "values": [
+                "birth",
+                "death"
+              ]
+            },
+            {
+              "field": "requestMode",
+              "equals": "urgent"
+            }
+          ]
+        },
+        "secondPersonName": {
+          "field": "partType",
+          "values": [
+            "marriage",
+            "cohabitation"
+          ]
+        },
+        "sectionCirc": {
+          "field": "requestMode",
+          "equals": "urgent"
+        },
+        "bookNumber": {
+          "field": "requestMode",
+          "equals": "urgent"
+        },
+        "actNumber": {
+          "field": "requestMode",
+          "equals": "urgent"
+        },
+        "registrationYear": {
+          "field": "requestMode",
+          "equals": "urgent"
+        },
+        "creditCardAvailable": {
+          "field": "requestMode",
+          "equals": "urgent"
+        }
+      },
+      "blockedConditions": [
+        {
+          "all": [
+            {
+              "field": "partType",
+              "equals": "cohabitation"
+            },
+            {
+              "field": "requestMode",
+              "notEquals": "union-review"
+            }
+          ]
+        },
+        {
+          "all": [
+            {
+              "field": "partType",
+              "values": [
+                "birth",
+                "marriage",
+                "death"
+              ]
+            },
+            {
+              "field": "requestMode",
+              "equals": "union-review"
+            }
+          ]
+        }
+      ]
     },
     "certificacion-estado-civil": {
       "name": "Estado Civil",
@@ -907,7 +1111,31 @@
           "field": "applicantRole",
           "notEquals": "holder"
         }
-      }
+      },
+      "fieldRequirements": {
+        "civilJurisdiction": {
+          "field": "civilRequestType",
+          "equals": "single"
+        },
+        "thirdPartyDocument": {
+          "field": "applicantRole",
+          "notEquals": "holder"
+        }
+      },
+      "blockedConditions": [
+        {
+          "all": [
+            {
+              "field": "civilRequestType",
+              "equals": "single"
+            },
+            {
+              "field": "civilJurisdiction",
+              "equals": "caba"
+            }
+          ]
+        }
+      ]
     },
     "certificado-domicilio-pba": {
       "name": "Certificado de Domicilio",
