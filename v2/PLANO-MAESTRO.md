@@ -10,7 +10,7 @@
 - Ubicación exclusiva del código nuevo: `/v2/**` y pruebas específicas V2.
 - No tocar `index.html`, `app.js`, `services.js`, `site.css`, `admin/**`, configuraciones de publicación, DNS, Cloudflare ni backend de V1.
 - No publicar ni crear/desplegar un entorno público sin autorización adicional. V2 permanecerá fuera de la rama productiva.
-- No usar PII real en pruebas. No conectar pagos, archivos, correo, autenticación o base productivos hasta disponer de adaptador y ambiente TEST validados. Cambio backend definitivo se coordina con chat 09 (Firestore); no se asume que Auth/Storage deban migrar a la vez.
+- No usar PII real en pruebas. No conectar pagos, archivos, correo, autenticación o base productivos hasta disponer de adaptador y ambiente TEST validados. Backend definitivo V2 se coordina con chat 12: MySQL real (no Firestore), API propia y separación de Auth/Storage. Consultar `v2/INTEGRACION-CHAT11-CHAT12.md`; tecnología/proveedores sujetos a viabilidad gratuita y pruebas. Chat 09 queda como antecedente de la propuesta Firestore reemplazada para V2.
 - No indexación mientras esté en pruebas: futuras páginas V2 incorporarán `noindex,nofollow` hasta autorización de publicación.
 
 ## 2. Arquitectura funcional y orden
@@ -77,7 +77,7 @@ Origen consultado en lectura: `services.js`, `service-pages.json`, `tramites-cat
 - Reutilizar patrones operativos validados, no duplicar motor en cada servicio; motor de pasos genérico y definición tipada por servicio.
 - Cada paso requiere validación de cliente y de servidor, control de archivos, consentimiento y reglas del trámite.
 - **Modo TEST** sin peticiones a backend de producción; no emitir comprobantes, pagos, códigos ni confirmaciones ficticias.
-- Contrato frontend/backend V2 se acordará con chat 09; pagos reales, emails y entrega documental permanecen bloqueados hasta pruebas integrales.
+- Contrato frontend/backend V2 se acuerda con chat 12 mediante `v2/contracts/api-v2.contract.json` y `v2/INTEGRACION-CHAT11-CHAT12.md`. Las rutas de API son borradores no implementados; pagos, emails, documentos y seguimiento reales permanecen bloqueados hasta pruebas integrales.
 
 ## 7. Matriz CONTROL 4
 | Elemento | Destino | Regla |
@@ -105,3 +105,7 @@ Origen consultado en lectura: `services.js`, `service-pages.json`, `tramites-cat
 Crear fuente de rutas V2, generador de páginas, componentes de navegación y tests; contrastar fidelidad de portada con la imagen aprobada sin transformar la imagen en interfaz estática ni cambiar el diseño. Fotografía de portada separada en alta calidad **no localizada aún** en el repositorio; conservar imagen de referencia y declarar el bloqueo antes de cerrar el hero.
 
 **Estado al iniciar:** rama V2 creada, plano maestro definido en borrador; ni sitio completo ni navegación E2E acreditados todavía.
+
+## 10. Integración aprobada con chat 12 (11/10/2026)
+
+MySQL real es el destino explícito para V2. A diferencia del antecedente Firebase del chat 09, las capas Auth/MFA, almacenamiento, API, email y respaldos se construyen modularmente con proveedores sujetos a pruebas independientes. Ningún cambio en V1 ni corte de producción está autorizado. Contrato de coordinación: `v2/INTEGRACION-CHAT11-CHAT12.md` y `v2/contracts/api-v2.contract.json`, con equivalentes versionados en la rama backend `v2-mysql-chat12-integration` del repositorio privado `TramiPago-web`.
