@@ -92,15 +92,26 @@
       "sha256": "8e1cf157bce5ee289a91a45ae58cc7a55f4873c8060b7003a660fde477e6e9a4"
     },
     {
-      "path": "v2/assets/logo-horizontal-opcion-c.webp",
+      "path": "v2/assets/logo-horizontal-opcion-c.png",
       "sourceBox": [
         168,
         2,
         519,
-        65
+        75
       ],
-      "bytes": 32680,
-      "sha256": "cef0a6cdf25650cd4b0af9f6403c47a8132aa096f60882b4e04b56033e6116fc"
+      "bytes": 37325,
+      "sha256": "2f7706b62f2109160aa9b2c6412392d75fb10e7c022d20a030134f4db702518c",
+      "canvas": [
+        367,
+        89
+      ],
+      "alphaBBox": [
+        8,
+        12,
+        356,
+        76
+      ],
+      "transparentPadding": 8
     },
     {
       "path": "v2/assets/hero-opcion-c-aprobada.jpg",
