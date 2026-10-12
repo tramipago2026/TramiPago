@@ -1,7 +1,7 @@
 {
   "name": "TramiPago V2 — Contrato compartido Chat 11 ↔ Chat 12",
-  "version": "2026-10-12.d13-c12-draft4",
-  "status": "STAGING_FUNCIONAL_CORE_B2_PENDIENTE",
+  "version": "2026-10-12.d14-staging-review1",
+  "status": "STAGING_FUNCIONAL_CORE_B2_RESEND_PENDIENTES",
   "audience": "Revisión y pruebas en staging únicamente",
   "frontend": {
     "repository": "tramipago2026/TramiPago",
@@ -18,9 +18,10 @@
     "auth": "Better Auth 1.7.7 self-hosted — validado en Worker staging con TOTP",
     "api": "Cloudflare Workers + Hono + Hyperdrive — staging real validado",
     "storage": "Backblaze B2 privado — código de integración listo; bucket/key TEST pendientes de intervención humana",
-    "notifications": "Resend sujeto a verificación",
+    "notifications": "Resend — motor/cola listos; API key y remitente verificado TEST pendientes",
     "backup": "dump MySQL cifrado + restauración verificada; Google Drive candidato sin cargo; R2 no apto bajo regla sin facturación obligatoria",
-    "zeroCostAudit": "backend-v2/docs/COSTO-CERO-2026-10-11.md (repositorio backend)"
+    "zeroCostAudit": "backend-v2/docs/COSTO-CERO-2026-10-11.md (repositorio backend)",
+    "apiOriginStaging": "https://tramipago-v2-api-staging.tramipago.workers.dev"
   },
   "security": {
     "frontendDirectSqlAccess": false,
@@ -142,7 +143,7 @@
     },
     {
       "name": "contrato API y esquema MySQL versionado",
-      "status": "DRAFT4_CORE_IMPLEMENTADO"
+      "status": "IMPLEMENTADO_VERIFICADO_STAGING"
     },
     {
       "name": "Auth MFA y autorización cliente/admin",
@@ -158,7 +159,29 @@
     },
     {
       "name": "dump cifrado + restauración aislada",
-      "status": "PENDIENTE"
+      "status": "VERIFICADO_STAGING_TEST",
+      "evidence": {
+        "repository": "tramipago2026/TramiPago-web",
+        "runId": 38213772420,
+        "conclusion": "success",
+        "scope": "Prueba histórica de restauración aislada; no certifica backup externo persistente"
+      }
+    },
+    {
+      "name": "correo externo Resend",
+      "status": "CODIGO_LISTO_PENDIENTE_API_KEY_REMITENTE_TEST"
+    },
+    {
+      "name": "TLS directo MySQL con CA Aiven",
+      "status": "PENDIENTE_CA_Y_PRUEBA_ESTRICTA"
+    },
+    {
+      "name": "backup externo persistente",
+      "status": "PENDIENTE_DESTINO_OAUTH_Y_PRUEBA_RECUPERACION"
+    },
+    {
+      "name": "ficha modelo y modelo comercial",
+      "status": "PENDIENTE_DEFINICION_APROBADA"
     },
     {
       "name": "validación independiente producción (solo tras aprobación cutover)",

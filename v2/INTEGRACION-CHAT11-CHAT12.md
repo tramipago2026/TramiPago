@@ -1,50 +1,57 @@
-# TramiPago V2 — Acuerdo técnico Chat 11 ↔ Chat 12
+# TramiPago V2 — Acuerdo técnico y continuidad
 
-**Versión contractual:** `2026-10-11.d13-c12-draft1` — **BORRADOR, NO IMPLEMENTADO**.
+**Corte:** 12/10/2026. **Versión contractual:** `2026-10-12.d14-staging-review1`.
+**Estado:** núcleo funcional y portada Opción C verificados en staging aislado. Documentos privados B2 y correos Resend pendientes. No habilita producción.
 
-## Decisión y prioridad
-- La instrucción explícita del usuario en chat 12 fija **MySQL real** como base de datos objetivo de **TramiPago V2**, y reemplaza para este alcance la propuesta previa de Firestore en chat 09.
-- El chat 11 sigue siendo dueño de la interfaz V2, navegación, catálogo, formularios y fidelidad a Opción C. El chat 12 define y construye el nuevo backend, sin tocar V1 ni la estética aprobada.
-- El documento de origen exige estructura modular, con Cloudflare Workers + Hono (a validar), Auth/MFA con Better Auth o equivalente (a validar), MySQL sobre TLS, almacenamiento privado B2 (candidato), Resend y copias independientes restaurables.
-- **No** seleccionar proveedor ni afirmar que existe plan gratuito utilizable hasta auditar límites, tarjeta, cuota, backups, conectividad y condiciones reales. Restricción comercial: no comprometer pagos.
-- `TramiPago-web` es privado y aloja el backend histórico. La rama `v2-mysql-chat12-integration` sirve sólo para diseño/contratos. Definir repo backend privado definitivo con protección efectiva antes de subir componentes sensibles. **Nunca** publicar repositorio privado para conseguir branch protection.
+## Entorno autorizado
 
-## Separación de responsabilidades
-| Responsabilidad | Chat 11 / frontend V2 | Chat 12 / backend V2 |
+- Frontend: `tramipago2026/TramiPago`, rama `v2/opcion-c-directiva13`, código bajo `/v2/`.
+- Backend privado: `tramipago2026/TramiPago-web`, rama `v2-mysql-chat12-integration`.
+- Worker: `tramipago-v2-api-staging`; base TEST: `tramipago_v2_test`.
+- URL: https://tramipago-v2-api-staging.tramipago.workers.dev/v2/
+- MySQL real con Aiven/Hyperdrive; Better Auth 1.7.7 y MFA TOTP; API Hono/Worker. La propuesta histórica Firestore del chat 09 no define este entorno.
+- V1, ramas `main`, producción, Supabase y DNS productivo quedan fuera de alcance. No comprometer pagos ni habilitar proveedores facturables.
+
+## Trabajo cerrado con evidencia
+
+| Bloque | Resultado comprobado | Evidencia |
 |---|---|---|
-| Diseño C | Congelado; modificable sólo previa aprobación | No alterar |
-| Catálogo | Render y rutas V2 | Servicios, precios y requisitos validados |
-| Formularios | Campos y validación UX | Reglas server-side y autorización |
-| Seguimiento | Pantalla y estados | Datos autorizados, tokens y rate limit |
-| Documentos | Carga de interfaz | Storage privado, MIME/firma/tamaño/hash |
-| Pagos | Experiencia del usuario | Estado, comprobante y control antifraude |
-| Admin | UI aislada y navegación | Auth, MFA TOTP, permisos y auditoría |
-| Emails | Mensajes UI | Resend, reintentos y observabilidad |
-| Pruebas | Navegación, formularios, responsive | Seguridad, integración, restauración |
-| Corte | Sólo tras autorización | Sólo tras autorización y CONTROL 3 |
+| Portada Opción C | Hero original, ocho tarjetas y logo completos; sin placeholders; búsqueda y navegación operativas | Run backend `38320437324`, visual en nueve tamaños; manifiesto `v2/assets/opcion-c-assets.json` |
+| Catálogo y rutas | 25 servicios, cinco familias, 142 rutas; destinos V2 existentes | CONTROL 4 y Live Preview E2E `38320437275` |
+| Formularios | Entrada directa, resumen en la misma pantalla, tres pasos o dos sin pago; verde/completo, azul/actual, gris/pendiente; datos conservados al recargar y reintentar | Browser E2E `38320437248` |
+| Solicitudes y seguimiento | Borradores, envío, estados, seguimiento autorizado, ayuda y correcciones con MySQL real | Core API E2E `38320437261`; Browser E2E |
+| Admin | Sesión, roles y MFA; UI aislada conectada | Admin Browser E2E `38320437307` |
+| Integridad del backend | Comprobaciones estáticas y TypeScript aprobadas | `backend-v2-static` `38320437301`; job de deploy |
+| Backup y restauración aislada | Dump TEST cifrado, descifrado y restaurado; verificación de conteos | Backup Restore E2E `38213772420`, SUCCESS; prueba histórica, no repetida en esta revisión |
+| Información interna | CONTROL 2/fecha/valores oficiales retirados de las 25 fichas y datos públicos | CONTROL 4, Live Preview E2E; antigua URL pública 404 |
 
-## Contrato de interfaz
-Fuente de revisión: `v2/contracts/api-v2.contract.json` (frontend) y `docs/v2-api.contract.json` (backend privado), sincronizados en esta versión.
+El cierre anterior fue comprobado sobre frontend `daf37d4d1ea7bb5490a9e28af5cf526a9a174432` y backend `9dde33b85c6527d792f34696387e8f174fc21185`. Los cambios de esta revisión actualizan continuidad/contrato y el pin de publicación; la versión activa posterior se comprueba en `/v2/health/dependencies` y en los runs del nuevo commit. No sustituir esa comprobación por un SHA escrito en un documento.
 
-**Las rutas de API son propuestas**, no endpoints publicados ni implementados. Cada operación equivale funcionalmente a una Edge Function previa sin copiar problemas, y conserva los ocho flujos de V1. Se debe completar el esquema JSON preciso de request/response, validación, permisos, formato de error, idempotencia y estados antes de conectar la UI.
+## Pendientes reales
 
-Secuencia de usuario: catálogo → ficha → crear borrador y código del servidor → etapas del formulario → revisión → pago/comprobante → Admin → corrección si corresponde → seguimiento → finalización y entrega → correo. Ninguna etapa real se habilita sólo porque tenga HTML.
+| Pendiente | Qué falta para completarlo | Estado verificable |
+|---|---|---|
+| Archivos y comprobantes B2 | Bucket privado TEST y clave restringida configurados en el Worker; pruebas reales de carga, descarga, borrado, hash y rechazos | `b2: pending` en staging; código listo. La carga y entrega reales siguen bloqueadas; no simularlas |
+| Correos Resend | API key y remitente verificado TEST; prueba de envío externo con datos sintéticos | `resend: pending` en staging; motor/cola listos. No declarar mensajes entregados |
+| TLS directo estricto MySQL | CA de Aiven en el entorno TEST y ejecución de `backend-v2-tls-verify.yml` con validación de cadena | Pendiente documental `PENDING_AIVEN_CA`; no revalidado en esta revisión. La conexión operativa por Hyperdrive no cierra esta prueba distinta |
+| Backup externo persistente | Destino elegido y OAuth/configuración; comprobar copia cifrada y recuperación | Pendiente. El restore temporal aprobado no demuestra conservación externa |
+| Ficha modelo y modelo comercial | Definición/aprobación del usuario antes de fijar fichas e información comercial definitiva | Pendiente. No inventar requisitos, valores oficiales ni nuevos precios |
+| Producción/cutover | Autorización expresa y CONTROL 3 específico tras resolver los gates | Fuera del alcance actual; no ejecutar |
 
-## Pendientes que impiden cierre
-1. Inventario real y medición de tamaño/crecimiento Supabase (sólo lectura).
-2. Comparar planes MySQL reales sin costos ni tarjeta y con acceso API/CLI, TLS y backups; si ninguno sirve, bloquear elección y presentar alternativas al usuario.
-3. Definir red/transporte MySQL de Worker (Hyperdrive o alternativa verificada) y costo efectivo.
-4. Definir Auth/MFA robustos compatibles con ese entorno, sin suponer que Better Auth funciona sin pruebas.
-5. Esquema MySQL versionado + políticas server-side equivalentes a RLS, tests y migración fila a fila.
-6. B2 privado / URL firmada y restauración comprobada.
-7. Endpoints de ocho flujos, sesiones Admin/MFA, emails Resend.
-8. E2E con datos sintéticos y pruebas negativas; prueba independiente de backup-restauración.
-9. Informe **APTO/NO APTO**, autorización expresa de corte y CONTROL 3.
+No solicitar nuevamente recursos del logo, la portada ni credenciales de Cloudflare: su publicación ya está verificada. No pedir ni publicar secretos en chats o repositorios.
 
-## Reglas de trabajo y estado
-- Repositorios y ramas separados; staging y producción no comparten secretos ni datos TEST.
-- Ningún enlace que nace dentro de V2 lleva a V1 (excepciones externas expresamente autorizadas).
-- Sin acceso directo del navegador a MySQL.
-- V1 y Supabase íntegros como fuente/rollback, no desconectar.
-- Resultados sólo pueden etiquetarse CERRADOS con evidencias de código, test, despliegue autorizado y verificación independiente donde aplique.
-- No hay sincronización automática entre conversaciones ChatGPT. **La fuente de coordinación son estos documentos versionados en GitHub y el contrato**.
+## Contrato y recorrido vigentes
+
+Contrato JSON idéntico en `v2/contracts/api-v2.contract.json` (frontend) y `docs/v2-api.contract.json` (backend). Las operaciones marcadas `STAGING_E2E_OK` están implementadas y probadas; no son sólo propuestas.
+
+Recorrido: catálogo/familia → formulario directo con revisión local → guardar/enviar → pago cuando corresponda → confirmación/seguimiento. Las rutas antiguas `iniciar` y `revisar` permanecen compatibles y no agregan un paso obligatorio. Documentación requerida ausente conserva la solicitud como borrador; la barra no la presenta como completa.
+
+El flujo de pago y sus estados están implementados. La recepción de un comprobante real, la entrega de documentos privados y el correo final requieren las dependencias pendientes de la tabla. Cargar un comprobante nunca aprueba un pago automáticamente.
+
+## Reglas para continuar
+
+- Tomar estos documentos y el código versionado como coordinación, contrastando siempre con staging y los runs del commit activo.
+- Mantener la portada aprobada y las funciones estables; modificar sólo un incumplimiento comprobado.
+- Ningún enlace V2 lleva inadvertidamente a V1. El navegador no accede directamente a MySQL.
+- Usar exclusivamente datos sintéticos y recursos TEST; mantener `noindex,nofollow`.
+- Cerrar cada pendiente sólo tras comprobar código, prueba y despliegue donde aplique. Una dependencia configurada no equivale a una prueba E2E superada.

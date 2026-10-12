@@ -1,8 +1,8 @@
-# TramiPago V2 — Plano Maestro | Directiva 13
+# TramiPago V2 — Plano Maestro | Directivas 13 y 14
 
 **Estado:** V2 TÉCNICA EN STAGING AISLADO. No publicada en producción ni integrada a V1.
 **Referencia visual inalterable:** `Portada-v2.png` entregada por el usuario el 11/10/2026, opción C (híbrido V1 + propuesta profesional B).
-**Marco:** chat 00, chat 11, controles 2/3/4, Directiva 13. El diseño aprobado NO se altera sin propuesta y aceptación explícitas.
+**Marco:** chat 00, chat 11, controles 2/3/4, Directivas 13 y 14. El diseño aprobado NO se altera sin propuesta y aceptación explícitas. Estado y pendientes contrastados: `v2/INTEGRACION-CHAT11-CHAT12.md`.
 
 ## 1. Aislamiento verificable
 - Repositorio de origen: `tramipago2026/TramiPago`.
@@ -18,9 +18,9 @@
 ```
 /v2/                                 Portada opción C
 ├── tramites/                         Catálogo de trámites individuales
-│   └── <slug>/                       Ficha individual
-│       ├── iniciar/                  Formulario: etapas y validación
-│       ├── revisar/                  Resumen previo a contratación
+│   └── <slug>/                       Formulario directo + resumen en la misma pantalla
+│       ├── iniciar/                  Entrada compatible al mismo formulario
+│       ├── revisar/                  Ruta compatible de revisión; no paso obligatorio adicional
 │       └── pago/                     Medio de pago sólo luego de revisión
 ├── categorias/                       Todas las familias/agrupaciones
 ├── familias/<slug>/                 Familia → trámites
@@ -65,7 +65,7 @@ Origen consultado en lectura: `services.js`, `service-pages.json`, `tramites-cat
 5. Ficha de trámite
 6. Formulario de etapas (campos particulares por configuración, controles accesibles)
 7. Revisión previa al pago (resumen, monto final, consentimiento)
-8. Pago / carga de comprobante (etapa backend operativa; carga de archivo fail-closed hasta configurar B2 TEST)
+8. Pago / carga de comprobante (estado backend operativo; carga real de archivo bloqueada hasta configurar B2 TEST)
 9. Confirmación y código (respuesta real del backend V2 TEST)
 10. Seguimiento (código, estado, correcciones; no respuestas simuladas como reales)
 11. Buscador / resultados
@@ -99,7 +99,7 @@ Origen consultado en lectura: `services.js`, `service-pages.json`, `tramites-cat
 3. Pruebas de formularios con datos sintéticos: campos, validación, errores, resumen.
 4. Integración E2E TEST con Auth/API y rollback controlado; archivos B2 se validarán cuando exista bucket/credenciales TEST.
 5. CONTROL 3 sólo cuando hay despliegue autorizado: código+pruebas, despliegue real, verificación independiente.
-6. No cerrar ni habilitar contratar hasta disponer de requisitos oficiales CONTROL 2 y servicio backend real verificado.
+6. No habilitar contratación productiva hasta aprobar la ficha modelo y el modelo comercial y verificar las dependencias externas. CONTROL 2 y sus valores oficiales quedan fuera de las fichas públicas, según instrucción del usuario.
 
 ## 9. Estado de la iteración actual — 12/10/2026
 - Fuente de rutas, páginas, navegación, buscador, formularios compartidos, seguimiento, ayuda, flujo de pago y Admin V2: construidos.
@@ -108,8 +108,12 @@ Origen consultado en lectura: `services.js`, `service-pages.json`, `tramites-cat
 - Live Preview E2E: 142 rutas HTML + 78 enlaces/assets + 25 servicios: SUCCESS.
 - Browser E2E cliente → Worker → MySQL: SUCCESS.
 - Admin Browser E2E + MFA: SUCCESS.
-- La captura aprobada `Portada-v2.png` fue recuperada en la Biblioteca del proyecto, pero la fotografía de portada separada en alta calidad **no fue localizada**. No recortar ni inventar un reemplazo sin autorización.
-- B2, Resend, CA de Aiven para TLS directo estricto, backup externo persistente y producción/cutover permanecen como dependencias externas o humanas.
+- Portada Opción C: hero original recuperado del ZIP y ocho imágenes de tarjetas de la referencia aprobada, publicados y verificados por tamaño/hash. Sin sustitutos generados ni textos provisionales.
+- Logo: PNG RGBA con letras completas, fondo exterior transparente y margen; orden de capas y menú verificados en nueve tamaños de pantalla. Tamaño y ubicación visual conservados.
+- Los 25 trámites abren directamente el formulario con resumen local; progreso compartido de tres pasos, o dos en consultas sin pago. Pasos completos verdes, actual azul y pendientes grises. No se exige repetir el correo.
+- CONTROL 2 y valores oficiales retirados de todas las fichas y datos públicos; reporte interno conservado exclusivamente en el backend privado.
+- Backup lógico cifrado y restauración aislada: verificados. La copia externa persistente es un pendiente distinto.
+- B2 y Resend: `pending` en las dependencias del staging verificado. CA de Aiven para TLS directo estricto, destino/OAuth de backup externo y ficha modelo/modelo comercial siguen pendientes. Producción/cutover está fuera del alcance autorizado.
 
 ## 10. Integración aprobada con chat 12 (11/10/2026)
 
