@@ -244,6 +244,17 @@
     });
   }
 
+  function initServicePage() {
+    const match = location.pathname.match(/^\/v2\/tramites\/([^/]+)\/?$/);
+    if (!match) return;
+    const notice = qs(".content .notice");
+    const start = qsa('.content a.button').find((a) => /\/iniciar\/?$/.test(a.getAttribute("href") || ""));
+    if (notice) {
+      notice.textContent = "Ficha V2 en construcción. El inicio de solicitud ya está conectado al backend MySQL de STAGING; requisitos, tasas y plazos sólo se publicarán cuando superen CONTROL 2.";
+    }
+    if (start) start.textContent = "Iniciar solicitud de prueba →";
+  }
+
   async function reportClientError(code, message) {
     try {
       await fetch("/v2/telemetry/client-errors", {
@@ -267,6 +278,7 @@
   });
 
   initSearch();
+  initServicePage();
   initStartForm();
   initTracking();
 })();
