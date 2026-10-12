@@ -1,0 +1,182 @@
+{
+  "version": "2026-10-12.control2-v1",
+  "rule": "Sólo las entradas control2=confirmed pueden mostrarse en V2. Los honorarios TramiPago no forman parte de estos datos oficiales.",
+  "services": {
+    "antecedentes-penales": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "El certificado se emite en formato electrónico.",
+        "Existen modalidades oficiales de 1 hora, 6 horas, 24 horas y 5 días hábiles.",
+        "Valores oficiales publicados: $8.500, $4.800, $2.400 y $1.000 respectivamente."
+      ],
+      "sources": [
+        "https://www.argentina.gob.ar/justicia/reincidencia/antecedentespenales",
+        "https://www.argentina.gob.ar/justicia/reincidencia/antecedentespenales/preguntas-frecuentes"
+      ]
+    },
+    "constancias-anses": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "La constancia de CUIL puede descargarse en línea, es gratuita, no tiene vencimiento y no requiere firma ni sello.",
+        "La Certificación Negativa puede consultarse en línea; el período consultado debe estar dentro de los últimos seis meses y la constancia tiene validez de 30 días."
+      ],
+      "sources": [
+        "https://www.anses.gob.ar/noticias/como-obtener-la-constancia-de-cuil-en-anses",
+        "https://www.anses.gob.ar/consultas/certificacion-negativa",
+        "https://www.anses.gob.ar/noticias/como-obtener-la-certificacion-negativa-0"
+      ]
+    },
+    "informe-vehicular": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "El informe permite conocer la situación jurídica registrada del automotor, incluidas afectaciones como prenda, embargo, robo/hurto e inhibiciones.",
+        "Cualquier persona puede solicitar información sobre la situación jurídica de un automotor."
+      ],
+      "sources": [
+        "https://www.argentina.gob.ar/servicio/solicitar-un-informe-de-dominio-del-automotor",
+        "https://www.dnrpa.gov.ar/portal_dnrpa/index2.php",
+        "https://www.dnrpa.gov.ar/concursos_publicos/digesto26-02-2019/T2C14S1.php"
+      ]
+    },
+    "arba-inmobiliario": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "La consulta de deuda del Impuesto Inmobiliario se realiza por web.",
+        "Se identifica el inmueble mediante Partido / Partida.",
+        "La consulta oficial de deuda no tiene costo y puede realizarla cualquier persona."
+      ],
+      "sources": [
+        "https://www.arba.gov.ar/GuiaTramites/TramiteSeleccionado.asp?tramite=268",
+        "https://web.arba.gov.ar/consulta-de-deuda-impuesto-inmobiliario-b%C3%A1sico"
+      ]
+    },
+    "partidas": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "La solicitud digital comprende partidas de nacimiento, defunción, matrimonio y unión convivencial inscriptas en la Provincia de Buenos Aires.",
+        "El trámite puede iniciarse y seguirse en línea."
+      ],
+      "sources": [
+        "https://www.gba.gob.ar/registrodelaspersonas/solicitud_de_partidas_online",
+        "https://portal.gba.gob.ar/tramite/13197"
+      ]
+    },
+    "certificacion-estado-civil": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "La certificación informa el último estado civil declarado y datos identificatorios del titular.",
+        "El valor oficial publicado es $8.000.",
+        "Luego del pago puede demorar hasta 10 días hábiles la generación del expediente; la respuesta se informa dentro de los 25 días hábiles siguientes."
+      ],
+      "sources": [
+        "https://www.argentina.gob.ar/interior/renaper/certificaciones-digitales",
+        "https://www.argentina.gob.ar/node/274825"
+      ]
+    },
+    "certificado-domicilio-pba": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "La modalidad en línea permite obtener una Declaración Jurada de Domicilio para presentar ante el organismo correspondiente.",
+        "La declaración es personal; no se puede declarar en nombre de terceros.",
+        "El valor publicado para el trámite en línea es $8.700. La modalidad presencial posee condiciones y aranceles propios."
+      ],
+      "sources": [
+        "https://portal.gba.gob.ar/seccion/organismo/182/tramite/13167/",
+        "https://www.gba.gob.ar/registrodelaspersonas/otros_tramites/declaracion_jurada_de_domicilio"
+      ]
+    },
+    "arca-constancia": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "La constancia de inscripción puede obtenerse desde los servicios de ARCA.",
+        "Para monotributistas, la constancia de inscripción generada tiene una vigencia informada de 15 días."
+      ],
+      "sources": [
+        "https://www.arca.gob.ar/monotributo/ayuda/constancias-y-credenciales.asp",
+        "https://serviciosweb.arca.gob.ar/genericos/guiasPasoPaso/VerGuia.aspx?id=206"
+      ]
+    },
+    "arca-reimputacion": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "La reimputación permite corregir pagos mal generados o utilizar saldos a favor.",
+        "Para períodos desde julio de 2004 puede gestionarse con clave fiscal mediante CCMA; existen procedimientos específicos para períodos anteriores."
+      ],
+      "sources": [
+        "https://arca.gob.ar/monotributo/ayuda/reimputacion-de-pagos.asp",
+        "https://serviciosweb.arca.gob.ar/genericos/guiasPasoPaso/VerGuia.aspx?id=398",
+        "https://www.arca.gob.ar/atencion/atencion-presencial/documentos/ReimputacionPagosMonotributo.pdf"
+      ]
+    },
+    "arca-recategorizacion": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "La recategorización del monotributo se realiza dos veces al año, en febrero y agosto, evaluando los últimos 12 meses.",
+        "El trámite se realiza con clave fiscal desde el portal de Monotributo."
+      ],
+      "sources": [
+        "https://www.arca.gob.ar/monotributo/ayuda/recategorizacion.asp",
+        "https://www.argentina.gob.ar/servicio/recategorizarme-en-el-monotributo"
+      ]
+    },
+    "arca-dfe": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "El Domicilio Fiscal Electrónico es una casilla privada de comunicaciones oficiales.",
+        "Es gratuito, seguro y obligatorio para los sujetos alcanzados; requiere autenticación con clave fiscal."
+      ],
+      "sources": [
+        "https://arca.gob.ar/monotributo/ayuda/domicilio-fiscal-electronico.asp",
+        "https://www.argentina.gob.ar/node/483068"
+      ]
+    },
+    "arca-alta-monotributo": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "La adhesión al monotributo se realiza desde el portal Monotributo o la aplicación ARCA Móvil.",
+        "La inscripción requiere previamente la situación registral necesaria, incluyendo CUIT y los datos de actividad y domicilio que correspondan."
+      ],
+      "sources": [
+        "https://www.arca.gob.ar/monotributo/default.asp",
+        "https://www.arca.gob.ar/inscripcion/abm/"
+      ]
+    },
+    "arca-baja-monotributo": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "La baja puede solicitarse por distintos motivos, incluido cese de actividades.",
+        "Para evitar generar deuda, el mes en que se solicita la baja debe quedar pago; la baja produce efectos desde el mes siguiente según la guía oficial."
+      ],
+      "sources": [
+        "https://arca.gob.ar/monotributo/ayuda/baja.asp",
+        "https://arca.gob.ar/monotributo/ayuda/cese-de-actividades.asp"
+      ]
+    },
+    "apostilla-tad": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "La Apostilla / Legalización con validez internacional puede tramitarse íntegramente en línea mediante TAD.",
+        "Para TAD se requiere ser mayor de 18 años, Clave Fiscal nivel 2 o superior y una cuenta bancaria argentina asociada.",
+        "La tasa publicada por TAD es $4.500; el tiempo promedio informado es 30 días hábiles."
+      ],
+      "sources": [
+        "https://www.argentina.gob.ar/servicio/legalizar-o-apostillar-un-documento-traves-de-tad",
+        "https://cancilleria.gob.ar/es/servicios/apostilla-legalizacion-con-validez-internacional-tad"
+      ]
+    }
+  }
+}
