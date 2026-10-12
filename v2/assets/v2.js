@@ -215,7 +215,7 @@
     if (field.inputmode) input.inputMode = field.inputmode;
     if (field.accept && input.type === "file") input.accept = field.accept;
 
-    const isContactRequired = field.id === "fullName" || field.id === "whatsapp";
+    const isContactRequired = field.id === "whatsapp";
     input.required = Boolean(field.required || isContactRequired);
 
     if (input.type === "file") {
