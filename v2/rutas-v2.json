@@ -1,0 +1,243 @@
+{
+  "version": "directiva13-2026-10-11",
+  "status": "BORRADOR_NO_PUBLICAR",
+  "primary": [
+    {
+      "label": "Inicio",
+      "href": "/v2/"
+    },
+    {
+      "label": "Trámites",
+      "href": "/v2/tramites/"
+    },
+    {
+      "label": "Seguimiento",
+      "href": "/v2/seguimiento/"
+    },
+    {
+      "label": "Ayuda",
+      "href": "/v2/ayuda/"
+    }
+  ],
+  "families": [
+    {
+      "id": "partidas-certificados",
+      "name": "Partidas y Certificados",
+      "image": "partidas-familia-final.webp",
+      "href": "/v2/familias/partidas-certificados/"
+    },
+    {
+      "id": "arca",
+      "name": "ARCA",
+      "image": "arca-familia-final.webp",
+      "href": "/v2/familias/arca/"
+    },
+    {
+      "id": "legalizaciones-apostillas",
+      "name": "Legalizaciones y Apostillas",
+      "image": "promo-apostillas-20260916.webp",
+      "href": "/v2/familias/legalizaciones-apostillas/"
+    },
+    {
+      "id": "atencion-abogado",
+      "name": "Reclamo ART",
+      "subtitle": "Accidentes, laboral, sucesiones",
+      "image": "promo-art-20260911.webp",
+      "href": "/v2/familias/atencion-abogado/"
+    },
+    {
+      "id": "asistencia-digital",
+      "name": "Asistencia Digital",
+      "image": "asistencia-digital-v3.webp",
+      "href": "/v2/familias/asistencia-digital/"
+    }
+  ],
+  "services": [
+    {
+      "id": "antecedentes-penales",
+      "name": "Antecedentes Penales",
+      "family": null,
+      "image": "antecedentes-penales-v3.webp",
+      "href": "/v2/tramites/antecedentes-penales/"
+    },
+    {
+      "id": "constancias-anses",
+      "name": "Constancias ANSES",
+      "family": null,
+      "image": "anses-v3.webp",
+      "href": "/v2/tramites/constancias-anses/"
+    },
+    {
+      "id": "informe-vehicular",
+      "name": "Informe Vehicular",
+      "family": null,
+      "image": "informe-vehicular-v3.webp",
+      "href": "/v2/tramites/informe-vehicular/"
+    },
+    {
+      "id": "arba-inmobiliario",
+      "name": "ARBA / Inmobiliario",
+      "family": null,
+      "image": "arba-inmobiliario-v3.webp",
+      "href": "/v2/tramites/arba-inmobiliario/"
+    },
+    {
+      "id": "partidas",
+      "name": "Partidas PBA",
+      "family": "partidas-certificados",
+      "image": null,
+      "href": "/v2/tramites/partidas/"
+    },
+    {
+      "id": "partidas-caba",
+      "name": "Partidas CABA",
+      "family": "partidas-certificados",
+      "image": null,
+      "href": "/v2/tramites/partidas-caba/"
+    },
+    {
+      "id": "certificacion-estado-civil",
+      "name": "Certificación de Estado Civil",
+      "family": "partidas-certificados",
+      "image": null,
+      "href": "/v2/tramites/certificacion-estado-civil/"
+    },
+    {
+      "id": "certificado-domicilio-pba",
+      "name": "Certificado de Domicilio PBA",
+      "family": "partidas-certificados",
+      "image": null,
+      "href": "/v2/tramites/certificado-domicilio-pba/"
+    },
+    {
+      "id": "asistencia-digital",
+      "name": "Asistencia Digital",
+      "family": "asistencia-digital",
+      "image": "asistencia-digital-v3.webp",
+      "href": "/v2/tramites/asistencia-digital/"
+    },
+    {
+      "id": "arca-constancia",
+      "name": "Constancia ARCA",
+      "family": "arca",
+      "image": null,
+      "href": "/v2/tramites/arca-constancia/"
+    },
+    {
+      "id": "arca-vep",
+      "name": "Generar VEP",
+      "family": "arca",
+      "image": null,
+      "href": "/v2/tramites/arca-vep/"
+    },
+    {
+      "id": "arca-ccma",
+      "name": "Informe de deuda y saldos CCMA",
+      "family": "arca",
+      "image": null,
+      "href": "/v2/tramites/arca-ccma/"
+    },
+    {
+      "id": "arca-reimputacion",
+      "name": "Reimputación de pagos",
+      "family": "arca",
+      "image": null,
+      "href": "/v2/tramites/arca-reimputacion/"
+    },
+    {
+      "id": "arca-informe-reimputacion",
+      "name": "Informe + reimputación",
+      "family": "arca",
+      "image": null,
+      "href": "/v2/tramites/arca-informe-reimputacion/"
+    },
+    {
+      "id": "arca-alta-monotributo",
+      "name": "Alta en el Monotributo",
+      "family": "arca",
+      "image": null,
+      "href": "/v2/tramites/arca-alta-monotributo/"
+    },
+    {
+      "id": "arca-baja-monotributo",
+      "name": "Baja en el Monotributo",
+      "family": "arca",
+      "image": null,
+      "href": "/v2/tramites/arca-baja-monotributo/"
+    },
+    {
+      "id": "arca-recategorizacion",
+      "name": "Recategorización",
+      "family": "arca",
+      "image": null,
+      "href": "/v2/tramites/arca-recategorizacion/"
+    },
+    {
+      "id": "arca-dfe",
+      "name": "Domicilio Fiscal Electrónico",
+      "family": "arca",
+      "image": null,
+      "href": "/v2/tramites/arca-dfe/"
+    },
+    {
+      "id": "arca-actualizacion",
+      "name": "Actualización de datos ARCA",
+      "family": "arca",
+      "image": null,
+      "href": "/v2/tramites/arca-actualizacion/"
+    },
+    {
+      "id": "apostilla-tad",
+      "name": "Apostillado",
+      "family": "legalizaciones-apostillas",
+      "image": null,
+      "href": "/v2/tramites/apostilla-tad/"
+    },
+    {
+      "id": "legalizaciones",
+      "name": "Legalizaciones",
+      "family": "legalizaciones-apostillas",
+      "image": null,
+      "href": "/v2/tramites/legalizaciones/"
+    },
+    {
+      "id": "abogado-art",
+      "name": "Reclamo ART / accidente laboral",
+      "family": "atencion-abogado",
+      "image": null,
+      "href": "/v2/tramites/abogado-art/"
+    },
+    {
+      "id": "abogado-accidentes",
+      "name": "Accidentes",
+      "family": "atencion-abogado",
+      "image": null,
+      "href": "/v2/tramites/abogado-accidentes/"
+    },
+    {
+      "id": "abogado-sucesiones",
+      "name": "Sucesiones",
+      "family": "atencion-abogado",
+      "image": null,
+      "href": "/v2/tramites/abogado-sucesiones/"
+    },
+    {
+      "id": "abogado-laboral",
+      "name": "Consulta laboral",
+      "family": "atencion-abogado",
+      "image": null,
+      "href": "/v2/tramites/abogado-laboral/"
+    }
+  ],
+  "systemPages": [
+    "/v2/categorias/",
+    "/v2/buscar/",
+    "/v2/seguimiento/",
+    "/v2/ayuda/",
+    "/v2/contacto/",
+    "/v2/terminos-condiciones/",
+    "/v2/politica-privacidad/",
+    "/v2/arrepentimiento/",
+    "/v2/baja-servicio/"
+  ]
+}
