@@ -5,12 +5,14 @@ import {fileURLToPath} from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = JSON.parse(readFileSync(path.join(root, "rutas-v2.json"), "utf8"));
+assert.equal(manifest.status, "STAGING_EN_CONSTRUCCION", "Estado V2 inesperado");
 const paths = [
   ...manifest.primary.map(x => x.href),
   ...manifest.families.map(x => x.href),
   ...manifest.services.map(x => x.href),
   ...manifest.services.map(x => x.href + "iniciar/"),
-  ...manifest.systemPages
+  ...manifest.systemPages,
+  ...(manifest.internalPages || [])
 ];
 const unique = [...new Set(paths)];
 const duplicates = [...new Set(paths.filter((x, i) => paths.indexOf(x) !== i))].sort();
@@ -35,4 +37,14 @@ for (const url of unique) {
 }
 assert.equal(manifest.services.length, 25, "Inventario de fichas inesperado");
 assert.equal(manifest.families.length, 5, "Inventario de familias inesperado");
+for (const service of manifest.services) {
+  const formPath = path.join(root, service.href.slice(4), "iniciar", "index.html");
+  const formHtml = readFileSync(formPath, "utf8");
+  assert.ok(formHtml.includes("data-v2-request-form"), "Formulario V2 no funcional: " + service.id);
+}
+const trackingHtml = readFileSync(path.join(root, "seguimiento", "index.html"), "utf8");
+assert.ok(trackingHtml.includes("data-v2-tracking-form"), "Seguimiento V2 no funcional");
+const adminHtml = readFileSync(path.join(root, "admin", "index.html"), "utf8");
+assert.ok(adminHtml.includes("data-admin-login-form"), "Admin V2 sin login");
+assert.ok(adminHtml.includes("data-admin-enroll-form"), "Admin V2 sin enrolamiento MFA");
 console.log("PASS CONTROL 4: " + unique.length + " rutas, " + internalLinks + " enlaces/recursos locales verificados; sin escapes V1.");
