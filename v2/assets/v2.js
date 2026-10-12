@@ -730,45 +730,12 @@
     });
   }
 
-  async function initServicePage() {
-    const match = location.pathname.match(/^\/v2\/tramites\/([^/]+)\/?$/);
-    if (!match) return;
-    const serviceId = match[1];
-    const content = qs(".content");
+  function initServicePage() {
+    if (!/^\/v2\/tramites\/([^/]+)\/?$/.test(location.pathname)) return;
     const notice = qs(".content .notice");
-    const start = qsa('.content a.button').find((a) => /\/iniciar\/?$/.test(a.getAttribute("href") || ""));
-    if (notice) {
-      notice.textContent = "Ficha V2 en construcción. El inicio de solicitud ya está conectado al backend MySQL de STAGING; sólo se muestran datos oficiales que superaron CONTROL 2.";
-    }
+    const start = qsa(".content a.button").find((a) => /\/iniciar\/?$/.test(a.getAttribute("href") || ""));
+    if (notice) notice.textContent = "Ficha en preparación.";
     if (start) start.textContent = "Iniciar solicitud de prueba →";
-
-    try {
-      const dataset = await fetch("/v2/data/official-services-2026-10-12.json", { cache: "no-store" }).then((r) => {
-        if (!r.ok) throw new Error("official_data_unavailable");
-        return r.json();
-      });
-      const official = dataset?.services?.[serviceId];
-      if (!official || official.control2 !== "confirmed" || !Array.isArray(official.facts)) return;
-
-      const section = document.createElement("section");
-      section.className = "verified-facts";
-      const title = document.createElement("h2");
-      title.textContent = "Información oficial verificada";
-      const meta = document.createElement("p");
-      meta.className = "muted";
-      meta.textContent = "CONTROL 2 · verificación " + official.verifiedAt;
-      const list = document.createElement("ul");
-      for (const fact of official.facts) {
-        const li = document.createElement("li");
-        li.textContent = String(fact);
-        list.append(li);
-      }
-      section.append(title, meta, list);
-      if (start?.parentElement) start.parentElement.before(section);
-      else content?.append(section);
-    } catch {
-      // La ficha sigue utilizable aun cuando el archivo documental no esté disponible.
-    }
   }
 
   async function reportClientError(code, message) {

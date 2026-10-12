@@ -5,7 +5,9 @@ import {fileURLToPath} from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = JSON.parse(readFileSync(path.join(root, "rutas-v2.json"), "utf8"));
-const officialData = JSON.parse(readFileSync(path.join(root, "data", "official-services-2026-10-12.json"), "utf8"));
+assert.equal(existsSync(path.join(root, "data", "official-services-2026-10-12.json")), false, "La documentación de validación interna no debe publicarse en V2");
+const clientScript = readFileSync(path.join(root, "assets", "v2.js"), "utf8");
+assert.ok(!clientScript.includes("Información oficial verificada"), "Control interno expuesto en ficha pública");
 const formSchema = JSON.parse(readFileSync(path.join(root, "data", "form-schema-v2.json"), "utf8"));
 assert.equal(manifest.status, "STAGING_EN_CONSTRUCCION", "Estado V2 inesperado");
 const paths = [
