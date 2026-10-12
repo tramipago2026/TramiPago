@@ -12,7 +12,7 @@ const paths = [
   ...manifest.primary.map(x => x.href),
   ...manifest.families.map(x => x.href),
   ...manifest.services.map(x => x.href),
-  ...manifest.services.map(x => x.href + "iniciar/"),
+  ...manifest.services.flatMap(x => (manifest.serviceStages || ["iniciar"]).map(stage => x.href + stage + "/")),
   ...manifest.systemPages,
   ...(manifest.internalPages || [])
 ];
@@ -48,10 +48,16 @@ for (const service of manifest.services) {
   const formPath = path.join(root, service.href.slice(4), "iniciar", "index.html");
   const formHtml = readFileSync(formPath, "utf8");
   assert.ok(formHtml.includes("data-v2-request-form"), "Formulario V2 no funcional: " + service.id);
+  for (const stage of ["revisar","pago","confirmacion"]) {
+    const stagePath = path.join(root, service.href.slice(4), stage, "index.html");
+    assert.ok(existsSync(stagePath), "Falta etapa " + stage + ": " + service.id);
+    const stageHtml = readFileSync(stagePath, "utf8");
+    assert.ok(stageHtml.includes('data-v2-flow="' + ({revisar:"review",pago:"payment",confirmacion:"confirmation"})[stage] + '"'), "Etapa V2 inválida: " + service.id + "/" + stage);
+  }
 }
 const trackingHtml = readFileSync(path.join(root, "seguimiento", "index.html"), "utf8");
 assert.ok(trackingHtml.includes("data-v2-tracking-form"), "Seguimiento V2 no funcional");
 const adminHtml = readFileSync(path.join(root, "admin", "index.html"), "utf8");
 assert.ok(adminHtml.includes("data-admin-login-form"), "Admin V2 sin login");
 assert.ok(adminHtml.includes("data-admin-enroll-form"), "Admin V2 sin enrolamiento MFA");
-console.log("PASS CONTROL 4: " + unique.length + " rutas, 25 esquemas de formulario y " + internalLinks + " enlaces/recursos locales verificados; sin escapes V1.");
+console.log("PASS CONTROL 4: " + unique.length + " rutas, 25 esquemas + 4 etapas por servicio y " + internalLinks + " enlaces/recursos locales verificados; sin escapes V1.");
