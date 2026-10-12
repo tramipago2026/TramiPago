@@ -24,7 +24,7 @@ for (const url of unique) {
   const htmlPath = path.join(root, url.slice(4), "index.html");
   assert.ok(existsSync(htmlPath), "Falta destino: " + url);
   const html = readFileSync(htmlPath, "utf8");
-  assert.ok(html.includes('name="robots" content="noindex,nofollow"'), "Falta noindex: " + url);
+  assert.match(html, /name="robots" content="[^"]*noindex[^"]*nofollow[^"]*"/, "Falta noindex/nofollow: " + url);
   for (const [, attribute, value] of html.matchAll(/\b(href|src|action)="([^"]+)"/g)) {
     if (!value.startsWith("/")) continue;
     assert.ok(value.startsWith("/v2/"), "Enlace o recurso fuera de V2: " + url + " → " + value);
