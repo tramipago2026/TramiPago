@@ -1,0 +1,25 @@
+name: TramiPago V2 CONTROL 4
+
+on:
+  push:
+    branches:
+      - v2/opcion-c-directiva13
+    paths:
+      - v2/**
+      - .github/workflows/v2-control4.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  control4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Validate isolated V2 routes and functional shells
+        run: node v2/tests/control4.mjs
