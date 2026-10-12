@@ -117,6 +117,216 @@
     }
   }
 
+  function fieldHasValue(form, id) {
+    const controls = qsa('[name="' + CSS.escape(id) + '"]', form);
+    if (!controls.length) return false;
+    return controls.some((control) => {
+      if (control.disabled) return false;
+      if (control.type === "checkbox" || control.type === "radio") return control.checked;
+      if (control.type === "file") return Boolean(control.files?.length);
+      return String(control.value || "").trim().length > 0;
+    });
+  }
+
+  function validateServiceRules(form, schema) {
+    if (!schema?.rules) return null;
+    const rules = schema.rules;
+    if (Array.isArray(rules.anyOf) && !rules.anyOf.some((id) => fieldHasValue(form, id))) {
+      return rules.message || "Completá al menos una de las opciones requeridas.";
+    }
+    if (Array.isArray(rules.oneOfGroups)) {
+      const ok = rules.oneOfGroups.some((group) =>
+        Array.isArray(group) && group.every((id) => fieldHasValue(form, id))
+      );
+      if (!ok) return rules.message || "Completá una de las alternativas requeridas.";
+    }
+    return null;
+  }
+
+  function makeSchemaField(field, b2Ready) {
+    if (!field?.id || !field?.label || !field?.type) return null;
+
+    if (field.type === "choice") {
+      const fieldset = document.createElement("fieldset");
+      fieldset.className = "wide choice-field";
+      const legend = document.createElement("legend");
+      legend.textContent = field.label;
+      fieldset.append(legend);
+      for (const option of field.options || []) {
+        const label = document.createElement("label");
+        label.className = "check-row";
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = field.id;
+        input.value = option.value;
+        input.required = Boolean(field.required);
+        input.dataset.v2SchemaField = field.id;
+        label.append(input, document.createTextNode(option.label));
+        fieldset.append(label);
+      }
+      return fieldset;
+    }
+
+    if (field.type === "checkbox") {
+      const label = document.createElement("label");
+      label.className = "wide check-row";
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.name = field.id;
+      input.required = Boolean(field.required);
+      input.dataset.v2SchemaField = field.id;
+      label.append(input, document.createTextNode(field.label));
+      return label;
+    }
+
+    const label = document.createElement("label");
+    if (field.type === "textarea" || field.type === "file") label.className = "wide";
+    label.append(document.createTextNode(field.label));
+
+    let input;
+    if (field.type === "textarea") {
+      input = document.createElement("textarea");
+      input.rows = 4;
+    } else if (field.type === "select") {
+      input = document.createElement("select");
+      if (field.noDefault || field.required) {
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "Seleccioná una opción";
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        input.append(placeholder);
+      }
+      for (const option of field.options || []) {
+        const item = document.createElement("option");
+        item.value = option.value;
+        item.textContent = option.label;
+        input.append(item);
+      }
+    } else {
+      input = document.createElement("input");
+      input.type = ["email","tel","date","month","file"].includes(field.type) ? field.type : "text";
+    }
+
+    input.name = field.id;
+    input.dataset.v2SchemaField = field.id;
+    if (field.placeholder) input.placeholder = field.placeholder;
+    if (field.autocomplete) input.autocomplete = field.autocomplete;
+    if (field.inputmode) input.inputMode = field.inputmode;
+    if (field.accept && input.type === "file") input.accept = field.accept;
+
+    const isContactRequired = field.id === "fullName" || field.id === "whatsapp";
+    input.required = Boolean(field.required || isContactRequired);
+
+    if (input.type === "file") {
+      input.dataset.v2FileField = field.id;
+      input.dataset.originalRequired = field.required ? "true" : "false";
+      if (!b2Ready) {
+        input.disabled = true;
+        input.required = false;
+        const note = document.createElement("small");
+        note.className = "muted";
+        note.textContent = "Carga privada pendiente de habilitar B2 en STAGING.";
+        label.append(input, note);
+        return label;
+      }
+    }
+
+    label.append(input);
+    return label;
+  }
+
+  async function renderServiceSchema(form, serviceId) {
+    let schema = null;
+    let b2Ready = false;
+    try {
+      const dataset = await fetch("/v2/data/form-schema-v2.json", { cache: "no-store" }).then((r) => {
+        if (!r.ok) throw new Error("schema_unavailable");
+        return r.json();
+      });
+      schema = dataset?.services?.[serviceId] || null;
+    } catch {}
+
+    try {
+      const health = await api("/v2/health/dependencies", { method: "GET" });
+      b2Ready = health?.dependencies?.b2 === "configured";
+    } catch {}
+
+    if (!schema?.fields?.length) return { schema: null, b2Ready, submit: qs('button[type="submit"]', form) };
+
+    form.replaceChildren();
+    const fragment = document.createDocumentFragment();
+    for (const field of schema.fields) {
+      const control = makeSchemaField(field, b2Ready);
+      if (control) fragment.append(control);
+    }
+
+    if (!b2Ready && schema.fields.some((field) => field.type === "file")) {
+      const notice = document.createElement("p");
+      notice.className = "wide notice";
+      notice.textContent = "Los campos de documentos están preparados, pero permanecen deshabilitados hasta conectar el almacenamiento privado B2 de STAGING.";
+      fragment.append(notice);
+    }
+
+    const action = document.createElement("div");
+    action.className = "wide";
+    const button = document.createElement("button");
+    button.className = "button";
+    button.type = "submit";
+    button.textContent = "Crear y guardar solicitud de prueba";
+    action.append(button);
+    fragment.append(action);
+    form.append(fragment);
+
+    return { schema, b2Ready, submit: button };
+  }
+
+  function schemaPayload(form) {
+    const payload = {};
+    const skip = new Set(["fullName","name","whatsapp","email","emailConfirm","authorization","serviceFeeAcceptance"]);
+    const names = new Set(qsa("[data-v2-schema-field]", form).map((node) => node.name).filter(Boolean));
+    for (const name of names) {
+      if (skip.has(name)) continue;
+      const controls = qsa('[name="' + CSS.escape(name) + '"]', form);
+      const first = controls[0];
+      if (!first || first.disabled || first.type === "file") continue;
+      if (first.type === "radio") {
+        const checked = controls.find((node) => node.checked);
+        payload[name] = checked ? checked.value : null;
+      } else if (first.type === "checkbox") {
+        payload[name] = Boolean(first.checked);
+      } else {
+        payload[name] = String(first.value || "").trim();
+      }
+    }
+    return payload;
+  }
+
+  async function uploadSchemaFiles(form, active, b2Ready) {
+    if (!b2Ready) return { uploaded: 0, skipped: qsa('input[type="file"]', form).length };
+    let uploaded = 0;
+    for (const input of qsa('input[type="file"][data-v2-file-field]', form)) {
+      const file = input.files?.[0];
+      if (!file) continue;
+      const fieldId = input.dataset.v2FileField || input.name;
+      const kind = /dni/i.test(fieldId) ? "dni" : "supporting_document";
+      const body = new FormData();
+      body.set("file", file);
+      body.set("kind", kind);
+      body.set("fieldId", fieldId);
+      await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/files", {
+        method: "POST",
+        headers: {
+          "Idempotency-Key": randomKey("schema-file-" + active.requestId + "-" + fieldId),
+          "X-Request-Capability": active.capability,
+        },
+        body,
+      });
+      uploaded += 1;
+    }
+    return { uploaded, skipped: 0 };
+  }
+
   async function initStartForm() {
     const form = qs("[data-v2-request-form]");
     if (!form) return;
@@ -138,9 +348,13 @@
         }
       }
     } catch {}
+
+    const rendered = await renderServiceSchema(form, serviceId);
+    const schema = rendered.schema;
+    const b2Ready = rendered.b2Ready;
+    const submit = rendered.submit;
     const output = qs("[data-v2-form-message]", form.closest(".content") || document);
     const result = qs("[data-v2-created]", form.closest(".content") || document);
-    const submit = qs('button[type="submit"]', form);
 
     function currentSession() {
       try {
@@ -259,18 +473,32 @@
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
-      submit.disabled = true;
-      setMessage(output, "Creando solicitud de prueba…");
+
+      const ruleError = validateServiceRules(form, schema);
+      if (ruleError) {
+        setMessage(output, ruleError, "error");
+        return;
+      }
 
       const data = new FormData(form);
+      const email = String(data.get("email") || "").trim();
+      const emailConfirm = String(data.get("emailConfirm") || "").trim();
+      if (emailConfirm && email.toLowerCase() !== emailConfirm.toLowerCase()) {
+        setMessage(output, "Los correos electrónicos no coinciden.", "error");
+        return;
+      }
+
+      submit.disabled = true;
+      setMessage(output, "Creando y guardando solicitud de prueba…");
+
       const body = {
         serviceId,
         contact: {
-          name: String(data.get("name") || "").trim(),
+          name: String(data.get("fullName") || data.get("name") || "").trim(),
           whatsapp: String(data.get("whatsapp") || "").trim(),
-          email: String(data.get("email") || "").trim() || undefined,
+          email: email || undefined,
         },
-        consent: data.get("consent") === "on",
+        consent: true,
       };
 
       try {
@@ -279,28 +507,40 @@
           headers: { "Idempotency-Key": randomKey("create-" + serviceId) },
           body: JSON.stringify(body),
         });
-
-        sessionStorage.setItem("tramipago-v2-current", JSON.stringify({
+        const active = {
           requestId: created.id,
           capability: created.capability,
           trackingCode: created.trackingCode,
           serviceId,
           serviceName,
-        }));
+        };
+        sessionStorage.setItem("tramipago-v2-current", JSON.stringify(active));
 
-        setMessage(output, "Solicitud de prueba creada correctamente.", "success");
-        renderCreated({
-          requestId: created.id,
-          capability: created.capability,
-          trackingCode: created.trackingCode,
-          serviceId,
-          serviceName,
-        });
+        const payload = schemaPayload(form);
+        if (Object.keys(payload).length) {
+          await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/draft", {
+            method: "PATCH",
+            headers: {
+              "Idempotency-Key": randomKey("initial-draft-" + active.requestId),
+              "X-Request-Capability": active.capability,
+            },
+            body: JSON.stringify({ currentStep: "datos", payload }),
+          });
+        }
+
+        const uploads = await uploadSchemaFiles(form, active, b2Ready);
+        const extra = uploads.uploaded
+          ? " · " + uploads.uploaded + " archivo(s) privado(s) cargado(s)."
+          : "";
+        setMessage(output, "Solicitud y datos de prueba guardados en MySQL." + extra, "success");
+        renderCreated(active);
         form.reset();
       } catch (error) {
         setMessage(output, error.status === 404
           ? "Este trámite todavía no está habilitado en la base V2."
-          : "No se pudo crear la solicitud de prueba. Intentá nuevamente.", "error");
+          : error.status === 503
+            ? "La solicitud quedó limitada por una dependencia externa todavía pendiente."
+            : "No se pudo guardar la solicitud de prueba. Intentá nuevamente.", "error");
       } finally {
         submit.disabled = false;
       }
