@@ -177,6 +177,86 @@
         "https://www.argentina.gob.ar/servicio/legalizar-o-apostillar-un-documento-traves-de-tad",
         "https://cancilleria.gob.ar/es/servicios/apostilla-legalizacion-con-validez-internacional-tad"
       ]
+    },
+    "partidas-caba": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "La solicitud regular de partidas de nacimiento, defunción o matrimonio inscriptas en CABA es online.",
+        "El plazo regular publicado es de 15 días hábiles.",
+        "La partida regular es gratuita; si faltan los datos precisos de localización del acta, la búsqueda tiene un cargo adicional publicado de $10.950."
+      ],
+      "sources": [
+        "https://buenosaires.gob.ar/tramites/solicitud-partidas",
+        "https://buenosaires.gob.ar/gcaba_historico/tramites/solicitud-partidas",
+        "https://buenosaires.gob.ar/gcaba_historico/tramites/solicitud-partidas-urgentes"
+      ]
+    },
+    "arca-vep": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "El VEP es un volante electrónico que permite pagar obligaciones por internet.",
+        "Para el servicio Presentación de DDJJ y Pagos se utiliza clave fiscal o acceso habilitado desde homebanking; el pago requiere una cuenta bancaria en pesos.",
+        "Monotributistas y autónomos también pueden generar VEP desde CCMA para obligaciones allí informadas."
+      ],
+      "sources": [
+        "https://www.argentina.gob.ar/servicio/obtener-volante-electronico-de-pagos-vep",
+        "https://serviciosweb.arca.gob.ar/genericos/guiasPasoPaso/VerGuia.aspx?id=66",
+        "https://serviciosweb.arca.gob.ar/genericos/guiasPasoPaso/VerGuia.aspx?id=479"
+      ]
+    },
+    "arca-ccma": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "CCMA permite consultar el estado de cuenta de monotributistas y autónomos, identificando deudas y saldos a favor.",
+        "Desde CCMA pueden seleccionarse obligaciones para generar un VEP o QR de pago."
+      ],
+      "sources": [
+        "https://arca.gob.ar/monotributo/ayuda/reimputacion-de-pagos.asp",
+        "https://serviciosweb.arca.gob.ar/genericos/guiasPasoPaso/VerGuia.aspx?id=479",
+        "https://arca.gob.ar/comoPagarImpuestos/como-pagar-impuestos/Monotributo/default.asp"
+      ]
+    },
+    "arca-informe-reimputacion": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "CCMA permite identificar deudas y saldos a favor del monotributo.",
+        "Los saldos a favor pueden reimputarse a obligaciones compatibles; para períodos anteriores a julio de 2004 se aplica un procedimiento específico."
+      ],
+      "sources": [
+        "https://arca.gob.ar/monotributo/ayuda/reimputacion-de-pagos.asp",
+        "https://serviciosweb.arca.gob.ar/genericos/guiasPasoPaso/VerGuia.aspx?id=398",
+        "https://www.arca.gob.ar/atencion/atencion-presencial/documentos/ReimputacionPagosMonotributo.pdf"
+      ]
+    },
+    "arca-actualizacion": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "Sistema Registral permite consultar y modificar datos registrales como domicilios y actividades según corresponda.",
+        "Las altas y modificaciones tributarias deben realizarse por las opciones habilitadas del Registro Único Tributario / Sistema Registral."
+      ],
+      "sources": [
+        "https://www.arca.gob.ar/inscripcion/abm/",
+        "https://serviciosweb.arca.gob.ar/genericos/guiasPasoPaso/VerGuia.aspx?id=431"
+      ]
+    },
+    "legalizaciones": {
+      "control2": "confirmed",
+      "verifiedAt": "2026-10-12",
+      "facts": [
+        "La legalización nacional de documentos públicos se tramita en línea mediante TAD.",
+        "El trámite publicado es gratuito y tiene un plazo informado de 20 días hábiles.",
+        "Se admite un documento por expediente y el archivo debe ser legible, completo y escaneado a color."
+      ],
+      "sources": [
+        "https://www.argentina.gob.ar/servicio/legalizar-documentos-publicos",
+        "https://www.argentina.gob.ar/sites/default/files/instructivo_legalizacion_documentospublicos_tad_0.pdf",
+        "https://www.argentina.gob.ar/interior"
+      ]
     }
   }
 }
