@@ -162,3 +162,19 @@
  .home-opcion-c .section h2{font-size:18px}
  .home-opcion-c .card-copy{font-size:14px}
 }
+
+/* Keep the whole logo inside the header, including at browser zoom boundaries. */
+.home-opcion-c .site-header{min-height:86px;padding:10px 0;overflow:visible}
+.home-opcion-c .brand{min-width:0;flex:0 1 351px}
+.home-opcion-c .brand img{display:block;width:100%;max-width:351px;height:auto;object-fit:contain}
+.home-opcion-c .hero-shell{min-height:448px}
+.home-opcion-c .hero-visual{top:86px}
+@media(max-width:1100px){.home-opcion-c .brand{flex-basis:290px}.home-opcion-c .brand img{height:auto}}
+@media(max-width:900px){
+ .home-opcion-c .site-header{flex-direction:column;align-items:center;gap:3px;max-width:100%;width:100%;padding:12px 16px;background:#f5fbff}
+ .home-opcion-c .brand{flex:0 1 auto;width:min(300px,80vw);max-width:100%;margin:0}
+ .home-opcion-c .site-header nav{margin:0;justify-content:center;flex-wrap:wrap;gap:22px}
+ .home-opcion-c .site-header nav a{padding:7px 0}
+ .home-opcion-c .hero-visual{top:113px}
+}
+@media(max-width:760px){.home-opcion-c .hero-shell{min-height:0}.home-opcion-c .hero-visual{top:auto}}

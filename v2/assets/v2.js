@@ -123,7 +123,7 @@
     return controls.some((control) => {
       if (control.disabled) return false;
       if (control.type === "checkbox" || control.type === "radio") return control.checked;
-      if (control.type === "file") return Boolean(control.files?.length);
+      if (control.type === "file") return Boolean(control.files?.length) || control.dataset.v2Uploaded === "true";
       return String(control.value || "").trim().length > 0;
     });
   }
@@ -189,7 +189,7 @@
       input.rows = 4;
     } else if (field.type === "select") {
       input = document.createElement("select");
-      if (field.noDefault || field.required) {
+      {
         const placeholder = document.createElement("option");
         placeholder.value = "";
         placeholder.textContent = "Seleccioná una opción";
@@ -226,7 +226,7 @@
         input.required = false;
         const note = document.createElement("small");
         note.className = "muted";
-        note.textContent = "Carga privada pendiente de habilitar B2 en STAGING.";
+        note.textContent = "Carga de documentos pendiente de habilitación en la prueba.";
         label.append(input, note);
         return label;
       }
@@ -236,48 +236,123 @@
     return label;
   }
 
-  async function renderServiceSchema(form, serviceId) {
-    let schema = null;
-    let b2Ready = false;
-    try {
-      const dataset = await fetch("/v2/data/form-schema-v2.json", { cache: "no-store" }).then((r) => {
-        if (!r.ok) throw new Error("schema_unavailable");
-        return r.json();
-      });
-      schema = dataset?.services?.[serviceId] || null;
-    } catch {}
+  function applyFieldConditions(form, schema) {
+    const value = (id) => {
+      const controls = qsa('[name="' + CSS.escape(id) + '"]', form);
+      return controls.find(node => node.type === "radio" ? node.checked : true)?.value || "";
+    };
+    const matches = condition => {
+      if (condition.all) return condition.all.every(matches);
+      const selected = value(condition.field);
+      return condition.values ? condition.values.includes(selected) : condition.notEquals !== undefined ? Boolean(selected) && selected !== condition.notEquals : selected === condition.equals;
+    };
+    for (const [id, condition] of Object.entries(schema.fieldConditions || {})) {
+      const wrapper = qs('[data-v2-field="' + CSS.escape(id) + '"]', form);
+      if (!wrapper) continue;
+      const visible = matches(condition);
+      wrapper.hidden = !visible;
+      for (const input of qsa("input,select,textarea", wrapper)) {
+        input.disabled = !visible || input.dataset.v2Unavailable === "true";
+        input.required = visible && !input.disabled && input.dataset.v2Required === "true";
+      }
+    }
+    // When the applicant is the holder, ask their name once.
+    const holder = value("applicantRole") === "holder";
+    const name = qs('[name="fullName"]', form);
+    const wrapper = qs('[data-v2-field="fullName"]', form);
+    if (schema.fieldConditions?.thirdPartyDocument && name && wrapper) {
+      wrapper.hidden = holder;
+      name.disabled = holder;
+      if (holder) name.value = value("recordHolderFullName");
+    }
+  }
 
+  async function renderServiceSchema(form, serviceId) {
+    let schema = null, b2Ready = false;
     try {
-      const health = await api("/v2/health/dependencies", { method: "GET" });
+      const [dataset, health] = await Promise.all([
+        fetch("/v2/data/form-schema-v2.json", { cache: "no-store" }).then(r => {
+          if (!r.ok) throw new Error("schema_unavailable");
+          return r.json();
+        }),
+        api("/v2/health/dependencies", { method: "GET" }).catch(() => null),
+      ]);
+      schema = dataset?.services?.[serviceId] || null;
       b2Ready = health?.dependencies?.b2 === "configured";
     } catch {}
-
-    if (!schema?.fields?.length) return { schema: null, b2Ready, submit: qs('button[type="submit"]', form) };
-
     form.replaceChildren();
-    const fragment = document.createDocumentFragment();
-    for (const field of schema.fields) {
-      const control = makeSchemaField(field, b2Ready);
-      if (control) fragment.append(control);
-    }
+    if (!schema?.fields?.length) return { schema: null, b2Ready, submit: null };
 
-    if (!b2Ready && schema.fields.some((field) => field.type === "file")) {
-      const notice = document.createElement("p");
-      notice.className = "wide notice";
-      notice.textContent = "Los campos de documentos están preparados, pero permanecen deshabilitados hasta conectar el almacenamiento privado B2 de STAGING.";
-      fragment.append(notice);
+    const groups = new Map();
+    const addGroup = (key, title) => {
+      const group = document.createElement("fieldset");
+      group.className = "request-group";
+      const legend = document.createElement("legend");
+      legend.textContent = title;
+      const fields = document.createElement("div");
+      fields.className = "request-fields";
+      group.append(legend, fields);
+      form.append(group);
+      groups.set(key, fields);
+    };
+    addGroup("service", "Datos del trámite");
+    addGroup("contact", "Contacto");
+    addGroup("consent", "Autorización");
+    const optional = document.createElement("details");
+    optional.className = "request-optional";
+    const optionalTitle = document.createElement("summary");
+    optionalTitle.textContent = "Agregar información opcional";
+    const optionalFields = document.createElement("div");
+    optionalFields.className = "request-fields";
+    optional.append(optionalTitle, optionalFields);
+    form.insertBefore(optional, groups.get("consent").parentElement);
+    const contact = new Set(["fullName", "name", "whatsapp", "email", "emailAccess"]);
+    const consent = new Set(["authorization", "serviceFeeAcceptance"]);
+    const alternatives = new Set([...(schema.rules?.anyOf || []), ...(schema.rules?.oneOfGroups || []).flat()]);
+    for (const field of schema.fields) {
+      if (field.id === "emailConfirm") continue; // Email is checked in the inline summary.
+      const control = makeSchemaField(field, b2Ready);
+      if (!control) continue;
+      control.dataset.v2Field = field.id;
+      for (const input of qsa("input,select,textarea", control)) {
+        input.dataset.v2Required = input.required ? "true" : "false";
+        if (input.type === "file" && input.disabled) input.dataset.v2Unavailable = "true";
+        if (input.name === "whatsapp") { input.minLength = 8; input.maxLength = 40; }
+        if (["name", "fullName"].includes(input.name)) { input.minLength = 2; input.maxLength = 200; }
+      }
+      const group = consent.has(field.id) ? groups.get("consent") : contact.has(field.id) ? groups.get("contact") : field.required || alternatives.has(field.id) || schema.fieldConditions?.[field.id] ? groups.get("service") : optionalFields;
+      group.append(control);
     }
+    for (const fields of groups.values()) if (!fields.children.length) fields.parentElement.remove();
+    if (!optionalFields.children.length) optional.remove();
+    if (!b2Ready && schema.fields.some(field => field.type === "file")) {
+      const notice = document.createElement("p");
+      notice.className = "notice";
+      notice.textContent = "La carga de documentos todavía no está habilitada en esta versión de prueba. Los documentos requeridos quedan pendientes.";
+      form.append(notice);
+    }
+    const preview = document.createElement("details");
+    preview.className = "request-preview";
+    preview.dataset.v2Preview = "";
+    const title = document.createElement("summary");
+    title.textContent = "Revisar mis datos antes de continuar";
+    const summary = document.createElement("div");
+    summary.dataset.v2PreviewContent = "";
+    preview.append(title, summary);
+    form.append(preview);
 
     const action = document.createElement("div");
-    action.className = "wide";
+    action.className = "request-actions";
+    const note = document.createElement("span");
+    note.className = "muted";
+    note.textContent = "Los datos se ingresan una sola vez. Podés revisarlos en esta misma pantalla.";
     const button = document.createElement("button");
     button.className = "button";
     button.type = "submit";
-    button.textContent = "Crear y guardar solicitud de prueba";
-    action.append(button);
-    fragment.append(action);
-    form.append(fragment);
-
+    button.textContent = schema.intakeOnly ? "Enviar consulta →" : "Continuar al pago →";
+    action.append(note, button);
+    form.append(action);
+    applyFieldConditions(form, schema);
     return { schema, b2Ready, submit: button };
   }
 
@@ -306,6 +381,7 @@
     if (!b2Ready) return { uploaded: 0, skipped: qsa('input[type="file"]', form).length };
     let uploaded = 0;
     for (const input of qsa('input[type="file"][data-v2-file-field]', form)) {
+      if (input.disabled) continue;
       const file = input.files?.[0];
       if (!file) continue;
       const fieldId = input.dataset.v2FileField || input.name;
@@ -314,7 +390,7 @@
       body.set("file", file);
       body.set("kind", kind);
       body.set("fieldId", fieldId);
-      await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/files", {
+      const uploadedFile = await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/files", {
         method: "POST",
         headers: {
           "Idempotency-Key": randomKey("schema-file-" + active.requestId + "-" + fieldId),
@@ -322,6 +398,11 @@
         },
         body,
       });
+      active.uploadedFields ||= {};
+      active.uploadedFields[fieldId] = uploadedFile.fileId;
+      input.dataset.v2Uploaded = "true";
+      input.required = false;
+      input.value = "";
       uploaded += 1;
     }
     return { uploaded, skipped: 0 };
@@ -330,229 +411,183 @@
   async function initStartForm() {
     const form = qs("[data-v2-request-form]");
     if (!form) return;
-
-    const pathMatch = location.pathname.match(/\/v2\/tramites\/([^/]+)\/iniciar\/?$/);
+    form.inert = true;
+    const pathMatch = location.pathname.match(/^\/v2\/tramites\/([^/]+)(?:\/iniciar)?\/?$/);
     const serviceId = form.dataset.serviceId || pathMatch?.[1] || "";
-    let serviceName = form.dataset.serviceName || serviceId;
+    let serviceName = serviceId;
     const titleNode = qs("[data-v2-service-title]");
     const backLink = qs("[data-v2-service-back]");
+    const output = qs("[data-v2-form-message]");
+    const result = qs("[data-v2-created]");
     try {
-      const manifest = await fetch("/v2/rutas-v2.json", { cache: "no-store" }).then((r) => r.json());
-      const service = (manifest.services || []).find((item) => item.id === serviceId);
-      if (service) {
-        serviceName = service.name;
-        if (titleNode) titleNode.textContent = "Iniciar " + service.name;
-        if (backLink) {
-          backLink.href = service.href;
-          backLink.textContent = "← " + service.name;
-        }
-      }
+      const manifest = await fetch("/v2/rutas-v2.json", { cache: "no-store" }).then(r => r.json());
+      const service = manifest.services.find(item => item.id === serviceId);
+      if (service) serviceName = service.name;
     } catch {}
-
-    const rendered = await renderServiceSchema(form, serviceId);
-    const schema = rendered.schema;
-    const b2Ready = rendered.b2Ready;
-    const submit = rendered.submit;
-    const output = qs("[data-v2-form-message]", form.closest(".content") || document);
-    const result = qs("[data-v2-created]", form.closest(".content") || document);
-
-    function currentSession() {
-      try {
-        const value = JSON.parse(sessionStorage.getItem("tramipago-v2-current") || "null");
-        return value && value.serviceId === serviceId ? value : null;
-      } catch { return null; }
+    if (titleNode) titleNode.textContent = serviceName;
+    if (backLink) { backLink.href = "/v2/tramites/"; backLink.textContent = "← Todos los trámites"; }
+    const { schema, b2Ready, submit } = await renderServiceSchema(form, serviceId);
+    if (!schema || !submit) {
+      form.inert = false;
+      setMessage(output, "No se pudo cargar el formulario. Volvé a intentarlo.", "error");
+      return;
     }
+    const cacheKey = "tramipago-v2-form-" + serviceId;
+    let active = null;
+    try {
+      const saved = JSON.parse(sessionStorage.getItem("tramipago-v2-current") || "null");
+      if (saved?.serviceId === serviceId) active = saved;
+    } catch {}
+    let createKey = randomKey("create-" + serviceId);
+    let submitting = false;
+    let existingContact = null;
+    let uploadedFields = active?.uploadedFields || {};
 
-    function renderCreated(current) {
-      if (!result || !current) return;
+    const fields = () => qsa("[data-v2-schema-field]", form);
+    function values() {
+      const data = {};
+      for (const input of fields()) {
+        if (input.disabled && input.name !== "fullName") continue;
+        if (input.type === "radio") { if (input.checked) data[input.name] = input.value; }
+        else if (input.type === "checkbox") data[input.name] = input.checked;
+        else if (input.type === "file") data[input.name] = input.files?.[0]?.name || (uploadedFields[input.name] ? "Documento recibido" : "");
+        else data[input.name] = input.value.trim();
+      }
+      return data;
+    }
+    function fill(data) {
+      for (const input of fields()) {
+        if (input.type === "file" || data[input.name] === undefined) continue;
+        if (input.type === "radio") input.checked = data[input.name] === input.value;
+        else if (input.type === "checkbox") input.checked = data[input.name] === true;
+        else input.value = String(data[input.name] ?? "");
+      }
+    }
+    function missingDocuments() {
+      return qsa('input[type="file"]', form).filter(input => input.dataset.originalRequired === "true" && !input.closest("[data-v2-field]").hidden && !input.files?.length && !uploadedFields[input.name]);
+    }
+    function refresh() {
+      applyFieldConditions(form, schema);
+      for (const input of qsa('input[type="file"]', form)) {
+        if (uploadedFields[input.name]) { input.required = false; input.dataset.v2Uploaded = "true"; }
+      }
+      const missing = missingDocuments().length > 0;
+      window.TramiPagoProgress?.render({ requiresPayment: !schema.intakeOnly, missingDocuments: missing, status: "draft" });
+      submit.textContent = missing && !b2Ready ? "Guardar borrador →" : schema.intakeOnly ? "Enviar consulta →" : "Continuar al pago →";
+      window.TramiPagoProgress?.summary(qs("[data-v2-preview-content]", form), schema, values());
+      try { sessionStorage.setItem(cacheKey, JSON.stringify(values())); } catch {}
+    }
+    function savedCard(data, pending = false) {
       result.hidden = false;
-      const code = qs("[data-v2-tracking-code]", result);
-      if (code) code.textContent = current.trackingCode;
-      const link = qs("[data-v2-track-link]", result);
-      if (link) link.href = "/v2/seguimiento/?codigo=" + encodeURIComponent(current.trackingCode);
-      let draftForm = qs("[data-v2-draft-form]", result);
-      if (!draftForm) {
-        draftForm = document.createElement("form");
-        draftForm.className = "vertical";
-        draftForm.dataset.v2DraftForm = "";
-        draftForm.innerHTML = '<label>Nota de prueba para el borrador<textarea name="notes" maxlength="1000" rows="3" placeholder="Dato sintético para comprobar guardado"></textarea></label><button class="button" type="submit">Guardar borrador de prueba</button><div class="status-box" data-v2-draft-message hidden aria-live="polite"></div>';
-        result.append(draftForm);
-        draftForm.addEventListener("submit", async (event) => {
-          event.preventDefault();
-          const active = currentSession();
-          if (!active) return;
-          const notes = String(new FormData(draftForm).get("notes") || "").trim();
-          const draftMessage = qs("[data-v2-draft-message]", draftForm);
-          try {
-            const saved = await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/draft", {
-              method: "PATCH",
-              headers: {
-                "Idempotency-Key": randomKey("draft-" + active.requestId),
-                "X-Request-Capability": active.capability,
-              },
-              body: JSON.stringify({ currentStep: "datos", payload: { notes } }),
-            });
-            setMessage(draftMessage, "Borrador guardado en MySQL. Paso: " + saved.currentStep + ".", "success");
-          } catch {
-            setMessage(draftMessage, "No se pudo guardar el borrador de prueba.", "error");
-          }
+      result.replaceChildren();
+      const heading = document.createElement("h2");
+      heading.textContent = pending ? "Borrador guardado" : "Ya tenés una solicitud en curso";
+      const code = document.createElement("p");
+      code.textContent = "Código: ";
+      const tracking = document.createElement("code");
+      tracking.dataset.v2TrackingCode = "";
+      tracking.textContent = active.trackingCode;
+      code.append(tracking);
+      const note = document.createElement("p");
+      note.textContent = pending ? "La documentación requerida sigue pendiente. Tus datos ya están guardados." : "Estado: " + statusLabel(data.status);
+      result.append(heading, code, note);
+      if (!pending) {
+        const next = document.createElement("a");
+        next.className = "button";
+        next.href = "/v2/tramites/" + serviceId + (data.status === "awaiting_payment" ? "/pago/" : "/confirmacion/");
+        next.textContent = "Continuar mi solicitud →";
+        const reset = document.createElement("button");
+        reset.type = "button";
+        reset.className = "button secondary-button";
+        reset.textContent = "Iniciar otra solicitud";
+        reset.addEventListener("click", () => {
+          active = null; existingContact = null; uploadedFields = {};
+          sessionStorage.removeItem("tramipago-v2-current"); sessionStorage.removeItem(cacheKey);
+          createKey = randomKey("create-" + serviceId);
+          form.reset(); form.hidden = false; result.hidden = true; refresh();
         });
-      }
-
-      if (!qs("[data-v2-review-link]", result)) {
-        const reviewLink = document.createElement("a");
-        reviewLink.className = "button";
-        reviewLink.dataset.v2ReviewLink = "";
-        reviewLink.href = "/v2/tramites/" + serviceId + "/revisar/";
-        reviewLink.textContent = "Revisar solicitud →";
-        result.append(reviewLink);
-      }
-
-      if (!qs("[data-v2-upload-form]", result)) {
-        const uploadForm = document.createElement("form");
-        uploadForm.className = "vertical";
-        uploadForm.dataset.v2UploadForm = "";
-        uploadForm.innerHTML = '<h3>Documento adicional de prueba</h3><p data-v2-storage-state class="muted">Verificando almacenamiento privado…</p><input name="kind" type="hidden" value="supporting_document"><label>Archivo PDF/JPEG/PNG<input name="file" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required></label><button class="button" type="submit">Subir documento adicional</button><div class="status-box" data-v2-upload-message hidden aria-live="polite"></div>';
-        result.append(uploadForm);
-        const state = qs("[data-v2-storage-state]", uploadForm);
-        const uploadButton = qs('button[type="submit"]', uploadForm);
-        api("/v2/health/dependencies", { method: "GET" })
-          .then((health) => {
-            const ready = health?.dependencies?.b2 === "configured";
-            uploadButton.disabled = !ready;
-            state.textContent = ready
-              ? "Almacenamiento privado B2 disponible en STAGING."
-              : "Carga real pendiente: Backblaze B2 todavía no está configurado. El resto del flujo continúa operativo.";
-          })
-          .catch(() => {
-            uploadButton.disabled = true;
-            state.textContent = "No se pudo verificar el almacenamiento; carga deshabilitada de forma segura.";
-          });
-
-        uploadForm.addEventListener("submit", async (event) => {
-          event.preventDefault();
-          const active = currentSession();
-          if (!active) return;
-          const fd = new FormData(uploadForm);
-          const file = fd.get("file");
-          const kind = String(fd.get("kind") || "supporting_document");
-          const uploadMessage = qs("[data-v2-upload-message]", uploadForm);
-          if (!(file instanceof File)) return;
-          uploadButton.disabled = true;
-          const body = new FormData();
-          body.set("file", file);
-          body.set("kind", kind);
-          try {
-            const uploaded = await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/files", {
-              method: "POST",
-              headers: {
-                "Idempotency-Key": randomKey("file-" + active.requestId),
-                "X-Request-Capability": active.capability,
-              },
-              body,
-            });
-            if (kind === "payment_receipt") {
-              const payment = await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/payment-proof", {
-                method: "POST",
-                headers: {
-                  "Idempotency-Key": randomKey("payment-" + active.requestId),
-                  "X-Request-Capability": active.capability,
-                },
-                body: JSON.stringify({ fileId: uploaded.fileId }),
-              });
-              setMessage(uploadMessage, "Comprobante privado recibido. Estado: " + statusLabel(payment.status) + ".", "success");
-            } else {
-              setMessage(uploadMessage, "Archivo privado de prueba recibido correctamente.", "success");
-            }
-            uploadForm.reset();
-          } catch (error) {
-            setMessage(uploadMessage, error.status === 503
-              ? "Almacenamiento privado todavía no disponible en STAGING."
-              : "No se pudo subir el archivo de prueba.", "error");
-          } finally {
-            const health = await api("/v2/health/dependencies", { method: "GET" }).catch(() => null);
-            uploadButton.disabled = health?.dependencies?.b2 !== "configured";
-          }
-        });
+        const actions = document.createElement("div");
+        actions.className = "flow-actions";
+        actions.append(next, reset);
+        result.append(actions);
       }
     }
-
-    renderCreated(currentSession());
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (!form.reportValidity()) return;
-
-      const ruleError = validateServiceRules(form, schema);
-      if (ruleError) {
-        setMessage(output, ruleError, "error");
-        return;
-      }
-
-      const data = new FormData(form);
-      const email = String(data.get("email") || "").trim();
-      const emailConfirm = String(data.get("emailConfirm") || "").trim();
-      if (emailConfirm && email.toLowerCase() !== emailConfirm.toLowerCase()) {
-        setMessage(output, "Los correos electrónicos no coinciden.", "error");
-        return;
-      }
-
-      submit.disabled = true;
-      setMessage(output, "Creando y guardando solicitud de prueba…");
-
-      const body = {
-        serviceId,
-        contact: {
-          name: String(data.get("fullName") || data.get("name") || "").trim(),
-          whatsapp: String(data.get("whatsapp") || "").trim(),
-          email: email || undefined,
-        },
-        consent: true,
-      };
-
+    let cached = null;
+    try { cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null"); } catch {}
+    if (active) {
       try {
-        const created = await api("/v2/requests/drafts", {
-          method: "POST",
-          headers: { "Idempotency-Key": randomKey("create-" + serviceId) },
-          body: JSON.stringify(body),
-        });
-        const active = {
-          requestId: created.id,
-          capability: created.capability,
-          trackingCode: created.trackingCode,
-          serviceId,
-          serviceName,
-        };
-        sessionStorage.setItem("tramipago-v2-current", JSON.stringify(active));
-
-        const payload = schemaPayload(form);
-        if (Object.keys(payload).length) {
-          await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/draft", {
-            method: "PATCH",
-            headers: {
-              "Idempotency-Key": randomKey("initial-draft-" + active.requestId),
-              "X-Request-Capability": active.capability,
-            },
-            body: JSON.stringify({ currentStep: "datos", payload }),
-          });
+        const data = await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/draft", { method: "GET", headers: { "X-Request-Capability": active.capability } });
+        existingContact = active.contact || data.contact;
+        if (data.status === "draft") {
+          fill(cached || { ...data.payload, fullName: data.contact.name, name: data.contact.name, email: data.contact.email, whatsapp: data.contact.whatsapp });
+        } else {
+          form.hidden = true;
+          savedCard(data);
+          window.TramiPagoProgress?.render({ requiresPayment: data.requiresPayment, status: data.status });
         }
+      } catch { active = null; }
+    } else if (cached) fill(cached);
+    if (!form.hidden) refresh();
+    form.addEventListener("input", refresh);
+    form.addEventListener("change", refresh);
+    form.addEventListener("invalid", event => {
+      const details = event.target.closest("details");
+      if (details) details.open = true;
+    }, true);
+    form.inert = false;
+    form.dataset.v2Ready = "true";
 
-        const uploads = await uploadSchemaFiles(form, active, b2Ready);
-        const extra = uploads.uploaded
-          ? " · " + uploads.uploaded + " archivo(s) privado(s) cargado(s)."
-          : "";
-        setMessage(output, "Solicitud y datos de prueba guardados en MySQL." + extra, "success");
-        renderCreated(active);
-        form.reset();
-      } catch (error) {
-        setMessage(output, error.status === 404
-          ? "Este trámite todavía no está habilitado en la base V2."
-          : error.status === 503
-            ? "La solicitud quedó limitada por una dependencia externa todavía pendiente."
-            : "No se pudo guardar la solicitud de prueba. Intentá nuevamente.", "error");
-      } finally {
-        submit.disabled = false;
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      if (submitting || !form.reportValidity()) return;
+      const ruleError = validateServiceRules(form, schema);
+      if (ruleError) { setMessage(output, ruleError, "error"); return; }
+      const data = new FormData(form);
+      const contact = {
+        name: String(data.get("fullName") || data.get("name") || (data.get("applicantRole") === "holder" ? data.get("recordHolderFullName") : "") || "").trim(),
+        whatsapp: String(data.get("whatsapp") || "").trim(),
+        email: String(data.get("email") || "").trim() || undefined,
+      };
+      // Contact is immutable in the existing draft API. Never silently change it.
+      if (active && existingContact && ["name", "whatsapp", "email"].some(key => String(existingContact[key] || "") !== String(contact[key] || ""))) {
+        setMessage(output, "Esta solicitud ya guardó sus datos de contacto. Conservá esos datos para continuar.", "error");
+        return;
       }
+      submitting = true; submit.disabled = true;
+      setMessage(output, "Guardando tus datos…");
+      try {
+        if (!active) {
+          const created = await api("/v2/requests/drafts", { method: "POST", headers: { "Idempotency-Key": createKey }, body: JSON.stringify({ serviceId, contact, consent: true }) });
+          active = { requestId: created.id, capability: created.capability, trackingCode: created.trackingCode, serviceId, serviceName, contact, uploadedFields: {} };
+          existingContact = contact;
+          sessionStorage.setItem("tramipago-v2-current", JSON.stringify(active));
+        }
+        await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/draft", {
+          method: "PATCH",
+          headers: { "Idempotency-Key": randomKey("draft-" + active.requestId), "X-Request-Capability": active.capability },
+          body: JSON.stringify({ currentStep: "datos", payload: schemaPayload(form) }),
+        });
+        await uploadSchemaFiles(form, active, b2Ready);
+        uploadedFields = active.uploadedFields || {};
+        sessionStorage.setItem("tramipago-v2-current", JSON.stringify(active));
+        if (missingDocuments().length) {
+          savedCard(null, true);
+          setMessage(output, "Datos guardados. Falta adjuntar la documentación requerida.", "success");
+          refresh();
+          return;
+        }
+        active.submitKey ||= randomKey("submit-" + active.requestId);
+        sessionStorage.setItem("tramipago-v2-current", JSON.stringify(active));
+        const done = await api("/v2/requests/" + encodeURIComponent(active.requestId) + "/submit", {
+          method: "POST",
+          headers: { "Idempotency-Key": active.submitKey, "X-Request-Capability": active.capability },
+          body: "{}",
+        });
+        sessionStorage.setItem("tramipago-v2-current", JSON.stringify(active));
+        location.href = "/v2/tramites/" + serviceId + (done.requiresPayment ? "/pago/" : "/confirmacion/");
+      } catch (error) {
+        setMessage(output, error.status === 404 ? "Este trámite todavía no está habilitado para la prueba." : error.status === 503 ? "No se pudo completar esta etapa de prueba. Los datos guardados se conservan." : "No se pudo continuar. Tus datos siguen en esta pantalla; intentá nuevamente.", "error");
+      } finally { submitting = false; submit.disabled = false; }
     });
   }
 
@@ -730,14 +765,6 @@
     });
   }
 
-  function initServicePage() {
-    if (!/^\/v2\/tramites\/([^/]+)\/?$/.test(location.pathname)) return;
-    const notice = qs(".content .notice");
-    const start = qsa(".content a.button").find((a) => /\/iniciar\/?$/.test(a.getAttribute("href") || ""));
-    if (notice) notice.textContent = "Ficha en preparación.";
-    if (start) start.textContent = "Iniciar solicitud de prueba →";
-  }
-
   async function reportClientError(code, message) {
     try {
       await fetch("/v2/telemetry/client-errors", {
@@ -761,7 +788,6 @@
   });
 
   initSearch();
-  initServicePage();
   initStartForm();
   initTracking();
   initHelp();

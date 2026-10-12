@@ -47,6 +47,10 @@ for (const service of manifest.services) {
 }
 assert.equal(manifest.families.length, 5, "Inventario de familias inesperado");
 for (const service of manifest.services) {
+  const entryHtml = readFileSync(path.join(root, service.href.slice(4), "index.html"), "utf8");
+  assert.ok(entryHtml.includes("data-v2-request-form"), "La entrada no abre directamente los datos: " + service.id);
+  assert.ok(entryHtml.includes("data-v2-progress"), "Falta progreso en la entrada: " + service.id);
+  assert.ok(!entryHtml.includes("Ficha en preparación"), "Pantalla intermedia: " + service.id);
   const formPath = path.join(root, service.href.slice(4), "iniciar", "index.html");
   const formHtml = readFileSync(formPath, "utf8");
   assert.ok(formHtml.includes("data-v2-request-form"), "Formulario V2 no funcional: " + service.id);
@@ -55,6 +59,7 @@ for (const service of manifest.services) {
     assert.ok(existsSync(stagePath), "Falta etapa " + stage + ": " + service.id);
     const stageHtml = readFileSync(stagePath, "utf8");
     assert.ok(stageHtml.includes('data-v2-flow="' + ({revisar:"review",pago:"payment",confirmacion:"confirmation"})[stage] + '"'), "Etapa V2 inválida: " + service.id + "/" + stage);
+    assert.ok(stageHtml.includes("data-v2-progress"), "Falta progreso en " + service.id + "/" + stage);
   }
 }
 const trackingHtml = readFileSync(path.join(root, "seguimiento", "index.html"), "utf8");

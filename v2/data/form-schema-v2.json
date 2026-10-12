@@ -497,7 +497,80 @@
           "required": true
         }
       ],
-      "rules": null
+      "rules": null,
+      "fieldConditions": {
+        "documentType": {
+          "field": "dataMode",
+          "equals": "with-data"
+        },
+        "documentNumber": {
+          "field": "dataMode",
+          "equals": "with-data"
+        },
+        "registrationYearExact": {
+          "field": "dataMode",
+          "equals": "with-data"
+        },
+        "delegation": {
+          "field": "dataMode",
+          "equals": "with-data"
+        },
+        "registrationDistrict": {
+          "field": "dataMode",
+          "equals": "without-data"
+        },
+        "registrationYearApprox": {
+          "field": "dataMode",
+          "equals": "without-data"
+        },
+        "bookNumber": {
+          "field": "dataMode",
+          "equals": "without-data"
+        },
+        "previousAct": {
+          "field": "dataMode",
+          "equals": "without-data"
+        },
+        "parentOne": {
+          "all": [
+            {
+              "field": "dataMode",
+              "equals": "without-data"
+            },
+            {
+              "field": "partType",
+              "equals": "birth"
+            }
+          ]
+        },
+        "parentTwo": {
+          "all": [
+            {
+              "field": "dataMode",
+              "equals": "without-data"
+            },
+            {
+              "field": "partType",
+              "equals": "birth"
+            }
+          ]
+        },
+        "secondPersonName": {
+          "all": [
+            {
+              "field": "dataMode",
+              "equals": "without-data"
+            },
+            {
+              "field": "partType",
+              "values": [
+                "marriage",
+                "cohabitation"
+              ]
+            }
+          ]
+        }
+      }
     },
     "partidas-caba": {
       "name": "Partidas CABA",
@@ -660,7 +733,20 @@
           "required": true
         }
       ],
-      "rules": null
+      "rules": null,
+      "fieldConditions": {
+        "secondPersonName": {
+          "field": "partType",
+          "values": [
+            "marriage",
+            "cohabitation"
+          ]
+        },
+        "creditCardAvailable": {
+          "field": "requestMode",
+          "equals": "urgent"
+        }
+      }
     },
     "certificacion-estado-civil": {
       "name": "Estado Civil",
@@ -799,7 +885,29 @@
           "required": true
         }
       ],
-      "rules": null
+      "rules": null,
+      "fieldConditions": {
+        "civilJurisdiction": {
+          "field": "civilRequestType",
+          "equals": "single"
+        },
+        "birthCertificate": {
+          "all": [
+            {
+              "field": "civilRequestType",
+              "equals": "single"
+            },
+            {
+              "field": "civilJurisdiction",
+              "equals": "pba"
+            }
+          ]
+        },
+        "thirdPartyDocument": {
+          "field": "applicantRole",
+          "notEquals": "holder"
+        }
+      }
     },
     "certificado-domicilio-pba": {
       "name": "Certificado de Domicilio",

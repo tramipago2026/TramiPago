@@ -7,6 +7,8 @@
   const serviceId=match?.[1]||"";
   const output=q("[data-flow-message]");
   const main=q("[data-flow-content]");
+  let schema=null;
+  function progress(data){window.TramiPagoProgress?.render({stage:flow,requiresPayment:data.requiresPayment,status:data.status})}
 
   function message(text,kind="info"){
     if(!output)return;
@@ -54,6 +56,7 @@
 
   async function renderReview(active){
     const data=await loadDraft(active);
+    progress(data);
     q("[data-flow-title]").textContent="Revisar "+data.serviceName;
     const summary=document.createElement("div");summary.className="status-box";
     const heading=document.createElement("h2");heading.textContent="Resumen de la solicitud";
@@ -65,17 +68,20 @@
     };
     add("Código",data.trackingCode);
     add("Estado",statusLabel(data.status));
-    if(data.contact?.name)add("Nombre",data.contact.name);
-    if(data.contact?.email)add("Email",data.contact.email);
-    add("WhatsApp",data.contact?.whatsapp);
-    for(const [key,value] of Object.entries(data.payload||{}))add(key,value);
     summary.append(heading,dl);
+    const details=document.createElement("div");
+    window.TramiPagoProgress?.summary(details,schema,{...data.payload,fullName:data.contact?.name,name:data.contact?.name,email:data.contact?.email,whatsapp:data.contact?.whatsapp});
+    summary.append(details);
     main.replaceChildren(summary);
 
     if(data.status==="draft"){
       const actions=document.createElement("div");actions.className="flow-actions";
-      const back=document.createElement("a");back.className="button secondary-button";back.href="/v2/tramites/"+serviceId+"/iniciar/";back.textContent="Volver a editar";
+      const back=document.createElement("a");back.className="button secondary-button";back.href="/v2/tramites/"+serviceId+"/";back.textContent="Volver a editar";
       const submit=document.createElement("button");submit.className="button";submit.type="button";submit.textContent="Confirmar solicitud de prueba";
+      if(schema?.fields?.some(field=>field.type==="file"&&field.required&&!active.uploadedFields?.[field.id])){
+        submit.disabled=true;
+        message("Falta adjuntar la documentación requerida. Volvé a los datos para completar la solicitud.");
+      }
       submit.addEventListener("click",async()=>{
         submit.disabled=true;message("Confirmando solicitud…");
         try{
@@ -98,13 +104,14 @@
 
   async function renderPayment(active){
     const data=await loadDraft(active);
+    progress(data);
     q("[data-flow-title]").textContent="Pago · "+data.serviceName;
     const box=document.createElement("div");box.className="status-box";
-    box.innerHTML="<h2>Entorno de prueba</h2><p>No realices transferencias ni pagos reales desde V2 STAGING.</p>";
+    box.innerHTML="<h2>Pago de la solicitud</h2><p>Entorno de prueba: no realices transferencias ni pagos reales.</p>";
     main.replaceChildren(box);
 
     if(data.status==="draft"){
-      const a=document.createElement("a");a.className="button";a.href="/v2/tramites/"+serviceId+"/revisar/";a.textContent="Revisar y confirmar primero →";main.append(a);return;
+      const a=document.createElement("a");a.className="button";a.href="/v2/tramites/"+serviceId+"/";a.textContent="Completar datos →";main.append(a);return;
     }
     if(!data.requiresPayment||["payment_review","payment_confirmed","in_progress","needs_info","finalized"].includes(data.status)){
       const a=document.createElement("a");a.className="button";a.href="/v2/tramites/"+serviceId+"/confirmacion/";a.textContent="Ver confirmación →";main.append(a);return;
@@ -117,7 +124,8 @@
     const button=q('button[type="submit"]',form);
     if(!ready){
       button.disabled=true;
-      const p=document.createElement("p");p.className="notice";p.textContent="Backblaze B2 todavía no está configurado. La carga del comprobante queda pendiente sin bloquear el resto de V2.";main.append(p);
+      q('input[type="file"]',form).disabled=true;
+      const p=document.createElement("p");p.className="notice";p.textContent="La carga de comprobantes todavía no está habilitada en esta versión de prueba. El pago sigue pendiente.";main.append(p);
     }
     form.addEventListener("submit",async(event)=>{
       event.preventDefault();const file=new FormData(form).get("file");if(!(file instanceof File))return;
@@ -135,30 +143,35 @@
           body:JSON.stringify({fileId:uploaded.fileId}),
         });
         location.href="/v2/tramites/"+serviceId+"/confirmacion/";
-      }catch(e){message(e.status===503?"Almacenamiento B2 pendiente.":"No se pudo registrar el comprobante.","error");button.disabled=!ready}
+      }catch(e){message(e.status===503?"La carga de comprobantes aún no está disponible.":"No se pudo registrar el comprobante.","error");button.disabled=!ready}
     });
     main.append(form);
   }
 
   async function renderConfirmation(active){
     const data=await loadDraft(active);
-    q("[data-flow-title]").textContent="Solicitud registrada";
+    progress(data);
+    q("[data-flow-title]").textContent=data.status==="draft"?"Solicitud pendiente":data.status==="awaiting_payment"?"Pago pendiente":data.status==="payment_review"?"Comprobante en revisión":"Solicitud enviada";
     const box=document.createElement("div");box.className="created-card";
     const h=document.createElement("h2");h.textContent=data.serviceName;
     const code=document.createElement("p");code.innerHTML="Código de seguimiento: <code></code>";q("code",code).textContent=data.trackingCode;
     const status=document.createElement("p");status.textContent="Estado: "+statusLabel(data.status);
     const a=document.createElement("a");a.className="button";a.href="/v2/seguimiento/?codigo="+encodeURIComponent(data.trackingCode);a.textContent="Ir a seguimiento →";
     box.append(h,code,status,a);main.replaceChildren(box);
-  }
-
-  const active=current();
-  if(!active){
-    message("No hay una solicitud V2 activa en este navegador.","error");
-    const a=document.createElement("a");a.className="button";a.href="/v2/tramites/"+serviceId+"/iniciar/";a.textContent="Iniciar solicitud →";main.append(a);return;
+    if(["draft","awaiting_payment"].includes(data.status)){
+      const next=document.createElement("a");next.className="button secondary-button";next.href="/v2/tramites/"+serviceId+(data.status==="draft"?"/":"/pago/");next.textContent=data.status==="draft"?"Completar datos →":"Continuar al pago →";main.append(next);
+    }
   }
 
   (async()=>{
     try{
+      schema=await fetch("/v2/data/form-schema-v2.json").then(r=>r.json()).then(data=>data.services[serviceId]);
+      window.TramiPagoProgress?.render({stage:flow,requiresPayment:!schema?.intakeOnly});
+      const active=current();
+      if(!active){
+        message("Completá los datos para iniciar tu solicitud.");
+        const a=document.createElement("a");a.className="button";a.href="/v2/tramites/"+serviceId+"/";a.textContent="Iniciar solicitud →";main.replaceChildren(a);return;
+      }
       if(flow==="review")await renderReview(active);
       else if(flow==="payment")await renderPayment(active);
       else await renderConfirmation(active);
