@@ -399,11 +399,20 @@
         });
       }
 
+      if (!qs("[data-v2-review-link]", result)) {
+        const reviewLink = document.createElement("a");
+        reviewLink.className = "button";
+        reviewLink.dataset.v2ReviewLink = "";
+        reviewLink.href = "/v2/tramites/" + serviceId + "/revisar/";
+        reviewLink.textContent = "Revisar solicitud →";
+        result.append(reviewLink);
+      }
+
       if (!qs("[data-v2-upload-form]", result)) {
         const uploadForm = document.createElement("form");
         uploadForm.className = "vertical";
         uploadForm.dataset.v2UploadForm = "";
-        uploadForm.innerHTML = '<h3>Archivos de prueba</h3><p data-v2-storage-state class="muted">Verificando almacenamiento privado…</p><label>Tipo<select name="kind"><option value="supporting_document">Documento de apoyo</option><option value="payment_receipt">Comprobante de pago</option></select></label><label>Archivo PDF/JPEG/PNG<input name="file" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required></label><button class="button" type="submit">Subir archivo de prueba</button><div class="status-box" data-v2-upload-message hidden aria-live="polite"></div>';
+        uploadForm.innerHTML = '<h3>Documento adicional de prueba</h3><p data-v2-storage-state class="muted">Verificando almacenamiento privado…</p><input name="kind" type="hidden" value="supporting_document"><label>Archivo PDF/JPEG/PNG<input name="file" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required></label><button class="button" type="submit">Subir documento adicional</button><div class="status-box" data-v2-upload-message hidden aria-live="polite"></div>';
         result.append(uploadForm);
         const state = qs("[data-v2-storage-state]", uploadForm);
         const uploadButton = qs('button[type="submit"]', uploadForm);
