@@ -21,3 +21,51 @@
 .wide-admin{grid-column:1/-1}
 
 .choice-field{border:1px solid var(--line);border-radius:10px;padding:12px;margin:0}.choice-field legend{font-weight:700;padding:0 5px}.choice-field .check-row{margin-top:8px}.form-grid small.muted{display:block;margin-top:5px}.form-grid fieldset.wide{grid-column:1/-1}
+
+/* TRAMIPAGO V2 OPCION C — VISUAL FIDELITY PASS 2026-10-12 */
+@media(min-width:761px){
+  body{background:#fff}
+  .site-header{position:relative;z-index:2;min-height:64px;padding:3px max(26px,10.25%);background:rgba(255,255,255,.92)}
+  .brand{flex:0 0 335px;display:flex;align-items:center}
+  .brand img{width:auto;height:58px;max-height:58px;max-width:100%;object-fit:contain}
+  .site-header nav{margin-right:auto;margin-left:clamp(18px,9vw,150px);gap:clamp(24px,3.1vw,55px)}
+  .site-header nav a{font-size:16px;font-weight:600}
+  .hero{position:relative;isolation:isolate;grid-template-columns:minmax(0,50%) minmax(0,50%);min-height:354px;overflow:hidden;background:linear-gradient(95deg,#eaf6ff 0%,#fff 55%,#f5faff 100%)}
+  .hero:before{content:"";position:absolute;z-index:-1;top:-135px;left:-100px;width:275px;height:575px;border:58px solid #48b2ff88;border-radius:50%;transform:rotate(-19deg);pointer-events:none}
+  .hero-copy{z-index:1;padding:9px 1.5vw 18px max(36px,10.25%)}
+  .hero h1{font-size:clamp(38px,3.95vw,67px);line-height:.96;letter-spacing:-.04em;margin-bottom:13px}
+  .hero p{font-size:clamp(16px,1.38vw,23px);line-height:1.18;margin-bottom:11px}
+  .hero form{border:0;padding:6px 8px;box-shadow:0 5px 16px #2788e92e}
+  .hero input{font-size:18px}
+  .hero button{font-size:17px;min-width:150px}
+  .whats{padding:8px 14px;background:#e5fff0;border:0;box-shadow:0 3px 15px #0b765a19}
+  .whats strong{font-size:17px;line-height:1.16}
+  .whats span{font-size:14px}
+  .whats a{font-size:15px}
+  .hero-visual{min-height:354px}
+  .section{max-width:1500px;padding:0 26px;margin:7px auto}
+  .section-head{margin-bottom:9px}
+  .section h2{font-size:24px;letter-spacing:-.025em}
+  .section-head a{font-size:15px}
+  .card-grid{gap:15px}
+  .card-photo{min-height:147px}
+  .card-copy{font-size:19px}
+  .footer{margin-top:10px}
+  .footer-benefits{border-radius:18px;background:#eaf5ff;margin:0 3%;padding:12px 3%;text-align:left;min-height:63px;align-items:center}
+  .footer-dark{min-height:52px;justify-content:space-between;padding:8px 4%;font-size:13px}
+  .private-note{font-size:11px}
+}
+@media(min-width:1450px){
+  .hero{min-height:360px}
+  .hero-copy{padding-left:10.35%}
+  .card-photo{min-height:149px}
+}
+@media(max-width:760px){
+  .site-header{padding:8px 5%}
+  .brand{min-height:50px}
+  .hero{overflow:hidden}
+  .hero-copy{padding:24px 6%}
+  .hero h1{line-height:1.02}
+  .hero-visual{min-height:170px}
+  .footer{margin-top:12px}
+}
