@@ -1,5 +1,5 @@
 {
-  "version": "directiva13-2026-10-12-staging-functional",
+  "version": "directiva13-2026-10-12-staging-functional-flow",
   "status": "STAGING_EN_CONSTRUCCION",
   "primary": [
     {
@@ -242,5 +242,11 @@
   ],
   "internalPages": [
     "/v2/admin/"
+  ],
+  "serviceStages": [
+    "iniciar",
+    "revisar",
+    "pago",
+    "confirmacion"
   ]
 }
