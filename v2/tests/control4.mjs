@@ -141,4 +141,5 @@ await import("./legal-actions.test.mjs");
 await import("./progress-v2.test.mjs");
 await import("./tracking-v2.test.mjs");
 await import("./search-empty.test.mjs");
+await import("./flow-states.test.mjs");
 console.log("PASS CONTROL 4: "+unique.length+" rutas del manifiesto, "+pageFiles.length+" páginas HTML, 25 formularios y "+internalLinks+" enlaces/recursos locales");

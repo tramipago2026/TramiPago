@@ -46,6 +46,12 @@
     return String(value);
   }
   function safeName(name){return String(name||"").replace(/[\\/:*?"<>|]+/g,"-").slice(0,120)||"tramipago-resultado"}
+  function trackingHref(data){return "/v2/seguimiento/?codigo="+encodeURIComponent(data.trackingCode)}
+  function nextAction(data){
+    if(data.status==="cancelled")return {href:"/v2/tramites/"+serviceId+"/",text:"Volver al trámite"};
+    if(data.status==="needs_info")return {href:trackingHref(data),text:"Completar información →"};
+    return {href:"/v2/tramites/"+serviceId+(data.requiresPayment&&data.status==="awaiting_payment"?"/pago/":"/confirmacion/"),text:"Continuar →"};
+  }
 
   async function loadDraft(active){
     return api("/v2/requests/"+encodeURIComponent(active.requestId)+"/draft",{
@@ -57,7 +63,7 @@
   async function renderReview(active){
     const data=await loadDraft(active);
     progress(data);
-    q("[data-flow-title]").textContent="Revisar "+data.serviceName;
+    q("[data-flow-title]").textContent=data.status==="cancelled"?"Solicitud cancelada":"Revisar "+data.serviceName;
     const summary=document.createElement("div");summary.className="status-box";
     const heading=document.createElement("h2");heading.textContent="Resumen de la solicitud";
     const dl=document.createElement("dl");dl.className="review-list";
@@ -98,17 +104,25 @@
       });
       actions.append(back,submit);main.append(actions);
     }else{
-      const next=document.createElement("a");next.className="button";next.href=data.requiresPayment?"/v2/tramites/"+serviceId+"/pago/":"/v2/tramites/"+serviceId+"/confirmacion/";next.textContent="Continuar →";main.append(next);
+      const action=nextAction(data);
+      const next=document.createElement("a");next.className="button";next.href=action.href;next.textContent=action.text;main.append(next);
     }
   }
 
   async function renderPayment(active){
     const data=await loadDraft(active);
     progress(data);
-    q("[data-flow-title]").textContent="Pago · "+data.serviceName;
+    q("[data-flow-title]").textContent=data.status==="cancelled"?"Solicitud cancelada":data.status==="needs_info"?"Información pendiente":"Pago · "+data.serviceName;
     const box=document.createElement("div");box.className="status-box";
-    box.innerHTML="<h2>Pago de la solicitud</h2><p>Todavía no es posible completar el pago. No realices transferencias.</p>";
+    const heading=document.createElement("h2");heading.textContent=data.requiresPayment?"Pago de la solicitud":"Solicitud sin pago";
+    const state=document.createElement("p");state.textContent="Estado actual: "+statusLabel(data.status);
+    box.append(heading,state);
     main.replaceChildren(box);
+
+    if(["cancelled","needs_info"].includes(data.status)){
+      const action=nextAction(data);
+      const a=document.createElement("a");a.className="button";a.href=action.href;a.textContent=action.text;main.append(a);return;
+    }
 
     if(data.status==="draft"){
       const a=document.createElement("a");a.className="button";a.href="/v2/tramites/"+serviceId+"/";a.textContent="Completar datos →";main.append(a);return;
@@ -151,12 +165,12 @@
   async function renderConfirmation(active){
     const data=await loadDraft(active);
     progress(data);
-    q("[data-flow-title]").textContent=data.status==="draft"?"Solicitud pendiente":data.status==="awaiting_payment"?"Pago pendiente":data.status==="payment_review"?"Comprobante en revisión":"Solicitud enviada";
+    q("[data-flow-title]").textContent=({draft:"Solicitud pendiente",awaiting_payment:"Pago pendiente",payment_review:"Comprobante en revisión",payment_confirmed:"Pago confirmado",in_progress:"Solicitud en proceso",needs_info:"Información pendiente",finalized:"Solicitud finalizada",cancelled:"Solicitud cancelada"})[data.status]||"Estado de la solicitud";
     const box=document.createElement("div");box.className="created-card";
     const h=document.createElement("h2");h.textContent=data.serviceName;
     const code=document.createElement("p");code.innerHTML="Código de seguimiento: <code></code>";q("code",code).textContent=data.trackingCode;
     const status=document.createElement("p");status.textContent="Estado: "+statusLabel(data.status);
-    const a=document.createElement("a");a.className="button";a.href="/v2/seguimiento/?codigo="+encodeURIComponent(data.trackingCode);a.textContent="Ir a seguimiento →";
+    const a=document.createElement("a");a.className="button";a.href=trackingHref(data);a.textContent=data.status==="needs_info"?"Completar información →":"Ir a seguimiento →";
     box.append(h,code,status,a);main.replaceChildren(box);
     if(["draft","awaiting_payment"].includes(data.status)){
       const next=document.createElement("a");next.className="button secondary-button";next.href="/v2/tramites/"+serviceId+(data.status==="draft"?"/":"/pago/");next.textContent=data.status==="draft"?"Completar datos →":"Continuar al pago →";main.append(next);
