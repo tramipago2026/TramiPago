@@ -9,6 +9,8 @@ const manifest = JSON.parse(readFileSync(path.join(root, "rutas-v2.json"), "utf8
 assert.equal(existsSync(path.join(root, "data", "official-services-2026-10-12.json")), false, "La documentación de validación interna no debe publicarse en V2");
 const clientScript = readFileSync(path.join(root, "assets", "v2.js"), "utf8");
 assert.ok(!clientScript.includes("Información oficial verificada"), "Control interno expuesto en ficha pública");
+const paymentFlow = readFileSync(path.join(root, "assets", "flow-v2.js"), "utf8");
+assert.ok(paymentFlow.includes('health?.dependencies?.b2==="configured" && health?.dependencies?.payments==="configured"'), "El frontend permite comprobantes sin pago habilitado");
 const formSchema = JSON.parse(readFileSync(path.join(root, "data", "form-schema-v2.json"), "utf8"));
 assert.equal(manifest.status, "STAGING", "Estado V2 inesperado");
 const paths = [
