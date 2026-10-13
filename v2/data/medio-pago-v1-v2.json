@@ -1,0 +1,11 @@
+{
+  "source": "V1 services.js main",
+  "version": "2026-10-13.v1-payment-snapshot",
+  "provider": "transferencia",
+  "enabled": false,
+  "activationCondition": "Requiere B2 TEST validado, tarifas servidor verificadas y autorización de cobro",
+  "alias": "tramipago",
+  "cvu": "0000003100004971102062",
+  "holder": "Christian Marcelo Adriano Montiel",
+  "note": "Transferí el total indicado y cargá el comprobante."
+}
