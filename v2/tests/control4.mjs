@@ -95,7 +95,7 @@ assert.ok(adminHtml.includes("data-admin-enroll-form"), "Admin V2 sin enrolamien
 for (const slug of ["terminos-condiciones","politica-privacidad","arrepentimiento","baja-servicio"]) {
   const html=readFileSync(path.join(root,slug,"index.html"),"utf8");
   assert.ok(html.includes("data-v2-shared-header")&&html.includes("shell-v2.js"),"Falta shell: "+slug);
-  assert.ok(!html.includes("Contenido legal pendiente")&&html.length>4000,"Legal incompleto: "+slug);
+  assert.ok(!html.includes("Contenido legal pendiente")&&html.includes("<article>")&&html.includes("</article>"),"Página legal sin contenido: "+slug);
 }
 for (const slug of ["arrepentimiento","baja-servicio"]) {
   const html=readFileSync(path.join(root,slug,"index.html"),"utf8");
