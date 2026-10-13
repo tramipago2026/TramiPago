@@ -104,6 +104,6 @@ assert.ok(pageFiles.length>=142,"Inventario HTML incompleto");
 assert.ok(adminHtml.includes("/v2/assets/logo-horizontal-opcion-c.png"),"Admin usa identidad distinta");
 for(const js of ["v2.js","flow-v2.js","shell-v2.js","legal-actions-v2.js"]) {
   const code=readFileSync(path.join(root,"assets",js),"utf8");
-  assert.ok(!code.includes("Consulta de prueba registrada"),"Texto interno expuesto: "+js);
+  assert.ok(!/solicitud de prueba|comprobante de prueba|entorno de prueba/i.test(code),"Texto de pruebas visible: "+js);
 }
 console.log("PASS CONTROL 4: "+unique.length+" rutas del manifiesto, "+pageFiles.length+" páginas HTML, 25 formularios y "+internalLinks+" enlaces/recursos locales");

@@ -77,7 +77,7 @@
     if(data.status==="draft"){
       const actions=document.createElement("div");actions.className="flow-actions";
       const back=document.createElement("a");back.className="button secondary-button";back.href="/v2/tramites/"+serviceId+"/";back.textContent="Volver a editar";
-      const submit=document.createElement("button");submit.className="button";submit.type="button";submit.textContent="Confirmar solicitud de prueba";
+      const submit=document.createElement("button");submit.className="button";submit.type="button";submit.textContent="Confirmar solicitud";
       if(schema?.fields?.some(field=>field.type==="file"&&field.required&&!active.uploadedFields?.[field.id])){
         submit.disabled=true;
         message("Falta adjuntar la documentación requerida. Volvé a los datos para completar la solicitud.");
@@ -107,7 +107,7 @@
     progress(data);
     q("[data-flow-title]").textContent="Pago · "+data.serviceName;
     const box=document.createElement("div");box.className="status-box";
-    box.innerHTML="<h2>Pago de la solicitud</h2><p>Entorno de prueba: no realices transferencias ni pagos reales.</p>";
+    box.innerHTML="<h2>Pago de la solicitud</h2><p>Todavía no es posible completar el pago. No realices transferencias.</p>";
     main.replaceChildren(box);
 
     if(data.status==="draft"){
@@ -120,12 +120,12 @@
     const health=await api("/v2/health/dependencies",{method:"GET"}).catch(()=>null);
     const ready=health?.dependencies?.b2==="configured";
     const form=document.createElement("form");form.className="vertical";
-    form.innerHTML='<label>Comprobante sintético PDF/JPEG/PNG<input name="file" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required></label><button class="button" type="submit">Enviar comprobante de prueba</button>';
+    form.innerHTML='<label>Comprobante PDF/JPEG/PNG<input name="file" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required></label><button class="button" type="submit">Enviar comprobante</button>';
     const button=q('button[type="submit"]',form);
     if(!ready){
       button.disabled=true;
       q('input[type="file"]',form).disabled=true;
-      const p=document.createElement("p");p.className="notice";p.textContent="La carga de comprobantes todavía no está habilitada por el momento. El pago sigue pendiente.";main.append(p);
+      const p=document.createElement("p");p.className="notice";p.textContent="No se pueden adjuntar comprobantes en este momento. El pago sigue pendiente.";main.append(p);
     }
     form.addEventListener("submit",async(event)=>{
       event.preventDefault();const file=new FormData(form).get("file");if(!(file instanceof File))return;
