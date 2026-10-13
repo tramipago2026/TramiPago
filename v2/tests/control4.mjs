@@ -107,6 +107,12 @@ for (const file of pageFiles) {
   const html=readFileSync(file,"utf8");
   const route=path.relative(root,file).replaceAll(path.sep,"/");
   assert.match(html,/name="robots" content="[^"]*noindex[^"]*nofollow/,"Sin aislamiento SEO: "+route);
+  assert.equal((html.match(/<main\\b/g)||[]).length,1,"Debe existir un único contenido principal: "+route);
+  assert.equal((html.match(/<h1\\b/g)||[]).length,1,"Debe existir un solo título principal: "+route);
+  assert.ok(!/href="#"/i.test(html),"Enlace de navegación sin destino: "+route);
+  for(const image of html.match(/<img\\b[^>]*>/g)||[]) {
+    assert.match(image,/\\balt="/,"Imagen sin atributo alternativo: "+route);
+  }
   if(route==="index.html"||route==="admin/index.html")continue;
   assert.ok(html.includes("data-v2-shared-header")&&html.includes("data-v2-shared-footer"),"Componente duplicado o faltante: "+route);
   assert.ok(html.includes("/v2/assets/shell-v2.js"),"No carga shell común: "+route);
