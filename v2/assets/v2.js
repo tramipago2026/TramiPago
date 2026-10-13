@@ -103,9 +103,14 @@
       "abogado-laboral": "laboral trabajo abogado",
     };
 
-    const nq = normalize(q);
-    const matches = nq
-      ? services.filter((item) => normalize([item.name, item.family || "", aliases[item.id] || ""].join(" ")).includes(nq))
+    // Buscar todas las palabras, independientemente de su orden, manteniendo
+    // la normalización de tildes y los sinónimos de cada trámite.
+    const terms = normalize(q).split(/\s+/).filter(Boolean);
+    const matches = terms.length
+      ? services.filter((item) => {
+          const searchable = normalize([item.name, item.family || "", aliases[item.id] || ""].join(" "));
+          return terms.every((term) => searchable.includes(term));
+        })
       : [];
 
     results.replaceChildren();
