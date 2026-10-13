@@ -120,4 +120,5 @@ for(const js of ["v2.js","flow-v2.js","shell-v2.js","legal-actions-v2.js","progr
   assert.doesNotThrow(() => new Script(code, {filename: js}), "Sintaxis JS inválida: "+js);
   assert.ok(!/solicitud de prueba|comprobante de prueba|entorno de prueba/i.test(code),"Texto de pruebas visible: "+js);
 }
+await import("./legal-actions.test.mjs");
 console.log("PASS CONTROL 4: "+unique.length+" rutas del manifiesto, "+pageFiles.length+" páginas HTML, 25 formularios y "+internalLinks+" enlaces/recursos locales");
