@@ -17,6 +17,12 @@ const paymentFlow = readFileSync(path.join(root, "assets", "flow-v2.js"), "utf8"
 assert.ok(paymentFlow.includes('health?.dependencies?.b2==="configured" && health?.dependencies?.payments==="configured"'), "El frontend permite comprobantes sin pago habilitado");
 const formSchema = JSON.parse(readFileSync(path.join(root, "data", "form-schema-v2.json"), "utf8"));
 const tariffs = JSON.parse(readFileSync(path.join(root,"data","tarifario-v1-v2.json"),"utf8"));
+const bank = JSON.parse(readFileSync(path.join(root,"data","medio-pago-v1-v2.json"),"utf8"));
+assert.equal(bank.enabled,false,"No activar cobros sin B2 TEST, precios verificados y autorización");
+assert.equal(bank.provider,"transferencia","Medio de pago V1 perdido");
+assert.ok(bank.alias&&bank.cvu&&bank.holder,"Datos de transferencia V1 incompletos");
+assert.match(paymentFlow,/data\.quotedAmount\s*!==\s*null/,"El pago no controla el importe cotizado");
+
 assert.equal(Object.keys(tariffs.services).length,25,"Las 25 fichas deben conservar su tarifa de V1 o falta de precio");
 assert.equal(Object.values(tariffs.services).filter(s=>s.options.length>0).length,20,"Conteo de servicios tarifados V1 inesperado");
 assert.equal(Object.values(tariffs.services).flatMap(s=>s.options).length,22,"Conteo de modalidades V1 inesperado");
