@@ -453,6 +453,12 @@
     if (!schema || !submit) {
       form.inert = false;
       setMessage(output, "No se pudo cargar el formulario. Volvé a intentarlo.", "error");
+      if (output) {
+        const retry = document.createElement("button");
+        retry.type = "button"; retry.className = "button"; retry.textContent = "Reintentar";
+        retry.addEventListener("click", () => location.reload());
+        output.after(retry);
+      }
       return;
     }
     const cacheKey = "tramipago-v2-form-" + serviceId;
