@@ -3,6 +3,14 @@
   function render({ stage = "data", requiresPayment = true, status = "draft", missingDocuments = false } = {}) {
     const host = document.querySelector("[data-v2-progress]");
     if (!host) return;
+    if (status === "cancelled") {
+      const notice = document.createElement("p");
+      notice.className = "notice";
+      notice.textContent = "Esta solicitud está cancelada. No hay pasos en curso.";
+      host.replaceChildren(notice);
+      host.dataset.stage = "cancelled";
+      return;
+    }
     const steps = requiresPayment ? [["data", "Datos"], ["payment", "Pago"], ["confirmation", "Confirmación"]] : [["data", "Datos"], ["confirmation", "Confirmación"]];
     const paid = ["payment_confirmed", "in_progress", "finalized"].includes(status);
     const sent = status !== "draft" && status !== "cancelled";
