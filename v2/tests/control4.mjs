@@ -121,6 +121,13 @@ for (const file of pageFiles) {
   assert.equal((html.match(/<main\b/g)||[]).length,1,"Debe existir un único contenido principal: "+route);
   assert.equal((html.match(/<h1\b/g)||[]).length,1,"Debe existir un solo título principal: "+route);
   assert.ok(!/href="#"/i.test(html),"Enlace de navegación sin destino: "+route);
+  // TramiPago V2 no depende de enlaces oficiales externos: las fuentes se citan como texto.
+  // Mantener los canales legales internos y las verificaciones de contenido obligatorias.
+  for (const match of html.matchAll(/<a\b[^>]*\bhref\s*=\s*["'](https?:\/\/[^"']+)["']/gi)) {
+    const domain = new URL(match[1]).hostname.toLowerCase();
+    assert.ok(!/(?:^|\.)(?:gob\.ar|gov\.ar|gov|gub\.uy)$/.test(domain),
+      "Enlace gubernamental externo activo en V2: " + route + " → " + domain);
+  }
   for(const image of html.match(/<img\b[^>]*>/g)||[]) {
     assert.match(image,/\balt="/,"Imagen sin atributo alternativo: "+route);
   }
