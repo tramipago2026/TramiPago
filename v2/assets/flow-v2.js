@@ -118,14 +118,14 @@
     }
 
     const health=await api("/v2/health/dependencies",{method:"GET"}).catch(()=>null);
-    const ready=health?.dependencies?.b2==="configured";
+    const ready=health?.dependencies?.b2==="configured" && health?.dependencies?.payments==="configured";
     const form=document.createElement("form");form.className="vertical";
     form.innerHTML='<label>Comprobante PDF/JPEG/PNG<input name="file" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required></label><button class="button" type="submit">Enviar comprobante</button>';
     const button=q('button[type="submit"]',form);
     if(!ready){
       button.disabled=true;
       q('input[type="file"]',form).disabled=true;
-      const p=document.createElement("p");p.className="notice";p.textContent="No se pueden adjuntar comprobantes en este momento. El pago sigue pendiente.";main.append(p);
+      const p=document.createElement("p");p.className="notice";p.textContent="El pago y la carga de comprobantes no están habilitados en este momento. No realices transferencias.";main.append(p);
     }
     form.addEventListener("submit",async(event)=>{
       event.preventDefault();const file=new FormData(form).get("file");if(!(file instanceof File))return;
