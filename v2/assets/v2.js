@@ -480,6 +480,19 @@
       }
       return;
     }
+    // La referencia comercial es el tarifario existente de V1; el backend siempre recalcula el importe.
+    let tariff = null;
+    try {
+      const snapshot = await fetch("/v2/data/tarifario-v1-v2.json", { cache: "no-store" }).then(r => r.ok ? r.json() : null);
+      tariff = snapshot?.services?.[serviceId] || null;
+    } catch {}
+    const quoteNode = document.createElement("p");
+    quoteNode.className = "muted";
+    quoteNode.setAttribute("aria-live", "polite");
+    submit.before(quoteNode);
+    const formatPrice = amount => new Intl.NumberFormat("es-AR", {
+      style: "currency", currency: "ARS", maximumFractionDigits: 0,
+    }).format(amount);
     const cacheKey = "tramipago-v2-form-" + serviceId;
     let active = null;
     try {
@@ -522,6 +535,19 @@
       const missing = missingDocuments().length > 0;
       window.TramiPagoProgress?.render({ requiresPayment: !schema.intakeOnly, missingDocuments: missing, status: "draft" });
       submit.textContent = missing && !b2Ready ? "Guardar datos →" : schema.intakeOnly ? "Enviar consulta →" : "Continuar al pago →";
+      const options = tariff?.options || [];
+      const selected = options.length === 1 ? options[0] : options.find(
+        option => String(values()[tariff?.selector] || "") === option.value,
+      );
+      quoteNode.textContent = !tariff
+        ? "El importe se informará antes de habilitar el pago."
+        : !options.length
+          ? "Importe a confirmar según la gestión. No realices transferencias."
+          : !selected
+            ? "Seleccioná una modalidad para conocer el importe."
+            : (tariff.officialFeeIncluded ? "Importe total del servicio: " : "Importe de gestión TramiPago: ") +
+              formatPrice(selected.amount) +
+              (tariff.officialFeeExternal ? ". La tasa oficial se informa y cobra por separado cuando corresponda." : "");
       window.TramiPagoProgress?.summary(qs("[data-v2-preview-content]", form), schema, values());
       try { sessionStorage.setItem(cacheKey, JSON.stringify(values())); } catch {}
     }
