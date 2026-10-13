@@ -67,7 +67,6 @@ assert.ok(trackingHtml.includes("data-v2-tracking-form"), "Seguimiento V2 no fun
 const adminHtml = readFileSync(path.join(root, "admin", "index.html"), "utf8");
 assert.ok(adminHtml.includes("data-admin-login-form"), "Admin V2 sin login");
 assert.ok(adminHtml.includes("data-admin-enroll-form"), "Admin V2 sin enrolamiento MFA");
-console.log("PASS CONTROL 4: " + unique.length + " rutas, 25 esquemas + 4 etapas por servicio y " + internalLinks + " enlaces/recursos locales verificados; sin escapes V1.");
 
 for (const slug of ["terminos-condiciones","politica-privacidad","arrepentimiento","baja-servicio"]) {
   const html=readFileSync(path.join(root,slug,"index.html"),"utf8");
@@ -80,3 +79,31 @@ for (const slug of ["arrepentimiento","baja-servicio"]) {
 }
 assert.ok(existsSync(path.join(root,"assets","shell-v2.js")),"Falta cabecera/pie común");
 assert.ok(existsSync(path.join(root,"assets","legal-actions-v2.js")),"Falta acciones legales");
+
+const fs = await import("node:fs");
+const pageFiles = [];
+function collectPages(folder) {
+  for (const item of fs.readdirSync(folder,{withFileTypes:true})) {
+    const p=path.join(folder,item.name);
+    if(item.isDirectory()) collectPages(p);
+    else if(item.name==="index.html") pageFiles.push(p);
+  }
+}
+collectPages(root);
+for (const file of pageFiles) {
+  const html=readFileSync(file,"utf8");
+  const route=path.relative(root,file).replaceAll(path.sep,"/");
+  assert.match(html,/name="robots" content="[^"]*noindex[^"]*nofollow/,"Sin aislamiento SEO: "+route);
+  if(route==="index.html"||route==="admin/index.html")continue;
+  assert.ok(html.includes("data-v2-shared-header")&&html.includes("data-v2-shared-footer"),"Componente duplicado o faltante: "+route);
+  assert.ok(html.includes("/v2/assets/shell-v2.js"),"No carga shell común: "+route);
+  assert.ok(!html.includes("logo-tramipago.webp")&&!html.includes("Entorno de construcción"),"Logo o aviso anterior: "+route);
+  assert.ok(!html.includes("Ver ficha →")&&!html.includes("Contenido legal pendiente"),"Texto pendiente: "+route);
+}
+assert.ok(pageFiles.length>=142,"Inventario HTML incompleto");
+assert.ok(adminHtml.includes("/v2/assets/logo-horizontal-opcion-c.png"),"Admin usa identidad distinta");
+for(const js of ["v2.js","flow-v2.js","shell-v2.js","legal-actions-v2.js"]) {
+  const code=readFileSync(path.join(root,"assets",js),"utf8");
+  assert.ok(!code.includes("Consulta de prueba registrada"),"Texto interno expuesto: "+js);
+}
+console.log("PASS CONTROL 4: "+unique.length+" rutas del manifiesto, "+pageFiles.length+" páginas HTML, 25 formularios y "+internalLinks+" enlaces/recursos locales");
