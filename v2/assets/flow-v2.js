@@ -150,7 +150,19 @@
     }
 
     const health=await api("/v2/health/dependencies",{method:"GET"}).catch(()=>null);
-    const ready=health?.dependencies?.b2==="configured" && health?.dependencies?.payments==="configured";
+    const method=await fetch("/v2/data/medio-pago-v1-v2.json").then(r=>r.ok?r.json():null).catch(()=>null);
+    const ready=health?.dependencies?.b2==="configured" && health?.dependencies?.payments==="configured" &&
+      method?.enabled===true && method?.provider==="transferencia" && data.quotedAmount!==null && data.quotedAmount!==undefined;
+    if(ready){
+      const destination=document.createElement("div");
+      destination.className="status-box";
+      const heading=document.createElement("h3");heading.textContent="Datos de transferencia";
+      destination.append(heading);
+      for(const [name,value] of [["Titular",method.holder],["Alias",method.alias],["CVU",method.cvu]]){
+        const row=document.createElement("p");row.textContent=name+": "+value;destination.append(row);
+      }
+      main.append(destination);
+    }
     const form=document.createElement("form");form.className="vertical";
     form.innerHTML='<label>Comprobante PDF/JPEG/PNG<input name="file" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required></label><button class="button" type="submit">Enviar comprobante</button>';
     const button=q('button[type="submit"]',form);
