@@ -16,6 +16,16 @@ assert.ok(!/Guardar borrador|Borrador guardado/.test(clientScript), "Jerga de co
 const paymentFlow = readFileSync(path.join(root, "assets", "flow-v2.js"), "utf8");
 assert.ok(paymentFlow.includes('health?.dependencies?.b2==="configured" && health?.dependencies?.payments==="configured"'), "El frontend permite comprobantes sin pago habilitado");
 const formSchema = JSON.parse(readFileSync(path.join(root, "data", "form-schema-v2.json"), "utf8"));
+const tariffs = JSON.parse(readFileSync(path.join(root,"data","tarifario-v1-v2.json"),"utf8"));
+assert.equal(Object.keys(tariffs.services).length,25,"Las 25 fichas deben conservar su tarifa de V1 o falta de precio");
+assert.equal(Object.values(tariffs.services).filter(s=>s.options.length>0).length,20,"Conteo de servicios tarifados V1 inesperado");
+assert.equal(Object.values(tariffs.services).flatMap(s=>s.options).length,22,"Conteo de modalidades V1 inesperado");
+assert.deepEqual(tariffs.services["antecedentes-penales"].options.map(o=>o.amount),[20000,15000],"Modalidades penales alteradas");
+assert.equal(tariffs.services["certificado-domicilio-pba"].options[0].amount,20000,"Precio final de domicilio PBA alterado");
+assert.equal(tariffs.services["certificado-domicilio-pba"].officialFeeIncluded,true,"La tasa de domicilio PBA debe quedar incluida");
+assert.equal(tariffs.services["certificacion-estado-civil"].officialFeeExternal,true,"Tasa externa de estado civil no diferenciada");
+assert.ok(clientScript.includes("/v2/data/tarifario-v1-v2.json"),"Formulario no muestra tarifario V1");
+assert.ok(paymentFlow.includes("data.quotedAmount"),"El flujo no muestra importe cotizado desde MySQL");
 assert.equal(manifest.status, "STAGING", "Estado V2 inesperado");
 const paths = [
   ...manifest.primary.map(x => x.href),
