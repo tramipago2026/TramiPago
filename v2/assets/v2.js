@@ -112,7 +112,7 @@
     }
     if (!matches.length) {
       const p = document.createElement("p");
-      p.textContent = q ? "No se encontraron coincidencias en el catálogo V2." : "Usá el buscador para encontrar un trámite.";
+      p.textContent = q ? "No encontramos trámites con esa búsqueda." : "Usá el buscador para encontrar un trámite.";
       results.append(p);
     }
   }
