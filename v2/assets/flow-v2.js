@@ -176,7 +176,10 @@
       else if(flow==="payment")await renderPayment(active);
       else await renderConfirmation(active);
     }catch(e){
-      message(e.status===401?"La autorización local de esta solicitud ya no es válida.":"No se pudo cargar esta etapa.","error");
+      message(e.status===401?"La autorización local de esta solicitud ya no es válida. Volvé a iniciar tu solicitud.":"No se pudo cargar esta etapa. Podés reintentar.","error");
+      const retry=document.createElement("button");retry.className="button";retry.type="button";retry.textContent="Reintentar";retry.addEventListener("click",()=>location.reload());
+      const back=document.createElement("a");back.className="button secondary-button";back.href="/v2/tramites/"+serviceId+"/";back.textContent="Volver al trámite";
+      const actions=document.createElement("div");actions.className="flow-actions";actions.append(retry,back);main.replaceChildren(actions);
     }
   })();
 })();
