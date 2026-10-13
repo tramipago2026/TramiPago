@@ -125,11 +125,11 @@
     if(!ready){
       button.disabled=true;
       q('input[type="file"]',form).disabled=true;
-      const p=document.createElement("p");p.className="notice";p.textContent="La carga de comprobantes todavía no está habilitada en esta versión de prueba. El pago sigue pendiente.";main.append(p);
+      const p=document.createElement("p");p.className="notice";p.textContent="La carga de comprobantes todavía no está habilitada por el momento. El pago sigue pendiente.";main.append(p);
     }
     form.addEventListener("submit",async(event)=>{
       event.preventDefault();const file=new FormData(form).get("file");if(!(file instanceof File))return;
-      button.disabled=true;message("Cargando comprobante privado…");
+      button.disabled=true;message("Enviando comprobante…");
       const body=new FormData();body.set("file",file);body.set("kind","payment_receipt");
       try{
         const uploaded=await api("/v2/requests/"+encodeURIComponent(active.requestId)+"/files",{

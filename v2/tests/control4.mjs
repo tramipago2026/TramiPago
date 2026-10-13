@@ -9,7 +9,7 @@ assert.equal(existsSync(path.join(root, "data", "official-services-2026-10-12.js
 const clientScript = readFileSync(path.join(root, "assets", "v2.js"), "utf8");
 assert.ok(!clientScript.includes("Información oficial verificada"), "Control interno expuesto en ficha pública");
 const formSchema = JSON.parse(readFileSync(path.join(root, "data", "form-schema-v2.json"), "utf8"));
-assert.equal(manifest.status, "STAGING_EN_CONSTRUCCION", "Estado V2 inesperado");
+assert.equal(manifest.status, "STAGING", "Estado V2 inesperado");
 const paths = [
   ...manifest.primary.map(x => x.href),
   ...manifest.families.map(x => x.href),
@@ -68,3 +68,15 @@ const adminHtml = readFileSync(path.join(root, "admin", "index.html"), "utf8");
 assert.ok(adminHtml.includes("data-admin-login-form"), "Admin V2 sin login");
 assert.ok(adminHtml.includes("data-admin-enroll-form"), "Admin V2 sin enrolamiento MFA");
 console.log("PASS CONTROL 4: " + unique.length + " rutas, 25 esquemas + 4 etapas por servicio y " + internalLinks + " enlaces/recursos locales verificados; sin escapes V1.");
+
+for (const slug of ["terminos-condiciones","politica-privacidad","arrepentimiento","baja-servicio"]) {
+  const html=readFileSync(path.join(root,slug,"index.html"),"utf8");
+  assert.ok(html.includes("data-v2-shared-header")&&html.includes("shell-v2.js"),"Falta shell: "+slug);
+  assert.ok(!html.includes("Contenido legal pendiente")&&html.length>4000,"Legal incompleto: "+slug);
+}
+for (const slug of ["arrepentimiento","baja-servicio"]) {
+  const html=readFileSync(path.join(root,slug,"index.html"),"utf8");
+  assert.ok(html.includes("legal-actions-v2.js")&&html.includes("<form"),"Falta canal legal: "+slug);
+}
+assert.ok(existsSync(path.join(root,"assets","shell-v2.js")),"Falta cabecera/pie común");
+assert.ok(existsSync(path.join(root,"assets","legal-actions-v2.js")),"Falta acciones legales");

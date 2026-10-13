@@ -63,7 +63,7 @@
       const manifest = await fetch("/v2/rutas-v2.json", { cache: "no-store" }).then((r) => r.json());
       services = manifest.services || [];
     } catch {
-      setMessage(results, "No se pudo cargar el catálogo de prueba.", "error");
+      setMessage(results, "No se pudo cargar el catálogo.", "error");
       return;
     }
 
@@ -227,7 +227,7 @@
         input.required = false;
         const note = document.createElement("small");
         note.className = "muted";
-        note.textContent = "Carga de documentos pendiente de habilitación en la prueba.";
+        note.textContent = "La carga de documentos no está disponible por el momento.";
         label.append(input, note);
         return label;
       }
@@ -351,7 +351,7 @@
     if (!b2Ready && schema.fields.some(field => field.type === "file")) {
       const notice = document.createElement("p");
       notice.className = "notice";
-      notice.textContent = "La carga de documentos todavía no está habilitada en esta versión de prueba. Los documentos requeridos quedan pendientes.";
+      notice.textContent = "La carga de documentos no está disponible por el momento. Podés guardar los datos y continuar cuando se habilite.";
       form.append(notice);
     }
     const preview = document.createElement("details");
@@ -609,7 +609,7 @@
         sessionStorage.setItem("tramipago-v2-current", JSON.stringify(active));
         location.href = "/v2/tramites/" + serviceId + (done.requiresPayment ? "/pago/" : "/confirmacion/");
       } catch (error) {
-        setMessage(output, error.status === 404 ? "Este trámite todavía no está habilitado para la prueba." : error.status === 503 ? "No se pudo completar esta etapa de prueba. Los datos guardados se conservan." : "No se pudo continuar. Tus datos siguen en esta pantalla; intentá nuevamente.", "error");
+        setMessage(output, error.status === 404 ? "Este trámite no está disponible por el momento." : error.status === 503 ? "No se pudo completar esta etapa. Los datos guardados se conservan." : "No se pudo continuar. Tus datos siguen en esta pantalla; intentá nuevamente.", "error");
       } finally { submitting = false; submit.disabled = false; }
     });
   }
@@ -709,7 +709,7 @@
               label.append(input); correction.append(label);
             }
             const save = document.createElement("button");
-            save.type = "submit"; save.className = "button"; save.textContent = "Enviar corrección de prueba";
+            save.type = "submit"; save.className = "button"; save.textContent = "Enviar corrección";
             correction.append(save);
             const msg = document.createElement("div");
             msg.className = "status-box"; msg.hidden = true; msg.setAttribute("aria-live","polite");
@@ -758,7 +758,7 @@
     const button = qs('button[type="submit"]', form);
     if (!current?.requestId || !current?.capability) {
       button.disabled = true;
-      setMessage(output, "Primero creá una solicitud de prueba para asociar la consulta.", "info");
+      setMessage(output, "Primero iniciá una solicitud para asociar tu consulta.", "info");
       return;
     }
     form.addEventListener("submit", async (event) => {
@@ -778,10 +778,10 @@
             message: String(data.get("message") || "").trim(),
           }),
         });
-        setMessage(output, "Consulta de prueba registrada en el trámite.", "success");
+        setMessage(output, "Consulta registrada en el trámite.", "success");
         form.reset();
       } catch {
-        setMessage(output, "No se pudo registrar la consulta de prueba.", "error");
+        setMessage(output, "No se pudo registrar la consulta.", "error");
       } finally {
         button.disabled = false;
       }
@@ -796,7 +796,7 @@
         body: JSON.stringify({
           code: String(code || "FRONTEND_ERROR").slice(0, 100),
           message: String(message || "Error de frontend").slice(0, 500),
-          context: { path: location.pathname, build: "v2" },
+          context: { path: location.pathname, build: "v2", environment: "staging" },
         }),
         keepalive: true,
       });
