@@ -137,4 +137,6 @@ for(const js of ["v2.js","flow-v2.js","shell-v2.js","legal-actions-v2.js","progr
 }
 await import("./legal-actions.test.mjs");
 await import("./progress-v2.test.mjs");
+await import("./tracking-v2.test.mjs");
+await import("./search-empty.test.mjs");
 console.log("PASS CONTROL 4: "+unique.length+" rutas del manifiesto, "+pageFiles.length+" páginas HTML, 25 formularios y "+internalLinks+" enlaces/recursos locales");

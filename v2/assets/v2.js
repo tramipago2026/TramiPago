@@ -57,6 +57,12 @@
     const q = (new URLSearchParams(location.search).get("q") || "").trim();
     const term = qs("#search-term");
     if (term) term.textContent = q ? "Búsqueda: " + q : "Ingresá un trámite para buscar";
+    if (!q) {
+      const note = document.createElement("p");
+      note.textContent = "Usá el buscador para encontrar un trámite.";
+      results.replaceChildren(note);
+      return;
+    }
 
     let services = [];
     try {
@@ -643,13 +649,32 @@
     const codeInput = qs('[name="trackingCode"]', form);
     const paramCode = new URLSearchParams(location.search).get("codigo");
     if (paramCode && codeInput) codeInput.value = paramCode;
+    let schemasPromise = null;
+    async function labelsForMissing(missing, serviceId) {
+      if (!missing.length) return new Map();
+      schemasPromise ||= fetch("/v2/data/form-schema-v2.json").then(r => {
+        if (!r.ok) throw new Error("schema_unavailable");
+        return r.json();
+      }).catch(() => null);
+      const schemas = await schemasPromise;
+      const fields = schemas?.services?.[serviceId]?.fields || Object.values(schemas?.services || {}).flatMap(service => service.fields || []);
+      return new Map(missing.map((id, i) => [id, fields.find(field => field.id === id)?.label || "Información adicional " + (i + 1)]));
+    }
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
       const button = qs('button[type="submit"]', form);
       button.disabled = true;
-      if (output) output.hidden = true;
+      form.setAttribute("aria-busy", "true");
+      if (statusNode) statusNode.textContent = "Consultando…";
+      if (noteNode) noteNode.hidden = true;
+      if (missingNode) missingNode.hidden = true;
+      if (output) {
+        for (const previous of qsa("[data-v2-correction-form], [data-v2-result-downloads]", output)) previous.remove();
+        output.dataset.kind = "info";
+        output.hidden = false;
+      }
 
       const data = new FormData(form);
       try {
@@ -660,23 +685,26 @@
             verification: String(data.get("verification") || "").trim(),
           }),
         });
+        if (output) output.dataset.kind = "success";
         if (statusNode) statusNode.textContent = statusLabel(response.status);
         if (noteNode) {
           noteNode.textContent = response.statusNote || "";
           noteNode.hidden = !response.statusNote;
         }
         const missing = Array.isArray(response.missingFields) ? response.missingFields : [];
+        let current = null;
+        try { current = JSON.parse(sessionStorage.getItem("tramipago-v2-current") || "null"); } catch {}
+        const requestedCode = String(data.get("trackingCode") || "").trim().toUpperCase();
+        const sameRequest = current?.trackingCode?.toUpperCase() === requestedCode;
+        const labels = await labelsForMissing(missing, sameRequest ? current.serviceId : null);
         if (missingNode) {
-          missingNode.textContent = missing.length ? "Información pendiente: " + missing.join(", ") : "";
+          missingNode.textContent = missing.length ? "Información pendiente: " + missing.map(field => labels.get(field)).join(", ") : "";
           missingNode.hidden = !missing.length;
         }
         if (output) {
           output.hidden = false;
           const old = qs("[data-v2-correction-form]", output);
           if (old) old.remove();
-          let current = null;
-          try { current = JSON.parse(sessionStorage.getItem("tramipago-v2-current") || "null"); } catch {}
-          const requestedCode = String(data.get("trackingCode") || "").trim().toUpperCase();
           const previousResults = qs("[data-v2-result-downloads]", output);
           if (previousResults) previousResults.remove();
           if (Array.isArray(response.results) && response.results.length && response.resultAccessToken) {
@@ -716,13 +744,13 @@
             output.append(downloads);
           }
 
-          if (response.canCorrect && missing.length && current?.trackingCode?.toUpperCase() === requestedCode && current?.capability) {
+          if (response.canCorrect && missing.length && sameRequest && current?.capability) {
             const correction = document.createElement("form");
             correction.className = "vertical";
             correction.dataset.v2CorrectionForm = "";
             for (const field of missing) {
               const label = document.createElement("label");
-              label.textContent = "Corregir: " + field;
+              label.textContent = "Corregir: " + labels.get(field);
               const input = document.createElement("input");
               input.name = field; input.required = true; input.maxLength = 1000;
               label.append(input); correction.append(label);
@@ -758,11 +786,14 @@
       } catch (error) {
         if (statusNode) statusNode.textContent = error.status === 429
           ? "Demasiados intentos. Probá más tarde."
-          : "No encontramos una solicitud con esos datos.";
+          : error.status === 404
+            ? "No encontramos una solicitud con esos datos."
+            : "No se pudo consultar el estado. Volvé a intentarlo.";
         if (noteNode) noteNode.hidden = true;
         if (missingNode) missingNode.hidden = true;
-        if (output) output.hidden = false;
+        if (output) { output.dataset.kind = "error"; output.hidden = false; }
       } finally {
+        form.setAttribute("aria-busy", "false");
         button.disabled = false;
       }
     });

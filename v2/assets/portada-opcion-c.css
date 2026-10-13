@@ -20,14 +20,14 @@
 .home-opcion-c .hero form{align-items:center;gap:12px;border:0;min-height:58px;padding:6px 9px 6px 20px;border-radius:12px;box-shadow:0 5px 18px #1280dc30}
 .home-opcion-c .search-icon{width:29px;height:29px;color:#071574;stroke-width:2.2}
 .home-opcion-c .hero input{font-size:21px;padding:8px 9px;min-height:44px;color:#06104d;box-shadow:none;outline-offset:0}
-.home-opcion-c .hero input::placeholder{color:#6b83b5;opacity:1}
+.home-opcion-c .hero input::placeholder{color:#536783;opacity:1}
 .home-opcion-c .hero button{display:flex;align-items:center;justify-content:center;gap:19px;min-width:170px;min-height:46px;padding:9px 15px;font-size:19px;box-shadow:0 4px 9px #006aff33}
 .home-opcion-c .whats{margin-top:11px;padding:7px 16px;gap:14px;min-height:72px;background:linear-gradient(100deg,#e9fff0,#d8ffe9);border:0;border-radius:12px;box-shadow:0 3px 14px #1280dc15}
 .home-opcion-c .whatsapp-icon{width:62px;height:58px;flex:0 0 62px}
 .home-opcion-c .whats-copy{flex:1;min-width:0}
 .home-opcion-c .whats strong{font-size:17px;font-weight:800;line-height:1.1;white-space:nowrap}
 .home-opcion-c .whats span{font-size:17px;line-height:1.15;margin-top:3px;white-space:nowrap}
-.home-opcion-c .whats a{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 14px;min-height:47px;font-size:17px;font-weight:400;background:linear-gradient(#02d32e,#00a71e);border-radius:9px}
+.home-opcion-c .whats a{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 14px;min-height:47px;font-size:17px;font-weight:400;background:linear-gradient(#008124,#006f1b);border-radius:9px}
 .home-opcion-c .hero-visual{position:absolute;z-index:0;inset:66px 0 0 auto;width:calc(50% + 11px);min-height:0;padding:0;display:block;background:none;mask-image:linear-gradient(90deg,transparent 0%,#000 6%);-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 6%)}
 .home-opcion-c .hero-visual img{display:block;width:100%;height:100%;object-fit:cover;object-position:center center}
 .home-opcion-c .home-services{position:relative;margin-top:0;background:#fff;border-radius:30px 30px 0 0;padding-top:3px}

@@ -1,12 +1,5 @@
 {
-  "version": "2026-10-12.v1-main-reuse",
-  "source": {
-    "repository": "tramipago2026/TramiPago",
-    "ref": "main",
-    "file": "services.js",
-    "commit": "69b44c56f5b0d38589cd95b4861eb30d2ae15a90"
-  },
-  "policy": "Reutilización técnica de campos V1 aprobados; no contiene tasas oficiales ni se usa como fuente de información oficial.",
+  "version": "2026-10-13.v2",
   "services": {
     "antecedentes-penales": {
       "name": "Antecedentes Penales",
