@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { Script } from "node:vm";
 import {readFileSync, existsSync} from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -111,8 +112,9 @@ for (const file of pageFiles) {
 }
 assert.ok(pageFiles.length>=142,"Inventario HTML incompleto");
 assert.ok(adminHtml.includes("/v2/assets/logo-horizontal-opcion-c.png"),"Admin usa identidad distinta");
-for(const js of ["v2.js","flow-v2.js","shell-v2.js","legal-actions-v2.js"]) {
+for(const js of ["v2.js","flow-v2.js","shell-v2.js","legal-actions-v2.js","progress-v2.js","admin-v2.js"]) {
   const code=readFileSync(path.join(root,"assets",js),"utf8");
+  assert.doesNotThrow(() => new Script(code, {filename: js}), "Sintaxis JS inválida: "+js);
   assert.ok(!/solicitud de prueba|comprobante de prueba|entorno de prueba/i.test(code),"Texto de pruebas visible: "+js);
 }
 console.log("PASS CONTROL 4: "+unique.length+" rutas del manifiesto, "+pageFiles.length+" páginas HTML, 25 formularios y "+internalLinks+" enlaces/recursos locales");
