@@ -8,6 +8,17 @@
   const output=q("[data-flow-message]");
   const main=q("[data-flow-content]");
   let schema=null;
+  let tariff=null;
+  const formatARS=amount=>new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(amount);
+  function showQuotedPrice(box,data){
+    if(!data.requiresPayment)return;
+    const p=document.createElement("p");
+    p.textContent=data.quotedAmount===null||data.quotedAmount===undefined
+      ?"Importe pendiente de cotización. No realices transferencias."
+      :(tariff?.officialFeeIncluded?"Importe total cotizado: ":"Importe de gestión cotizado: ")+formatARS(Number(data.quotedAmount))+
+      (tariff?.officialFeeExternal?". La tasa oficial, si corresponde, se informa por separado.":"");
+    box.append(p);
+  }
   function progress(data){window.TramiPagoProgress?.render({stage:flow,requiresPayment:data.requiresPayment,status:data.status})}
 
   function message(text,kind="info"){
@@ -74,7 +85,13 @@
     };
     add("Código",data.trackingCode);
     add("Estado",statusLabel(data.status));
+    if(data.requiresPayment)add("Importe cotizado",data.quotedAmount===null?"A confirmar":formatARS(Number(data.quotedAmount)));
     summary.append(heading,dl);
+    if(data.requiresPayment&&tariff?.officialFeeExternal){
+      const note=document.createElement("p");
+      note.textContent="La tasa oficial se informa por separado cuando corresponda.";
+      summary.append(note);
+    }
     const details=document.createElement("div");
     window.TramiPagoProgress?.summary(details,schema,{...data.payload,fullName:data.contact?.name,name:data.contact?.name,email:data.contact?.email,whatsapp:data.contact?.whatsapp});
     summary.append(details);
@@ -117,6 +134,7 @@
     const heading=document.createElement("h2");heading.textContent=data.requiresPayment?"Pago de la solicitud":"Solicitud sin pago";
     const state=document.createElement("p");state.textContent="Estado actual: "+statusLabel(data.status);
     box.append(heading,state);
+    showQuotedPrice(box,data);
     main.replaceChildren(box);
 
     if(["cancelled","needs_info"].includes(data.status)){
@@ -180,6 +198,10 @@
   (async()=>{
     try{
       schema=await fetch("/v2/data/form-schema-v2.json").then(r=>r.json()).then(data=>data.services[serviceId]);
+      try {
+        const prices=await fetch("/v2/data/tarifario-v1-v2.json").then(r=>r.ok?r.json():null);
+        tariff=prices?.services?.[serviceId]||null;
+      }catch{}
       window.TramiPagoProgress?.render({stage:flow,requiresPayment:!schema?.intakeOnly});
       const active=current();
       if(!active){
