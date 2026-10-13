@@ -36,7 +36,7 @@
     return data;
   }
   function statusLabel(status){
-    return ({draft:"Borrador",awaiting_payment:"Pago pendiente",payment_review:"Pago en revisión",payment_confirmed:"Pago confirmado",in_progress:"En proceso",needs_info:"Falta información",finalized:"Finalizado",cancelled:"Cancelado"})[status]||status||"";
+    return ({draft:"Datos sin enviar",awaiting_payment:"Pago pendiente",payment_review:"Pago en revisión",payment_confirmed:"Pago confirmado",in_progress:"En proceso",needs_info:"Falta información",finalized:"Finalizado",cancelled:"Cancelado"})[status]||status||"";
   }
   function valueText(value){
     if(value===null||value===undefined||value==="")return "—";
