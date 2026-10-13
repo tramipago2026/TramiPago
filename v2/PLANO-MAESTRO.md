@@ -118,3 +118,12 @@ Origen consultado en lectura: `services.js`, `service-pages.json`, `tramites-cat
 ## 10. Integración aprobada con chat 12 (11/10/2026)
 
 MySQL real es el destino explícito para V2. A diferencia del antecedente Firebase del chat 09, las capas Auth/MFA, almacenamiento, API, email y respaldos se construyen modularmente con proveedores sujetos a pruebas independientes. Ningún cambio en V1 ni corte de producción está autorizado. Contrato de coordinación: `v2/INTEGRACION-CHAT11-CHAT12.md` y `v2/contracts/api-v2.contract.json`, con equivalentes versionados en la rama backend `v2-mysql-chat12-integration` del repositorio privado `TramiPago-web`.
+
+## 11. Criterio legal práctico y enlaces gubernamentales (13/10/2026)
+
+- Las páginas legales V2 se mantienen comprensibles, proporcionadas al servicio privado de asistencia, sin exigir una auditoría exhaustiva de cada portal externo ni bloquear V2 porque un sitio del Gobierno no responda. La revisión se concentra en identidad/contacto reales, información sobre la contratación, privacidad, baja/arrepentimiento y demás derechos y obligaciones que correspondan.
+- **No eliminar derechos legales del cliente ni sustituir requisitos obligatorios por simples avisos.** Simplificar lenguaje y validaciones accesorias no significa prescindir de obligaciones legales.
+- **En V2, no colocar enlaces clicables externos que lleven a dominios gubernamentales** (por ejemplo, *.gob.ar, *.gov.ar, *.gov). La disponibilidad de un portal estatal no debe ser requisito técnico para cargar formularios, navegar, solicitar ayuda o consultar estados en TramiPago.
+- Si resulta pertinente mencionar una fuente estatal, conservar sólo la denominación o referencia como texto no interactivo; los enlaces verificables y comprobaciones de CONTROL 2 quedan en documentos internos, no como dependencias de la experiencia pública.
+- Mantener operativos los enlaces **internos de TramiPago** y los canales propios (WhatsApp y correo), así como las rutas de privacidad, términos, arrepentimiento y baja.
+- CONTROL 4 recorre todas las páginas públicas y rechaza cualquier `<a href>` hacia dominios gubernamentales. No realizar pruebas de disponibilidad de esos sitios externos para aprobar staging. Las verificaciones independientes siguen concentradas en funciones y recursos propios de V2.
