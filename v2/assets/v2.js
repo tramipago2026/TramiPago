@@ -40,7 +40,7 @@
 
   function statusLabel(status) {
     return ({
-      draft: "Borrador",
+      draft: "Datos sin enviar",
       awaiting_payment: "Pago pendiente",
       payment_review: "Pago en revisión",
       payment_confirmed: "Pago confirmado",
@@ -502,7 +502,7 @@
       }
       const missing = missingDocuments().length > 0;
       window.TramiPagoProgress?.render({ requiresPayment: !schema.intakeOnly, missingDocuments: missing, status: "draft" });
-      submit.textContent = missing && !b2Ready ? "Guardar borrador →" : schema.intakeOnly ? "Enviar consulta →" : "Continuar al pago →";
+      submit.textContent = missing && !b2Ready ? "Guardar datos →" : schema.intakeOnly ? "Enviar consulta →" : "Continuar al pago →";
       window.TramiPagoProgress?.summary(qs("[data-v2-preview-content]", form), schema, values());
       try { sessionStorage.setItem(cacheKey, JSON.stringify(values())); } catch {}
     }
@@ -510,7 +510,7 @@
       result.hidden = false;
       result.replaceChildren();
       const heading = document.createElement("h2");
-      heading.textContent = pending ? "Borrador guardado" : "Ya tenés una solicitud en curso";
+      heading.textContent = pending ? "Datos guardados" : "Ya tenés una solicitud en curso";
       const code = document.createElement("p");
       code.textContent = "Código: ";
       const tracking = document.createElement("code");
