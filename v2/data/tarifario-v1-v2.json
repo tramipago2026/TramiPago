@@ -1,0 +1,363 @@
+{
+  "version": "2026-10-13.v1-price-snapshot",
+  "source": {
+    "repository": "tramipago2026/TramiPago",
+    "ref": "main",
+    "path": "services.js",
+    "note": "Valores comerciales copiados, sin revalidar tasas oficiales ni autorización de cobro"
+  },
+  "services": {
+    "antecedentes-penales": {
+      "name": "Antecedentes Penales",
+      "selector": "modality",
+      "options": [
+        {
+          "value": "one-hour",
+          "label": "1 hora",
+          "amount": 20000,
+          "duration": "Modalidad: 1 hora"
+        },
+        {
+          "value": "six-hours",
+          "label": "6 horas",
+          "amount": 15000,
+          "duration": "Modalidad: 6 horas"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "constancias-anses": {
+      "name": "Constancias ANSES",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "constancias",
+          "label": "CODEM + Certificación Negativa",
+          "amount": 2000,
+          "duration": "Entrega en PDF por WhatsApp"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "informe-vehicular": {
+      "name": "Informe Vehicular",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "complete",
+          "label": "Informe completo",
+          "amount": 15000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "arba-inmobiliario": {
+      "name": "ARBA / Inmobiliario",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "debt-plan",
+          "label": "Deuda + plancheta",
+          "amount": 15000,
+          "duration": "Sujeto a disponibilidad de ARBA"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "partidas": {
+      "name": "Partidas PBA",
+      "selector": "dataMode",
+      "options": [
+        {
+          "value": "with-data",
+          "label": "Tengo los datos",
+          "amount": 15000,
+          "duration": "Hasta 10 días hábiles"
+        },
+        {
+          "value": "without-data",
+          "label": "No tengo los datos",
+          "amount": 20000,
+          "duration": "Hasta 20 días hábiles"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "partidas-caba": {
+      "name": "Partidas CABA",
+      "selector": null,
+      "options": [],
+      "officialFee": null,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "certificacion-estado-civil": {
+      "name": "Certificación de Estado Civil",
+      "selector": null,
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Gestión Estado Civil",
+          "amount": 15000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": 8000,
+      "officialFeeExternal": true,
+      "officialFeeIncluded": false
+    },
+    "certificado-domicilio-pba": {
+      "name": "Certificado de Domicilio PBA",
+      "selector": null,
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Certificado de Domicilio PBA",
+          "amount": 20000,
+          "duration": "Trámite online con asistencia y seguimiento"
+        }
+      ],
+      "officialFee": 8700,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": true
+    },
+    "asistencia-digital": {
+      "name": "Asistencia Digital",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "assistance",
+          "label": "Asistencia Digital",
+          "amount": 5000,
+          "duration": "Asistencia online"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "arca-constancia": {
+      "name": "Constancia ARCA",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Gestión de Constancia ARCA",
+          "amount": 5000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "arca-vep": {
+      "name": "Generar VEP",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Generación de VEP",
+          "amount": 5000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "arca-ccma": {
+      "name": "Informe de deuda y saldos CCMA",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Informe CCMA",
+          "amount": 8000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "arca-reimputacion": {
+      "name": "Reimputación de pagos",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Reimputación de pagos",
+          "amount": 10000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "arca-informe-reimputacion": {
+      "name": "Informe + reimputación",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Informe + reimputación",
+          "amount": 15000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "arca-alta-monotributo": {
+      "name": "Alta en el Monotributo",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Alta en el Monotributo",
+          "amount": 12000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "arca-baja-monotributo": {
+      "name": "Baja en el Monotributo",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Baja en el Monotributo",
+          "amount": 8000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "arca-recategorizacion": {
+      "name": "Recategorización",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Recategorización",
+          "amount": 12000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "arca-dfe": {
+      "name": "Domicilio Fiscal Electrónico",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Domicilio Fiscal Electrónico",
+          "amount": 7000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "arca-actualizacion": {
+      "name": "Actualización de datos ARCA",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Actualización de datos ARCA",
+          "amount": 10000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": 0,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "apostilla-tad": {
+      "name": "Apostillado",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Gestión de Apostillado",
+          "amount": 20000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": null,
+      "officialFeeExternal": true,
+      "officialFeeIncluded": false
+    },
+    "legalizaciones": {
+      "name": "Legalizaciones",
+      "selector": "serviceOption",
+      "options": [
+        {
+          "value": "gestion",
+          "label": "Gestión de Legalización",
+          "amount": 15000,
+          "duration": "Gestión online"
+        }
+      ],
+      "officialFee": null,
+      "officialFeeExternal": true,
+      "officialFeeIncluded": false
+    },
+    "abogado-art": {
+      "name": "Reclamo ART / accidente laboral",
+      "selector": null,
+      "options": [],
+      "officialFee": null,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "abogado-accidentes": {
+      "name": "Accidentes",
+      "selector": null,
+      "options": [],
+      "officialFee": null,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "abogado-sucesiones": {
+      "name": "Sucesiones",
+      "selector": null,
+      "options": [],
+      "officialFee": null,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    },
+    "abogado-laboral": {
+      "name": "Consulta laboral",
+      "selector": null,
+      "options": [],
+      "officialFee": null,
+      "officialFeeExternal": false,
+      "officialFeeIncluded": false
+    }
+  }
+}
