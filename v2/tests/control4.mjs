@@ -60,8 +60,17 @@ for (const service of manifest.services) {
     const stageHtml = readFileSync(stagePath, "utf8");
     assert.ok(stageHtml.includes('data-v2-flow="' + ({revisar:"review",pago:"payment",confirmacion:"confirmation"})[stage] + '"'), "Etapa V2 inválida: " + service.id + "/" + stage);
     assert.ok(stageHtml.includes("data-v2-progress"), "Falta progreso en " + service.id + "/" + stage);
+    if (stage === "pago") {
+      assert.ok(!/Pago de prueba/i.test(stageHtml), "Texto de prueba visible en pago: " + service.id);
+      assert.ok(stageHtml.includes("Pago de la solicitud"), "Título de pago no homologado: " + service.id);
+    }
   }
 }
+const homeHtml = readFileSync(path.join(root, "index.html"), "utf8");
+const sharedShell = readFileSync(path.join(root, "assets", "shell-v2.js"), "utf8");
+assert.ok(homeHtml.includes("/v2/assets/logo-horizontal-opcion-c.png") && sharedShell.includes("/v2/assets/logo-horizontal-opcion-c.png"), "La portada y las páginas internas no comparten logo aprobado");
+const catalogHtml = readFileSync(path.join(root, "tramites", "index.html"), "utf8");
+assert.ok(!catalogHtml.includes("sólo se activarán después de sus controles"), "Texto de construcción en catálogo");
 const trackingHtml = readFileSync(path.join(root, "seguimiento", "index.html"), "utf8");
 assert.ok(trackingHtml.includes("data-v2-tracking-form"), "Seguimiento V2 no funcional");
 const adminHtml = readFileSync(path.join(root, "admin", "index.html"), "utf8");
