@@ -685,7 +685,6 @@
             verification: String(data.get("verification") || "").trim(),
           }),
         });
-        if (output) output.dataset.kind = "success";
         if (statusNode) statusNode.textContent = statusLabel(response.status);
         if (noteNode) {
           noteNode.textContent = response.statusNote || "";
@@ -782,6 +781,7 @@
             });
             output.append(correction);
           }
+          output.dataset.kind = "success";
         }
       } catch (error) {
         if (statusNode) statusNode.textContent = error.status === 429

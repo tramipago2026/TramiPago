@@ -19,7 +19,8 @@ const form = new Element("form"), output = new Element(), status = new Element("
 status.dataset.v2Status = ""; note.dataset.v2StatusNote = ""; missing.dataset.v2Missing = "";
 output.append(status, note, missing);
 const code = { value: "ANTPEN-SINTETICO" }, verification = { value: "0000000000" };
-let valid = true, fetchCount = 0, schemaCount = 0, next;
+let valid = true, fetchCount = 0, schemaCount = 0, next, finishSchema, schemaStarted;
+const labelsStarted = new Promise(resolve => { schemaStarted = resolve; });
 form.reportValidity = () => valid;
 form.querySelector = query => query.includes("submit") ? button : query.includes("trackingCode") ? code : null;
 const nodes = new Map([["[data-v2-tracking-form]", form], ["[data-v2-tracking-result]", output], ["[data-v2-status]", status], ["[data-v2-status-note]", note], ["[data-v2-missing]", missing]]);
@@ -34,7 +35,8 @@ runInNewContext(script, {
   fetch: async (url, options) => {
     if (url === "/v2/data/form-schema-v2.json") {
       schemaCount++;
-      return new Response(JSON.stringify({ services: { "antecedentes-penales": { fields: [{ id: "fullName", label: "Nombre y apellido" }] } } }));
+      schemaStarted();
+      return new Promise(resolve => { finishSchema = () => resolve(new Response(JSON.stringify({ services: { "antecedentes-penales": { fields: [{ id: "fullName", label: "Nombre y apellido" }] } } }))); });
     }
     assert.equal(url, "/v2/requests/lookup");
     assert.equal(options.method, "POST");
@@ -46,7 +48,11 @@ runInNewContext(script, {
 const submit = () => form.events.submit({ preventDefault() {} });
 const reply = (body, status = 200) => new Response(JSON.stringify(body), { status });
 next = () => reply({ status: "needs_info", missingFields: ["fullName"], canCorrect: true });
-await submit();
+const withLabels = submit();
+await labelsStarted;
+assert.equal(output.dataset.kind, "info", "Do not mark a result ready before labels finish loading");
+finishSchema();
+await withLabels;
 assert.equal(status.textContent, "Falta información");
 assert.match(missing.textContent, /Nombre y apellido/);
 assert.ok(!missing.textContent.includes("fullName"), "Do not expose schema field identifiers");
