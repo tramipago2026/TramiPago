@@ -60,10 +60,18 @@
 
     let services = [];
     try {
-      const manifest = await fetch("/v2/rutas-v2.json", { cache: "no-store" }).then((r) => r.json());
-      services = manifest.services || [];
+      const manifest = await fetch("/v2/rutas-v2.json", { cache: "no-store" }).then((r) => {
+        if (!r.ok) throw new Error("catalog_unavailable");
+        return r.json();
+      });
+      if (!Array.isArray(manifest.services)) throw new Error("catalog_invalid");
+      services = manifest.services;
     } catch {
       setMessage(results, "No se pudo cargar el catálogo.", "error");
+      const retry = document.createElement("button");
+      retry.type = "button"; retry.className = "button"; retry.textContent = "Reintentar";
+      retry.addEventListener("click", () => location.reload());
+      results.append(retry);
       return;
     }
 
