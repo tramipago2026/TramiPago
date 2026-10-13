@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { Script } from "node:vm";
+import {createHash} from "node:crypto";
 import {readFileSync, existsSync} from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -73,6 +74,14 @@ for (const service of manifest.services) {
 const homeHtml = readFileSync(path.join(root, "index.html"), "utf8");
 const sharedShell = readFileSync(path.join(root, "assets", "shell-v2.js"), "utf8");
 assert.ok(homeHtml.includes("/v2/assets/logo-horizontal-opcion-c.png") && sharedShell.includes("/v2/assets/logo-horizontal-opcion-c.png"), "La portada y las páginas internas no comparten logo aprobado");
+const approvedAssets = JSON.parse(readFileSync(path.join(root,"assets","opcion-c-assets.json"),"utf8"));
+const approvedLogo = approvedAssets.assets.find(item => item.path==="v2/assets/logo-horizontal-opcion-c.png");
+assert.ok(approvedLogo,"Falta la referencia maestra del logo aprobado");
+const logoBytes = readFileSync(path.join(root,"assets","logo-horizontal-opcion-c.png"));
+assert.equal(createHash("sha256").update(logoBytes).digest("hex"),approvedLogo.sha256,"Logo PNG distinto del recurso aprobado");
+assert.equal(logoBytes.subarray(0,8).toString("hex"),"89504e470d0a1a0a","Firma PNG inválida");
+assert.deepEqual([logoBytes.readUInt32BE(16),logoBytes.readUInt32BE(20)],approvedLogo.canvas,"Dimensiones PNG modificadas");
+assert.equal(logoBytes[25],6,"El logo aprobado debe conservar canal alfa RGBA");
 const catalogHtml = readFileSync(path.join(root, "tramites", "index.html"), "utf8");
 assert.ok(!catalogHtml.includes("sólo se activarán después de sus controles"), "Texto de construcción en catálogo");
 const trackingHtml = readFileSync(path.join(root, "seguimiento", "index.html"), "utf8");
