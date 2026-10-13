@@ -6,6 +6,8 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const {execFileSync}=await import("node:child_process");
+execFileSync(process.execPath,[path.join(root,"scripts/build-shell.mjs"),"--check"],{stdio:"inherit"});
 const manifest = JSON.parse(readFileSync(path.join(root, "rutas-v2.json"), "utf8"));
 assert.equal(existsSync(path.join(root, "data", "official-services-2026-10-12.json")), false, "La documentación de validación interna no debe publicarse en V2");
 const clientScript = readFileSync(path.join(root, "assets", "v2.js"), "utf8");
