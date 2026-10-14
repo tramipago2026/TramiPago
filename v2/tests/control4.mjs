@@ -55,6 +55,11 @@ for (const url of unique) {
   for (const [, attribute, value] of html.matchAll(/\b(href|src|action)="([^"]+)"/g)) {
     if (!value.startsWith("/")) continue;
     assert.ok(value.startsWith("/v2/"), "Enlace o recurso fuera de V2: " + url + " → " + value);
+    if (value.startsWith("/v2/photo/")) {
+      assert.match(value,/^\/v2\/photo\/(?:partidas|arca|apostillas|abogado|digital|atencion|vehiculos)\.jpg$/,"Foto V2 fuera del catálogo de proxy privado");
+      internalLinks++;
+      continue; // Verified as same-origin runtime routes by backend live preview E2E.
+    }
     const rel = value.replace(/[?#].*$/, "").slice(4);
     const assetPath = path.join(root, rel);
     const target = value.endsWith("/") ? path.join(assetPath, "index.html") : assetPath;
