@@ -566,6 +566,10 @@
       "constancias-anses":"atencion",
       "informe-vehicular":"vehiculos",
       "arba-inmobiliario":"arca",
+      "abogado-art":"abogado-art",
+      "abogado-accidentes":"abogado-accidentes",
+      "abogado-sucesiones":"abogado-sucesiones",
+      "abogado-laboral":"abogado-laboral",
     };
     const photoId = photoByService[service?.id] || photoByFamily[family?.id] || "digital";
     if (!service || !form.parentElement) return;
