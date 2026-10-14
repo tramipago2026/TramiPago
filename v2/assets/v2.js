@@ -1033,37 +1033,97 @@
             const correction = document.createElement("form");
             correction.className = "vertical";
             correction.dataset.v2CorrectionForm = "";
+            const collection = await schemasPromise;
+            const serviceFields = new Map((collection?.services?.[current.serviceId]?.fields || []).map(field => [field.id,field]));
+            const missingUploads = missing.filter(field => serviceFields.get(field)?.type === "file");
+            const availability = missingUploads.length
+              ? await api("/v2/health/dependencies",{method:"GET"}).catch(()=>null)
+              : null;
+            const canUpload = availability?.dependencies?.b2 === "configured";
             for (const field of missing) {
               const label = document.createElement("label");
               label.textContent = "Corregir: " + labels.get(field);
+              const definition = serviceFields.get(field);
+              if(definition?.type === "file" && !canUpload) {
+                const note = document.createElement("small");
+                note.className = "file-format-note";
+                note.textContent = "Este documento no puede adjuntarse por ahora.";
+                label.append(note);
+                correction.append(label);
+                continue;
+              }
               const input = document.createElement("input");
-              input.name = field; input.required = true; input.maxLength = 1000;
-              label.append(input); correction.append(label);
+              input.name = field;
+              input.required = true;
+              if(definition?.type === "file") {
+                input.type = "file";
+                input.accept = definition.accept || "application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png";
+                const note = document.createElement("small");
+                note.className = "file-format-note";
+                note.textContent = "PDF, JPG o PNG según el documento · máximo 10 MB.";
+                label.append(input,note);
+              } else {
+                input.maxLength = 1000;
+                label.append(input);
+              }
+              correction.append(label);
             }
             const save = document.createElement("button");
-            save.type = "submit"; save.className = "button"; save.textContent = "Enviar corrección";
+            save.type = "submit";
+            save.className = "button";
+            save.textContent = "Enviar corrección";
+            if(missingUploads.length && !canUpload) {
+              save.disabled = true;
+              const help = document.createElement("div");
+              help.className = "file-help-actions";
+              help.append(whatsappHelp(current.serviceName || "mi trámite",current.trackingCode));
+              correction.append(help);
+            }
             correction.append(save);
             const msg = document.createElement("div");
             msg.className = "status-box"; msg.hidden = true; msg.setAttribute("aria-live","polite");
             correction.append(msg);
             correction.addEventListener("submit", async (ev) => {
               ev.preventDefault();
+              if(save.disabled || !correction.reportValidity()) return;
               const fd = new FormData(correction);
-              const payload = Object.fromEntries(missing.map((field) => [field, String(fd.get(field) || "").trim()]));
+              const payload = Object.fromEntries(missing.filter(field => !missingUploads.includes(field))
+                .map(field => [field, String(fd.get(field) || "").trim()]));
+              save.disabled=true;
               try {
+                const fileIds=[];
+                for(const field of missingUploads){
+                  const file=fd.get(field);
+                  const issue=file instanceof File ? uploadIssue(file,serviceFields.get(field)?.accept || "") : "Seleccioná un documento válido.";
+                  if(issue) throw new Error(issue);
+                  const body=new FormData();
+                  body.set("file",file);
+                  body.set("kind",/dni/i.test(field)?"dni":"supporting_document");
+                  body.set("fieldId",field);
+                  const uploaded=await api("/v2/requests/"+encodeURIComponent(current.requestId)+"/files",{
+                    method:"POST",
+                    headers:{
+                      "Idempotency-Key":randomKey("correction-file-"+current.requestId+"-"+field),
+                      "X-Request-Capability":current.capability,
+                    },
+                    body,
+                  });
+                  fileIds.push(uploaded.fileId);
+                }
                 const updated = await api("/v2/requests/" + encodeURIComponent(current.requestId) + "/corrections", {
                   method: "POST",
                   headers: {
                     "Idempotency-Key": randomKey("correction-" + current.requestId),
                     "X-Request-Capability": current.capability,
                   },
-                  body: JSON.stringify({ payload }),
+                  body: JSON.stringify({ payload, fileIds }),
                 });
                 setMessage(msg, "Corrección recibida. Nuevo estado: " + statusLabel(updated.status) + ".", "success");
                 if (statusNode) statusNode.textContent = statusLabel(updated.status);
-              } catch {
-                setMessage(msg, "No se pudo enviar la corrección.", "error");
-              }
+              } catch (e) {
+                setMessage(msg, e?.message?.startsWith("Formato") || e?.message?.startsWith("El archivo") || e?.message?.startsWith("Seleccioná")
+                  ? e.message : "No se pudo enviar la corrección.", "error");
+              } finally { save.disabled=false; }
             });
             output.append(correction);
           }
