@@ -82,11 +82,13 @@
           const health=await request("/v2/health/dependencies");
           const ready=health?.dependencies?.b2==="configured";
           uploadButton.disabled=!ready;
+          q('input[name="file"]',resultForm).disabled=!ready;
           resultState.textContent=ready
             ?"B2 privado disponible. El archivo quedará asociado como resultado de esta solicitud."
             :"Backblaze B2 todavía no está configurado; la entrega permanece bloqueada de forma segura.";
         }catch{
           uploadButton.disabled=true;
+          q('input[name="file"]',resultForm).disabled=true;
           resultState.textContent="No se pudo verificar el almacenamiento privado.";
         }
       }
@@ -145,6 +147,13 @@
     e.preventDefault(); if(!selectedId)return;
     const file=new FormData(resultForm).get("file");
     if(!(file instanceof File))return;
+    const ext=(file.name.toLowerCase().match(/\.[a-z0-9]+$/)||[])[0]||"";
+    const mime={".pdf":"application/pdf",".jpg":"image/jpeg",".jpeg":"image/jpeg",".png":"image/png"}[ext];
+    if(!file.size||file.size>10*1024*1024||!mime||mime!==file.type){
+      resultMessage.textContent="Archivo inválido: PDF, JPG o PNG de hasta 10 MB.";
+      resultMessage.dataset.kind="error";resultMessage.hidden=false;
+      return;
+    }
     const body=new FormData();body.set("file",file);
     const button=q('button[type="submit"]',resultForm);button.disabled=true;
     try{
