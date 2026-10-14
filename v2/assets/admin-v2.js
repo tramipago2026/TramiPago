@@ -9,6 +9,7 @@
   const list=q("[data-admin-list]"), detail=q("[data-admin-detail]");
   const statusForm=q("[data-admin-status-form]"), filter=q("[data-admin-status-filter]");
   const logout=q("[data-admin-logout]");
+  const rejectProof=q("[data-admin-reject-payment]");
   const resultForm=q("[data-admin-result-form]");
   const resultState=q("[data-admin-result-state]");
   const resultMessage=q("[data-admin-result-message]");
@@ -75,6 +76,7 @@
       events.append(ul);
       wrap.append(files,events);detail.replaceChildren(wrap);
       statusForm.hidden=role==="viewer";
+      rejectProof.hidden=role==="viewer" || r.status!=="payment_review";
       resultForm.hidden=role==="viewer";
       if(role!=="viewer"){
         const uploadButton=q('button[type="submit"]',resultForm);
@@ -92,7 +94,7 @@
           resultState.textContent="No se pudo verificar el almacenamiento privado.";
         }
       }
-    }catch{detail.textContent="No se pudo cargar el detalle.";statusForm.hidden=true;resultForm.hidden=true}
+    }catch{detail.textContent="No se pudo cargar el detalle.";statusForm.hidden=true;rejectProof.hidden=true;resultForm.hidden=true}
   }
   async function loadNotifications(){
     notificationList.textContent="Cargando…";
@@ -185,6 +187,25 @@
       const data=await request("/v2/admin/requests/"+encodeURIComponent(selectedId)+"/status",{method:"PATCH",body:JSON.stringify({status:fd.get("status"),note:String(fd.get("note")||"").trim()||undefined,missingFields:missing})});
       msg("Estado actualizado: "+statusLabel(data.status),"success");await loadDetail(selectedId);await loadList();
     }catch(e){msg(e.message==="invalid_transition"?"Transición de estado no permitida.":"No se pudo actualizar el estado.","error")}
+  });
+  rejectProof.addEventListener("click",async()=>{
+    if(!selectedId || rejectProof.hidden) return;
+    const note=String(statusForm.elements.namedItem("note")?.value||"").trim();
+    if(!note){
+      msg("Para rechazar el comprobante, escribí el motivo en Observación.","error");
+      statusForm.elements.namedItem("note")?.focus();
+      return;
+    }
+    rejectProof.disabled=true;
+    try{
+      const data=await request("/v2/admin/requests/"+encodeURIComponent(selectedId)+"/status",{
+        method:"PATCH",body:JSON.stringify({status:"awaiting_payment",note}),
+      });
+      msg("Comprobante rechazado. El cliente puede subir uno nuevo con el mismo código.","success");
+      await loadDetail(selectedId);await loadList();
+    }catch{
+      msg("No se pudo rechazar el comprobante. Comprobá el estado e intentá nuevamente.","error");
+    }finally{rejectProof.disabled=false}
   });
   q("[data-admin-refresh]").addEventListener("click",loadList);
   q("[data-admin-load-notifications]").addEventListener("click",loadNotifications);
