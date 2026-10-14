@@ -183,3 +183,6 @@ body.v2-interior .contact-content{max-width:1220px;padding-top:46px;padding-bott
   .contact-photo{height:185px;order:-1}
   .contact-actions{gap:17px}
 }
+
+/* Admin V2 only: CSP-safe visibility for MFA stages */
+body.admin-v2-page [hidden]{display:none!important}
