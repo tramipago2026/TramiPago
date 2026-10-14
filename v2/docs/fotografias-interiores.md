@@ -10,9 +10,10 @@ Las fotos fueron seleccionadas en páginas de Unsplash señaladas como **Free to
 | abogado | Elementos jurídicos reales: libros, mazo y justicia | https://unsplash.com/photos/statue-of-justice-gavel-and-open-book-on-table-YFz39MOmxnQ | Sasun Bughdaryan |
 | digital | Persona trabajando en una computadora portátil | https://unsplash.com/photos/person-using-laptop-computer-Hcfwew744z4 | Christin Hume |
 | atencion | Atención administrativa con documentos | https://unsplash.com/photos/woman-working-with-documents-at-office-desk-Vvn0OD0IxBM | Vitaly Gariev |
+| vehiculos | Automóvil fotografiado en La Plata, PBA | https://unsplash.com/photos/a-car-parked-on-the-side-of-the-road-r18P9T9-CWw | Mario Amé |
 
 Las fotografías se sirven **desde el mismo dominio de staging** por `/v2/photo/<id>.jpg`; se evita exponer directamente a los visitantes a dominios de terceros. El Worker mantiene una lista cerrada de archivos e impide crear un proxy arbitrario. Si una fotografía externa falla, se presenta una superficie de respaldo sin texto publicitario cortado.
 
 El permiso de uso general de Unsplash se describe en https://unsplash.com/license; no sustituye derechos de marcas o personas representadas. Las fotografías son ilustrativas del tipo de gestión y **no representan documentos oficiales argentinos auténticos ni la realización efectiva de una gestión**.
 
-La foto del informe vehicular utiliza provisionalmente un recurso fotográfico existente aprobado de V2 (`vehicular-opcion-c.webp`) mientras se selecciona una fotografía argentina sin sobreimpresiones que lo mejore.
+La fotografía de informe vehicular también es nueva: un automóvil en La Plata, provincia de Buenos Aires, fotografiado por Mario Amé (https://unsplash.com/photos/a-car-parked-on-the-side-of-the-road-r18P9T9-CWw), sin textos publicitarios superpuestos.
