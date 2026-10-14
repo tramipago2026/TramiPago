@@ -126,7 +126,7 @@
       loginForm.reset();
       if(data?.twoFactorRedirect){loginForm.hidden=true;totpForm.hidden=false;msg("Ingresá el código de tu autenticador.");return}
       await session();
-    }catch{msg("No se pudo iniciar sesión.","error")}
+    }catch(e){const code=String(e.code||"request_failed").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,64);msg("Error al iniciar sesión ("+e.status+" · "+code+").","error")}
   });
   totpForm.addEventListener("submit",async e=>{
     e.preventDefault(); const fd=new FormData(totpForm); msg("Verificando MFA…");
