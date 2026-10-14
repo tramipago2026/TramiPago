@@ -151,8 +151,11 @@
 
     const health=await api("/v2/health/dependencies",{method:"GET"}).catch(()=>null);
     const method=await fetch("/v2/data/medio-pago-v1-v2.json").then(r=>r.ok?r.json():null).catch(()=>null);
-    const ready=health?.dependencies?.b2==="configured" && health?.dependencies?.payments==="configured" &&
-      method?.enabled===true && method?.provider==="transferencia" && data.quotedAmount!==null && data.quotedAmount!==undefined;
+    // No third-party payment gateway: payment proof is a private file uploaded to B2.
+    // The transfer method is approved from V1 and needs no separate payment credential.
+    const ready=health?.dependencies?.b2==="configured" &&
+      method?.enabled===true && method?.provider==="transferencia" &&
+      Number.isFinite(Number(data.quotedAmount)) && Number(data.quotedAmount)>0;
     if(ready){
       const destination=document.createElement("div");
       destination.className="status-box";
