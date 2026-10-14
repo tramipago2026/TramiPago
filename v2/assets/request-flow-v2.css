@@ -62,3 +62,44 @@
 @media(max-width:850px){.request-layout{grid-template-columns:minmax(0,1fr) 220px;gap:16px}.request-context-copy{padding:12px 14px}.request-context-copy h2{font-size:17px}}
 @media(max-width:760px){.request-layout{display:flex;flex-direction:column;gap:12px}.request-layout-main{order:2;width:100%}.request-context{position:static;order:1;display:flex;width:100%;align-items:center}.request-context>img{width:35%;max-height:145px;aspect-ratio:1;object-fit:cover}.request-context-copy{flex:1;min-width:0}.request-context-copy>p:not(.muted){display:none}.request-context-help{min-height:30px}.form-wizard-progress li{flex-direction:column;gap:5px;text-align:center;padding:9px 5px;font-size:11px}.form-wizard-progress strong{min-width:24px;height:24px}.request-page .content{padding:12px 16px}}
 @media(max-width:420px){.request-context>img{width:31%;max-height:120px}.request-context-copy h2{font-size:15px}.request-context-copy{padding:8px 12px}.form-wizard-navigation{gap:8px}.form-wizard-navigation .button{padding:10px 12px}}
+
+
+/* Adaptive V2 usability: ONE visible progress for data entry; one visually dominant field area. */
+body.request-page:has([data-v2-request-form]) [data-v2-progress]{display:none!important}
+body.request-page .request-intro{max-width:840px;margin-bottom:16px;font-size:15px}
+body.request-page .request-layout{grid-template-columns:minmax(0,1fr) minmax(340px,410px);gap:24px}
+body.request-page .form-wizard-progress{margin:0 0 14px}
+body.request-page .form-wizard-progress ol{gap:8px}
+body.request-page .form-wizard-progress li{border:0;border-bottom:3px solid #d4e2f4;border-radius:0;background:transparent;color:#63748c;padding:11px 9px;font-size:13px}
+body.request-page .form-wizard-progress li.active{border-bottom:4px solid #0673ef;background:#eaf3ff;color:#084895}
+body.request-page .form-wizard-progress li.complete{background:transparent;color:#1d7354;border-bottom-color:#7dcba7}
+body.request-page .form-wizard-progress li:not(.active) strong{width:24px;height:24px;min-width:24px}
+body.request-page .request-group:not(.wizard-hidden){border:2px solid #7aaff1;background:#fff;box-shadow:0 9px 25px #0a5db21c;border-radius:18px;padding:22px 26px 25px}
+body.request-page .request-group:not(.wizard-hidden) legend{font-size:19px;border:0;background:#eaf3ff;padding:6px 15px}
+body.request-page .request-fields{gap:18px}
+body.request-page .form-grid label{font-size:16px;line-height:1.4;color:#0d2d63;gap:8px}
+body.request-page .form-grid input:not([type=checkbox]):not([type=radio]),body.request-page .form-grid select,body.request-page .form-grid textarea{min-height:54px;border:2px solid #879bb9;border-radius:10px;padding:12px 14px;font-size:16px;background:#fff}
+body.request-page .form-grid input:focus-visible,body.request-page .form-grid select:focus-visible,body.request-page .form-grid textarea:focus-visible{border-color:#066ced;outline:3px solid #b9d8ff;outline-offset:1px;box-shadow:0 0 0 2px #e9f4ff}
+body.request-page .form-wizard-navigation{padding:12px 0 16px;margin:0}
+body.request-page .form-wizard-navigation .button{font-size:17px;min-height:50px;padding:12px 22px}
+body.request-page .request-context{position:sticky;top:24px;border:1px solid #b8d3f0;border-radius:18px}
+body.request-page .request-context>img{aspect-ratio:4/3;min-height:285px;width:100%;object-fit:cover;object-position:center;background:#cee6ff}
+body.request-page .request-context-copy{padding:18px 22px 23px}
+body.request-page .request-context-copy h2{font-size:23px}
+body.request-page .request-context-copy>p:not(.muted){margin:0 0 11px}
+body.request-page .request-context.photo-unavailable{background:linear-gradient(140deg,#d9eaff,#fff)}
+@media(max-width:950px){body.request-page .request-layout{grid-template-columns:minmax(0,1fr) 300px;gap:16px}body.request-page .request-context>img{min-height:240px}}
+@media(max-width:760px){
+  body.request-page .request-layout{display:flex;flex-direction:column;gap:12px}
+  body.request-page .request-layout-main{order:2}
+  body.request-page .request-context{order:1;display:flex;position:static;max-width:none;min-height:105px;width:100%}
+  body.request-page .request-context>img{min-height:0;width:34%;max-height:130px;height:115px;object-fit:cover;aspect-ratio:auto}
+  body.request-page .request-context-copy{padding:10px 15px}
+  body.request-page .request-context-copy h2{font-size:17px;margin-bottom:5px}
+  body.request-page .request-context-copy .muted{font-size:11px}
+  body.request-page .form-wizard-progress li{font-size:11px}
+  body.request-page .request-group:not(.wizard-hidden){padding:17px 15px 20px}
+  body.request-page .request-group:not(.wizard-hidden) legend{font-size:17px}
+  body.request-page .form-grid label{font-size:15px}
+  body.request-page .form-wizard-navigation .button{font-size:15px;min-height:48px;padding:10px 15px}
+}
