@@ -929,6 +929,15 @@
         location.href = "/v2/tramites/" + serviceId + (done.requiresPayment ? "/pago/" : "/confirmacion/");
       } catch (error) {
         setMessage(output, error.status === 404 ? "Este trámite no está disponible por el momento." : error.status === 503 ? "No se pudo completar esta etapa. Los datos guardados se conservan." : "No se pudo continuar. Tus datos siguen en esta pantalla; intentá nuevamente.", "error");
+        if (error.status === 503 && !qs("[data-v2-retry-help]")) {
+          const help = whatsappHelp(serviceName, active?.trackingCode || "");
+          help.dataset.v2RetryHelp = "";
+          const actions = document.createElement("div");
+          actions.className = "file-help-actions";
+          actions.dataset.v2RetryHelp = "";
+          actions.append(help);
+          output?.after(actions);
+        }
       } finally { submitting = false; submit.disabled = false; }
     });
   }
