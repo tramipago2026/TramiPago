@@ -15,6 +15,13 @@
   const resultMessage=q("[data-admin-result-message]");
   const notificationList=q("[data-admin-notifications]");
   let selectedId=null, role=null;
+  document.querySelectorAll("[data-password-toggle]").forEach(button=>button.addEventListener("click",()=>{
+    const input=button.parentElement?.querySelector('input[type="password"],input[type="text"]');
+    if(!input)return;
+    const visible=input.type==="text";input.type=visible?"password":"text";
+    button.textContent=visible?"Mostrar contraseña":"Ocultar contraseña";
+    button.setAttribute("aria-label",button.textContent);button.setAttribute("aria-pressed",String(!visible));
+  }));
 
   async function request(path, options={}) {
     const response=await fetch(path,{credentials:"same-origin",...options,headers:{Accept:"application/json",...(options.body && !(options.body instanceof FormData)?{"Content-Type":"application/json"}:{}),...(options.headers||{})}});
