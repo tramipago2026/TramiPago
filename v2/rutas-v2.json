@@ -40,8 +40,8 @@
     },
     {
       "id": "atencion-abogado",
-      "name": "Reclamo ART",
-      "subtitle": "Accidentes, laboral, sucesiones",
+      "name": "Atención con abogado",
+      "subtitle": "ART, accidentes, laboral y sucesiones",
       "image": "promo-art-20260911.webp",
       "href": "/v2/familias/atencion-abogado/"
     },
