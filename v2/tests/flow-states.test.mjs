@@ -4,7 +4,7 @@ import {runInNewContext} from "node:vm";
 import {setImmediate} from "node:timers/promises";
 
 class Element {
-  constructor(tag){this.tag=tag;this.children=[];this.dataset={};this.textContent="";this.events={};}
+  constructor(tag){this.tag=tag;this.children=[];this.dataset={};this.textContent="";this.events={};this.classList={add(){},remove(){},toggle(){}};}
   append(...nodes){this.children.push(...nodes);}
   replaceChildren(...nodes){this.children=nodes;}
   addEventListener(type,fn){this.events[type]=fn;}
