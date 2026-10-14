@@ -154,6 +154,30 @@
     return null;
   }
 
+  const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+  function whatsappHelp(serviceName, trackingCode = "") {
+    const link = document.createElement("a");
+    link.className = "button file-help-button";
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.href = "https://wa.me/5491167083232?text=" + encodeURIComponent(
+      "Hola, necesito ayuda con " + (serviceName || "mi trámite") +
+      (trackingCode ? ". Código: " + trackingCode : "") + ". No puedo adjuntar la documentación."
+    );
+    link.textContent = "Necesito ayuda por WhatsApp →";
+    return link;
+  }
+  function uploadIssue(file, accept = "") {
+    if (!file || !file.size) return "Seleccioná un archivo válido.";
+    if (file.size > MAX_UPLOAD_BYTES) return "El archivo supera los 10 MB permitidos.";
+    const ext = file.name.toLowerCase().match(/\.[a-z0-9]+$/)?.[0] || "";
+    const mime = {".pdf":"application/pdf",".jpg":"image/jpeg",".jpeg":"image/jpeg",".png":"image/png"}[ext];
+    if (!mime || file.type !== mime || !accept.split(",").map(v => v.trim()).includes(mime)) {
+      return "Formato no permitido. Usá PDF, JPG o PNG según lo indicado.";
+    }
+    return "";
+  }
+
   function makeSchemaField(field, b2Ready) {
     if (!field?.id || !field?.label || !field?.type) return null;
 
@@ -229,21 +253,56 @@
     const isContactRequired = field.id === "whatsapp";
     input.required = Boolean(field.required || isContactRequired);
 
+    // Two priced alternatives are direct, accessible selection buttons;
+    // the original select and value remain unchanged for the backend contract.
+    if (field.type === "select" && ["modality","dataMode"].includes(field.id) && field.options?.length === 2) {
+      const group = document.createElement("fieldset");
+      group.className = "price-choice-group wide";
+      const legend = document.createElement("legend");
+      legend.textContent = field.label;
+      group.append(legend);
+      input.className = "price-choice-native";
+      input.setAttribute("aria-label", field.label);
+      group.append(input);
+      const options = document.createElement("div");
+      options.className = "price-choice-options";
+      for (const option of field.options) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "price-choice-button";
+        button.dataset.v2PriceFor = field.id;
+        button.dataset.v2PriceValue = option.value;
+        button.setAttribute("aria-pressed", "false");
+        button.textContent = option.label;
+        button.addEventListener("click", () => {
+          input.value = option.value;
+          input.dispatchEvent(new Event("change", {bubbles:true}));
+        });
+        options.append(button);
+      }
+      group.append(options);
+      return group;
+    }
+
     if (input.type === "file") {
       input.dataset.v2FileField = field.id;
       input.dataset.originalRequired = field.required ? "true" : "false";
+      const limits = document.createElement("small");
+      limits.className = "file-format-note";
+      limits.textContent = "Formatos: " + (field.accept?.includes("application/pdf") ? "PDF, " : "") + "JPG o PNG · máximo 10 MB por archivo.";
+      label.append(input, limits);
       if (!b2Ready) {
         input.disabled = true;
         input.required = false;
         const note = document.createElement("small");
         note.className = "muted";
-        note.textContent = "La carga de documentos no está disponible por el momento.";
-        label.append(input, note);
+        note.textContent = "Carga temporalmente deshabilitada. Si necesitás continuar, pedí ayuda.";
+        label.append(note);
         return label;
       }
     }
 
-    label.append(input);
+    if (input.type !== "file") label.append(input);
     return label;
   }
 
@@ -361,7 +420,11 @@
     if (!b2Ready && schema.fields.some(field => field.type === "file")) {
       const notice = document.createElement("p");
       notice.className = "notice";
-      notice.textContent = "La carga de documentos no está disponible por el momento. Podés guardar los datos y continuar cuando se habilite.";
+      notice.textContent = "No se pueden adjuntar archivos por ahora. Podés guardar los datos, pero el trámite que requiera documentos no podrá completarse hasta habilitar la carga.";
+      const help = document.createElement("div");
+      help.className = "file-help-actions";
+      help.append(whatsappHelp(schema.title || serviceId));
+      notice.append(help);
       form.append(notice);
     }
     const preview = document.createElement("details");
@@ -566,6 +629,8 @@
       if (input.disabled) continue;
       const file = input.files?.[0];
       if (!file) continue;
+      const issue = uploadIssue(file, input.accept);
+      if (issue) throw new Error(issue);
       const fieldId = input.dataset.v2FileField || input.name;
       const kind = /dni/i.test(fieldId) ? "dni" : "supporting_document";
       const body = new FormData();
@@ -680,6 +745,12 @@
         if (uploadedFields[input.name]) { input.required = false; input.dataset.v2Uploaded = "true"; }
       }
       const missing = missingDocuments().length > 0;
+      for (const option of qsa("[data-v2-price-option]", form)) {
+        const selected = qs('[name="' + CSS.escape(option.dataset.v2PriceFor) + '"]', form)?.value;
+        const active = selected === option.dataset.v2PriceValue;
+        option.setAttribute("aria-pressed", String(active));
+        option.classList.toggle("selected", active);
+      }
       window.TramiPagoProgress?.render({ requiresPayment: !schema.intakeOnly, missingDocuments: missing, status: "draft" });
       submit.textContent = missing && !b2Ready ? "Guardar datos →" : schema.intakeOnly ? "Enviar consulta →" : "Continuar al pago →";
       const options = tariff?.options || [];
@@ -712,6 +783,12 @@
       const note = document.createElement("p");
       note.textContent = pending ? "La documentación requerida sigue pendiente. Tus datos ya están guardados." : "Estado: " + statusLabel(data.status);
       result.append(heading, code, note);
+      if (pending) {
+        const actions = document.createElement("div");
+        actions.className = "file-help-actions";
+        actions.append(whatsappHelp(serviceName, active.trackingCode));
+        result.append(actions);
+      }
       if (!pending) {
         const next = document.createElement("a");
         next.className = "button";
@@ -749,6 +826,15 @@
       } catch { active = null; }
     } else if (cached) fill(cached);
     if (!form.hidden) refresh();
+    form.addEventListener("change", event => {
+      const input = event.target;
+      if (input?.type !== "file" || input.disabled || !input.files?.length) return;
+      const error = uploadIssue(input.files[0], input.accept);
+      if (error) {
+        input.value = "";
+        setMessage(output, error, "error");
+      } else setMessage(output, "");
+    }, true);
     form.addEventListener("input", refresh);
     form.addEventListener("change", refresh);
     form.addEventListener("invalid", event => {
