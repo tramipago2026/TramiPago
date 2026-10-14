@@ -270,6 +270,7 @@
         const button = document.createElement("button");
         button.type = "button";
         button.className = "price-choice-button";
+        button.dataset.v2PriceOption = "";
         button.dataset.v2PriceFor = field.id;
         button.dataset.v2PriceValue = option.value;
         button.setAttribute("aria-pressed", "false");
@@ -423,7 +424,7 @@
       notice.textContent = "No se pueden adjuntar archivos por ahora. Podés guardar los datos, pero el trámite que requiera documentos no podrá completarse hasta habilitar la carga.";
       const help = document.createElement("div");
       help.className = "file-help-actions";
-      help.append(whatsappHelp(schema.title || serviceId));
+      help.append(whatsappHelp(qs("[data-v2-service-title]")?.textContent || serviceId));
       notice.append(help);
       form.append(notice);
     }
