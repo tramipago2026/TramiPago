@@ -167,13 +167,21 @@
     link.textContent = "Necesito ayuda por WhatsApp →";
     return link;
   }
+  function allowedFileFormats(accept = "") {
+    const supported = [];
+    if (accept.includes("application/pdf")) supported.push("PDF");
+    if (accept.includes("image/jpeg")) supported.push("JPG");
+    if (accept.includes("image/png")) supported.push("PNG");
+    if (!supported.length) return "PDF, JPG o PNG";
+    return supported.length < 3 ? supported.join(" o ") : "PDF, JPG o PNG";
+  }
   function uploadIssue(file, accept = "") {
     if (!file || !file.size) return "Seleccioná un archivo válido.";
     if (file.size > MAX_UPLOAD_BYTES) return "El archivo supera los 10 MB permitidos.";
     const ext = file.name.toLowerCase().match(/\.[a-z0-9]+$/)?.[0] || "";
     const mime = {".pdf":"application/pdf",".jpg":"image/jpeg",".jpeg":"image/jpeg",".png":"image/png"}[ext];
     if (!mime || file.type !== mime || !accept.split(",").map(v => v.trim()).includes(mime)) {
-      return "Formato no permitido. Usá PDF, JPG o PNG según lo indicado.";
+      return "Formato no permitido. Usá " + allowedFileFormats(accept) + ".";
     }
     return "";
   }
@@ -290,7 +298,7 @@
       input.dataset.originalRequired = field.required ? "true" : "false";
       const limits = document.createElement("small");
       limits.className = "file-format-note";
-      limits.textContent = "Formatos: " + (field.accept?.includes("application/pdf") ? "PDF, " : "") + "JPG o PNG · máximo 10 MB por archivo.";
+      limits.textContent = "Formatos: " + allowedFileFormats(field.accept || "") + " · máximo 10 MB por archivo.";
       label.append(input, limits);
       if (!b2Ready) {
         input.disabled = true;
@@ -1060,7 +1068,7 @@
                 input.accept = definition.accept || "application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png";
                 const note = document.createElement("small");
                 note.className = "file-format-note";
-                note.textContent = "PDF, JPG o PNG según el documento · máximo 10 MB.";
+                note.textContent = allowedFileFormats(input.accept) + " · máximo 10 MB.";
                 label.append(input,note);
               } else {
                 input.maxLength = 1000;
@@ -1118,8 +1126,11 @@
                   },
                   body: JSON.stringify({ payload, fileIds }),
                 });
-                setMessage(msg, "Corrección recibida. Nuevo estado: " + statusLabel(updated.status) + ".", "success");
+                setMessage(msg, updated.missingFields?.length
+                  ? "Corrección recibida. Todavía hay datos pendientes; consultá nuevamente el estado."
+                  : "Corrección recibida. Nuevo estado: " + statusLabel(updated.status) + ".", "success");
                 if (statusNode) statusNode.textContent = statusLabel(updated.status);
+                correction.querySelectorAll("input,button").forEach(control => { control.disabled = true; });
               } catch (e) {
                 setMessage(msg, e?.message?.startsWith("Formato") || e?.message?.startsWith("El archivo") || e?.message?.startsWith("Seleccioná")
                   ? e.message : "No se pudo enviar la corrección.", "error");
