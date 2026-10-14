@@ -33,4 +33,56 @@
   if(!document.querySelector(".skip-link")){const skip=document.createElement("a");skip.className="skip-link";skip.href="#contenido";skip.textContent="Saltar al contenido";header.before(skip);}
   header.innerHTML=renderHeader(location.pathname);
   footer.innerHTML=renderFooter();
+
+  // Interior-only visual layout. The approved Opción C homepage stays unchanged.
+  if (!document.body.classList.contains("home-opcion-c")) {
+    document.body.classList.add("v2-interior");
+    const familyPhotos={
+      "partidas-certificados":"partidas",
+      "arca":"arca",
+      "legalizaciones-apostillas":"apostillas",
+      "atencion-abogado":"abogado",
+      "asistencia-digital":"digital"
+    };
+    const makePhoto=(id,alt)=>{
+      const img=document.createElement("img");
+      img.src="/v2/photo/"+id+".jpg";
+      img.alt=alt;
+      img.loading="lazy";img.decoding="async";
+      img.addEventListener("error",()=>{
+        img.hidden=true;
+        img.parentElement?.classList.add("photo-unavailable");
+      });
+      return img;
+    };
+    const path=location.pathname;
+    const family=path.match(/^\/v2\/familias\/([^/]+)\/$/)?.[1];
+    if(family && familyPhotos[family]) {
+      const content=document.querySelector("main .content");
+      const h1=content?.querySelector("h1");
+      const subtitle=h1?.nextElementSibling;
+      if(content && h1) {
+        const hero=document.createElement("div");hero.className="interior-family-hero";
+        const text=document.createElement("div");text.className="interior-family-copy";
+        const visual=document.createElement("div");visual.className="interior-family-photo";
+        visual.append(makePhoto(familyPhotos[family],"Fotografía representativa de "+h1.textContent));
+        h1.before(hero);hero.append(text,visual);text.append(h1);
+        if(subtitle?.tagName==="P")text.append(subtitle);
+      }
+      content?.classList.add("family-content");
+    }
+    if(path==="/v2/categorias/") {
+      document.querySelector("main .content")?.classList.add("categories-content");
+      for(const [slug,photo] of Object.entries(familyPhotos)){
+        const card=document.querySelector('a.card-photo[href="/v2/familias/'+slug+'/"]');
+        const img=card?.querySelector("img");
+        if(img){
+          img.src="/v2/photo/"+photo+".jpg";
+          img.alt="";
+          img.addEventListener("error",()=>{img.hidden=true;card.classList.add("photo-unavailable");});
+        }
+      }
+    }
+  }
+
 })();
