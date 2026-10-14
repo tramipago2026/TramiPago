@@ -14,7 +14,8 @@ const clientScript = readFileSync(path.join(root, "assets", "v2.js"), "utf8");
 assert.ok(!clientScript.includes("Información oficial verificada"), "Control interno expuesto en ficha pública");
 assert.ok(!/Guardar borrador|Borrador guardado/.test(clientScript), "Jerga de construcción en formulario público");
 const paymentFlow = readFileSync(path.join(root, "assets", "flow-v2.js"), "utf8");
-assert.ok(paymentFlow.includes('health?.dependencies?.b2==="configured" && health?.dependencies?.payments==="configured"'), "El frontend permite comprobantes sin pago habilitado");
+assert.ok(paymentFlow.includes('health?.dependencies?.b2==="configured"'), "El frontend no verifica B2 antes de pedir comprobantes");
+assert.ok(!paymentFlow.includes('health?.dependencies?.payments==="configured"'),"No exigir una pasarela ajena a la transferencia manual de V1");
 const formSchema = JSON.parse(readFileSync(path.join(root, "data", "form-schema-v2.json"), "utf8"));
 const tariffs = JSON.parse(readFileSync(path.join(root,"data","tarifario-v1-v2.json"),"utf8"));
 const uploadFields=Object.values(formSchema.services).flatMap(s=>s.fields.filter(field=>field.type==="file"));
@@ -28,10 +29,10 @@ assert.ok(clientScript.includes("price-choice-options"),"Faltan botones visibles
 assert.ok(clientScript.includes("file-help-button"),"Falta ayuda contextual cuando se bloquean documentos");
 
 const bank = JSON.parse(readFileSync(path.join(root,"data","medio-pago-v1-v2.json"),"utf8"));
-assert.equal(bank.enabled,false,"No activar cobros sin B2 TEST, precios verificados y autorización");
+assert.equal(bank.enabled,true,"El medio de transferencia manual de V1 debe estar preparado para activarse automáticamente tras B2");
 assert.equal(bank.provider,"transferencia","Medio de pago V1 perdido");
 assert.ok(bank.alias&&bank.cvu&&bank.holder,"Datos de transferencia V1 incompletos");
-assert.match(paymentFlow,/data\.quotedAmount\s*!==\s*null/,"El pago no controla el importe cotizado");
+assert.match(paymentFlow,/Number\.isFinite\(Number\(data\.quotedAmount\)\)/,"El pago requiere una cotización válida generada en MySQL");
 
 assert.equal(Object.keys(tariffs.services).length,25,"Las 25 fichas deben conservar su tarifa de V1 o falta de precio");
 assert.equal(Object.values(tariffs.services).filter(s=>s.options.length>0).length,20,"Conteo de servicios tarifados V1 inesperado");
