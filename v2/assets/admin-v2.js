@@ -131,7 +131,7 @@
   totpForm.addEventListener("submit",async e=>{
     e.preventDefault(); const fd=new FormData(totpForm); msg("Verificando MFA…");
     try{await request("/v2/auth/two-factor/verify-totp",{method:"POST",body:JSON.stringify({code:String(fd.get("code")||"").trim(),trustDevice:false})});totpForm.reset();await session()}
-    catch{msg("Código MFA inválido o vencido.","error")}
+    catch(e){msg(e.status===401?"Sesión vencida. Volvé a ingresar correo y contraseña.":e.status===429?"Demasiados intentos. Esperá antes de reintentar.":e.status===403?"La verificación MFA no está disponible para esta sesión. Volvé a iniciar sesión.":"No se pudo verificar el MFA. Revisá el código de V2 y la etapa de inicio de sesión.","error")}
   });
   enrollForm.addEventListener("submit",async e=>{
     e.preventDefault(); const fd=new FormData(enrollForm); msg("Generando configuración MFA…");
