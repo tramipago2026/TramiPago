@@ -12,6 +12,9 @@ class Element {
   querySelector(selector){return this.children.find(n=>n.tag===selector.match(/^\w+/)?.[0])||null;}
 }
 const code=readFileSync(new URL("../assets/flow-v2.js",import.meta.url),"utf8");
+const shared={window:{},document:{querySelector(){return null;}}};
+runInNewContext(readFileSync(new URL("../assets/shell-v2.js",import.meta.url),"utf8"),shared);
+
 const statuses=["draft","awaiting_payment","payment_review","payment_confirmed","in_progress","needs_info","finalized","cancelled"];
 for(const stage of ["review","payment","confirmation"])for(const status of statuses){
   const main=new Element("main"),title=new Element("h1"),message=new Element("p");
@@ -20,7 +23,7 @@ for(const stage of ["review","payment","confirmation"])for(const status of statu
     document:{body:{dataset:{v2Flow:stage}},querySelector(s){return s==="[data-flow-content]"?main:s==="[data-flow-title]"?title:message;},createElement(tag){return new Element(tag);}},
     location:{pathname:"/v2/tramites/antecedentes-penales/"+({review:"revisar",payment:"pago",confirmation:"confirmacion"})[stage]+"/"},
     sessionStorage:{getItem(){return JSON.stringify({serviceId:"antecedentes-penales",requestId:"synthetic-only",capability:"synthetic-only"});}},
-    window:{TramiPagoProgress:{render(){},summary(){}}},
+    window:{TramiPagoProgress:{render(){},summary(){}},TramiPagoShell:shared.window.TramiPagoShell},
     FormData,
     fetch:async url=>({ok:true,json:async()=>({services:{"antecedentes-penales":{fields:[]}}}),text:async()=>JSON.stringify(url.includes("health")?{dependencies:{b2:"pending",payments:"pending"}}:data)}),
   });
