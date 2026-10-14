@@ -166,13 +166,32 @@
     const form=document.createElement("form");form.className="vertical";
     form.innerHTML='<label>Comprobante PDF/JPEG/PNG<input name="file" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required></label><button class="button" type="submit">Enviar comprobante</button>';
     const button=q('button[type="submit"]',form);
+    const fileInput=q('input[type="file"]',form);
+    const fileGuide=document.createElement("small");
+    fileGuide.className="file-format-note";
+    fileGuide.textContent="Formatos: PDF, JPG o PNG · máximo 10 MB por archivo.";
+    form.querySelector("label")?.append(fileGuide);
     if(!ready){
       button.disabled=true;
       q('input[type="file"]',form).disabled=true;
-      const p=document.createElement("p");p.className="notice";p.textContent="El pago y la carga de comprobantes no están habilitados en este momento. No realices transferencias.";main.append(p);
+      form.classList.add("upload-pending-form");
+      const p=document.createElement("div");p.className="upload-unavailable";
+      const txt=document.createElement("p");txt.textContent="Los pagos y comprobantes todavía no están habilitados. No realices transferencias.";
+      const actions=document.createElement("div");actions.className="file-help-actions";
+      const help=document.createElement("a");
+      help.className="button file-help-button";
+      help.href="https://wa.me/5491167083232?text="+encodeURIComponent("Hola, necesito ayuda con el pago de "+data.serviceName+". Código: "+active.trackingCode);
+      help.target="_blank";help.rel="noopener noreferrer";help.textContent="Necesito ayuda por WhatsApp →";
+      actions.append(help);p.append(txt,actions);main.append(p);
     }
     form.addEventListener("submit",async(event)=>{
       event.preventDefault();const file=new FormData(form).get("file");if(!(file instanceof File))return;
+      const ext=(file.name.toLowerCase().match(/\.[a-z0-9]+$/)||[])[0]||"";
+      const mime={".pdf":"application/pdf",".jpg":"image/jpeg",".jpeg":"image/jpeg",".png":"image/png"}[ext];
+      if(!file.size||file.size>10*1024*1024||!mime||mime!==file.type){
+        message("Comprobante inválido. Adjuntá un PDF, JPG o PNG de hasta 10 MB.","error");
+        return;
+      }
       button.disabled=true;message("Enviando comprobante…");
       const body=new FormData();body.set("file",file);body.set("kind","payment_receipt");
       try{
