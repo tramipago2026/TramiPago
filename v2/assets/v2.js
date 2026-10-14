@@ -489,14 +489,22 @@
   }
 
   function attachRequestContext(form, output, result, service, family) {
-    const photos = {
-      "antecedentes-penales": "antecedentes-opcion-c.webp",
-      "constancias-anses": "anses-opcion-c.webp",
-      "informe-vehicular": "vehicular-opcion-c.webp",
-      "arba-inmobiliario": "arba-opcion-c.webp",
+    // Real, text-free photography by topic; avoid cropped V1 advertising composites.
+    const photoByFamily = {
+      "partidas-certificados":"partidas",
+      "arca":"arca",
+      "legalizaciones-apostillas":"apostillas",
+      "atencion-abogado":"abogado",
+      "asistencia-digital":"digital",
     };
-    const imageName = photos[service?.id] || family?.image || service?.image;
-    if (!imageName || !service || !form.parentElement) return;
+    const photoByService = {
+      "antecedentes-penales":"partidas",
+      "constancias-anses":"atencion",
+      "informe-vehicular":"vehiculos",
+      "arba-inmobiliario":"arca",
+    };
+    const photoId = photoByService[service?.id] || photoByFamily[family?.id] || "digital";
+    if (!service || !form.parentElement) return;
     const layout = document.createElement("div");
     layout.className = "request-layout";
     const main = document.createElement("div");
@@ -505,7 +513,8 @@
     aside.className = "request-context";
     aside.setAttribute("aria-label", "Información sobre el trámite seleccionado");
     const photo = document.createElement("img");
-    photo.src = "/v2/assets/" + imageName;
+    photo.src = photoId === "vehiculos" ? "/v2/assets/vehicular-opcion-c.webp" : "/v2/photo/" + photoId + ".jpg";
+    photo.addEventListener("error",()=>{photo.hidden=true;aside.classList.add("photo-unavailable");});
     photo.alt = "Imagen relacionada con " + service.name;
     photo.loading = "lazy";
     photo.decoding = "async";
