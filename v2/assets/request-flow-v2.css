@@ -103,3 +103,24 @@ body.request-page .request-context.photo-unavailable{background:linear-gradient(
   body.request-page .form-grid label{font-size:15px}
   body.request-page .form-wizard-navigation .button{font-size:15px;min-height:48px;padding:10px 15px}
 }
+
+
+/* V2 upload readiness and direct choice of priced alternatives. */
+.request-page .price-choice-group{border:1px solid #94b8e8;border-radius:16px;background:#f6faff;margin:8px 0;padding:13px 14px 17px;min-width:0;grid-column:1/-1}
+.request-page .price-choice-group legend{font-size:17px;background:none;border:0;margin:0;padding:0 6px;color:#113b78}
+.request-page .price-choice-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:8px 0 0}
+.request-page .price-choice-button{font:inherit;color:#163e75;min-height:68px;padding:13px 16px;background:#fff;border:2px solid #95afd0;border-radius:12px;text-align:center;font-size:16px;font-weight:750;cursor:pointer}
+.request-page .price-choice-button:hover{background:#edf6ff;border-color:#2475d8}
+.request-page .price-choice-button.selected,.request-page .price-choice-button[aria-pressed="true"]{border-color:#0967e6;background:#dceeff;color:#074b9e;box-shadow:inset 0 0 0 1px #0967e6}
+.request-page .price-choice-button:focus-visible{outline:3px solid #60a5fa;outline-offset:3px}
+.request-page .price-choice-native{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;clip-path:inset(50%)!important;overflow:hidden!important;pointer-events:none!important}
+.request-page input[type=file][data-v2-unavailable="true"]{display:none!important}
+.request-page .file-format-note{display:block;color:#405d80;font-size:13px;font-weight:550;margin:7px 0 0}
+.request-page .file-help-actions,.file-help-actions{display:flex;align-items:center;justify-content:center;margin:16px auto 4px;gap:10px;flex-wrap:wrap}
+.request-page .file-help-button,.file-help-button{display:inline-flex;align-items:center;justify-content:center;text-align:center;border-radius:11px;border:1px solid #0b833e!important;background:#087f39!important;color:#fff!important;padding:13px 20px;min-height:48px;font-size:15px;font-weight:750;text-decoration:none!important}
+.request-page .file-help-button:hover,.file-help-button:hover{background:#056e31!important}
+.request-page .file-help-button:focus-visible,.file-help-button:focus-visible{outline:3px solid #60a5fa;outline-offset:2px}
+.request-page .upload-unavailable{border:1px solid #bfd5ee;background:#f2f8ff;padding:16px 20px;border-radius:12px;margin:15px 0}
+.request-page .upload-unavailable p{margin:0}
+.request-page .upload-unavailable .file-help-actions{margin:10px auto 0}
+@media(max-width:530px){.request-page .price-choice-options{grid-template-columns:1fr}.request-page .price-choice-button{min-height:56px}}
