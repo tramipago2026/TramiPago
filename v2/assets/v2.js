@@ -518,6 +518,11 @@
         for (const control of qsa("input,select,textarea", node)) {
           if (control.disabled || control.closest("[data-v2-field]")?.hidden) continue;
           if (!control.checkValidity()) {
+            if (control.classList.contains("price-choice-native")) {
+              setMessage(output, "Elegí una de las opciones de modalidad para continuar.", "error");
+              node.querySelector(".price-choice-button")?.focus();
+              return false;
+            }
             const details = control.closest("details");
             if (details) details.open = true;
             control.reportValidity();
