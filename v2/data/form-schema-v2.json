@@ -60,7 +60,7 @@
           "label": "Frente del DNI (alternativa al N.º de trámite)",
           "type": "file",
           "required": false,
-          "accept": "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+          "accept": "image/jpeg,image/png,.jpg,.jpeg,.png"
         },
         {
           "id": "address",
@@ -247,7 +247,7 @@
           "label": "Foto de boleta o documento del inmueble",
           "type": "file",
           "required": false,
-          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+          "accept": "image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
         },
         {
           "id": "propertyDistrict",
@@ -454,7 +454,7 @@
           "label": "Copia de una partida anterior (opcional)",
           "type": "file",
           "required": false,
-          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+          "accept": "image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
         },
         {
           "id": "purpose",
@@ -818,7 +818,7 @@
           "label": "Copia de una partida anterior (opcional)",
           "type": "file",
           "required": false,
-          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+          "accept": "image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
         },
         {
           "id": "purpose",
@@ -1023,28 +1023,28 @@
           "label": "DNI vigente — frente",
           "type": "file",
           "required": true,
-          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+          "accept": "image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
         },
         {
           "id": "dniBack",
           "label": "DNI vigente — dorso",
           "type": "file",
           "required": true,
-          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+          "accept": "image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
         },
         {
           "id": "birthCertificate",
           "label": "Partida / acta de nacimiento (si corresponde)",
           "type": "file",
           "required": false,
-          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+          "accept": "image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
         },
         {
           "id": "thirdPartyDocument",
           "label": "Vínculo o autorización del tercero",
           "type": "file",
           "required": false,
-          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+          "accept": "image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
         },
         {
           "id": "purpose",
@@ -1578,7 +1578,7 @@
           "label": "Comprobante de pago (opcional)",
           "type": "file",
           "required": false,
-          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+          "accept": "image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
         },
         {
           "id": "ccmaNotes",
@@ -1682,7 +1682,7 @@
           "label": "Comprobante de pago (opcional)",
           "type": "file",
           "required": false,
-          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+          "accept": "image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
         },
         {
           "id": "reimputationNotes",
@@ -1784,7 +1784,7 @@
           "label": "Comprobante de pago (opcional)",
           "type": "file",
           "required": false,
-          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+          "accept": "image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
         },
         {
           "id": "comboNotes",
@@ -2324,7 +2324,7 @@
           "label": "Documentación respaldatoria (si corresponde)",
           "type": "file",
           "required": false,
-          "accept": "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"
+          "accept": "image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
         },
         {
           "id": "serviceFeeAcceptance",
