@@ -17,6 +17,16 @@ const paymentFlow = readFileSync(path.join(root, "assets", "flow-v2.js"), "utf8"
 assert.ok(paymentFlow.includes('health?.dependencies?.b2==="configured" && health?.dependencies?.payments==="configured"'), "El frontend permite comprobantes sin pago habilitado");
 const formSchema = JSON.parse(readFileSync(path.join(root, "data", "form-schema-v2.json"), "utf8"));
 const tariffs = JSON.parse(readFileSync(path.join(root,"data","tarifario-v1-v2.json"),"utf8"));
+const uploadFields=Object.values(formSchema.services).flatMap(s=>s.fields.filter(field=>field.type==="file"));
+assert.equal(uploadFields.length,14,"Inventario de 14 campos de archivo alterado");
+for(const field of uploadFields){
+  assert.ok(!/webp|heic/i.test(field.accept||""),field.id+": el servidor no admite este formato");
+  assert.ok(/image\/jpeg|application\/pdf/.test(field.accept||""),field.id+": falta formato compatible con el backend");
+}
+assert.ok(clientScript.includes("10 * 1024 * 1024"),"Falta validación de tamaño de 10 MB en navegador");
+assert.ok(clientScript.includes("price-choice-options"),"Faltan botones visibles para modalidades con precio");
+assert.ok(clientScript.includes("file-help-button"),"Falta ayuda contextual cuando se bloquean documentos");
+
 const bank = JSON.parse(readFileSync(path.join(root,"data","medio-pago-v1-v2.json"),"utf8"));
 assert.equal(bank.enabled,false,"No activar cobros sin B2 TEST, precios verificados y autorización");
 assert.equal(bank.provider,"transferencia","Medio de pago V1 perdido");
