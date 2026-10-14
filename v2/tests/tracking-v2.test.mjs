@@ -3,6 +3,9 @@ import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
 
 const script = readFileSync(process.argv[2] || new URL("../assets/v2.js", import.meta.url), "utf8");
+const shellVm = {window:{},document:{querySelector(){return null;}}};
+runInNewContext(readFileSync(new URL("../assets/shell-v2.js",import.meta.url),"utf8"),shellVm);
+
 class Element {
   constructor(tag = "div") { this.tag = tag; this.dataset = {}; this.children = []; this.attributes = {}; this.hidden = false; this.textContent = ""; this.events = {}; }
   append(...items) { for (const item of items) { item.parent = this; this.children.push(item); } }
@@ -27,7 +30,7 @@ const nodes = new Map([["[data-v2-tracking-form]", form], ["[data-v2-tracking-re
 const active = { serviceId: "antecedentes-penales", requestId: "synthetic-only", trackingCode: code.value, capability: "synthetic-only" };
 runInNewContext(script, {
   document: { querySelector: query => nodes.get(query) || null, createElement: tag => new Element(tag) },
-  window: { addEventListener() {} },
+  window: { addEventListener() {}, TramiPagoShell:shellVm.window.TramiPagoShell },
   location: { search: "", pathname: "/v2/seguimiento/" },
   sessionStorage: { getItem: () => JSON.stringify(active) },
   URLSearchParams, Response,
