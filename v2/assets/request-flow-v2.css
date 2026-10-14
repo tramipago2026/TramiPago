@@ -124,3 +124,6 @@ body.request-page .request-context.photo-unavailable{background:linear-gradient(
 .request-page .upload-unavailable p{margin:0}
 .request-page .upload-unavailable .file-help-actions{margin:10px auto 0}
 @media(max-width:530px){.request-page .price-choice-options{grid-template-columns:1fr}.request-page .price-choice-button{min-height:56px}}
+
+/* Do not expose unusable receipt controls before private B2 payment integration is ready. */
+.request-page .upload-pending-form{display:none!important}
