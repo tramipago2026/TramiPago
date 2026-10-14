@@ -398,6 +398,146 @@
     return { schema, b2Ready, submit: button };
   }
 
+
+  // Only the presentation changes: all 25 service schemas retain their backend contract.
+  function setupFormWizard(form, schema, output) {
+    const group = id => qs('[data-v2-group="' + id + '"]', form)?.closest(".request-group") || null;
+    const contact = group("contact"), service = group("service"), consent = group("consent");
+    const optional = qs(".request-optional", form), preview = qs("[data-v2-preview]", form);
+    const actions = qs(".request-actions", form);
+    if (!contact || !service || !actions) return { validateAll: () => form.reportValidity(), reset: () => {} };
+    const serviceFirst = Boolean(schema.fieldConditions?.fullName || schema.fieldConditions?.thirdPartyDocument);
+    if (!serviceFirst) form.insertBefore(contact, service);
+    const steps = (serviceFirst ? [
+      { id: "service", label: "Datos del trámite", nodes: [service, optional, ...qsa("p.notice", form)] },
+      { id: "contact", label: "Tus datos", nodes: [contact] },
+    ] : [
+      { id: "contact", label: "Tus datos", nodes: [contact] },
+      { id: "service", label: "Datos del trámite", nodes: [service, optional, ...qsa("p.notice", form)] },
+    ]).concat([{ id: "review", label: "Revisar y confirmar", nodes: [consent, preview, actions] }]);
+    for (const item of steps) item.nodes = item.nodes.filter(Boolean);
+    const progress = document.createElement("nav");
+    progress.className = "form-wizard-progress";
+    progress.setAttribute("aria-label", "Pasos para completar el formulario");
+    const list = document.createElement("ol");
+    for (const item of steps) {
+      const li = document.createElement("li");
+      const number = document.createElement("strong");
+      number.textContent = String(steps.indexOf(item) + 1);
+      const label = document.createElement("span");
+      label.textContent = item.label;
+      li.append(number, label);
+      list.append(li);
+    }
+    progress.append(list);
+    form.prepend(progress);
+    const navigation = document.createElement("div");
+    navigation.className = "form-wizard-navigation";
+    const back = document.createElement("button");
+    back.type = "button"; back.className = "button secondary-button";
+    back.textContent = "← Volver"; back.dataset.v2WizardBack = "";
+    const next = document.createElement("button");
+    next.type = "button"; next.className = "button";
+    next.textContent = "Continuar →"; next.dataset.v2WizardNext = "";
+    navigation.append(back, next);
+    form.append(navigation);
+    form.noValidate = true;
+    let current = 0;
+    const draw = index => {
+      current = Math.max(0, Math.min(index, steps.length - 1));
+      for (let i = 0; i < steps.length; i += 1) {
+        for (const node of steps[i].nodes) node.classList.toggle("wizard-hidden", i !== current);
+        const li = list.children[i];
+        li.className = i < current ? "complete" : i === current ? "active" : "";
+        if (i === current) li.setAttribute("aria-current", "step");
+        else li.removeAttribute("aria-current");
+      }
+      back.hidden = current === 0;
+      next.hidden = current === steps.length - 1;
+      if (current === steps.length - 1 && preview) preview.open = true;
+      form.dataset.v2WizardStep = String(current + 1);
+    };
+    const check = index => {
+      draw(index);
+      for (const node of steps[index].nodes) {
+        for (const control of qsa("input,select,textarea", node)) {
+          if (control.disabled || control.closest("[data-v2-field]")?.hidden) continue;
+          if (!control.checkValidity()) {
+            const details = control.closest("details");
+            if (details) details.open = true;
+            control.reportValidity();
+            return false;
+          }
+        }
+      }
+      if (steps[index].id === "service") {
+        const problem = validateServiceRules(form, schema);
+        if (problem) {
+          setMessage(output, problem, "error");
+          return false;
+        }
+      }
+      return true;
+    };
+    back.addEventListener("click", () => draw(current - 1));
+    next.addEventListener("click", () => {
+      if (check(current)) {
+        setMessage(output, "");
+        draw(current + 1);
+      }
+    });
+    draw(0);
+    return {
+      reset: () => draw(0),
+      validateAll: () => {
+        for (let i = 0; i < steps.length; i += 1) if (!check(i)) return false;
+        draw(steps.length - 1);
+        return true;
+      },
+    };
+  }
+
+  function attachRequestContext(form, output, result, service, family) {
+    const photos = {
+      "antecedentes-penales": "antecedentes-opcion-c.webp",
+      "constancias-anses": "anses-opcion-c.webp",
+      "informe-vehicular": "vehicular-opcion-c.webp",
+      "arba-inmobiliario": "arba-opcion-c.webp",
+    };
+    const imageName = photos[service?.id] || family?.image || service?.image;
+    if (!imageName || !service || !form.parentElement) return;
+    const layout = document.createElement("div");
+    layout.className = "request-layout";
+    const main = document.createElement("div");
+    main.className = "request-layout-main";
+    const aside = document.createElement("aside");
+    aside.className = "request-context";
+    aside.setAttribute("aria-label", "Información sobre el trámite seleccionado");
+    const photo = document.createElement("img");
+    photo.src = "/v2/assets/" + imageName;
+    photo.alt = "Imagen relacionada con " + service.name;
+    photo.loading = "lazy";
+    photo.decoding = "async";
+    const content = document.createElement("div");
+    content.className = "request-context-copy";
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "muted";
+    eyebrow.textContent = "Estás solicitando";
+    const title = document.createElement("h2");
+    title.textContent = service.name;
+    const description = document.createElement("p");
+    description.textContent = "Completá los datos y revisalos antes de continuar.";
+    const help = document.createElement("a");
+    help.href = "/v2/ayuda/";
+    help.className = "request-context-help";
+    help.textContent = "¿Necesitás ayuda? →";
+    content.append(eyebrow, title, description, help);
+    aside.append(photo, content);
+    form.before(layout);
+    layout.append(main, aside);
+    main.append(form, output, result);
+  }
+
   function schemaPayload(form) {
     const payload = {};
     const skip = new Set(["fullName","name","whatsapp","email","emailConfirm","authorization","serviceFeeAcceptance"]);
@@ -457,6 +597,7 @@
     const pathMatch = location.pathname.match(/^\/v2\/tramites\/([^/]+)(?:\/iniciar)?\/?$/);
     const serviceId = form.dataset.serviceId || pathMatch?.[1] || "";
     let serviceName = serviceId;
+    let serviceInfo = null, familyInfo = null;
     const titleNode = qs("[data-v2-service-title]");
     const backLink = qs("[data-v2-service-back]");
     const output = qs("[data-v2-form-message]");
@@ -464,7 +605,11 @@
     try {
       const manifest = await fetch("/v2/rutas-v2.json", { cache: "no-store" }).then(r => r.json());
       const service = manifest.services.find(item => item.id === serviceId);
-      if (service) serviceName = service.name;
+      if (service) {
+        serviceName = service.name;
+        serviceInfo = service;
+        familyInfo = manifest.families?.find(item => item.id === service.family) || null;
+      }
     } catch {}
     if (titleNode) titleNode.textContent = serviceName;
     if (backLink) { backLink.href = "/v2/tramites/"; backLink.textContent = "← Todos los trámites"; }
@@ -490,6 +635,8 @@
     quoteNode.className = "muted";
     quoteNode.setAttribute("aria-live", "polite");
     submit.before(quoteNode);
+    attachRequestContext(form, output, result, serviceInfo, familyInfo);
+    const wizard = setupFormWizard(form, schema, output);
     const formatPrice = amount => new Intl.NumberFormat("es-AR", {
       style: "currency", currency: "ARS", maximumFractionDigits: 0,
     }).format(amount);
@@ -578,7 +725,7 @@
           active = null; existingContact = null; uploadedFields = {};
           sessionStorage.removeItem("tramipago-v2-current"); sessionStorage.removeItem(cacheKey);
           createKey = randomKey("create-" + serviceId);
-          form.reset(); form.hidden = false; result.hidden = true; refresh();
+          form.reset(); form.hidden = false; result.hidden = true; wizard.reset(); refresh();
         });
         const actions = document.createElement("div");
         actions.className = "flow-actions";
@@ -613,7 +760,7 @@
 
     form.addEventListener("submit", async event => {
       event.preventDefault();
-      if (submitting || !form.reportValidity()) return;
+      if (submitting || !wizard.validateAll()) return;
       const ruleError = validateServiceRules(form, schema);
       if (ruleError) { setMessage(output, ruleError, "error"); return; }
       const data = new FormData(form);
