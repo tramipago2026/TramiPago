@@ -14,7 +14,19 @@
     const links=legal.map(([slug,title])=>'<a href="/v2/'+slug+'/">'+title+'</a>').join("");
     return '<div class="footer-benefits">'+features+'</div><div class="footer-dark"><a href="/v2/" aria-label="Ir al inicio">TramiPago</a>'+links+'<span>© 2026 TramiPago</span></div><p class="private-note">Servicio privado de asistencia. TramiPago no es un organismo público.</p>';
   }
-  window.TramiPagoShell={header:renderHeader,footer:renderFooter};
+  // Shared public labels; Admin retains its more specific administrative terminology.
+  const customerStatuses=Object.freeze({
+    draft:"Datos sin enviar",
+    awaiting_payment:"Pago pendiente",
+    payment_review:"Pago en revisión",
+    payment_confirmed:"Pago confirmado",
+    in_progress:"En proceso",
+    needs_info:"Falta información",
+    finalized:"Finalizado",
+    cancelled:"Cancelado",
+  });
+  const statusLabel=status=>customerStatuses[status]||status||"Sin estado";
+  window.TramiPagoShell={header:renderHeader,footer:renderFooter,statusLabel};
   const header=document.querySelector("[data-v2-shared-header]"),footer=document.querySelector("[data-v2-shared-footer]");
   if(!header||!footer)return;
   const main=document.querySelector("main");if(main&&!main.id)main.id="contenido";
