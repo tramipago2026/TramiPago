@@ -513,7 +513,7 @@
     aside.className = "request-context";
     aside.setAttribute("aria-label", "Información sobre el trámite seleccionado");
     const photo = document.createElement("img");
-    photo.src = photoId === "vehiculos" ? "/v2/assets/vehicular-opcion-c.webp" : "/v2/photo/" + photoId + ".jpg";
+    photo.src = "/v2/photo/" + photoId + ".jpg";
     photo.addEventListener("error",()=>{photo.hidden=true;aside.classList.add("photo-unavailable");});
     photo.alt = "Imagen relacionada con " + service.name;
     photo.loading = "lazy";
