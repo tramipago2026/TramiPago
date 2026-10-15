@@ -49,5 +49,32 @@ assert.equal(nodes.loginSection.hidden, false);
 assert.equal(nodes.loginForm.hidden, false);
 for (const name of names.filter(name => !["loginSection", "loginForm"].includes(name))) assert.equal(nodes[name].hidden, true, name);
 assert.equal(signupOpen.parentElement.hidden, false);
+
+// Unlike public pages, Admin has no shared shell: verify its own skip-link.
+const start = '  const skipLink=q(".skip-link"), main=q("main");';
+const end = '  const loginSection=q("[data-admin-login]")';
+assert.ok(admin.includes(start) && admin.includes(end));
+const wiring = start + admin.split(start)[1].split(end)[0];
+let adminSkip;
+const adminSequence = [];
+const adminMain = {
+  setAttribute(key, value) { this[key] = value; },
+  focus() { adminSequence.push("focus"); },
+  scrollIntoView() { adminSequence.push("scroll"); },
+};
+const adminLocation = {hash: ""};
+runInNewContext(wiring, {
+  q(selector) {
+    return selector === ".skip-link"
+      ? { addEventListener(type, handler) { if(type === "click") adminSkip = handler; } }
+      : selector === "main" ? adminMain : null;
+  },
+  history: { pushState() { adminSequence.push("hash"); adminLocation.hash = "#contenido"; } },
+  location: adminLocation,
+}, {timeout:3000});
+assert.equal(typeof adminSkip, "function");
+adminSkip({ preventDefault() {} });
+assert.equal(adminMain.tabindex, "-1");
+assert.deepEqual(adminSequence, ["focus","hash","scroll"], "Admin skip must focus before fragment navigation");
 assert.match(admin, /catch\(e\)\{if\(e\.status===401\|\|e\.status===403\)showLogin\(\)/, "Expired MFA must return to credential login");
 console.log("V2 keyboard focus and expired MFA login recovery: OK");
