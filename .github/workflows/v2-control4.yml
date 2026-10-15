@@ -27,3 +27,5 @@ jobs:
         run: node v2/tests/skip-admin-recovery.test.mjs
       - name: Verify Admin valid status transitions
         run: node v2/tests/admin-status-regression.test.mjs
+      - name: Verify private payment proof retry
+        run: node v2/tests/payment-retry-regression.test.mjs
