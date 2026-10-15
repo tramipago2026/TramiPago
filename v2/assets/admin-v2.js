@@ -25,7 +25,12 @@
   }));
 
   async function request(path, options={}) {
-    const response=await fetch(path,{credentials:"same-origin",...options,headers:{Accept:"application/json",...(options.body && !(options.body instanceof FormData)?{"Content-Type":"application/json"}:{}),...(options.headers||{})}});
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),12000);
+    let response;
+    try {response=await fetch(path,{credentials:"same-origin",...options,signal:controller.signal,headers:{Accept:"application/json",...(options.body && !(options.body instanceof FormData)?{"Content-Type":"application/json"}:{}),...(options.headers||{})}})}
+    catch(e){const err=new Error(e?.name==="AbortError"?"request_timeout":"network_error");err.code=err.message;err.status=0;throw err}
+    finally{clearTimeout(timeout)}
     const raw=await response.text(); let data=null;
     if(raw){try{data=JSON.parse(raw)}catch{data={error:"invalid_response"}}}
     if(!response.ok){const e=new Error(data?.error||"request_failed");e.status=response.status;e.code=data?.code||data?.error;e.data=data;throw e}
@@ -39,8 +44,8 @@
   function statusLabel(s){return ({draft:"Borrador",awaiting_payment:"Pago pendiente",payment_review:"Pago en revisión",payment_confirmed:"Pago confirmado",in_progress:"En proceso",needs_info:"Falta información",finalized:"Finalizado",cancelled:"Cancelado"})[s]||s}
 
   async function session(){
-    try{const s=await request("/v2/admin/session");showApp(s);await loadList()}
-    catch(e){if(e.code==="mfa_enrollment_required"){showEnroll();return}showLogin()}
+    try{const s=await request("/v2/admin/session");showApp(s);message.hidden=true;await loadList()}
+    catch(e){if(e.code==="mfa_enrollment_required"){showEnroll();return}showLogin();if(e.code==="request_timeout"||e.code==="network_error")msg("No se pudo consultar la sesión. Podés crear tu cuenta o iniciar sesión igualmente.","error");else message.hidden=true}
   }
   async function loadList(){
     list.textContent="Cargando…";
@@ -128,7 +133,7 @@
       await request("/v2/auth/sign-up/email",{method:"POST",body:JSON.stringify({email:String(fd.get("email")||"").trim().toLowerCase(),name:String(fd.get("name")||"").trim(),password:String(fd.get("password")||"")})});
       signupForm.reset();signupForm.hidden=true;signupOpen.parentElement.hidden=false;loginForm.hidden=false;
       msg("Cuenta V2 creada. Falta habilitar el rol owner en MySQL antes de entrar al panel.","success");
-    }catch(error){const code=String(error.code||"request_failed").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,64);msg("No se pudo registrar la cuenta ("+error.status+" · "+code+").","error")}
+    }catch(error){const code=String(error.code||"request_failed").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,64);msg(error.code==="request_timeout"||error.code==="network_error"?"La solicitud de registro no obtuvo respuesta. No la repitas: comprobá primero si la cuenta se creó en MySQL.":"No se pudo registrar la cuenta ("+error.status+" · "+code+").","error")}
     finally{button.disabled=false}
   });
   loginForm.addEventListener("submit",async e=>{
