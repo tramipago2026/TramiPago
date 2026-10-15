@@ -83,7 +83,7 @@
 
   async function session(){
     try{const s=await request("/v2/admin/session");showApp(s);message.hidden=true;await loadList()}
-    catch(e){if(e.code==="mfa_enrollment_required"){showEnroll();return}showLogin();if(e.code==="request_timeout"||e.code==="network_error")msg("No se pudo consultar la sesión. Podés crear tu cuenta o iniciar sesión igualmente.","error");else message.hidden=true}
+    catch(e){if(e.code==="mfa_enrollment_required"){showEnroll();return}showLogin();if(e.code==="forbidden"){const profile=await request("/v2/auth/get-session").catch(()=>null);const userId=String(profile?.user?.id||"");msg(userId?"Cuenta V2 autenticada pero sin permisos Admin. Copiá este ID de activación (no es una contraseña): "+userId:"Cuenta V2 sin permiso Admin: falta vincular el rol owner en MySQL TEST.","error")}else if(e.code==="request_timeout"||e.code==="network_error")msg("No se pudo consultar la sesión. Podés crear tu cuenta o iniciar sesión igualmente.","error");else message.hidden=true}
   }
   let listSequence=0;
   async function loadList(){
@@ -174,9 +174,10 @@
   signupForm.addEventListener("submit",async e=>{
     e.preventDefault();const fd=new FormData(signupForm);const button=q('button[type="submit"]',signupForm);button.disabled=true;
     try {
-      await request("/v2/auth/sign-up/email",{method:"POST",body:JSON.stringify({email:String(fd.get("email")||"").trim().toLowerCase(),name:String(fd.get("name")||"").trim(),password:String(fd.get("password")||"")})});
+      const created=await request("/v2/auth/sign-up/email",{method:"POST",body:JSON.stringify({email:String(fd.get("email")||"").trim().toLowerCase(),name:String(fd.get("name")||"").trim(),password:String(fd.get("password")||"")})});
       signupForm.reset();signupForm.hidden=true;signupOpen.parentElement.hidden=false;loginForm.hidden=false;
-      msg("Cuenta V2 creada. Falta habilitar el rol owner en MySQL antes de entrar al panel.","success");
+      const id=String(created?.user?.id||"");
+      msg(id?"Cuenta V2 creada. Copiá este ID de activación y envialo para habilitar el rol owner: "+id+". No compartas contraseña ni códigos MFA.":"Cuenta V2 creada. Falta habilitar el rol owner antes de entrar al panel.","success");
     }catch(error){const code=String(error.code||"request_failed").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,64);msg(error.code==="request_timeout"||error.code==="network_error"?"La solicitud de registro no obtuvo respuesta. No la repitas: comprobá primero si la cuenta se creó en MySQL.":"No se pudo registrar la cuenta ("+error.status+" · "+code+").","error")}
     finally{button.disabled=false}
   });
