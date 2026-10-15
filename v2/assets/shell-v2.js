@@ -36,9 +36,15 @@
     main.setAttribute("tabindex","-1");
     document.querySelector(".skip-link")?.addEventListener("click",(event)=>{
       event.preventDefault();
-      main.focus({preventScroll:true});
+      // On small screens the approved Opción C layout uses display:contents
+      // for main. That element has no focusable box: focus the first heading.
+      const focusTarget=typeof getComputedStyle==="function" &&
+        getComputedStyle(main).display==="contents"
+        ?main.querySelector("h1")||main:main;
+      if(focusTarget!==main)focusTarget.setAttribute("tabindex","-1");
+      focusTarget.focus({preventScroll:true});
       if(location.hash!=="#contenido")history.pushState(null,"","#contenido");
-      main.scrollIntoView({block:"start"});
+      focusTarget.scrollIntoView({block:"start"});
     });
   }
   header.innerHTML=renderHeader(location.pathname);
