@@ -30,4 +30,7 @@ assert.match(source,/const data=await request\("\/v2\/admin\/requests\/"\+encode
   "Ignore stale Admin request responses");
 assert.match(source,/const health=await request\("\/v2\/health\/dependencies"\);\s+if\(selectedId!==id\)return/,
   "Ignore stale B2 readiness when switching details");
+const refreshedSuccess=/await loadDetail\(selectedId\);await loadList\(\);\s*msg\("Estado actualizado:/;
+assert.match(source,refreshedSuccess,
+  "Do not confirm Admin success until the new status options are refreshed");
 console.log("V2 Admin asynchronous list and detail guards: OK");
