@@ -38,7 +38,7 @@
   }
   function msg(text,kind="info"){message.textContent=text;message.dataset.kind=kind;message.hidden=false}
   function showLogin(){loginSection.hidden=false;appSection.hidden=true;logout.hidden=true}
-  function showApp(session){loginSection.hidden=true;appSection.hidden=false;logout.hidden=false;role=session.admin.role;roleNode.textContent=role+" · MFA activo";statusForm.hidden=role==="viewer"}
+  function showApp(session){loginSection.hidden=true;appSection.hidden=false;logout.hidden=false;role=session.admin.role;roleNode.textContent=role+" · MFA activo";statusForm.hidden=true;rejectProof.hidden=true;resultForm.hidden=true}
   function showEnroll(){loginForm.hidden=true;totpForm.hidden=true;enrollForm.hidden=false;enrollSecret.hidden=true;msg("Esta cuenta debe activar MFA antes de acceder al panel.")}
   function esc(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
   function statusLabel(s){return ({draft:"Borrador",awaiting_payment:"Pago pendiente",payment_review:"Pago en revisión",payment_confirmed:"Pago confirmado",in_progress:"En proceso",needs_info:"Falta información",finalized:"Finalizado",cancelled:"Cancelado"})[s]||s}
@@ -55,14 +55,14 @@
       list.replaceChildren();
       if(!data.requests?.length){list.textContent="Sin solicitudes.";return}
       for(const row of data.requests){
-        const b=document.createElement("button");b.type="button";b.className="text-card";
+        const b=document.createElement("button");b.type="button";b.className="text-card";b.dataset.requestId=row.id;b.setAttribute("aria-pressed",String(selectedId===row.id));
         b.innerHTML="<strong>"+esc(row.tracking_code)+"</strong><span>"+esc(statusLabel(row.status))+" · "+esc(row.service_id)+"</span>";
         b.addEventListener("click",()=>loadDetail(row.id));list.append(b);
       }
     }catch{list.textContent="No se pudo cargar el listado."}
   }
   async function loadDetail(id){
-    selectedId=id; detail.textContent="Cargando…";
+    selectedId=id;list.querySelectorAll(".text-card").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.requestId===id)));detail.textContent="Cargando…";
     try{
       const data=await request("/v2/admin/requests/"+encodeURIComponent(id));
       const r=data.request||{};
