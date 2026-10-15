@@ -261,7 +261,8 @@
     if(target==="needs_info"&&!missing.length){msg("Indicá los campos faltantes para solicitar la corrección.","error");return}
     try{
       const data=await request("/v2/admin/requests/"+encodeURIComponent(selectedId)+"/status",{method:"PATCH",body:JSON.stringify({status:fd.get("status"),note:String(fd.get("note")||"").trim()||undefined,missingFields:missing})});
-      msg("Estado actualizado: "+statusLabel(data.status),"success");await loadDetail(selectedId);await loadList();
+      await loadDetail(selectedId);await loadList();
+      msg("Estado actualizado: "+statusLabel(data.status),"success");
     }catch(e){msg(e.message==="invalid_transition"?"Transición de estado no permitida.":"No se pudo actualizar el estado.","error")}
   });
   rejectProof.addEventListener("click",async()=>{
