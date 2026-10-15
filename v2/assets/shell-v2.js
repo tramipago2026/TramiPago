@@ -36,8 +36,8 @@
     main.setAttribute("tabindex","-1");
     document.querySelector(".skip-link")?.addEventListener("click",(event)=>{
       event.preventDefault();
-      if(location.hash!=="#contenido")history.pushState(null,"","#contenido");
       main.focus({preventScroll:true});
+      if(location.hash!=="#contenido")history.pushState(null,"","#contenido");
       main.scrollIntoView({block:"start"});
     });
   }
