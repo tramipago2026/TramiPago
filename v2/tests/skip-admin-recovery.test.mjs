@@ -39,6 +39,47 @@ assert.equal(main.tabindex, "-1");
 assert.equal(location.hash, "#contenido");
 assert.deepEqual(sequence, ["focus", "hash", "scroll"], "Keyboard skip must focus main before updating URL");
 
+// Approved Opción C uses display:contents on main on small screens:
+// the landmark has no focusable box, so the actual focus target must be an h1 inside it.
+const mobileSequence=[];
+let mobileHandler;
+const heading={
+  setAttribute(key,value){this[key]=value},
+  focus(){mobileSequence.push("focus-heading")},
+  scrollIntoView(){mobileSequence.push("scroll-heading")},
+};
+const mobileMain={
+  id:"contenido",setAttribute(key,value){this[key]=value},
+  querySelector(name){return name==="h1"?heading:null},
+  focus(){mobileSequence.push("focus-main")},
+  scrollIntoView(){mobileSequence.push("scroll-main")},
+};
+const mobileLocation={pathname:"/v2/",hash:""};
+const mobileContext={
+  document:{
+    querySelector(selector){
+      return {
+        "[data-v2-shared-header]":{innerHTML:""},
+        "[data-v2-shared-footer]":{innerHTML:""},
+        main:mobileMain,
+        ".skip-link":{addEventListener(type,handler){if(type==="click")mobileHandler=handler}},
+      }[selector]||null;
+    },
+    body:{classList:{contains(){return true}}},
+  },
+  getComputedStyle(node){return {display:node===mobileMain?"contents":"block"}},
+  history:{pushState(){mobileSequence.push("hash");mobileLocation.hash="#contenido"}},
+  location:mobileLocation,window:{},
+};
+runInNewContext(shell,mobileContext,{timeout:3000});
+assert.equal(typeof mobileHandler,"function");
+mobileHandler({preventDefault(){}});
+assert.equal(mobileMain.tabindex,"-1");
+assert.equal(heading.tabindex,"-1");
+assert.equal(mobileLocation.hash,"#contenido");
+assert.deepEqual(mobileSequence,["focus-heading","hash","scroll-heading"],
+  "The display:contents main must delegate focus to a descendant heading");
+
 const match = admin.match(/function showLogin\(\)\{[^}]*\}/);
 assert.ok(match, "Missing Admin login recovery");
 const names = ["loginSection", "appSection", "logout", "loginForm", "totpForm", "enrollForm", "enrollSecret", "signupForm"];
