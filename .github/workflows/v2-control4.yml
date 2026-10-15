@@ -29,3 +29,5 @@ jobs:
         run: node v2/tests/admin-status-regression.test.mjs
       - name: Verify private payment proof retry
         run: node v2/tests/payment-retry-regression.test.mjs
+      - name: Verify Admin asynchronous request selection
+        run: node v2/tests/admin-async-regression.test.mjs
