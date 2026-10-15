@@ -37,7 +37,7 @@
     return data;
   }
   function msg(text,kind="info"){message.textContent=text;message.dataset.kind=kind;message.hidden=false}
-  function showLogin(){loginSection.hidden=false;appSection.hidden=true;logout.hidden=true}
+  function showLogin(){loginSection.hidden=false;appSection.hidden=true;logout.hidden=true;loginForm.hidden=false;totpForm.hidden=true;enrollForm.hidden=true;enrollSecret.hidden=true;signupForm.hidden=true;signupOpen.parentElement.hidden=false}
   function showApp(session){loginSection.hidden=true;appSection.hidden=false;logout.hidden=false;role=session.admin.role;roleNode.textContent=role+" · MFA activo";statusForm.hidden=true;rejectProof.hidden=true;resultForm.hidden=true}
   function showEnroll(){loginForm.hidden=true;totpForm.hidden=true;enrollForm.hidden=false;enrollSecret.hidden=true;msg("Esta cuenta debe activar MFA antes de acceder al panel.")}
   function esc(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -148,7 +148,7 @@
   totpForm.addEventListener("submit",async e=>{
     e.preventDefault(); const fd=new FormData(totpForm); msg("Verificando MFA…");
     try{await request("/v2/auth/two-factor/verify-totp",{method:"POST",body:JSON.stringify({code:String(fd.get("code")||"").trim(),trustDevice:false})});totpForm.reset();await session()}
-    catch(e){msg(e.status===401?"Sesión vencida. Volvé a ingresar correo y contraseña.":e.status===429?"Demasiados intentos. Esperá antes de reintentar.":e.status===403?"La verificación MFA no está disponible para esta sesión. Volvé a iniciar sesión.":"No se pudo verificar el MFA. Revisá el código de V2 y la etapa de inicio de sesión.","error")}
+    catch(e){if(e.status===401||e.status===403)showLogin();msg(e.status===401?"Sesión vencida. Volvé a ingresar correo y contraseña.":e.status===429?"Demasiados intentos. Esperá antes de reintentar.":e.status===403?"La verificación MFA no está disponible para esta sesión. Volvé a iniciar sesión.":"No se pudo verificar el MFA. Revisá el código de V2 y la etapa de inicio de sesión.","error")}
   });
   enrollForm.addEventListener("submit",async e=>{
     e.preventDefault(); const fd=new FormData(enrollForm); msg("Generando configuración MFA…");
