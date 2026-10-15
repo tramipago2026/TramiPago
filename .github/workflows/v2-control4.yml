@@ -23,3 +23,5 @@ jobs:
           node-version: "24"
       - name: Validate isolated V2 routes and functional shells
         run: node v2/tests/control4.mjs
+      - name: Verify keyboard skip and expired MFA recovery
+        run: node v2/tests/skip-admin-recovery.test.mjs
