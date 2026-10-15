@@ -187,6 +187,8 @@
       help.target="_blank";help.rel="noopener noreferrer";help.textContent="Necesito ayuda por WhatsApp →";
       actions.append(help);p.append(txt,actions);main.append(p);
     }
+    let receiptAttempt=null;
+    fileInput.addEventListener("change",()=>{receiptAttempt=null});
     form.addEventListener("submit",async(event)=>{
       event.preventDefault();const file=new FormData(form).get("file");if(!(file instanceof File))return;
       const ext=(file.name.toLowerCase().match(/\.[a-z0-9]+$/)||[])[0]||"";
@@ -196,17 +198,26 @@
         return;
       }
       button.disabled=true;message("Enviando comprobante…");
-      const body=new FormData();body.set("file",file);body.set("kind","payment_receipt");
+      // A failed confirmation must not upload a second private object on retry.
+      const signature=[file.name,file.size,file.lastModified,file.type].join("|");
+      if(!receiptAttempt||receiptAttempt.signature!==signature)receiptAttempt={
+        signature,uploadKey:randomKey("payment-file-"+active.requestId),
+        proofKey:randomKey("payment-proof-"+active.requestId),fileId:null,
+      };
       try{
-        const uploaded=await api("/v2/requests/"+encodeURIComponent(active.requestId)+"/files",{
-          method:"POST",
-          headers:{"Idempotency-Key":randomKey("payment-file-"+active.requestId),"X-Request-Capability":active.capability},
-          body,
-        });
+        if(!receiptAttempt.fileId){
+          const body=new FormData();body.set("file",file);body.set("kind","payment_receipt");
+          const uploaded=await api("/v2/requests/"+encodeURIComponent(active.requestId)+"/files",{
+            method:"POST",
+            headers:{"Idempotency-Key":receiptAttempt.uploadKey,"X-Request-Capability":active.capability},
+            body,
+          });
+          receiptAttempt.fileId=uploaded.fileId;
+        }
         await api("/v2/requests/"+encodeURIComponent(active.requestId)+"/payment-proof",{
           method:"POST",
-          headers:{"Idempotency-Key":randomKey("payment-proof-"+active.requestId),"X-Request-Capability":active.capability},
-          body:JSON.stringify({fileId:uploaded.fileId}),
+          headers:{"Idempotency-Key":receiptAttempt.proofKey,"X-Request-Capability":active.capability},
+          body:JSON.stringify({fileId:receiptAttempt.fileId}),
         });
         location.href="/v2/tramites/"+serviceId+"/confirmacion/";
       }catch(e){message(e.status===503?"La carga de comprobantes aún no está disponible.":"No se pudo registrar el comprobante.","error");button.disabled=!ready}
