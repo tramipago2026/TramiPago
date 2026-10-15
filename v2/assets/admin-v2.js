@@ -1,6 +1,17 @@
 "use strict";
 (() => {
   const q = (s, r=document) => r.querySelector(s);
+  // Admin does not load the shared public shell; keep its skip link keyboard-functional.
+  const skipLink=q(".skip-link"), main=q("main");
+  if(skipLink && main){
+    main.setAttribute("tabindex","-1");
+    skipLink.addEventListener("click",event=>{
+      event.preventDefault();
+      main.focus({preventScroll:true});
+      if(location.hash!=="#contenido")history.pushState(null,"","#contenido");
+      main.scrollIntoView({block:"start"});
+    });
+  }
   const loginSection=q("[data-admin-login]"), appSection=q("[data-admin-app]");
   const loginForm=q("[data-admin-login-form]"), totpForm=q("[data-admin-totp-form]");
   const enrollForm=q("[data-admin-enroll-form]"), enrollSecret=q("[data-admin-enroll-secret]");
