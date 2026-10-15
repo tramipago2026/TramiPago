@@ -34,8 +34,11 @@
   // A visible skip link must move keyboard focus inside main, not only scroll the page.
   if(main){
     main.setAttribute("tabindex","-1");
-    document.querySelector(".skip-link")?.addEventListener("click",()=>{
+    document.querySelector(".skip-link")?.addEventListener("click",(event)=>{
+      event.preventDefault();
+      if(location.hash!=="#contenido")history.pushState(null,"","#contenido");
       main.focus({preventScroll:true});
+      main.scrollIntoView({block:"start"});
     });
   }
   header.innerHTML=renderHeader(location.pathname);
