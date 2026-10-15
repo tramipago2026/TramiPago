@@ -53,6 +53,33 @@
   function showEnroll(){loginForm.hidden=true;totpForm.hidden=true;enrollForm.hidden=false;enrollSecret.hidden=true;msg("Esta cuenta debe activar MFA antes de acceder al panel.")}
   function esc(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
   function statusLabel(s){return ({draft:"Borrador",awaiting_payment:"Pago pendiente",payment_review:"Pago en revisión",payment_confirmed:"Pago confirmado",in_progress:"En proceso",needs_info:"Falta información",finalized:"Finalizado",cancelled:"Cancelado"})[s]||s}
+  const allowedStatusChanges=Object.freeze({
+    draft:["awaiting_payment","cancelled"],
+    awaiting_payment:["payment_review","cancelled"],
+    payment_review:["payment_confirmed","awaiting_payment","needs_info","cancelled"],
+    payment_confirmed:["in_progress","needs_info","cancelled"],
+    in_progress:["needs_info","finalized","cancelled"],
+    needs_info:["payment_review","in_progress","cancelled"],
+    finalized:[],cancelled:[],
+  });
+  function resetStatusChoices(current){
+    const select=statusForm.elements.namedItem("status");
+    if(!select)return false;
+    const allowed=allowedStatusChanges[current]||[];
+    statusForm.dataset.currentStatus=current;
+    let prompt=select.querySelector('option[value=""]');
+    if(!prompt){
+      prompt=document.createElement("option");
+      prompt.value="";prompt.textContent="Seleccioná un nuevo estado";prompt.disabled=true;
+      select.prepend(prompt);
+    }
+    for(const option of select.options)if(option!==prompt)option.disabled=!allowed.includes(option.value);
+    select.value="";
+    prompt.selected=true;
+    statusForm.elements.namedItem("note").value="";
+    statusForm.elements.namedItem("missingFields").value="";
+    return allowed.length>0;
+  }
 
   async function session(){
     try{const s=await request("/v2/admin/session");showApp(s);message.hidden=true;await loadList()}
@@ -99,7 +126,7 @@
       if(!ul.children.length){const li=document.createElement("li");li.textContent="Sin eventos.";ul.append(li)}
       events.append(ul);
       wrap.append(files,events);detail.replaceChildren(wrap);
-      statusForm.hidden=role==="viewer";
+      statusForm.hidden=role==="viewer" || !resetStatusChoices(r.status);
       rejectProof.hidden=role==="viewer" || r.status!=="payment_review";
       resultForm.hidden=role==="viewer";
       if(role!=="viewer"){
@@ -221,6 +248,11 @@
     e.preventDefault(); if(!selectedId)return;
     const fd=new FormData(statusForm);
     const missing=String(fd.get("missingFields")||"").split(",").map(x=>x.trim()).filter(Boolean);
+    const target=String(fd.get("status")||"");
+    if(!allowedStatusChanges[statusForm.dataset.currentStatus||""]?.includes(target)){
+      msg("Seleccioná un cambio de estado permitido.","error");return;
+    }
+    if(target==="needs_info"&&!missing.length){msg("Indicá los campos faltantes para solicitar la corrección.","error");return}
     try{
       const data=await request("/v2/admin/requests/"+encodeURIComponent(selectedId)+"/status",{method:"PATCH",body:JSON.stringify({status:fd.get("status"),note:String(fd.get("note")||"").trim()||undefined,missingFields:missing})});
       msg("Estado actualizado: "+statusLabel(data.status),"success");await loadDetail(selectedId);await loadList();
