@@ -4,7 +4,7 @@
   const loginSection=q("[data-admin-login]"), appSection=q("[data-admin-app]");
   const loginForm=q("[data-admin-login-form]"), totpForm=q("[data-admin-totp-form]");
   const enrollForm=q("[data-admin-enroll-form]"), enrollSecret=q("[data-admin-enroll-secret]");
-  const enrollVerify=q("[data-admin-enroll-verify]"), secretNode=q("[data-admin-totp-secret]");
+  const enrollVerify=q("[data-admin-enroll-verify]"), secretNode=q("[data-admin-totp-secret]"), qrNode=q("[data-admin-totp-qr]");
   const message=q("[data-admin-message]"), roleNode=q("[data-admin-role]");
   const list=q("[data-admin-list]"), detail=q("[data-admin-detail]");
   const statusForm=q("[data-admin-status-form]"), filter=q("[data-admin-status-filter]");
@@ -159,14 +159,17 @@
       const secret=uri.searchParams.get("secret");
       if(!secret) throw new Error("missing_totp_secret");
       secretNode.textContent=secret;
-      enrollForm.hidden=true;enrollSecret.hidden=false;msg("Configuración generada. Agregá la clave en tu autenticador y confirmá un código.","success");
+      qrNode.replaceChildren();
+      if(typeof QRCode==="undefined")throw new Error("qr_library_missing");
+      new QRCode(qrNode,{text:data.totpURI,width:220,height:220,colorDark:"#06164d",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});
+      enrollForm.hidden=true;enrollSecret.hidden=false;msg("Escaneá el QR con Google Authenticator (cuenta TramiPago V2) y confirmá su código de 6 dígitos.","success");
     }catch{msg("No se pudo iniciar la activación de MFA.","error")}
   });
   enrollVerify.addEventListener("submit",async e=>{
     e.preventDefault();const fd=new FormData(enrollVerify);msg("Confirmando MFA…");
     try{
       await request("/v2/auth/two-factor/verify-totp",{method:"POST",body:JSON.stringify({code:String(fd.get("code")||"").trim(),trustDevice:false})});
-      secretNode.textContent="";enrollSecret.hidden=true;enrollVerify.reset();await session();
+      secretNode.textContent="";qrNode.replaceChildren();enrollSecret.hidden=true;enrollVerify.reset();await session();
     }catch{msg("Código inválido. Revisá el autenticador e intentá nuevamente.","error")}
   });
   resultForm.addEventListener("submit",async e=>{
