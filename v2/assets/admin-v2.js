@@ -14,6 +14,7 @@
   const resultState=q("[data-admin-result-state]");
   const resultMessage=q("[data-admin-result-message]");
   const notificationList=q("[data-admin-notifications]");
+  const signupForm=q("[data-admin-signup-form]"), signupOpen=q("[data-admin-signup-open]");
   let selectedId=null, role=null;
   document.querySelectorAll("[data-password-toggle]").forEach(button=>button.addEventListener("click",()=>{
     const input=button.parentElement?.querySelector('input[type="password"],input[type="text"]');
@@ -119,6 +120,17 @@
     }catch{notificationList.textContent="No se pudo cargar la cola."}
   }
 
+  signupOpen.addEventListener("click",()=>{loginForm.hidden=true;signupOpen.parentElement.hidden=true;signupForm.hidden=false;message.hidden=true});
+  q("[data-admin-signup-cancel]").addEventListener("click",()=>{signupForm.hidden=true;loginForm.hidden=false;signupOpen.parentElement.hidden=false;signupForm.reset()});
+  signupForm.addEventListener("submit",async e=>{
+    e.preventDefault();const fd=new FormData(signupForm);const button=q('button[type="submit"]',signupForm);button.disabled=true;
+    try {
+      await request("/v2/auth/sign-up/email",{method:"POST",body:JSON.stringify({email:String(fd.get("email")||"").trim().toLowerCase(),name:String(fd.get("name")||"").trim(),password:String(fd.get("password")||"")})});
+      signupForm.reset();signupForm.hidden=true;signupOpen.parentElement.hidden=false;loginForm.hidden=false;
+      msg("Cuenta V2 creada. Falta habilitar el rol owner en MySQL antes de entrar al panel.","success");
+    }catch(error){const code=String(error.code||"request_failed").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,64);msg("No se pudo registrar la cuenta ("+error.status+" · "+code+").","error")}
+    finally{button.disabled=false}
+  });
   loginForm.addEventListener("submit",async e=>{
     e.preventDefault(); const fd=new FormData(loginForm); msg("Verificando…");
     try{
