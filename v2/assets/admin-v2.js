@@ -85,11 +85,14 @@
     try{const s=await request("/v2/admin/session");showApp(s);message.hidden=true;await loadList()}
     catch(e){if(e.code==="mfa_enrollment_required"){showEnroll();return}showLogin();if(e.code==="request_timeout"||e.code==="network_error")msg("No se pudo consultar la sesión. Podés crear tu cuenta o iniciar sesión igualmente.","error");else message.hidden=true}
   }
+  let listSequence=0;
   async function loadList(){
+    const sequence=++listSequence;
     list.textContent="Cargando…";
     const suffix=filter.value?"?status="+encodeURIComponent(filter.value)+"&limit=50":"?limit=50";
     try{
       const data=await request("/v2/admin/requests"+suffix);
+      if(sequence!==listSequence)return;
       list.replaceChildren();
       if(!data.requests?.length){list.textContent="Sin solicitudes.";return}
       for(const row of data.requests){
@@ -97,12 +100,14 @@
         b.innerHTML="<strong>"+esc(row.tracking_code)+"</strong><span>"+esc(statusLabel(row.status))+" · "+esc(row.service_id)+"</span>";
         b.addEventListener("click",()=>loadDetail(row.id));list.append(b);
       }
-    }catch{list.textContent="No se pudo cargar el listado."}
+    }catch{if(sequence===listSequence)list.textContent="No se pudo cargar el listado."}
   }
   async function loadDetail(id){
-    selectedId=id;list.querySelectorAll(".text-card").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.requestId===id)));detail.textContent="Cargando…";
+    selectedId=id;statusForm.hidden=true;rejectProof.hidden=true;resultForm.hidden=true;
+    list.querySelectorAll(".text-card").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.requestId===id)));detail.textContent="Cargando…";
     try{
       const data=await request("/v2/admin/requests/"+encodeURIComponent(id));
+      if(selectedId!==id)return; // Ignore outdated response after switching requests.
       const r=data.request||{};
       const wrap=document.createElement("div");
       wrap.innerHTML="<p><strong>"+esc(r.tracking_code)+"</strong></p><p>Servicio: "+esc(r.service_id)+"</p><p>Estado: "+esc(statusLabel(r.status))+"</p><p>Cliente: "+esc(r.client_name||"—")+"</p><p>WhatsApp: "+esc(r.whatsapp||"—")+"</p><p>Email: "+esc(r.email||"—")+"</p>";
@@ -133,6 +138,7 @@
         const uploadButton=q('button[type="submit"]',resultForm);
         try{
           const health=await request("/v2/health/dependencies");
+          if(selectedId!==id)return;
           const ready=health?.dependencies?.b2==="configured";
           uploadButton.disabled=!ready;
           q('input[name="file"]',resultForm).disabled=!ready;
@@ -145,7 +151,7 @@
           resultState.textContent="No se pudo verificar el almacenamiento privado.";
         }
       }
-    }catch{detail.textContent="No se pudo cargar el detalle.";statusForm.hidden=true;rejectProof.hidden=true;resultForm.hidden=true}
+    }catch{if(selectedId!==id)return;detail.textContent="No se pudo cargar el detalle.";statusForm.hidden=true;rejectProof.hidden=true;resultForm.hidden=true}
   }
   async function loadNotifications(){
     notificationList.textContent="Cargando…";
