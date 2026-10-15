@@ -31,6 +31,13 @@
   if(!header||!footer)return;
   const main=document.querySelector("main");if(main&&!main.id)main.id="contenido";
   if(!document.querySelector(".skip-link")){const skip=document.createElement("a");skip.className="skip-link";skip.href="#contenido";skip.textContent="Saltar al contenido";header.before(skip);}
+  // A visible skip link must move keyboard focus inside main, not only scroll the page.
+  if(main){
+    main.setAttribute("tabindex","-1");
+    document.querySelector(".skip-link")?.addEventListener("click",()=>{
+      main.focus({preventScroll:true});
+    });
+  }
   header.innerHTML=renderHeader(location.pathname);
   footer.innerHTML=renderFooter();
 
