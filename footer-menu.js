@@ -39,7 +39,7 @@
         <section class="footer-menu-col"><h3>DERECHOS DEL USUARIO</h3><a href="arrepentimiento.html">Arrepentimiento</a><a href="baja-servicio.html">Baja de servicio</a><span>Defensa del Consumidor · argentina.gob.ar</span></section>
       </div>
       <p class="footer-service-note">Servicio privado de asistencia. TramiPago no es un organismo público.</p>
-      <div class="footer-menu-bottom"><span>© 2026 TramiPago · Todos los derechos reservados</span><span>CUIT 20-25988733-0 · tramipago@gmail.com</span></div>`;
+      <div class="footer-menu-bottom"><span>© 2026 TramiPago · Todos los derechos reservados</span><span>tramipago@gmail.com</span></div>`;
   }
 
   function addStyles(){
