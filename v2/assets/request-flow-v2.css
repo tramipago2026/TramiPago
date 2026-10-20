@@ -276,3 +276,13 @@ body.request-page .upload-unavailable{background:#fff;border-color:#c8d8e6}
 @media(hover:none){
  body.request-page .price-choice-button:hover{transform:none}
 }
+
+/* TP-V2-PRECIO-ESPECIFICO-26-1: priorizar importe sobre la clase heredada .muted. */
+body.request-page .content .v2-price-summary,
+body.request-page .content .v2-price-summary.muted{
+ font-size:21px;font-weight:800;line-height:1.4;color:#123b77;
+}
+@media(max-width:760px){
+ body.request-page .content .v2-price-summary,
+ body.request-page .content .v2-price-summary.muted{font-size:19px}
+}
