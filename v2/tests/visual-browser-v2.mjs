@@ -71,11 +71,19 @@ try{
   for(const [route,slug] of routes){
    await cmd('Page.navigate',{url:`http://127.0.0.1:${port}${route}`});
    await sleep(400);
-   const expression=`JSON.stringify({title:document.title,overflow:document.documentElement.scrollWidth-window.innerWidth,header:!!document.querySelector('header'),broken:[...document.images].filter(i=>i.src.includes('/v2/assets/')&&i.complete&&!i.naturalWidth).map(i=>i.src),links:[...document.querySelectorAll('header nav a')].map(a=>a.getAttribute('href'))})`;
+   // Las capturas sólo son válidas si las fotografías locales ya se decodificaron.
+   // Se fuerza la carga de imágenes lazy durante esta prueba, sin cambiar el HTML.
+   await cmd('Runtime.evaluate',{
+    expression:"Promise.all([...document.images].filter(i=>i.src.includes('/v2/assets/')).map(i=>{i.loading='eager';return i.decode().catch(()=>null)}))",
+    awaitPromise:true
+   });
+   const expression=`JSON.stringify({title:document.title,overflow:document.documentElement.scrollWidth-window.innerWidth,header:!!document.querySelector('header'),broken:[...document.images].filter(i=>i.src.includes('/v2/assets/')&&!i.naturalWidth).map(i=>i.src),captionsClear:[...document.querySelectorAll('.home-opcion-c .card-photo')].every(c=>c.querySelector('img')?.getBoundingClientRect().bottom<=c.querySelector('.card-copy')?.getBoundingClientRect().top+2),designToken:getComputedStyle(document.documentElement).getPropertyValue('--tp-brand').trim(),links:[...document.querySelectorAll('header nav a')].map(a=>a.getAttribute('href'))})`;
    const state=JSON.parse((await cmd('Runtime.evaluate',{expression,returnByValue:true})).result.value);
    if(state.overflow>2)issues.push(`${slug} ${view.w}: ${state.overflow}px de desborde`);
    if(!state.header)issues.push(`${slug} ${view.w}: falta encabezado`);
    if(state.broken.length)issues.push(`${slug} ${view.w}: recursos rotos ${state.broken.join(',')}`);
+   if(!state.captionsClear)issues.push(`${slug} ${view.w}: texto de tarjeta superpuesto a fotografía`);
+   if(state.designToken!=='#006cf5')issues.push(`${slug} ${view.w}: no se cargó el estilo visual compartido`);
    if(!state.links.includes('/v2/'))issues.push(`${slug} ${view.w}: no hay link de inicio`);
    const screenshot=await cmd('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
    fs.writeFileSync(path.join(out,`${slug}-${view.w}.png`),Buffer.from(screenshot.data,'base64'));
