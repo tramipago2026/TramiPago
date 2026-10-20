@@ -44,3 +44,21 @@ const gitHash=createHash("sha1").update(Buffer.from("blob "+heroBytes.length+"\\
 assert.equal(gitHash,"131b93f644bdade05c47fa013c3c26d012663a34","fotografía aprobada verificada por contenido");
 assert.ok(index.includes("/v2/assets/hero-pareja-45-50-aprobada.webp"),"portada apunta a la fotografía aprobada");
 assert.ok(!index.includes("/v2/assets/hero-opcion-c-aprobada.jpg"),"no conserva la referencia visual anterior");
+
+// Fotografías tomadas de las ocho tarjetas en la maqueta expresamente aprobada.
+const approvedCards=new Map([
+  ["home-abogado-aprobada.webp","a31b7964048b1a356e6733979ecdf7832326bdcd"],
+  ["home-anses-aprobada.webp","251232695fe1392b0f49bb09facd7879f9b9cd55"],
+  ["home-antecedentes-aprobada.webp","7b25e36e6d375edbe82b14e31e8f8229fe47643e"],
+  ["home-apostillas-aprobada.webp","8bbb77344c2afb43fddaa1580766dc4e88d983f2"],
+  ["home-arba-aprobada.webp","cfac2d332a564f6aa460e979ca133f0bb37a081f"],
+  ["home-arca-aprobada.webp","f592fd8720eddb63c87b1e65d9c4f425b33a0f5b"],
+  ["home-partidas-aprobada.webp","25ae9002a306e5f6d7462a6fd9fe788c4ded6e4e"],
+  ["home-vehicular-aprobada.webp","e1fa1e100edefd1998845678cfedd98451410ae3"]
+]);
+for(const [name,expectedHash] of approvedCards){
+ const bin=fs.readFileSync(new URL("assets/"+name,root));
+ const got=createHash("sha1").update(Buffer.from("blob "+bin.length+"\\0".replace("\\0","\0"))).update(bin).digest("hex");
+ assert.equal(got,expectedHash,"integridad foto "+name);
+ assert.ok(index.includes("/v2/assets/"+name),"tarjeta aprobada presente: "+name);
+}
