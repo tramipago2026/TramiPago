@@ -31,6 +31,19 @@ assert.ok(clientScript.includes("file-help-button"),"Falta ayuda contextual cuan
 const bank = JSON.parse(readFileSync(path.join(root,"data","medio-pago-v1-v2.json"),"utf8"));
 assert.equal(bank.enabled,true,"El medio de transferencia manual de V1 debe estar preparado para activarse automáticamente tras B2");
 assert.equal(bank.provider,"transferencia","Medio de pago V1 perdido");
+// Execute the actual frontend readiness expression with synthetic variations;
+// never enable a transfer with an incomplete destination.
+const transferReadyExpression = paymentFlow.match(/const ready=([\\s\\S]*?);\\s*if\\(ready\\)/)?.[1];
+assert.ok(transferReadyExpression,"Payment readiness logic not found");
+const transferReady = new Script("(function(health,method,data){return Boolean("+transferReadyExpression+");})").runInNewContext();
+const healthyB2={dependencies:{b2:"configured"}};
+const validQuote={quotedAmount:15000};
+assert.equal(transferReady(healthyB2,bank,validQuote),true,"Authorized transfer details must be usable");
+for(const field of ["holder","alias","cvu"]){
+  assert.equal(transferReady(healthyB2,{...bank,[field]:""},validQuote),false,"Incomplete "+field+" must block transfer");
+}
+assert.equal(transferReady({dependencies:{b2:"pending"}},bank,validQuote),false,"Unavailable B2 must block transfer");
+assert.equal(transferReady(healthyB2,bank,{quotedAmount:0}),false,"Missing quote must block transfer");
 
 assert.match(paymentFlow,/Number\.isFinite\(Number\(data\.quotedAmount\)\)/,"El pago requiere una cotización válida generada en MySQL");
 
