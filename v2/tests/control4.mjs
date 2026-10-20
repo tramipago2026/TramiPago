@@ -31,6 +31,14 @@ assert.ok(clientScript.includes("file-help-button"),"Falta ayuda contextual cuan
 const bank = JSON.parse(readFileSync(path.join(root,"data","medio-pago-v1-v2.json"),"utf8"));
 assert.equal(bank.enabled,true,"El medio de transferencia manual de V1 debe estar preparado para activarse automáticamente tras B2");
 assert.equal(bank.provider,"transferencia","Medio de pago V1 perdido");
+// CVU: same 22-digit structure and modulo-10/9713 checks as CBU (BCRA).
+// This verifies format and check digits, not external account ownership.
+assert.match(bank.alias,/^[A-Za-z0-9.-]{6,20}$/,"Alias CVU con formato inválido");
+assert.match(bank.cvu,/^000\\d{19}$/,"CVU debe empezar con 000 y contener 22 dígitos");
+const digit10=(digits,weights)=>(10-[...digits].reduce((sum,d,i)=>sum+Number(d)*weights[i],0)%10)%10;
+assert.equal(Number(bank.cvu[7]),digit10(bank.cvu.slice(0,7),[7,1,3,9,7,1,3]),"Dígito verificador del PSP inválido");
+assert.equal(Number(bank.cvu[21]),digit10(bank.cvu.slice(8,21),[3,9,7,1,3,9,7,1,3,9,7,1,3]),"Dígito verificador de cuenta CVU inválido");
+
 // Execute the actual frontend readiness expression with synthetic variations;
 // never enable a transfer with an incomplete destination.
 const transferReadyExpression = paymentFlow.match(/const ready=([\s\S]*?);\s*if\(ready\)/)?.[1];
