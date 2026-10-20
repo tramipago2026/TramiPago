@@ -62,3 +62,18 @@ for(const [name,expectedHash] of approvedCards){
  assert.equal(got,expectedHash,"integridad foto "+name);
  assert.ok(index.includes("/v2/assets/"+name),"tarjeta aprobada presente: "+name);
 }
+
+// TP-V2-DISENO-INTEGRAL-26-1: controles de legibilidad y precios (sin cambiar importes).
+assert.match(global,/TP-V2-DISENO-INTEGRAL-26-1/);
+assert.match(global,/--tp-text-action:17px/);
+assert.match(global,/--tp-action-disabled:/);
+assert.match(global,/\.button\.secondary-button/);
+assert.match(flows,/TP-V2-DISENO-INTEGRAL-26-1/);
+assert.match(flows,/\.v2-price-summary/);
+assert.match(flows,/request-actions\s*>\s*\.v2-price-summary/);
+assert.match(flows,/\.price-choice-button\.selected/);
+assert.match(admin,/TP-V2-DISENO-INTEGRAL-26-1/);
+assert.match(home,/\.home-opcion-c \.card-photo img\{filter:none\}/);
+assert.match(read("assets/v2.js"),/quoteNode\.className = "muted v2-price-summary"/);
+assert.match(read("assets/flow-v2.js"),/p\.className="v2-price-summary"/);
+console.log("PASS unidad integral 26.1: botones, tipografia, precio y ambitos visuales sin cambios de catalogo");
