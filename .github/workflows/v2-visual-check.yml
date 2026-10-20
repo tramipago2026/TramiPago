@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Verificar visualmente ocho tipos de pantallas en tres anchos
+      - name: Verificar visualmente 15 tipos de pantallas en tres anchos
         run: node v2/tests/visual-browser-v2.mjs
       - name: Conservar capturas tres días para inspección
         if: always()
