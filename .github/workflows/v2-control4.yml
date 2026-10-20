@@ -43,3 +43,5 @@ jobs:
         run: node v2/scripts/build-shell.mjs --check
       - name: Validate isolated V2 routes and functional shells
         run: node v2/tests/control4.mjs
+      - name: Verify V2 staging SEO isolation on all HTML pages
+        run: node v2/tests/seo-staging.test.mjs
