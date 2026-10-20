@@ -64,7 +64,7 @@ try{
  await cmd('Page.enable');await cmd('Runtime.enable');await cmd('Network.enable');
  await cmd('Network.setBlockedURLs',{urls:['https://*']});
  const views=[{w:375,h:812},{w:768,h:1000},{w:1440,h:900}];
- const routes=[['/v2/','inicio'],['/v2/tramites/','catalogo'],['/v2/categorias/','categorias'],['/v2/tramites/antecedentes-penales/','solicitud'],['/v2/tramites/antecedentes-penales/pago/','pago'],['/v2/seguimiento/','seguimiento'],['/v2/contacto/','contacto'],['/v2/admin/','admin']];
+ const routes=[['/v2/','inicio'],['/v2/tramites/','catalogo'],['/v2/categorias/','categorias'],['/v2/familias/arca/','familia-arca'],['/v2/tramites/antecedentes-penales/','solicitud'],['/v2/tramites/antecedentes-penales/revisar/','revisar'],['/v2/tramites/antecedentes-penales/pago/','pago'],['/v2/tramites/constancias-anses/','solicitud-anses'],['/v2/tramites/constancias-anses/pago/','pago-anses'],['/v2/tramites/constancias-anses/confirmacion/','confirmacion'],['/v2/seguimiento/','seguimiento'],['/v2/ayuda/','ayuda'],['/v2/contacto/','contacto'],['/v2/terminos-condiciones/','legales'],['/v2/admin/','admin']];
  const issues=[];
  for(const view of views){
   await cmd('Emulation.setDeviceMetricsOverride',{width:view.w,height:view.h,deviceScaleFactor:1,mobile:false});
@@ -85,6 +85,13 @@ try{
    if(!state.captionsClear)issues.push(`${slug} ${view.w}: texto de tarjeta superpuesto a fotografía`);
    if(state.designToken!=='#006cf5')issues.push(`${slug} ${view.w}: no se cargó el estilo visual compartido`);
    if(!state.links.includes('/v2/'))issues.push(`${slug} ${view.w}: no hay link de inicio`);
+   // Diagnóstico real de tamaños de botones e importe, sin necesitar una solicitud ni datos reales.
+   if(slug==='solicitud'||slug==='pago'||slug==='pago-anses'||slug==='solicitud-anses'){
+    const metricExpr=`JSON.stringify((()=>{const el=document.createElement('p');el.className='v2-price-summary';el.textContent='Precio de ejemplo';const btn=document.createElement('button');btn.className='button';btn.textContent='Acción';document.body.append(el,btn);const price=parseFloat(getComputedStyle(el).fontSize);const action=parseFloat(getComputedStyle(btn).fontSize);const minHeight=parseFloat(getComputedStyle(btn).minHeight);el.remove();btn.remove();return {price,action,minHeight}})())`;
+    const metric=JSON.parse((await cmd('Runtime.evaluate',{expression:metricExpr,returnByValue:true})).result.value);
+    if(metric.price<19||metric.action<16||metric.minHeight<48)
+      issues.push(`${slug} ${view.w}: legibilidad insuficiente precio=${metric.price}, accion=${metric.action}, altura=${metric.minHeight}`);
+   }
    const screenshot=await cmd('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
    fs.writeFileSync(path.join(out,`${slug}-${view.w}.png`),Buffer.from(screenshot.data,'base64'));
    console.log(`VISUAL ${slug} ancho=${view.w} desborde=${state.overflow} rotas=${state.broken.length}`);
