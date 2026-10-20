@@ -98,7 +98,7 @@ try{
   }
  }
  if(issues.length)throw new Error('CONTROL VISUAL INCOMPLETO: '+issues.join(' | '));
- console.log('PASS local browser: 8 tipos de pantallas, 3 tamaños; no demuestra staging/producción');
+ console.log('PASS local browser: 15 tipos de pantallas, 3 tamaños (45 capturas); no demuestra staging/producción');
 }finally{
  try{ws?.close();}catch{}
  browser.kill('SIGTERM');
