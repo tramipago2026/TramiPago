@@ -31,5 +31,15 @@ jobs:
         run: node v2/tests/payment-retry-regression.test.mjs
       - name: Verify Admin asynchronous request selection
         run: node v2/tests/admin-async-regression.test.mjs
+      - name: Verify legal request contact actions
+        run: node v2/tests/legal-actions.test.mjs
+      - name: Verify tracking recovery and error handling
+        run: node v2/tests/tracking-v2.test.mjs
+      - name: Verify empty search without unnecessary requests
+        run: node v2/tests/search-empty.test.mjs
+      - name: Verify all request flow states
+        run: node v2/tests/flow-states.test.mjs
+      - name: Validate shared shell consistency
+        run: node v2/scripts/build-shell.mjs --check
       - name: Validate isolated V2 routes and functional shells
         run: node v2/tests/control4.mjs
