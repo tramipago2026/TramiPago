@@ -55,3 +55,18 @@ body.admin-v2-page [data-admin-login] form.vertical{max-width:540px}
  body.admin-v2-page .admin-panel{padding:12px}
  body.admin-v2-page .admin-panel h2{font-size:19px}
 }
+
+/* TRAMIPAGO-V2-UNIDAD-VISUAL-20261020 — Admin conserva navegación, MFA, permisos y operaciones. */
+body.admin-v2-page{background:#f4f8fd}
+body.admin-v2-page .admin-panel{border-color:var(--tp-border);border-radius:var(--tp-radius);box-shadow:var(--tp-elevation)}
+body.admin-v2-page .admin-panel h2{color:var(--tp-navy)}
+body.admin-v2-page [data-admin-list] .text-card{border-radius:0;box-shadow:none}
+body.admin-v2-page [data-admin-list] .text-card:hover,
+body.admin-v2-page [data-admin-list] .text-card:focus-visible{
+ transform:none;background:#eaf5ff;border-color:#d6e6f7
+}
+body.admin-v2-page [data-admin-detail]{border-color:var(--tp-border);border-radius:11px}
+body.admin-v2-page .admin-panel button,body.admin-v2-page .admin-panel a.button{
+ border-radius:11px;min-height:44px
+}
+body.admin-v2-page [data-admin-status-filter]{border-color:#afccee;border-radius:10px}

@@ -127,3 +127,28 @@ body.request-page .request-context.photo-unavailable{background:linear-gradient(
 
 /* Do not expose unusable receipt controls before private B2 payment integration is ready. */
 .request-page .upload-pending-form{display:none!important}
+
+/* TRAMIPAGO-V2-UNIDAD-VISUAL-20261020 — Formularios V2, solo presentación. */
+.request-page .request-group,.request-page [data-flow-content]>.status-box,
+.request-page .created-card,.request-page .request-preview{
+ background:#fff;border-color:var(--tp-border);border-radius:var(--tp-radius);
+ box-shadow:var(--tp-elevation)
+}
+.request-page .request-group legend{border-color:var(--tp-border);background:#eaf5ff}
+.request-page .request-step{border-radius:11px}
+.request-page .request-step.current{border-color:#75b5ff}
+.request-page .form-grid input:not([type="checkbox"]):not([type="radio"]),
+.request-page .form-grid textarea,.request-page .form-grid select{
+ min-height:44px;border:1px solid #b8cfea;border-radius:10px;background:#fff
+}
+.request-page .form-grid textarea{min-height:100px}
+.request-page .request-actions .button,.request-page .flow-actions .button{
+ border-radius:11px;min-height:44px;max-width:100%
+}
+.request-page .status-box{box-shadow:0 3px 14px #16385b08}
+.request-page [data-v2-progress]{
+ border:1px solid #d8e9f9;box-shadow:0 4px 18px #15365810
+}
+@media(prefers-reduced-motion:reduce){
+ .request-page .request-actions .button,.request-page .flow-actions .button{transition:none}
+}

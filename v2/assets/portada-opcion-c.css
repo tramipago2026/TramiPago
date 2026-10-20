@@ -189,3 +189,91 @@
  .home-opcion-c .hero-visual{grid-area:2/1;position:relative;inset:auto;justify-self:end;align-self:stretch}
  .home-opcion-c .hero-visual img{position:absolute;inset:0}
 }
+
+/* TRAMIPAGO-V2-UNIDAD-VISUAL-20261020 — Portada aprobada: tarjetas claras, no textos incrustados en fotos.
+   Mantiene intacta la información y navegación reales hasta revisión de contenido. */
+.home-opcion-c{color:var(--tp-navy);background:#fff}
+.home-opcion-c .hero-shell{background:linear-gradient(100deg,#edf8ff,#fff 62%)}
+.home-opcion-c .hero-shell:before,.home-opcion-c .hero-shell:after{content:none!important}
+.home-opcion-c .site-header{background:#fff;border-bottom:1px solid #e6f0fb}
+.home-opcion-c .site-header nav a{
+ font-weight:600;transition:color .18s ease,border-color .18s ease
+}
+.home-opcion-c .site-header nav a:hover,
+.home-opcion-c .site-header nav a:focus-visible{color:var(--tp-brand);border-bottom-color:var(--tp-brand)}
+.home-opcion-c .hero button,.home-opcion-c .whats a{
+ border-radius:11px;transition:transform .18s ease,box-shadow .18s ease
+}
+.home-opcion-c .hero button:hover,.home-opcion-c .whats a:hover{
+ transform:translateY(-1px);box-shadow:0 7px 17px #0757b532
+}
+.home-opcion-c .home-services{border-radius:0}
+.home-opcion-c .section-head>a{
+ color:#005ad8;border:1px solid #78b6ff;border-radius:10px;
+ background:#fff;padding:9px 15px;min-height:44px;
+ font-weight:700;transition:background-color .18s ease,border-color .18s ease
+}
+.home-opcion-c .section-head>a:hover,.home-opcion-c .section-head>a:focus-visible{
+ background:#e9f4ff;border-color:#006cf5
+}
+.home-opcion-c .card-photo,.home-opcion-c .section:nth-child(2) .card-photo{
+ height:222px;min-height:222px;
+ color:var(--tp-navy);border:1px solid var(--tp-border);
+ background:#fff;border-radius:12px;box-shadow:var(--tp-elevation);
+ transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease
+}
+.home-opcion-c .section:nth-child(2) .card-photo{height:192px;min-height:192px}
+.home-opcion-c .card-photo img{height:calc(100% - 76px);object-fit:cover;object-position:center}
+.home-opcion-c .section:nth-child(2) .card-photo img{height:calc(100% - 62px)}
+.home-opcion-c .card-photo:after{display:none}
+.home-opcion-c .card-copy{
+ position:absolute;left:0;right:0;bottom:0;z-index:2;
+ width:100%;max-width:none;height:76px;padding:13px 54px 10px 15px;
+ background:#fff;color:var(--tp-navy);text-shadow:none;
+ font-size:18px;line-height:1.22;letter-spacing:-.2px;
+ display:flex;flex-direction:column;justify-content:center
+}
+.home-opcion-c .card-copy strong{font-weight:800}
+.home-opcion-c .section:nth-child(2) .card-copy{height:62px;font-size:16px}
+.home-opcion-c .card-copy small{
+ display:block;font-size:12px;line-height:1.15;
+ color:var(--tp-muted);white-space:normal
+}
+.home-opcion-c .card-arrow{
+ position:absolute;z-index:3;right:12px;bottom:17px;
+ width:41px;height:41px;
+ display:grid;place-items:center;border:0;border-radius:50%;
+ background:#e5f4ff;color:#006af5;transition:background-color .18s ease,color .18s ease
+}
+.home-opcion-c .section:nth-child(2) .card-arrow{bottom:10px}
+.home-opcion-c .card-photo:hover,.home-opcion-c .card-photo:focus-visible{
+ border-color:#70b5ff;box-shadow:var(--tp-elevation-hover);transform:translateY(-2px)
+}
+.home-opcion-c .card-photo:hover .card-arrow,
+.home-opcion-c .card-photo:focus-visible .card-arrow{background:#0678fa;color:#fff}
+.home-opcion-c .footer-benefits{
+ background:#e7f4ff;border-radius:14px
+}
+.home-opcion-c .footer-dark{
+ background:linear-gradient(105deg,#0c3165,#071947);
+ align-items:center
+}
+@media(max-width:760px){
+ .home-opcion-c .site-header{background:#fff}
+ .home-opcion-c .hero-shell{background:#f0f9ff}
+ .home-opcion-c .card-photo,.home-opcion-c .section:nth-child(2) .card-photo{
+  height:204px;min-height:204px
+ }
+ .home-opcion-c .section:nth-child(2) .card-photo{height:177px;min-height:177px}
+ .home-opcion-c .card-copy{height:70px;font-size:16px;padding:9px 49px 9px 11px}
+ .home-opcion-c .section:nth-child(2) .card-copy{height:59px;font-size:14px}
+ .home-opcion-c .card-photo img{height:calc(100% - 70px)}
+ .home-opcion-c .section:nth-child(2) .card-photo img{height:calc(100% - 59px)}
+ .home-opcion-c .card-arrow{width:35px;height:35px;bottom:17px;right:10px}
+ .home-opcion-c .section:nth-child(2) .card-arrow{bottom:12px}
+ .home-opcion-c .section-head>a{font-size:13px;min-height:40px}
+}
+@media(max-width:420px){
+ .home-opcion-c .card-copy{font-size:15px}
+ .home-opcion-c .section:nth-child(2) .card-copy{font-size:13px}
+}

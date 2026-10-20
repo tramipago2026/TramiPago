@@ -186,3 +186,93 @@ body.v2-interior .contact-content{max-width:1220px;padding-top:46px;padding-bott
 
 /* Admin V2 only: CSP-safe visibility for MFA stages */
 body.admin-v2-page [hidden]{display:none!important}
+
+/* TRAMIPAGO-V2-UNIDAD-VISUAL-20261020 — Base única para pantallas públicas V2.
+   Solo presentación; no cambia rutas, campos, validaciones, precios ni estados. */
+:root{
+ --tp-brand:#006cf5;--tp-brand-hover:#0755d7;--tp-navy:#071d53;--tp-border:#cde1f7;
+ --tp-surface:#fff;--tp-muted:#405b81;--tp-elevation:0 7px 24px #133b7614;
+ --tp-elevation-hover:0 13px 28px #0a57b826;--tp-radius:12px;
+ --v2-button-radius:11px;--v2-button-padding:11px 18px;--v2-button-min-height:44px;
+ --v2-button-background:linear-gradient(135deg,#0879ff,#0064ea);
+ --v2-secondary-button-background:#fff;--v2-secondary-button-color:#0759c9;
+ --v2-secondary-button-border:#78b4ff;
+}
+body:not(.home-opcion-c){background:#f6faff;color:var(--tp-navy)}
+body:not(.home-opcion-c) .site-header{
+ background:#fff;border-bottom:1px solid #e1edfa;
+ box-shadow:0 2px 13px #124f9408;
+}
+.site-header nav a{transition:color .18s ease,border-color .18s ease,background-color .18s ease}
+body:not(.home-opcion-c) .site-header nav a{border-bottom:2px solid transparent}
+body:not(.home-opcion-c) .site-header nav a:hover,
+body:not(.home-opcion-c) .site-header nav a[aria-current="page"]{
+ color:var(--tp-brand);border-bottom-color:var(--tp-brand)
+}
+.button,button.button,a.button,.secondary-button,.hero button{
+ border-radius:var(--v2-button-radius);min-height:var(--v2-button-min-height);
+ transition:background-color .18s ease,box-shadow .18s ease,transform .18s ease,border-color .18s ease;
+}
+.button:hover,button.button:hover,a.button:hover,.hero button:hover{
+ box-shadow:0 6px 15px #086cf733;transform:translateY(-1px)
+}
+.secondary-button,.button.secondary-button{
+ background:var(--v2-secondary-button-background);color:var(--v2-secondary-button-color);
+ border:1px solid var(--v2-secondary-button-border);
+}
+.secondary-button:hover,.button.secondary-button:hover{
+ background:#ecf5ff;border-color:var(--tp-brand);box-shadow:0 3px 12px #086cf71c
+}
+button:disabled,.button[aria-disabled="true"],.button:disabled{
+ opacity:.65;cursor:not-allowed;box-shadow:none;transform:none
+}
+.text-card,body.v2-interior .content .text-card{
+ background:#fff;border:1px solid var(--tp-border);border-radius:var(--tp-radius);
+ box-shadow:var(--tp-elevation);
+ transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease
+}
+.text-card:hover,.text-card:focus-visible,
+body.v2-interior .content .text-card:hover,body.v2-interior .content .text-card:focus-visible{
+ border-color:#75b4ff;box-shadow:var(--tp-elevation-hover);transform:translateY(-2px)
+}
+.card-photo{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.card-photo:hover,.card-photo:focus-visible{
+ transform:translateY(-2px);box-shadow:var(--tp-elevation-hover)
+}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,
+select:focus-visible,summary:focus-visible{outline:3px solid #086cf7;outline-offset:3px}
+input:not([type="checkbox"]):not([type="radio"]),textarea,select{
+ border-radius:10px;border-color:#b8cfea;
+}
+input:not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus,select:focus{border-color:#0879ff}
+.status-box{border-radius:var(--tp-radius);box-shadow:0 3px 14px #16385b08}
+body.v2-interior .categories-content .card-photo{
+ border:1px solid var(--tp-border);background:#fff;box-shadow:var(--tp-elevation);
+}
+body.v2-interior .categories-content .card-photo:after{display:none}
+body.v2-interior .categories-content .card-copy{
+ color:var(--tp-navy);background:#fff;text-shadow:none;
+ left:0;bottom:0;width:100%;max-width:none;
+ padding:12px 60px 12px 14px;min-height:62px;
+}
+body.v2-interior .categories-content .card-arrow{
+ color:var(--tp-brand);background:#e5f3ff;border:0;
+}
+body.v2-interior .categories-content .card-photo:hover .card-arrow,
+body.v2-interior .categories-content .card-photo:focus-visible .card-arrow{
+ background:var(--tp-brand);color:#fff
+}
+.footer .footer-benefits{background:#e8f4ff}
+.footer .footer-dark{
+ background:linear-gradient(110deg,#0a2d63,#071948);color:#fff
+}
+.footer .footer-dark a{color:#fff}
+.footer .footer-dark a:not(:first-child):hover,
+.footer .footer-dark a:not(:first-child):focus-visible{
+ color:#b3e5ff;text-decoration:underline
+}
+@media(prefers-reduced-motion:reduce){
+ .button,.secondary-button,.hero button,.text-card,.card-photo,
+ .site-header nav a{transition:none!important;transform:none!important}
+}
