@@ -18,7 +18,7 @@
     const active = status === "needs_info" || !sent ? "data" : finished ? "confirmation" : "payment";
     const list = document.createElement("ol");
     list.className = "request-progress";
-    for (const [id, title] of steps) {
+    for (const [index, [id, title]] of steps.entries()) {
       const done = id === "data" ? sent && status !== "needs_info" : id === "payment" ? paid : finished;
       const current = !done && id === active;
       const item = document.createElement("li");
@@ -28,7 +28,7 @@
       const number = document.createElement("span");
       number.className = "step-number";
       number.setAttribute("aria-hidden", "true");
-      number.textContent = done ? "✓" : String(steps.findIndex(([key]) => key === id) + 1);
+      number.textContent = done ? "✓" : String(index + 1);
       const label = document.createElement("span");
       label.className = "step-label";
       const name = document.createElement("strong");
