@@ -35,6 +35,32 @@ const paymentFlow = readFileSync(path.join(root, "assets", "flow-v2.js"), "utf8"
 assert.ok(paymentFlow.includes('health?.dependencies?.b2==="configured"'), "El frontend no verifica B2 antes de pedir comprobantes");
 assert.ok(!paymentFlow.includes('health?.dependencies?.payments==="configured"'),"No exigir una pasarela ajena a la transferencia manual de V1");
 const formSchema = JSON.parse(readFileSync(path.join(root, "data", "form-schema-v2.json"), "utf8"));
+// Validate all 25 schemas and the 37 conditional/rule references without
+// inventing a field for synthetic serviceOption fixed-price backend selectors.
+let conditionReferences=0;
+function validateConditions(condition, fields, origin){
+  if(Array.isArray(condition)){for(const item of condition)validateConditions(item,fields,origin);return;}
+  if(!condition || typeof condition!=="object")return;
+  if(condition.field){
+    conditionReferences++;
+    assert.ok(fields.has(condition.field),origin+": missing referenced field "+condition.field);
+  }
+  for(const key of ["all","any"])if(condition[key])validateConditions(condition[key],fields,origin);
+}
+for(const [serviceId, schema] of Object.entries(formSchema.services)){
+  const ids=new Set(schema.fields.map(field=>field.id));
+  assert.equal(ids.size,schema.fields.length,serviceId+": duplicate field ids");
+  for(const type of ["fieldConditions","fieldRequirements"]){
+    for(const [id,condition] of Object.entries(schema[type]||{})){
+      assert.ok(ids.has(id),serviceId+":"+type+": missing field "+id);
+      validateConditions(condition,ids,serviceId+":"+type+":"+id);
+    }
+  }
+  validateConditions(schema.blockedConditions,ids,serviceId+":blocked");
+  for(const field of schema.rules?.anyOf||[])assert.ok(ids.has(field),serviceId+": anyOf missing "+field);
+  for(const group of schema.rules?.oneOfGroups||[])for(const field of group)assert.ok(ids.has(field),serviceId+": oneOfGroups missing "+field);
+}
+assert.ok(conditionReferences>=37,"Unexpected drop of conditional service rules");
 const tariffs = JSON.parse(readFileSync(path.join(root,"data","tarifario-v1-v2.json"),"utf8"));
 const uploadFields=Object.values(formSchema.services).flatMap(s=>s.fields.filter(field=>field.type==="file"));
 assert.equal(uploadFields.length,14,"Inventario de 14 campos de archivo alterado");
