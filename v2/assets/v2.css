@@ -276,3 +276,40 @@ body.v2-interior .categories-content .card-photo:focus-visible .card-arrow{
  .button,.secondary-button,.hero button,.text-card,.card-photo,
  .site-header nav a{transition:none!important;transform:none!important}
 }
+
+/* TP-V2-CIERRE-UNIDAD — coherencia de interiores (presentación solamente) */
+body.v2-interior .content{color:var(--tp-navy)}
+body.v2-interior .content h1,
+body.v2-interior .content h2{color:var(--tp-navy);letter-spacing:-.015em}
+body.v2-interior .content .breadcrumbs,
+body.v2-interior .content .muted{color:var(--tp-muted)}
+body.v2-interior .content .catalog-grid{gap:18px}
+body.v2-interior .interior-family-hero,
+body.v2-interior .contact-card{
+ border-color:var(--tp-border);border-radius:18px;box-shadow:var(--tp-elevation);
+ background:linear-gradient(110deg,#eaf5ff,#fff 80%);
+}
+body.v2-interior .interior-family-photo{border-radius:12px}
+body.v2-interior .categories-content .card-photo:focus-visible,
+body.v2-interior .categories-content .card-photo:hover{border-color:#6aabff}
+body.v2-interior .categories-content .card-photo img{
+ height:calc(100% - 70px);object-fit:cover;object-position:center
+}
+body.v2-interior .categories-content .card-copy{
+ min-height:70px;font-size:18px;line-height:1.18;
+ display:flex;flex-direction:column;justify-content:center
+}
+body.v2-interior .categories-content .card-copy small{font-size:12px;color:var(--tp-muted)}
+body.v2-interior .categories-content .card-arrow{
+ z-index:2;right:13px;bottom:15px;width:40px;height:40px;
+ border-radius:50%;display:grid;place-items:center
+}
+body.v2-interior .contact-actions .button{max-width:100%}
+body.v2-interior .footer{color:var(--tp-navy)}
+body.v2-interior .footer .footer-dark{background:linear-gradient(110deg,#0a2d63,#071948)}
+@media(max-width:600px){
+ body.v2-interior .categories-content .card-photo img{height:calc(100% - 62px)}
+ body.v2-interior .categories-content .card-copy{min-height:62px;font-size:15px;padding:8px 44px 8px 10px}
+ body.v2-interior .categories-content .card-arrow{width:32px;height:32px;bottom:14px;right:8px}
+ body.v2-interior .content h1{overflow-wrap:break-word}
+}

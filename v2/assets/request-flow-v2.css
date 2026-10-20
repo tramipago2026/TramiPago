@@ -152,3 +152,25 @@ body.request-page .request-context.photo-unavailable{background:linear-gradient(
 @media(prefers-reduced-motion:reduce){
  .request-page .request-actions .button,.request-page .flow-actions .button{transition:none}
 }
+
+/* TP-V2-CIERRE-UNIDAD — pasos, elección de honorarios y estados (sin tocar cálculo ni validación) */
+.request-page .request-group,
+.request-page .created-card{overflow-wrap:anywhere}
+.request-page .price-choice-group{
+ border-color:var(--tp-border);background:#f5faff;border-radius:var(--tp-radius)
+}
+.request-page .price-choice-button{
+ border-radius:11px;transition:border-color .18s ease,box-shadow .18s ease,background-color .18s ease
+}
+.request-page .price-choice-button:hover{border-color:var(--tp-brand);box-shadow:0 4px 13px #086cf71a}
+.request-page .price-choice-button.selected,
+.request-page .price-choice-button[aria-pressed="true"]{
+ border-color:var(--tp-brand);box-shadow:inset 0 0 0 1px var(--tp-brand)
+}
+.request-page .upload-unavailable{border-radius:var(--tp-radius);border-color:var(--tp-border)}
+.request-page .file-help-button{border-radius:11px}
+.request-page [data-flow-content] .status-box[data-kind="success"]{border-color:#78cda5}
+.request-page [data-flow-content] .status-box[data-kind="error"]{border-color:#dc8890}
+@media(prefers-reduced-motion:reduce){
+ .request-page .price-choice-button{transition:none!important}
+}

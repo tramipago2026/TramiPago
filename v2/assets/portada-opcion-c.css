@@ -277,3 +277,22 @@
  .home-opcion-c .card-copy{font-size:15px}
  .home-opcion-c .section:nth-child(2) .card-copy{font-size:13px}
 }
+
+/* TP-V2-CIERRE-UNIDAD — navegación y tarjetas de portada; conservar texto y rutas */
+.home-opcion-c .site-header a:focus-visible,
+.home-opcion-c .card-photo:focus-visible,
+.home-opcion-c .section-head>a:focus-visible{
+ outline:3px solid var(--tp-brand);outline-offset:3px
+}
+.home-opcion-c .hero-visual{background:#edf6ff}
+.home-opcion-c .hero-visual img{object-fit:cover;object-position:center}
+.home-opcion-c .card-photo img{filter:none}
+.home-opcion-c .card-photo:focus-visible .card-arrow{background:var(--tp-brand);color:#fff}
+.home-opcion-c .footer-dark>a:not(:first-child):focus-visible{
+ outline:2px solid #b2e2ff;outline-offset:3px
+}
+@media(prefers-reduced-motion:reduce){
+ .home-opcion-c .card-photo,
+ .home-opcion-c .card-arrow,
+ .home-opcion-c .section-head>a{transition:none!important;transform:none!important}
+}

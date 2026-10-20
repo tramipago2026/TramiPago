@@ -70,3 +70,24 @@ body.admin-v2-page .admin-panel button,body.admin-v2-page .admin-panel a.button{
  border-radius:11px;min-height:44px
 }
 body.admin-v2-page [data-admin-status-filter]{border-color:#afccee;border-radius:10px}
+
+/* TP-V2-CIERRE-UNIDAD — panel administrativo bajo selectores aislados */
+body.admin-v2-page .admin-panel h2{letter-spacing:-.012em}
+body.admin-v2-page .admin-panel .button,
+body.admin-v2-page .admin-panel button{
+ transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease
+}
+body.admin-v2-page .admin-panel button:focus-visible,
+body.admin-v2-page .admin-panel a:focus-visible{
+ outline:3px solid var(--tp-brand);outline-offset:3px
+}
+body.admin-v2-page [data-admin-detail]{
+ border:1px solid var(--tp-border);background:#f7fbff
+}
+body.admin-v2-page .admin-panel input:not([type=checkbox]):not([type=radio]),
+body.admin-v2-page .admin-panel select,
+body.admin-v2-page .admin-panel textarea{border-radius:10px}
+@media(prefers-reduced-motion:reduce){
+ body.admin-v2-page .admin-panel .button,
+ body.admin-v2-page .admin-panel button{transition:none!important}
+}

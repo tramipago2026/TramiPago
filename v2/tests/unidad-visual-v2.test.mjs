@@ -25,3 +25,15 @@ for(const path of ["terminos-condiciones","politica-privacidad","arrepentimiento
  assert.ok(index.includes("/v2/"+path+"/"),"conservar legal "+path);
 }
 console.log("PASS V2 contrato de unidad visual (estático; no sustituye validación navegador)");
+// TP-V2-CIERRE-UNIDAD: verificar que el cambio de estilo no requiera duplicar el motor.
+for(const file of css){
+ const sheet=read(file);
+ assert.match(sheet,/TP-V2-CIERRE-UNIDAD/,"cierre visual en "+file);
+}
+assert.match(global,/\.categories-content \.card-photo img/);
+assert.match(global,/\.contact-card/);
+assert.match(flows,/\.price-choice-button\.selected/);
+assert.match(admin,/body\.admin-v2-page \[data-admin-detail\]/);
+for(const route of ["/v2/tramites/antecedentes-penales/","/v2/tramites/constancias-anses/","/v2/tramites/informe-vehicular/","/v2/tramites/arba-inmobiliario/"]){
+ assert.ok(index.includes(route),"trámite destacado conservado: "+route);
+}
