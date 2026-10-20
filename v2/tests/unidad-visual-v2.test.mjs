@@ -37,3 +37,10 @@ assert.match(admin,/body\.admin-v2-page \[data-admin-detail\]/);
 for(const route of ["/v2/tramites/antecedentes-penales/","/v2/tramites/constancias-anses/","/v2/tramites/informe-vehicular/","/v2/tramites/arba-inmobiliario/"]){
  assert.ok(index.includes(route),"trámite destacado conservado: "+route);
 }
+
+const heroBytes=fs.readFileSync(new URL("assets/hero-pareja-45-50-aprobada.webp",root));
+const {createHash}=await import("node:crypto");
+const gitHash=createHash("sha1").update(Buffer.from("blob "+heroBytes.length+"\\0".replace("\\0","\0"))).update(heroBytes).digest("hex");
+assert.equal(gitHash,"131b93f644bdade05c47fa013c3c26d012663a34","fotografía aprobada verificada por contenido");
+assert.ok(index.includes("/v2/assets/hero-pareja-45-50-aprobada.webp"),"portada apunta a la fotografía aprobada");
+assert.ok(!index.includes("/v2/assets/hero-opcion-c-aprobada.jpg"),"no conserva la referencia visual anterior");
