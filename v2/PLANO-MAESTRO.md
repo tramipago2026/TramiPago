@@ -127,3 +127,13 @@ MySQL real es el destino explícito para V2. A diferencia del antecedente Fireba
 - Si resulta pertinente mencionar una fuente estatal, conservar sólo la denominación o referencia como texto no interactivo; los enlaces verificables y comprobaciones de CONTROL 2 quedan en documentos internos, no como dependencias de la experiencia pública.
 - Mantener operativos los enlaces **internos de TramiPago** y los canales propios (WhatsApp y correo), así como las rutas de privacidad, términos, arrepentimiento y baja.
 - CONTROL 4 recorre todas las páginas públicas y rechaza cualquier `<a href>` hacia dominios gubernamentales. No realizar pruebas de disponibilidad de esos sitios externos para aprobar staging. Las verificaciones independientes siguen concentradas en funciones y recursos propios de V2.
+
+## 12. Rama secundaria retirada de uso y simplificación de código (19/10/2026)
+
+**Decisión expresa del titular:** `v2/opcion-c-directiva13` es la **única rama de trabajo autorizada para el frontend V2**. La rama `tramipago-v2-staging` queda **descartada operativamente / sin uso**; no usarla para nuevos commits, correcciones, pruebas ni despliegues. Su existencia temporal en GitHub es sólo histórica hasta que el titular pueda eliminarla. Esta decisión documental **no constituye una protección técnica de rama ni su borrado**.
+
+- Antes de eliminar la rama descartada, comparar sus cambios exclusivos y conservar en la rama oficial sólo las correcciones previamente autorizadas que efectivamente falten, adaptadas a rutas `v2/**`; no fusionar indiscriminadamente archivos raíz que pertenecen a otra arquitectura.
+- El staging V2 debe alimentarse exclusivamente de un commit comprobado de la rama oficial de frontend, mediante la referencia del Worker en el repositorio backend. Diferenciar commit guardado, desplegado y contenido efectivamente servido.
+- **Simplificación y eliminación de duplicados:** relevar código activo de V2, localizar funciones, estilos, archivos y componentes duplicados, obsoletos o sin uso, eliminar sólo los casos demostrados, reutilizar implementaciones funcionales y ejecutar pruebas antes y después. Reducir líneas no justifica romper funciones ni reemplazar componentes útiles.
+- Respetar Opción C, V1, `main`, producción y los controles/directivas vigentes. No usar la limpieza para introducir funcionalidades, costos o cambios visuales no aprobados.
+- **Responsabilidad operativa:** evitar que el asistente realice futuras modificaciones en la rama secundaria. No atribuir esa posibilidad a terceros ni presentar esta anotación como bloqueo técnico.
