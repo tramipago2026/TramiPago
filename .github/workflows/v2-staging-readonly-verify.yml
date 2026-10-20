@@ -22,7 +22,7 @@ jobs:
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
           const base='https://tramipago-v2-api-staging.tramipago.workers.dev';
-          const expected='dd36eb04c9686c972b6cab03968fe264f91e3552';
+          const expected='9fe6f241ff6c1752453c1a1c6df8197124ac9003';
           const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
           async function check(){
             const health=await fetch(base+'/v2/health/dependencies',{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(12000)});
@@ -81,3 +81,83 @@ jobs:
           console.error('BLOQUEADO: staging no comprobado independientemente',last);
           process.exit(1);
           NODE
+
+  browser-live:
+    name: Validar interfaz publicada en Chrome (solo lectura)
+    needs: read-live
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Capturar portada, ANSES, pago y Admin del staging real
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import os from 'node:os';
+          import path from 'node:path';
+          import {execFileSync,spawn} from 'node:child_process';
+          const base='https://tramipago-v2-api-staging.tramipago.workers.dev';
+          const out='v2-staging-visual-capturas';
+          fs.mkdirSync(out,{recursive:true});
+          let chrome;
+          for(const exe of ['google-chrome','google-chrome-stable','chromium']){
+            try{execFileSync('which',[exe],{stdio:'ignore'});chrome=exe;break}catch{}
+          }
+          assert.ok(chrome,'Chrome ausente; no aprobar sin navegador');
+          const profile=fs.mkdtempSync(path.join(os.tmpdir(),'tp-staging-ro-'));
+          const browser=spawn(chrome,['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--no-first-run','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:'ignore'});
+          const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+          let socket;
+          try{
+            let port;
+            for(let i=0;i<100;i++){
+              const f=path.join(profile,'DevToolsActivePort');
+              if(fs.existsSync(f)){port=Number(fs.readFileSync(f,'utf8').split('\n')[0]);break}
+              if(browser.exitCode!==null)throw Error('Chrome detenido');
+              await sleep(100);
+            }
+            assert.ok(port,'Chrome DevTools indisponible');
+            const targets=await(await fetch('http://127.0.0.1:'+port+'/json')).json();
+            socket=new WebSocket(targets.find(t=>t.type==='page').webSocketDebuggerUrl);
+            await new Promise((resolve,reject)=>{socket.addEventListener('open',resolve,{once:true});socket.addEventListener('error',reject,{once:true})});
+            let seq=0;const pending=new Map();
+            socket.addEventListener('message',e=>{const m=JSON.parse(e.data);if(m.id&&pending.has(m.id)){const p=pending.get(m.id);pending.delete(m.id);m.error?p.reject(m.error):p.resolve(m.result)}});
+            const cmd=(method,params={})=>new Promise((resolve,reject)=>{const id=++seq;pending.set(id,{resolve,reject});socket.send(JSON.stringify({id,method,params}))});
+            await cmd('Page.enable');await cmd('Runtime.enable');
+            const routes=[['/v2/','portada'],['/v2/tramites/constancias-anses/','anses'],['/v2/tramites/constancias-anses/pago/','pago-anses'],['/v2/admin/','admin']];
+            for(const width of [375,768,1440]){
+              await cmd('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
+              for(const [route,name] of routes){
+                await cmd('Page.navigate',{url:base+route});
+                await sleep(1000);
+                const expr=`JSON.stringify((()=>{const parent=document.querySelector('.content')||document.body;const p=document.createElement('p');p.className='muted v2-price-summary';p.textContent='Importe de prueba';const b=document.createElement('button');b.className='button';b.textContent='Acción';parent.append(p,b);const x={title:document.title,header:!!document.querySelector('header'),overflow:document.documentElement.scrollWidth-innerWidth,broken:[...document.images].filter(i=>i.complete&&!i.naturalWidth&&i.src.includes('/v2/assets/')).length,price:parseFloat(getComputedStyle(p).fontSize),action:parseFloat(getComputedStyle(b).fontSize),minHeight:parseFloat(getComputedStyle(b).minHeight),request:document.body.classList.contains('request-page')};p.remove();b.remove();return x})())`;
+                const result=await cmd('Runtime.evaluate',{expression:expr,returnByValue:true});
+                const state=JSON.parse(result.result.value);
+                assert.ok(state.header,'sin cabecera '+route);
+                assert.ok(state.title,'titulo faltante '+route);
+                assert.ok(state.overflow<=2,'desborde '+route+': '+state.overflow);
+                assert.equal(state.broken,0,'imagenes faltantes '+route);
+                assert.ok(state.action>=16&&state.minHeight>=48,'boton ilegible '+route);
+                if(state.request)assert.ok(state.price>=19,'importe pequeno '+route+': '+state.price);
+                const screen=await cmd('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+                fs.writeFileSync(out+'/'+name+'-'+width+'.png',Buffer.from(screen.data,'base64'));
+                console.log('PASS CHROME STAGING',route,width,'precio',state.price,'boton',state.action,'alto',state.minHeight);
+              }
+            }
+            console.log('PASS CONTROL 3 navegador staging real: 12 capturas, importes y botones legibles, rutas V2');
+          }finally{
+            try{socket?.close()}catch{}
+            browser.kill('SIGTERM');fs.rmSync(profile,{recursive:true,force:true,maxRetries:5});
+          }
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tramipago-v2-staging-visual-26-1
+          path: v2-staging-visual-capturas/*.png
+          if-no-files-found: ignore
+          retention-days: 3
