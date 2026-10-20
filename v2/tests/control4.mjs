@@ -34,7 +34,7 @@ assert.equal(bank.provider,"transferencia","Medio de pago V1 perdido");
 // CVU: same 22-digit structure and modulo-10/9713 checks as CBU (BCRA).
 // This verifies format and check digits, not external account ownership.
 assert.match(bank.alias,/^[A-Za-z0-9.-]{6,20}$/,"Alias CVU con formato inválido");
-assert.match(bank.cvu,/^000\\d{19}$/,"CVU debe empezar con 000 y contener 22 dígitos");
+assert.match(bank.cvu,/^000\d{19}$/,"CVU debe empezar con 000 y contener 22 dígitos");
 const digit10=(digits,weights)=>(10-[...digits].reduce((sum,d,i)=>sum+Number(d)*weights[i],0)%10)%10;
 assert.equal(Number(bank.cvu[7]),digit10(bank.cvu.slice(0,7),[7,1,3,9,7,1,3]),"Dígito verificador del PSP inválido");
 assert.equal(Number(bank.cvu[21]),digit10(bank.cvu.slice(8,21),[3,9,7,1,3,9,7,1,3,9,7,1,3]),"Dígito verificador de cuenta CVU inválido");
