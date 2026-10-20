@@ -157,7 +157,7 @@
       method?.enabled===true && method?.provider==="transferencia" &&
       typeof method.holder==="string" && method.holder.trim().length>0 &&
       typeof method.alias==="string" && method.alias.trim().length>0 &&
-      typeof method.cvu==="string" && /^\\d{22}$/.test(method.cvu) &&
+      typeof method.cvu==="string" && /^\d{22}$/.test(method.cvu) &&
       Number.isFinite(Number(data.quotedAmount)) && Number(data.quotedAmount)>0;
     if(ready){
       const destination=document.createElement("div");
