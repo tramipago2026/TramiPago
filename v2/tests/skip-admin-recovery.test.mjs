@@ -118,4 +118,22 @@ adminSkip({ preventDefault() {} });
 assert.equal(adminMain.tabindex, "-1");
 assert.deepEqual(adminSequence, ["focus","hash","scroll"], "Admin skip must focus before fragment navigation");
 assert.match(admin, /catch\(e\)\{if\(e\.status===401\|\|e\.status===403\)showLogin\(\)/, "Expired MFA must return to credential login");
+// Backup mensual: el enlace manual debe existir, pero solo el rol Owner lo ve
+// luego de pasar la sesión Admin con MFA. Nunca se ejecuta desde el navegador.
+const adminHtml=readFileSync(new URL("../admin/index.html",import.meta.url),"utf8");
+assert.match(adminHtml,/data-admin-monthly-backup hidden/);
+assert.match(adminHtml,/\/edit\/v2-mysql-chat12-integration\/backend-v2\/backup\/MANUAL-TRIGGER\.md/);
+const showAppRoutine=admin.match(/function showApp\(session\)\{[^}]*\}/)?.[0];
+assert.ok(showAppRoutine,"Admin login must gate monthly backup");
+const monthlyBackup={hidden:true};
+const loginSection={hidden:false},appSection={hidden:true},logout={hidden:true};
+const roleNode={textContent:""},statusForm={hidden:false},rejectProof={hidden:false},resultForm={hidden:false};
+for(const testRole of ["viewer","operator","admin","owner"]){
+  const harness=runInNewContext("let role=null;"+showAppRoutine+";showApp",{
+    loginSection,appSection,logout,roleNode,statusForm,rejectProof,resultForm,monthlyBackup
+  });
+  harness({admin:{role:testRole}});
+  assert.equal(monthlyBackup.hidden,testRole!=="owner","Manual backup visible only to Owner");
+}
+assert.match(admin,/monthlyBackup\.hidden=role!=="owner"/);
 console.log("V2 keyboard focus and expired MFA login recovery: OK");
