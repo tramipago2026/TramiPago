@@ -732,7 +732,7 @@
       tariff = snapshot?.services?.[serviceId] || null;
     } catch {}
     const quoteNode = document.createElement("p");
-    quoteNode.className = "muted";
+    quoteNode.className = "muted v2-price-summary";
     quoteNode.setAttribute("aria-live", "polite");
     submit.before(quoteNode);
     attachRequestContext(form, output, result, serviceInfo, familyInfo);
