@@ -174,3 +174,105 @@ body.request-page .request-context.photo-unavailable{background:linear-gradient(
 @media(prefers-reduced-motion:reduce){
  .request-page .price-choice-button{transition:none!important}
 }
+
+/* TP-V2-DISENO-INTEGRAL-26-1 — formularios, precios y pagos */
+body.request-page{background:#f8fafc}
+body.request-page .content{max-width:1190px;padding-bottom:36px}
+body.request-page .content h1{font-size:clamp(30px,3vw,40px);margin-bottom:14px}
+body.request-page .request-intro{font-size:17px;line-height:1.55;color:#37506f}
+body.request-page .request-group:not(.wizard-hidden){
+ border:1.5px solid #aacaf0;border-radius:17px;box-shadow:0 8px 25px #142e5011
+}
+body.request-page .request-group:not(.wizard-hidden) legend{
+ font-size:20px;line-height:1.3;font-weight:800;background:#f1f7ff;color:#0a3375
+}
+body.request-page .form-grid label{font-size:17px;line-height:1.45}
+body.request-page .field-note,body.request-page .file-format-note,
+body.request-page .form-grid .notice{font-size:15px;line-height:1.5}
+body.request-page .form-grid .check-row{font-size:16px;line-height:1.5}
+body.request-page .form-wizard-progress li{
+ font-size:15px;line-height:1.4;padding:12px 9px;border-bottom-width:3px
+}
+body.request-page .form-wizard-progress li.active{font-weight:800}
+body.request-page .form-wizard-progress strong{
+ width:31px;min-width:31px;height:31px;font-size:15px
+}
+body.request-page .request-step{padding:13px 14px}
+body.request-page .request-step strong{font-size:15px}
+body.request-page .request-step small{font-size:13px}
+body.request-page .request-context-copy .muted{font-size:14px;line-height:1.4}
+body.request-page .request-context-copy h2{font-size:24px}
+body.request-page .request-context-copy>p:not(.muted){font-size:16px;line-height:1.5}
+body.request-page .request-context-help{font-size:16px}
+body.request-page .request-preview>summary,
+body.request-page .request-optional>summary{font-size:17px;line-height:1.5}
+body.request-page .review-list{font-size:16px;line-height:1.5}
+body.request-page .review-list dt,body.request-page .review-list dd{padding-block:12px}
+body.request-page .request-actions{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(190px,auto);
+ align-items:center;column-gap:18px;row-gap:9px;margin-top:12px
+}
+body.request-page .request-actions > .muted:not(.v2-price-summary){font-size:14px;max-width:none;grid-column:1;grid-row:1}
+body.request-page .request-actions > .v2-price-summary{grid-column:1;grid-row:2}
+body.request-page .request-actions > .button{grid-column:2;grid-row:1 / span 2}
+body.request-page .v2-price-summary{
+ font-size:21px;line-height:1.4;font-weight:800;color:#123b77;
+ padding:15px 18px;margin:12px 0;
+ background:#fff;border:2px solid #8bb8ed;border-left:5px solid var(--tp-action-success);
+ border-radius:12px;box-shadow:0 5px 16px #183c680e;overflow-wrap:anywhere
+}
+body.request-page .request-actions .v2-price-summary{margin:0}
+body.request-page .price-choice-group{background:#fff;border:1px solid #c4d8f0}
+body.request-page .price-choice-button{min-height:76px;font-size:17px;border-radius:11px}
+body.request-page .price-choice-button.selected,
+body.request-page .price-choice-button[aria-pressed="true"]{background:#eff7ff;border-color:var(--tp-brand)}
+body.request-page .form-wizard-navigation .button,
+body.request-page .request-actions .button,
+body.request-page .flow-actions .button,
+body.request-page [data-flow-content] .button{font-size:17px;min-height:50px}
+body.request-page .file-help-button{font-size:16px;min-height:50px}
+body.request-page [data-flow-content]>.status-box,
+body.request-page [data-flow-content]>.created-card{
+ padding:23px 26px;border:1px solid #c7d9ec;box-shadow:0 7px 20px #143e6d0f
+}
+body.request-page [data-flow-content]>.status-box h2{font-size:24px;line-height:1.35;margin:0 0 12px}
+body.request-page [data-flow-content]>.status-box h3{font-size:21px;line-height:1.4;margin:0 0 13px}
+body.request-page [data-flow-content]>.status-box p{font-size:17px;line-height:1.6;margin:9px 0}
+body.request-page [data-flow-content]>.status-box .v2-price-summary{font-size:23px;line-height:1.35}
+body.request-page [data-flow-content]>.vertical{max-width:610px;gap:13px;margin-top:20px}
+body.request-page [data-flow-content]>.vertical label{font-size:17px;font-weight:700;line-height:1.5}
+body.request-page [data-flow-content] input[type="file"]{
+ width:100%;min-width:0;border:1px solid #9dbce0;background:#fff;
+ border-radius:10px;padding:9px;font-size:16px
+}
+body.request-page [data-flow-content] input[type="file"]::file-selector-button{
+ border:2px solid var(--tp-action-secondary-border);border-radius:9px;
+ background:#fff;color:#123f80;font:700 15px Arial,system-ui,sans-serif;
+ min-height:43px;padding:8px 13px;margin-right:12px;cursor:pointer
+}
+body.request-page [data-flow-content]>.vertical .button{max-width:100%;width:100%}
+body.request-page .upload-unavailable{background:#fff;border-color:#c8d8e6}
+@media(max-width:760px){
+ body.request-page .content h1{font-size:30px}
+ body.request-page .request-intro{font-size:16px}
+ body.request-page .form-wizard-progress li{font-size:13px;padding:10px 5px}
+ body.request-page .form-wizard-progress strong{width:29px;min-width:29px;height:29px;font-size:14px}
+ body.request-page .request-group:not(.wizard-hidden) legend{font-size:18px}
+ body.request-page .form-grid label{font-size:16px}
+ body.request-page .request-context-copy h2{font-size:20px}
+ body.request-page .request-context-copy .muted{font-size:13px}
+ body.request-page .request-actions{grid-template-columns:1fr;row-gap:12px}
+ body.request-page .request-actions > .muted:not(.v2-price-summary),
+ body.request-page .request-actions > .v2-price-summary,
+ body.request-page .request-actions > .button{grid-column:1;grid-row:auto}
+ body.request-page .request-actions > .button{width:100%}
+ body.request-page .v2-price-summary{font-size:19px}
+ body.request-page [data-flow-content]>.status-box .v2-price-summary{font-size:21px}
+ body.request-page [data-flow-content]>.status-box{padding:20px 17px}
+ body.request-page .request-step{padding:12px 8px}
+ body.request-page .request-step strong{font-size:13px}
+ body.request-page .request-step small{font-size:12px}
+}
+@media(hover:none){
+ body.request-page .price-choice-button:hover{transform:none}
+}
