@@ -87,8 +87,9 @@ try{
    if(!state.links.includes('/v2/'))issues.push(`${slug} ${view.w}: no hay link de inicio`);
    // Diagnóstico real de tamaños de botones e importe, sin necesitar una solicitud ni datos reales.
    if(slug==='solicitud'||slug==='pago'||slug==='pago-anses'||slug==='solicitud-anses'){
-    const metricExpr=`JSON.stringify((()=>{const el=document.createElement('p');el.className='v2-price-summary';el.textContent='Precio de ejemplo';const btn=document.createElement('button');btn.className='button';btn.textContent='Acción';document.body.append(el,btn);const price=parseFloat(getComputedStyle(el).fontSize);const action=parseFloat(getComputedStyle(btn).fontSize);const minHeight=parseFloat(getComputedStyle(btn).minHeight);el.remove();btn.remove();return {price,action,minHeight}})())`;
+    const metricExpr=`JSON.stringify((()=>{const parent=document.querySelector('.content')??document.body;const el=document.createElement('p');el.className='muted v2-price-summary';el.textContent='Precio de ejemplo';const btn=document.createElement('button');btn.className='button';btn.textContent='Acción';parent.append(el,btn);const price=parseFloat(getComputedStyle(el).fontSize);const action=parseFloat(getComputedStyle(btn).fontSize);const minHeight=parseFloat(getComputedStyle(btn).minHeight);el.remove();btn.remove();return {price,action,minHeight}})())`;
     const metric=JSON.parse((await cmd('Runtime.evaluate',{expression:metricExpr,returnByValue:true})).result.value);
+    console.log(`TIPOGRAFIA ${slug} ${view.w}: precio=${metric.price}px acción=${metric.action}px alto=${metric.minHeight}px`);
     if(metric.price<19||metric.action<16||metric.minHeight<48)
       issues.push(`${slug} ${view.w}: legibilidad insuficiente precio=${metric.price}, accion=${metric.action}, altura=${metric.minHeight}`);
    }
