@@ -13,6 +13,7 @@
   function showQuotedPrice(box,data){
     if(!data.requiresPayment)return;
     const p=document.createElement("p");
+    p.className="v2-price-summary";
     p.textContent=data.quotedAmount===null||data.quotedAmount===undefined
       ?"Importe pendiente de cotización. No realices transferencias."
       :(tariff?.officialFeeIncluded?"Importe total cotizado: ":"Importe de gestión cotizado: ")+formatARS(Number(data.quotedAmount))+
