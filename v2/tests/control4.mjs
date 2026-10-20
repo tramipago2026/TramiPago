@@ -31,7 +31,7 @@ assert.ok(clientScript.includes("file-help-button"),"Falta ayuda contextual cuan
 const bank = JSON.parse(readFileSync(path.join(root,"data","medio-pago-v1-v2.json"),"utf8"));
 assert.equal(bank.enabled,true,"El medio de transferencia manual de V1 debe estar preparado para activarse automáticamente tras B2");
 assert.equal(bank.provider,"transferencia","Medio de pago V1 perdido");
-assert.ok(bank.alias&&bank.cvu&&bank.holder,"Datos de transferencia V1 incompletos");
+
 assert.match(paymentFlow,/Number\.isFinite\(Number\(data\.quotedAmount\)\)/,"El pago requiere una cotización válida generada en MySQL");
 
 assert.equal(Object.keys(tariffs.services).length,25,"Las 25 fichas deben conservar su tarifa de V1 o falta de precio");
@@ -181,4 +181,6 @@ await import("./progress-v2.test.mjs");
 await import("./tracking-v2.test.mjs");
 await import("./search-empty.test.mjs");
 await import("./flow-states.test.mjs");
+console.log("PASS rutas CONTROL 4 previas a verificación bancaria: "+unique.length+" rutas del manifiesto, "+pageFiles.length+" páginas HTML, 25 formularios y "+internalLinks+" enlaces/recursos locales");
+assert.ok(bank.alias&&bank.cvu&&bank.holder,"Datos de transferencia V1 incompletos");
 console.log("PASS CONTROL 4: "+unique.length+" rutas del manifiesto, "+pageFiles.length+" páginas HTML, 25 formularios y "+internalLinks+" enlaces/recursos locales");
