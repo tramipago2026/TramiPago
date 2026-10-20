@@ -155,6 +155,9 @@
     // The transfer method is approved from V1 and needs no separate payment credential.
     const ready=health?.dependencies?.b2==="configured" &&
       method?.enabled===true && method?.provider==="transferencia" &&
+      typeof method.holder==="string" && method.holder.trim().length>0 &&
+      typeof method.alias==="string" && method.alias.trim().length>0 &&
+      typeof method.cvu==="string" && /^\\d{22}$/.test(method.cvu) &&
       Number.isFinite(Number(data.quotedAmount)) && Number(data.quotedAmount)>0;
     if(ready){
       const destination=document.createElement("div");
