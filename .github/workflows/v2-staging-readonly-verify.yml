@@ -22,7 +22,7 @@ jobs:
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
           const base='https://tramipago-v2-api-staging.tramipago.workers.dev';
-          const expected='3fd4aabd66de1bd09074ff3234f4117fbbf61163';
+          const expected='dd36eb04c9686c972b6cab03968fe264f91e3552';
           const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
           async function check(){
             const health=await fetch(base+'/v2/health/dependencies',{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(12000)});
@@ -51,11 +51,28 @@ jobs:
             assert.equal(css.status,200,'CSS compartido servido');
             const stylesheet=await css.text();
             assert.ok(stylesheet.includes('--tp-brand:#006cf5'),'estilos visuales actualizados');
+            assert.ok(stylesheet.includes('--tp-text-action:17px'),'botones con tamaño unificado');
+            assert.ok(stylesheet.includes('TP-V2-DISENO-INTEGRAL-26-1'),'base de diseño integral servida');
+            for(const [asset,needle] of [
+              ['/v2/assets/request-flow-v2.css','.v2-price-summary'],
+              ['/v2/assets/admin-layout.css','TP-V2-DISENO-INTEGRAL-26-1'],
+              ['/v2/assets/v2.js','muted v2-price-summary'],
+              ['/v2/assets/flow-v2.js','p.className="v2-price-summary"']
+            ]){
+              const response=await fetch(base+asset,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(12000)});
+              assert.equal(response.status,200,'asset '+asset);
+              assert.ok((await response.text()).includes(needle),'contenido visual no publicado: '+asset);
+            }
+            for(const route of ['/v2/tramites/constancias-anses/','/v2/tramites/constancias-anses/pago/','/v2/admin/','/v2/ayuda/']){
+              const response=await fetch(base+route,{signal:AbortSignal.timeout(12000)});
+              assert.equal(response.status,200,'ruta V2 '+route);
+              assert.ok((await response.text()).includes('/v2/assets/v2.css'),'sin diseño global '+route);
+            }
             const hero=await fetch(base+'/v2/assets/hero-pareja-45-50-aprobada.webp',{signal:AbortSignal.timeout(12000)});
             assert.equal(hero.status,200,'foto principal HTTP');
             assert.match(hero.headers.get('content-type')??'',/image\/webp/,'foto principal no es WebP');
             assert.ok((await hero.arrayBuffer()).byteLength>1000,'foto principal vacia');
-            console.log('PASS CONTROL 3 lectura independiente: staging, revision, portada, ocho tarjetas, CSS, foto y noindex');
+            console.log('PASS CONTROL 3 lectura independiente: staging, portada, 8 tarjetas, CSS integral, precios, 4 rutas, foto y noindex');
           }
           let last;
           for(let i=0;i<8;i++){
