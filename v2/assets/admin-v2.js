@@ -189,7 +189,7 @@
       loginForm.reset();
       if(data?.twoFactorRedirect){loginForm.hidden=true;totpForm.hidden=false;msg("Ingresá el código de tu autenticador.");return}
       await session();
-    }catch(e){const code=String(e.code||"request_failed").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,64);msg("Error al iniciar sesión ("+e.status+" · "+code+").","error")}
+    }catch(e){const code=String(e.code||"request_failed").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,64);msg(e.status===401 && String(fd.get("email")||"").trim().toLowerCase()==="tramipago@gmail.com"?"Owner V2: correo o contraseña incorrectos. La cuenta ya existe. No crees otra cuenta ni desactives MFA. Para recuperar la clave usá el procedimiento privado de V2 con tu usuario GitHub, sin compartir contraseñas ni códigos.":"Error al iniciar sesión ("+e.status+" · "+code+").","error")}
   });
   totpForm.addEventListener("submit",async e=>{
     e.preventDefault(); const fd=new FormData(totpForm); msg("Verificando MFA…");
