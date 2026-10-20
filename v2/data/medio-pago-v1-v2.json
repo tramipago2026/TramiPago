@@ -6,6 +6,6 @@
   "activationCondition": "Transferencia de V1 con verificación manual. La pantalla permite transferir solo cuando B2 esté conectado, el importe esté cotizado por MySQL y la carga segura de comprobantes esté lista; realizar prueba E2E real antes de utilizar V2 con clientes.",
   "alias": "tramipago",
   "cvu": "0000003100004971102062",
-  "holder": "Christian Marcelo Adriano Montiel",
+  "holder": "",
   "note": "Transferí el total indicado y cargá el comprobante."
 }
