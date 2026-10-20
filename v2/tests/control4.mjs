@@ -33,7 +33,7 @@ assert.equal(bank.enabled,true,"El medio de transferencia manual de V1 debe esta
 assert.equal(bank.provider,"transferencia","Medio de pago V1 perdido");
 // Execute the actual frontend readiness expression with synthetic variations;
 // never enable a transfer with an incomplete destination.
-const transferReadyExpression = paymentFlow.match(/const ready=([\\s\\S]*?);\\s*if\\(ready\\)/)?.[1];
+const transferReadyExpression = paymentFlow.match(/const ready=([\s\S]*?);\s*if\(ready\)/)?.[1];
 assert.ok(transferReadyExpression,"Payment readiness logic not found");
 const transferReady = new Script("(function(health,method,data){return Boolean("+transferReadyExpression+");})").runInNewContext();
 const healthyB2={dependencies:{b2:"configured"}};
