@@ -313,3 +313,70 @@ body.v2-interior .footer .footer-dark{background:linear-gradient(110deg,#0a2d63,
  body.v2-interior .categories-content .card-arrow{width:32px;height:32px;bottom:14px;right:8px}
  body.v2-interior .content h1{overflow-wrap:break-word}
 }
+
+/* TP-V2-DISENO-INTEGRAL-26-1 — jerarquia, legibilidad y familia unica de botones */
+:root{
+ --tp-action-primary:linear-gradient(135deg,#0879ff,#0064ea);
+ --tp-action-primary-hover:linear-gradient(135deg,#0764d5,#064cb5);
+ --tp-action-secondary-border:#456ca6;
+ --tp-action-success:#087f39;
+ --tp-action-disabled:#929ead;
+ --tp-text-small:14px;
+ --tp-text-regular:16px;
+ --tp-text-action:17px;
+ --v2-button-radius:11px;
+ --v2-button-min-height:48px;
+ --v2-button-padding:12px 20px;
+ --v2-button-background:var(--tp-action-primary);
+ --v2-secondary-button-border:var(--tp-action-secondary-border);
+ --v2-secondary-button-color:#123f80;
+}
+body:not(.home-opcion-c){font-size:var(--tp-text-regular);line-height:1.5;background:#f8fafc}
+body:not(.home-opcion-c) .content p,
+body:not(.home-opcion-c) .content li,
+body:not(.home-opcion-c) .content label{line-height:1.5}
+body:not(.home-opcion-c) .content h1{font-size:clamp(29px,3vw,42px);line-height:1.17}
+body:not(.home-opcion-c) .content .muted,
+body:not(.home-opcion-c) .content .breadcrumbs,
+body:not(.home-opcion-c) .content small,
+body:not(.home-opcion-c) .content .field-note{font-size:var(--tp-text-small);line-height:1.5}
+body:not(.home-opcion-c) .content input:not([type="checkbox"]):not([type="radio"]),
+body:not(.home-opcion-c) .content textarea,
+body:not(.home-opcion-c) .content select{font-size:16px;min-height:48px}
+body:not(.home-opcion-c) .content .status-box,
+body:not(.home-opcion-c) .content .notice,
+body:not(.home-opcion-c) .content .tracking-result{border:1px solid var(--tp-border);border-radius:var(--tp-radius);background:#fff;box-shadow:var(--tp-elevation)}
+body:not(.home-opcion-c) .content .status-box[data-kind="success"]{background:#eefbf2;border-color:#85c89d}
+body:not(.home-opcion-c) .content .status-box[data-kind="error"]{background:#fff6f6;border-color:#d8969c}
+.button,button.button,a.button,.secondary-button,.hero button{
+ font-size:var(--tp-text-action);font-weight:750;line-height:1.25;min-height:var(--v2-button-min-height);
+ padding:var(--v2-button-padding);border-radius:var(--v2-button-radius);
+ text-align:center;display:inline-flex;justify-content:center;align-items:center;gap:8px;
+}
+.button:not(.secondary-button):not(.file-help-button),
+button.button:not(.secondary-button):not(.file-help-button),
+a.button:not(.secondary-button):not(.file-help-button){background:var(--tp-action-primary);color:#fff}
+.button:not(.secondary-button):not(.file-help-button):hover,
+button.button:not(.secondary-button):not(.file-help-button):hover,
+a.button:not(.secondary-button):not(.file-help-button):hover{background:var(--tp-action-primary-hover)}
+.secondary-button,.button.secondary-button,a.button.secondary-button{
+ background:#fff;color:#123f80;border:2px solid var(--tp-action-secondary-border);box-shadow:0 2px 8px #112e5a12
+}
+.secondary-button:hover,.button.secondary-button:hover{background:#f0f6fe;border-color:#164a8c}
+.button:disabled,button.button:disabled,button:disabled,.button[aria-disabled="true"]{
+ background:var(--tp-action-disabled)!important;color:#fff!important;border-color:var(--tp-action-disabled)!important;
+ cursor:not-allowed;box-shadow:none!important;transform:none!important;opacity:1
+}
+body:not(.home-opcion-c) .content a:not(.button):hover{text-underline-offset:4px}
+.footer .footer-dark>a:not(:first-child),.footer .footer-dark>span{font-size:14px;line-height:1.45}
+.footer .private-note{font-size:13px;line-height:1.5}
+body.v2-interior .content .text-card strong{font-size:19px;line-height:1.35}
+body.v2-interior .content .text-card span{font-size:15px;line-height:1.45}
+body.v2-interior .categories-content .card-copy small{font-size:14px}
+@media(hover:none){
+ .button:hover,button.button:hover,a.button:hover,.secondary-button:hover,
+ .text-card:hover,.card-photo:hover{transform:none;box-shadow:var(--tp-elevation)}
+}
+@media(prefers-reduced-motion:reduce){
+ .button,.secondary-button,.text-card,.card-photo{transition:none!important;transform:none!important}
+}
