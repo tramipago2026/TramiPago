@@ -10,6 +10,24 @@ const {execFileSync}=await import("node:child_process");
 execFileSync(process.execPath,[path.join(root,"scripts/build-shell.mjs"),"--check"],{stdio:"inherit"});
 const manifest = JSON.parse(readFileSync(path.join(root, "rutas-v2.json"), "utf8"));
 assert.equal(existsSync(path.join(root, "data", "official-services-2026-10-12.json")), false, "La documentación de validación interna no debe publicarse en V2");
+const sharedStyles=readFileSync(path.join(root,"assets","v2.css"),"utf8");
+const formStyles=readFileSync(path.join(root,"assets","request-flow-v2.css"),"utf8");
+// V2 interior controls use shared design tokens; initial values stay pixel-identical.
+for(const [key,value] of Object.entries({
+  "--v2-button-radius":"8px",
+  "--v2-button-padding":"10px 15px",
+  "--v2-button-min-height":"44px",
+  "--v2-button-color":"#fff",
+  "--v2-button-background":"linear-gradient(180deg,#0075cb,#0754ff)",
+  "--v2-secondary-button-background":"#e3eefb",
+  "--v2-price-choice-background":"#fff",
+})){
+  assert.ok(sharedStyles.includes(key+":"+value),key+" unexpected initial style");
+}
+assert.ok(sharedStyles.includes("background:var(--v2-button-background)"),"Shared buttons must follow centralized colors");
+for(const key of ["--v2-secondary-button-background","--v2-price-choice-background","--v2-price-choice-border"]){
+  assert.ok(formStyles.includes("var("+key+","),key+" has a scoped hardcoded override");
+}
 const clientScript = readFileSync(path.join(root, "assets", "v2.js"), "utf8");
 assert.ok(!clientScript.includes("Información oficial verificada"), "Control interno expuesto en ficha pública");
 assert.ok(!/Guardar borrador|Borrador guardado/.test(clientScript), "Jerga de construcción en formulario público");
