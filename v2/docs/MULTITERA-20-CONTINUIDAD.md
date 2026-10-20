@@ -76,3 +76,66 @@ Orden vigente: DIRECTIVA ROJO MULTITERA-20, entregada y autorizada expresamente 
 
 **Criterio de verdad:** GitHub commit ≠ CI aprobado ≠ deploy publicado ≠ prueba real del sitio.
 **Estado declarado:** PARCIALMENTE COMPLETADO — PENDIENTES IDENTIFICADOS.
+
+---
+
+## 7. Continuación comprobada — 20/10/2026
+
+**Mandato:** continuar DIRECTIVA ROJO MULTITERA-20 sin reiterar diagnósticos validados, sin tocar V1, producción, DNS, cuentas, textos legales, datos bancarios, MFA o identidad visual. Esta sección actualiza el punto de reanudación; las fechas, datos iniciales y procedimientos históricos de las secciones 1 a 6 se conservan como evidencia de su momento.
+
+### 7.1. Commits y controles posteriores
+- HEAD frontend oficial al comenzar esta continuación: `1b15672c8ac135bfa14b000c8a575f908ba11723` (traspaso previo documentado).
+- `6c67c77da6ea0866fc96311b08abdb73822fad5c`: movió el CONTROL 4 integral al final del workflow, sin suprimir pruebas ni aserciones, para permitir observabilidad de las cinco regresiones independientes.
+- `88be4b9e8864b3f8b77c999b358fdc92a1632333`: añadió ejecución independiente de cuatro pruebas existentes y el chequeo del generador `build-shell.mjs --check`, antes del CONTROL 4 integral. Ningún cambio a frontend servido o backend.
+- HEAD oficial tras estos cambios: `88be4b9e8864b3f8b77c999b358fdc92a1632333`.
+- **GitHub Actions real:** ejecución del commit `e101e619...` [39359618184](https://github.com/tramipago2026/TramiPago/actions/runs/39359618184) falló; ejecución del traspaso [39359937092](https://github.com/tramipago2026/TramiPago/actions/runs/39359937092) también. Tras la reordenación, [39361226802](https://github.com/tramipago2026/TramiPago/actions/runs/39361226802) pasó las cinco regresiones independientes, pero falló el CONTROL 4 integral. La ejecución [39361300839](https://github.com/tramipago2026/TramiPago/actions/runs/39361300839) pasó **nueve tests independientes y el chequeo del shell común**; el CONTROL 4 integral siguió fallando.
+- **Fallo verificado en logs:** `AssertionError [ERR_ASSERTION]: Datos de transferencia V1 incompletos`, `v2/tests/control4.mjs:34`. El archivo `v2/data/medio-pago-v1-v2.json` de la rama oficial tiene `holder` vacío y la prueba comprueba que `alias`, `cvu` y `holder` estén presentes. El frontend fijado previamente a `0e02f6ad...` contenía un `holder` no vacío; **no restaurar ni inventar** valores, por la prohibición expresa de modificar datos personales y condiciones de pago. La razón administrativa de la diferencia no se valida sólo con estos dos archivos. **CI total: FALLIDO; no aceptar staging como listo para publicar.**
+- Scripts probados independientemente con conclusión `success`: `progress-v2.test.mjs`, `skip-admin-recovery.test.mjs`, `admin-status-regression.test.mjs`, `payment-retry-regression.test.mjs`, `admin-async-regression.test.mjs`, `legal-actions.test.mjs`, `tracking-v2.test.mjs`, `search-empty.test.mjs`, `flow-states.test.mjs`, y `build-shell.mjs --check` (141 páginas de shell comprobadas). **No confundir con el CONTROL 4 integral aprobado.**
+
+### 7.2. Comparaciones cuantitativas y límites
+| Origen | Archivos en `v2/` | Bytes de `v2/` | Bytes JS | Bytes CSS | Páginas HTML |
+|---|---:|---:|---:|---:|---:|
+| Commit fijado actualmente en backend `0e02f6ad...` | 197 | 2.137.090 | 124.983 | 55.590 | 142 |
+| HEAD al comienzo anterior `cd0d2f18...` | 197 | 2.138.310 | 124.983 | 55.590 | 142 |
+| HEAD de esta continuación `88be4b9e...` | 198 | 2.148.857 | 124.969 | 55.590 | 142 |
+
+Los tamaños derivan del inventario completo del árbol GitHub; el incremento total se relaciona principalmente con documentación de continuidad, **no** con mayor tráfico enviado al navegador. Las cinco páginas representativas inspeccionadas (portada, catálogo, seguimiento, administrador y antecedentes penales) mantienen exactamente la misma cantidad de etiquetas `script`, `link[rel=stylesheet]` e `img` y el mismo HTML entre el SHA fijado y este HEAD. Esto no sustituye métricas de red, tiempo real de carga ni pruebas visuales.
+
+Una inspección textual de los seis JS propios y los cuatro CSS mostró coincidencias acotadas (`statusLabel`, `randomKey`, `api`), pero los helpers API presentan diferencias de solicitud/respuesta y el administrador gestiona su propio mapa de estados. **Ninguna deduplicación adicional fue demostrada segura**: no se reescribieron para obtener reducciones cosméticas. La inspección CSS anterior encontró sobrescrituras dependientes del contexto; evitar borrar estilos sin pruebas visuales.
+
+La verificación directa de `https://tramipago-v2-api-staging.tramipago.workers.dev/v2/` mediante el lector web volvió a devolver URL no accesible por la herramienta; **no prueba** que Cloudflare esté caído. El Worker inspeccionado continúa fijando `FRONTEND_COMMIT = "0e02f6adfe00c66366a0b60f078bfe4b21ca15a3"`, actualmente **10 commits** detrás del HEAD oficial (comparación GitHub). **No se cambió el backend ni se desplegó staging.**
+
+HEAD confirmados tras la ejecución: `main=c6ddaecab20ad0b1fe0f4a8ee77c711bed52f857` (sin cambios); secundaria `45d3cd7119cd4a50703b6540f10193dd2cf8a5af` (sin cambios); backend `688c462da434951c52e4058b5d16729a83a97bd4` (sin cambios).
+
+### 7.3. Matriz actualizada de los 20 frentes (sin inventar cierres)
+| # | Estado al 20/10 | Evidencia / lo que falta |
+|---|---|---|
+| 01 | PARCIAL | Commits y frontend fijado confirmados; publicación real no verificable aún |
+| 02 | REVISADO | Comparación rama secundaria y oficial efectuada previamente; no fusionar |
+| 03 | REVISADO | No se acreditó archivo exclusivo de `/v2/` que recuperar de secundaria |
+| 04 | PARCIAL | 22 workflows revisados previamente; Cloudflare administrativo fuera de alcance observable |
+| 05 | REVISADO | Generador compartido y arquitectura conocidos; no se justificó cambio mayor |
+| 06 | PARCIAL | Duplicados textuales examinados, sin prueba de equivalencia suficiente para fusionar |
+| 07 | PARCIAL | CSS sin modificaciones; falta prueba visual contextual para eliminar reglas |
+| 08 | COMPROBADO | `build-shell --check` aprobó 141 páginas compartidas |
+| 09 | PENDIENTE | No demostrar obsolescencia de recursos sin rastrear todos los usos |
+| 10 | PARCIAL | Conteos, bytes y páginas comparados; falta benchmark de red/rendimiento |
+| 11 | PARCIAL | Prueba de búsqueda vacía aprobada; inventario 25 servicios anterior; falta CONTROL 4 completo |
+| 12 | PARCIAL | Pruebas de estados y flujo aprobadas; faltan validaciones integrales/E2E |
+| 13 | BLOQUEADO | CONTROL 4 integral se detiene en prueba bancaria previa a verificación de rutas |
+| 14 | PARCIAL | Desfase de 10 commits confirmado; no se actualizó el Worker por fallas CI |
+| 15 | PARCIAL | Tres regresiones Admin/MFA aprobadas; acceso Owner real pendiente separado |
+| 16 | PARCIAL | Inventario de 198 archivos y cuatro CSS; ningún recurso descartado sin prueba |
+| 17 | PARCIAL | Microoptimización de `progress-v2.js` previa y mejora de observabilidad CI; sin refactor mayor |
+| 18 | BLOQUEADO | Nueve tests y shell aprobados; CONTROL 4 integral continúa fallando |
+| 19 | PENDIENTE | Staging sigue fijado al SHA viejo; no publicar con CI fallido |
+| 20 | PARCIAL | Comparación cuantitativa y aislamiento GitHub confirmados; falta publicación y validación independiente |
+
+### 7.4. Punto exacto de reanudación (vigente)
+1. No repetir comparación de ramas, inventario de assets, pruebas independientes ni mediciones de tamaño ya registradas.
+2. **Bloqueo decisivo:** resolver, bajo una autorización separada y verificable que respete privacidad y pagos, si el `holder` del JSON bancario debe permanecer omitido o restituirse desde una fuente autorizada. No inventarlo, no introducir valores históricos sin decisión, ni quitar la aserción para forzar CI verde. Hasta entonces, CONTROL 4 no puede certificar éxito.
+3. Continuar las investigaciones independientes técnicamente útiles y reversibles sobre recursos, rutas, frontend/backend y configuración de staging; no cambiar diseño, datos o funcionalidades aprobadas.
+4. Reejecutar íntegramente CONTROL 4 cuando se aclare el bloqueo. Sólo publicar el SHA **probado** en el Worker V2 de staging, sin producción, y comprobar externamente el contenido servido. Si el acceso real falla por una limitación de herramientas, declararlo, no certificarlo.
+5. Conservar separado el cierre del chat 20 (Owner real, Resend, backups, circuito completo y auditorías finales).
+
+**Estado de MULTITERA-20 al cierre de esta continuación: PARCIALMENTE COMPLETADO — PENDIENTES IDENTIFICADOS.** Ninguna modificación a V1, `main`, backend, DNS productivos, rama secundaria, tarifario, recursos visuales ni páginas legales en esta continuación.
