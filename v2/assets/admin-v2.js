@@ -25,6 +25,7 @@
   const resultState=q("[data-admin-result-state]");
   const resultMessage=q("[data-admin-result-message]");
   const notificationList=q("[data-admin-notifications]");
+  const monthlyBackup=q("[data-admin-monthly-backup]");
   const signupForm=q("[data-admin-signup-form]"), signupOpen=q("[data-admin-signup-open]");
   let selectedId=null, role=null;
   document.querySelectorAll("[data-password-toggle]").forEach(button=>button.addEventListener("click",()=>{
@@ -49,7 +50,7 @@
   }
   function msg(text,kind="info"){message.textContent=text;message.dataset.kind=kind;message.hidden=false}
   function showLogin(){loginSection.hidden=false;appSection.hidden=true;logout.hidden=true;loginForm.hidden=false;totpForm.hidden=true;enrollForm.hidden=true;enrollSecret.hidden=true;signupForm.hidden=true;signupOpen.parentElement.hidden=false}
-  function showApp(session){loginSection.hidden=true;appSection.hidden=false;logout.hidden=false;role=session.admin.role;roleNode.textContent=role+" · MFA activo";statusForm.hidden=true;rejectProof.hidden=true;resultForm.hidden=true}
+  function showApp(session){loginSection.hidden=true;appSection.hidden=false;logout.hidden=false;role=session.admin.role;roleNode.textContent=role+" · MFA activo";monthlyBackup.hidden=role!=="owner";statusForm.hidden=true;rejectProof.hidden=true;resultForm.hidden=true}
   function showEnroll(){loginForm.hidden=true;totpForm.hidden=true;enrollForm.hidden=false;enrollSecret.hidden=true;msg("Esta cuenta debe activar MFA antes de acceder al panel.")}
   function esc(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
   function statusLabel(s){return ({draft:"Borrador",awaiting_payment:"Pago pendiente",payment_review:"Pago en revisión",payment_confirmed:"Pago confirmado",in_progress:"En proceso",needs_info:"Falta información",finalized:"Finalizado",cancelled:"Cancelado"})[s]||s}
