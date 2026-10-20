@@ -39,6 +39,8 @@ jobs:
         run: node v2/tests/search-empty.test.mjs
       - name: Verify all request flow states
         run: node v2/tests/flow-states.test.mjs
+      - name: Verify visual unity contract across V2 templates
+        run: node v2/tests/unidad-visual-v2.test.mjs
       - name: Validate shared shell consistency
         run: node v2/scripts/build-shell.mjs --check
       - name: Validate isolated V2 routes and functional shells
