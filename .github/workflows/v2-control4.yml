@@ -21,8 +21,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-      - name: Validate isolated V2 routes and functional shells
-        run: node v2/tests/control4.mjs
       - name: Verify request progress render regression
         run: node v2/tests/progress-v2.test.mjs
       - name: Verify keyboard skip and expired MFA recovery
@@ -33,3 +31,5 @@ jobs:
         run: node v2/tests/payment-retry-regression.test.mjs
       - name: Verify Admin asynchronous request selection
         run: node v2/tests/admin-async-regression.test.mjs
+      - name: Validate isolated V2 routes and functional shells
+        run: node v2/tests/control4.mjs
