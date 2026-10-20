@@ -1,0 +1,66 @@
+name: V2 Staging verificacion independiente (solo lectura)
+on:
+  push:
+    branches:
+      - v2/opcion-c-directiva13
+    paths:
+      - .github/workflows/v2-staging-readonly-verify.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  read-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Confirmar revision visual realmente servida en staging aislado
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const base='https://tramipago-v2-api-staging.tramipago.workers.dev';
+          const expected='3fd4aabd66de1bd09074ff3234f4117fbbf61163';
+          const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+          async function check(){
+            const health=await fetch(base+'/v2/health/dependencies',{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(12000)});
+            assert.equal(health.status,200,'staging dependencies HTTP status');
+            const info=await health.json();
+            assert.equal(info.environment,'staging','entorno equivocado');
+            assert.equal(info.frontendCommit,expected,'version visual servida no coincide');
+            const page=await fetch(base+'/v2/',{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(12000)});
+            assert.equal(page.status,200,'portada publicada');
+            assert.match(page.headers.get('x-robots-tag')??'',/noindex/,'staging no debe indexarse');
+            const html=await page.text();
+            for(const name of [
+              'hero-pareja-45-50-aprobada.webp',
+              'home-antecedentes-aprobada.webp',
+              'home-anses-aprobada.webp',
+              'home-vehicular-aprobada.webp',
+              'home-arba-aprobada.webp',
+              'home-partidas-aprobada.webp',
+              'home-arca-aprobada.webp',
+              'home-apostillas-aprobada.webp',
+              'home-abogado-aprobada.webp'
+            ])assert.ok(html.includes('/v2/assets/'+name),'falta foto aprobada '+name);
+            assert.equal((html.match(/class="card-photo(?: card-art)?"/g)??[]).length,8,'faltan tarjetas');
+            assert.ok(html.includes('/v2/seguimiento/'),'falta acceso seguimiento');
+            const css=await fetch(base+'/v2/assets/v2.css',{signal:AbortSignal.timeout(12000)});
+            assert.equal(css.status,200,'CSS compartido servido');
+            const stylesheet=await css.text();
+            assert.ok(stylesheet.includes('--tp-brand:#006cf5'),'estilos visuales actualizados');
+            const hero=await fetch(base+'/v2/assets/hero-pareja-45-50-aprobada.webp',{signal:AbortSignal.timeout(12000)});
+            assert.equal(hero.status,200,'foto principal HTTP');
+            assert.match(hero.headers.get('content-type')??'',/image\/webp/,'foto principal no es WebP');
+            assert.ok((await hero.arrayBuffer()).byteLength>1000,'foto principal vacia');
+            console.log('PASS CONTROL 3 lectura independiente: staging, revision, portada, ocho tarjetas, CSS, foto y noindex');
+          }
+          let last;
+          for(let i=0;i<8;i++){
+            try{await check();process.exit(0)}catch(error){last=error;console.log('Intento '+(i+1)+': '+error.message);if(i<7)await sleep(6000)}
+          }
+          console.error('BLOQUEADO: staging no comprobado independientemente',last);
+          process.exit(1);
+          NODE
