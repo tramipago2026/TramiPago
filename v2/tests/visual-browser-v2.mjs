@@ -64,7 +64,7 @@ try{
  await cmd('Page.enable');await cmd('Runtime.enable');await cmd('Network.enable');
  await cmd('Network.setBlockedURLs',{urls:['https://*']});
  const views=[{w:375,h:812},{w:768,h:1000},{w:1440,h:900}];
- const routes=[['/v2/','inicio'],['/v2/tramites/','catalogo'],['/v2/categorias/','categorias'],['/v2/tramites/antecedentes-penales/','solicitud'],['/v2/tramites/antecedentes-penales/pago/','pago'],['/v2/seguimiento/','seguimiento'],['/v2/contacto/','contacto'],['/v2/admin/','admin']];
+ const routes=[['/v2/','inicio'],['/v2/tramites/','catalogo'],['/v2/categorias/','categorias'],['/v2/tramites/antecedentes-penales/','solicitud'],['/v2/tramites/antecedentes-penales/pago/','pago'],['/v2/seguimiento/','seguimiento'],['/v2/contacto/','contacto'],['/v2/admin/','admin'],['/v2/tests/galeria-fotos-a.html','fotos-a'],['/v2/tests/galeria-fotos-b.html','fotos-b']];
  const issues=[];
  for(const view of views){
   await cmd('Emulation.setDeviceMetricsOverride',{width:view.w,height:view.h,deviceScaleFactor:1,mobile:false});
