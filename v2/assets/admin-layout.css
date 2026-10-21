@@ -122,3 +122,16 @@ body.admin-v2-page [data-admin-detail]{border-radius:12px;background:#fff;paddin
  body.admin-v2-page .admin-panel h2{font-size:21px}
  body.admin-v2-page [data-admin-list] .text-card{padding:14px 12px}
 }
+
+/* TP-V2-MUESTRA-ADMIN-26-APROBADA */
+body.admin-v2-page .admin-panel{border:2px solid #adcce4;border-radius:10px;box-shadow:0 5px 13px #0c335a17}
+body.admin-v2-page .admin-panel h2{color:#0b2e55;font-weight:850}
+body.admin-v2-page .admin-panel button:not(:disabled),
+body.admin-v2-page .admin-panel a.button:not(.file-help-button){
+ border:2px solid #082e57;border-radius:8px;box-shadow:0 3px 0 #082e57;
+ min-height:43px;font-weight:800;padding:9px 15px
+}
+body.admin-v2-page .admin-panel button:not(.button):not(:disabled){background:#daf0ff;color:#062d56}
+body.admin-v2-page [data-admin-list] .text-card{box-shadow:none;border:0;border-bottom:1px solid #d8e6ef;border-radius:0}
+body.admin-v2-page [data-admin-detail]{border-color:#b6d0e5;background:#f7fbff}
+body.admin-v2-page .admin-panel input:not([type=checkbox]):not([type=radio]),body.admin-v2-page .admin-panel select,body.admin-v2-page .admin-panel textarea{border:1.5px solid #93b6d4;border-radius:7px}
