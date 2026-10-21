@@ -286,3 +286,38 @@ body.request-page .content .v2-price-summary.muted{
  body.request-page .content .v2-price-summary,
  body.request-page .content .v2-price-summary.muted{font-size:19px}
 }
+
+/* TP-V2-MUESTRA-PAGO-Y-FORMULARIOS-26-APROBADA */
+body.request-page .content .v2-price-summary,
+body.request-page .content .v2-price-summary.muted{
+ background:#edf9f0;border:2px solid #16a55f;color:#076e40;
+ border-radius:9px;padding:14px 16px;box-shadow:none;
+ width:100%;max-width:340px;font-size:17px;line-height:1.45
+}
+body.request-page .v2-price-label{display:block;font-size:14px;font-weight:650;color:#486d90}
+body.request-page .v2-price-amount{display:block;color:#076e40;font-size:29px;line-height:1.2;margin:4px 0;font-weight:900;overflow-wrap:anywhere}
+body.request-page .v2-price-note{display:block;color:#435f7a;font-size:13px;line-height:1.45}
+body.request-page [data-flow-content]>.status-box.v2-bank-card{
+ max-width:550px;background:#f7fbff;border:1.5px solid #b6d0e5
+}
+body.request-page .v2-bank-list{margin:0}
+body.request-page .v2-bank-row{display:grid;grid-template-columns:90px minmax(0,1fr);gap:10px;align-items:center;border-bottom:1px solid #d9e8f3;padding:10px 0}
+body.request-page .v2-bank-row:last-child{border-bottom:0}
+body.request-page .v2-bank-row dt{font-size:14px;color:#486d90}
+body.request-page .v2-bank-row dd{margin:0;color:#032e58;font-size:17px;font-weight:800;overflow-wrap:anywhere;user-select:text}
+body.request-page [data-flow-content]>form.vertical>button.button{
+ width:auto;max-width:min(100%,320px);justify-self:start;
+}
+body.request-page .request-actions>.button{max-width:min(100%,320px);justify-self:start}
+body.request-page [data-flow-content]>.created-card .v2-confirmation-code{padding:12px 15px;border:1px solid #c5dced;border-radius:7px;background:#f2f9ff}
+body.request-page [data-flow-content]>.created-card .v2-confirmation-code code{display:block;font-size:20px;font-weight:900;color:#092d60;overflow-wrap:anywhere}
+body.request-page [data-flow-content]>.created-card .v2-confirmation-status{display:inline-block;padding:6px 10px;background:#edf5fd;color:#144f81;border-radius:7px;font-weight:800}
+body.request-page .form-grid input:not([type=checkbox]):not([type=radio]),
+body.request-page .form-grid select,body.request-page .form-grid textarea{border-color:#93b6d4}
+body.request-page .request-group:not(.wizard-hidden){border-color:#adcce4}
+@media(max-width:760px){
+ body.request-page .content .v2-price-summary,body.request-page .content .v2-price-summary.muted{max-width:100%}
+ body.request-page .v2-price-amount{font-size:26px}
+ body.request-page .v2-bank-row{grid-template-columns:70px minmax(0,1fr)}
+ body.request-page [data-flow-content]>form.vertical>button.button{width:auto}
+}
