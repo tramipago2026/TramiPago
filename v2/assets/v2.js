@@ -801,6 +801,18 @@
             : (tariff.officialFeeIncluded ? "Importe total del servicio: " : "Importe de gestión TramiPago: ") +
               formatPrice(selected.amount) +
               (tariff.officialFeeExternal ? ". La tasa oficial se informa y cobra por separado cuando corresponda." : "");
+      if(selected){
+        const label=document.createElement("span");label.className="v2-price-label";
+        label.textContent=tariff.officialFeeIncluded?"Importe total del servicio":"Importe de gestión TramiPago";
+        const amount=document.createElement("strong");amount.className="v2-price-amount";
+        amount.textContent=formatPrice(selected.amount);
+        quoteNode.replaceChildren(label,amount);
+        if(tariff.officialFeeExternal){
+          const note=document.createElement("small");note.className="v2-price-note";
+          note.textContent="La tasa oficial se informa y cobra por separado cuando corresponda.";
+          quoteNode.append(note);
+        }
+      }
       window.TramiPagoProgress?.summary(qs("[data-v2-preview-content]", form), schema, values());
       try { sessionStorage.setItem(cacheKey, JSON.stringify(values())); } catch {}
     }
