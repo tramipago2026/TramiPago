@@ -14,10 +14,20 @@
     if(!data.requiresPayment)return;
     const p=document.createElement("p");
     p.className="v2-price-summary";
-    p.textContent=data.quotedAmount===null||data.quotedAmount===undefined
-      ?"Importe pendiente de cotización. No realices transferencias."
-      :(tariff?.officialFeeIncluded?"Importe total cotizado: ":"Importe de gestión cotizado: ")+formatARS(Number(data.quotedAmount))+
-      (tariff?.officialFeeExternal?". La tasa oficial, si corresponde, se informa por separado.":"");
+    if(data.quotedAmount===null||data.quotedAmount===undefined){
+      p.textContent="Importe pendiente de cotización. No realices transferencias.";
+    }else{
+      const label=document.createElement("span");label.className="v2-price-label";
+      label.textContent=tariff?.officialFeeIncluded?"Importe total cotizado":"Importe de gestión cotizado";
+      const amount=document.createElement("strong");amount.className="v2-price-amount";
+      amount.textContent=formatARS(Number(data.quotedAmount));
+      p.append(label,amount);
+      if(tariff?.officialFeeExternal){
+        const note=document.createElement("small");note.className="v2-price-note";
+        note.textContent="La tasa oficial, si corresponde, se informa por separado.";
+        p.append(note);
+      }
+    }
     box.append(p);
   }
   function progress(data){window.TramiPagoProgress?.render({stage:flow,requiresPayment:data.requiresPayment,status:data.status})}
@@ -165,9 +175,14 @@
       destination.className="status-box";
       const heading=document.createElement("h3");heading.textContent="Datos de transferencia";
       destination.append(heading);
+      const details=document.createElement("dl");details.className="v2-bank-list";
       for(const [name,value] of [["Titular",method.holder],["Alias",method.alias],["CVU",method.cvu]]){
-        const row=document.createElement("p");row.textContent=name+": "+value;destination.append(row);
+        const row=document.createElement("div");row.className="v2-bank-row";
+        const label=document.createElement("dt");label.textContent=name;
+        const detail=document.createElement("dd");detail.textContent=value;
+        row.append(label,detail);details.append(row);
       }
+      destination.classList.add("v2-bank-card");destination.append(details);
       main.append(destination);
     }
     const form=document.createElement("form");form.className="vertical";
@@ -235,8 +250,10 @@
     q("[data-flow-title]").textContent=({draft:"Solicitud pendiente",awaiting_payment:"Pago pendiente",payment_review:"Comprobante en revisión",payment_confirmed:"Pago confirmado",in_progress:"Solicitud en proceso",needs_info:"Información pendiente",finalized:"Solicitud finalizada",cancelled:"Solicitud cancelada"})[data.status]||"Estado de la solicitud";
     const box=document.createElement("div");box.className="created-card";
     const h=document.createElement("h2");h.textContent=data.serviceName;
-    const code=document.createElement("p");code.innerHTML="Código de seguimiento: <code></code>";q("code",code).textContent=data.trackingCode;
-    const status=document.createElement("p");status.textContent="Estado: "+statusLabel(data.status);
+    const code=document.createElement("p");code.className="v2-confirmation-code";
+    code.innerHTML="Código de seguimiento: <code></code>";q("code",code).textContent=data.trackingCode;
+    const status=document.createElement("p");status.className="v2-confirmation-status";
+    status.textContent="Estado: "+statusLabel(data.status);
     const a=document.createElement("a");a.className="button";a.href=trackingHref(data);a.textContent=data.status==="needs_info"?"Completar información →":"Ir a seguimiento →";
     box.append(h,code,status,a);main.replaceChildren(box);
     if(["draft","awaiting_payment"].includes(data.status)){
