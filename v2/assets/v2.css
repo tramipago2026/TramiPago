@@ -380,3 +380,25 @@ body.v2-interior .categories-content .card-copy small{font-size:14px}
 @media(prefers-reduced-motion:reduce){
  .button,.secondary-button,.text-card,.card-photo{transition:none!important;transform:none!important}
 }
+
+/* TP-V2-MUESTRA-INTERIORES-26-APROBADA */
+:root{--tp-v2-outline:#082e57;--tp-v2-blue:#086dde;--tp-v2-green:#188d61;--tp-v2-ice:#daf0ff}
+body:not(.home-opcion-c) .button:not(.file-help-button),
+body:not(.home-opcion-c) .secondary-button{
+ border:2px solid var(--tp-v2-outline);box-shadow:0 3px 0 var(--tp-v2-outline);
+ border-radius:8px;min-height:48px;font-size:17px;font-weight:800;
+ line-height:1.3;padding:10px 16px;max-width:100%;text-decoration:none
+}
+body:not(.home-opcion-c) .button:not(.secondary-button):not(.file-help-button){background:var(--tp-v2-blue);color:#fff}
+body:not(.home-opcion-c) .button.secondary-button,body:not(.home-opcion-c) .secondary-button{background:white;color:#073766}
+body:not(.home-opcion-c) .button:not(:disabled):hover{box-shadow:0 4px 0 var(--tp-v2-outline);transform:translateY(-1px)}
+body:not(.home-opcion-c) .content .text-card{border:2px solid #adcce4;border-radius:10px;box-shadow:0 5px 13px #0c335a17}
+body:not(.home-opcion-c) .contact-actions .button:not(.secondary-button){background:var(--tp-v2-green)}
+body:not(.home-opcion-c) .contact-email{
+ display:inline-flex;align-items:center;justify-content:center;
+ border:2px solid var(--tp-v2-outline);box-shadow:0 3px 0 var(--tp-v2-outline);
+ border-radius:8px;background:var(--tp-v2-ice);color:#062d56;
+ min-height:48px;max-width:100%;padding:10px 16px;font-weight:800;text-decoration:none
+}
+body:not(.home-opcion-c) .content .tracking-result strong{font-size:19px;color:#092d60;overflow-wrap:anywhere}
+body:not(.home-opcion-c) .footer-dark a{text-decoration:underline;text-underline-offset:3px}
