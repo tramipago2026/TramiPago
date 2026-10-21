@@ -22,7 +22,7 @@ jobs:
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
           const base='https://tramipago-v2-api-staging.tramipago.workers.dev';
-          const expected='9fe6f241ff6c1752453c1a1c6df8197124ac9003';
+          const expected='7c9258e12a72a81d8fdb052335357e7370bb31fc';
           const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
           async function check(){
             const health=await fetch(base+'/v2/health/dependencies',{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(12000)});
@@ -53,11 +53,12 @@ jobs:
             assert.ok(stylesheet.includes('--tp-brand:#006cf5'),'estilos visuales actualizados');
             assert.ok(stylesheet.includes('--tp-text-action:17px'),'botones con tamaño unificado');
             assert.ok(stylesheet.includes('TP-V2-DISENO-INTEGRAL-26-1'),'base de diseño integral servida');
+            assert.ok(stylesheet.includes('TP-V2-MUESTRA-INTERIORES-26-APROBADA'),'falta boton aprobado');
             for(const [asset,needle] of [
-              ['/v2/assets/request-flow-v2.css','.v2-price-summary'],
-              ['/v2/assets/admin-layout.css','TP-V2-DISENO-INTEGRAL-26-1'],
-              ['/v2/assets/v2.js','muted v2-price-summary'],
-              ['/v2/assets/flow-v2.js','p.className="v2-price-summary"']
+              ['/v2/assets/request-flow-v2.css','TP-V2-MUESTRA-PAGO-Y-FORMULARIOS-26-APROBADA'],
+              ['/v2/assets/admin-layout.css','TP-V2-MUESTRA-ADMIN-26-APROBADA'],
+              ['/v2/assets/v2.js','quoteNode.replaceChildren(label,amount)'],
+              ['/v2/assets/flow-v2.js','v2-bank-list']
             ]){
               const response=await fetch(base+asset,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(12000)});
               assert.equal(response.status,200,'asset '+asset);
@@ -72,7 +73,13 @@ jobs:
             assert.equal(hero.status,200,'foto principal HTTP');
             assert.match(hero.headers.get('content-type')??'',/image\/webp/,'foto principal no es WebP');
             assert.ok((await hero.arrayBuffer()).byteLength>1000,'foto principal vacia');
-            console.log('PASS CONTROL 3 lectura independiente: staging, portada, 8 tarjetas, CSS integral, precios, 4 rutas, foto y noindex');
+            for(const key of ['constancias-anses','arca']){
+              const photo=await fetch(base+'/v2/photo/'+key+'.jpg',{signal:AbortSignal.timeout(14000)});
+              assert.equal(photo.status,200,'foto interior '+key+' HTTP');
+              assert.match(photo.headers.get('content-type')??'',/image\/(jpeg|webp)/,'foto interior no decodificable '+key);
+              assert.ok((await photo.arrayBuffer()).byteLength>1000,'foto interior vacia '+key);
+            }
+            console.log('PASS CONTROL 3 lectura independiente: staging, portada, 8 tarjetas, CSS aprobado, foto interior, rutas y noindex');
           }
           let last;
           for(let i=0;i<8;i++){
@@ -134,7 +141,7 @@ jobs:
               for(const [route,name] of routes){
                 await cmd('Page.navigate',{url:base+route});
                 await sleep(1000);
-                const expr=`JSON.stringify((()=>{const parent=document.querySelector('.content')||document.body;const p=document.createElement('p');p.className='muted v2-price-summary';p.textContent='Importe de prueba';const b=document.createElement('button');b.className='button';b.textContent='Acción';parent.append(p,b);const x={title:document.title,header:!!document.querySelector('header'),overflow:document.documentElement.scrollWidth-innerWidth,broken:[...document.images].filter(i=>i.complete&&!i.naturalWidth&&i.src.includes('/v2/assets/')).length,price:parseFloat(getComputedStyle(p).fontSize),action:parseFloat(getComputedStyle(b).fontSize),minHeight:parseFloat(getComputedStyle(b).minHeight),request:document.body.classList.contains('request-page')};p.remove();b.remove();return x})())`;
+                const expr=`JSON.stringify((()=>{const parent=document.querySelector('.content')||document.body;const p=document.createElement('p');p.className='muted v2-price-summary';p.textContent='Importe de prueba';const amount=document.createElement('strong');amount.className='v2-price-amount';amount.textContent='$ 2000';p.append(amount);const b=document.createElement('button');b.className='button';b.textContent='Acción';parent.append(p,b);const x={title:document.title,header:!!document.querySelector('header'),overflow:document.documentElement.scrollWidth-innerWidth,broken:[...document.images].filter(i=>i.complete&&!i.naturalWidth&&(i.src.includes('/v2/assets/')||i.src.includes('/v2/photo/'))).length,price:parseFloat(getComputedStyle(amount).fontSize),action:parseFloat(getComputedStyle(b).fontSize),minHeight:parseFloat(getComputedStyle(b).minHeight),request:document.body.classList.contains('request-page')};p.remove();b.remove();return x})())`;
                 const result=await cmd('Runtime.evaluate',{expression:expr,returnByValue:true});
                 const state=JSON.parse(result.result.value);
                 assert.ok(state.header,'sin cabecera '+route);
