@@ -77,3 +77,20 @@ assert.match(home,/\.home-opcion-c \.card-photo img\{filter:none\}/);
 assert.match(read("assets/v2.js"),/quoteNode\.className = "muted v2-price-summary"/);
 assert.match(read("assets/flow-v2.js"),/p\.className="v2-price-summary"/);
 console.log("PASS unidad integral 26.1: botones, tipografia, precio y ambitos visuales sin cambios de catalogo");
+
+// MULTITERA-26-2: referencia aprobada de ocho familias, fuera de portada.
+assert.match(global,/TP-V2-MUESTRA-INTERIORES-26-APROBADA/);
+assert.match(global,/body:not\(\.home-opcion-c\) \.button/);
+assert.match(global,/contact-email/);
+assert.match(flows,/TP-V2-MUESTRA-PAGO-Y-FORMULARIOS-26-APROBADA/);
+assert.match(flows,/\.v2-price-amount/);
+assert.match(flows,/\.v2-bank-row/);
+assert.match(flows,/form\.vertical>button\.button/);
+assert.match(admin,/TP-V2-MUESTRA-ADMIN-26-APROBADA/);
+const formSource=read("assets/v2.js"),paymentSource=read("assets/flow-v2.js");
+assert.match(formSource,/quoteNode\.replaceChildren\(label,amount\)/);
+assert.match(paymentSource,/destination\.classList\.add\("v2-bank-card"\)/);
+assert.match(paymentSource,/code\.className="v2-confirmation-code"/);
+assert.match(paymentSource,/method\.holder\.trim\(\)\.length>0/);
+assert.match(paymentSource,/Number\(data\.quotedAmount\)>0/);
+console.log("PASS MULTITERA-26-2 contrato muestra aprobada: pago, botones, banco, admin y portada aislada");
