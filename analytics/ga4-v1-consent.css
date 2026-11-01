@@ -1,0 +1,11 @@
+/* Sólo el aviso de consentimiento; sin cambios de estilos del sitio. */
+.tp-ga4-root{font-family:Arial,sans-serif;z-index:2147483000}
+.tp-ga4-panel:not([hidden]){position:fixed;left:12px;right:12px;bottom:12px;max-width:900px;margin:0 auto;background:#fff;color:#172033;border:1px solid #bccbd4;border-radius:9px;box-shadow:0 3px 20px #0003;padding:12px 15px;display:flex;align-items:center;gap:16px;justify-content:space-between;font-size:13px;line-height:1.4}
+.tp-ga4-desc{flex:1;min-width:0}.tp-ga4-desc p{margin:4px 0}.tp-ga4-desc a{color:#075985;text-decoration:underline}
+.tp-ga4-actions{display:flex;gap:8px;flex-shrink:0}
+.tp-ga4-actions button,.tp-ga4-reopen{font-family:Arial,sans-serif;font-size:12px;cursor:pointer;line-height:1.4;padding:8px 12px;border-radius:6px;border:1px solid #075985;font-weight:600}
+.tp-ga4-no{background:#fff;color:#075985}.tp-ga4-yes{background:#075985;color:#fff}
+.tp-ga4-reopen:not([hidden]){position:fixed;bottom:9px;left:9px;background:#fff;color:#075985;box-shadow:0 2px 7px #0002}
+.tp-ga4-root [hidden]{display:none!important}
+.tp-ga4-root button:focus-visible,.tp-ga4-root a:focus-visible{outline:3px solid #f0a93b;outline-offset:2px}
+@media(max-width:640px){.tp-ga4-panel:not([hidden]){display:block;max-height:45vh;overflow:auto}.tp-ga4-actions{margin-top:9px;justify-content:flex-end;flex-wrap:wrap}}
