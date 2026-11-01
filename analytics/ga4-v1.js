@@ -1,6 +1,7 @@
 /* TramiPago V1 — GA4 (preparado, no activado). No envía datos sin consentimiento explícito.
  * Requiere ID real G-... y revisión/autorización de privacidad antes de integrarlo en HTML.
- * No recoge formularios, códigos de seguimiento, parámetros de URL, IP ni datos personales.
+ * No lee formularios, códigos ni parámetros de URL. Una conexión posterior con Google
+ * puede transmitir datos técnicos de red, como la IP, según sus condiciones.
  */
 (function () {
   'use strict';
