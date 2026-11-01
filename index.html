@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://esm.sh; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://static.wixstatic.com https://josecpaz.gob.ar; connect-src 'self' https://injimzsxbnawnekybfpm.supabase.co https://mapas.msm.gov.ar; font-src 'self' data:; media-src 'self'; object-src 'none'; frame-src 'none'; worker-src 'self' blob:; base-uri 'none'; form-action 'self' https://wa.me mailto:; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://esm.sh https://www.googletagmanager.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://static.wixstatic.com https://josecpaz.gob.ar https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://injimzsxbnawnekybfpm.supabase.co https://mapas.msm.gov.ar https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com; font-src 'self' data:; media-src 'self'; object-src 'none'; frame-src 'none'; worker-src 'self' blob:; base-uri 'none'; form-action 'self' https://wa.me mailto:; upgrade-insecure-requests">
   <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -189,5 +189,8 @@
   
 <script src="whatsapp-context.js"></script>  <script src="lawyer-header-badge.js?v=20260930-restore1"></script>
 <script src="index-inline.js?v=20261007-estado-civil-button2"></script>
+  <!-- GA4 V1: carga solo el adaptador local. Sin consentimiento, NO carga el servicio de Google. -->
+  <script src="analytics/ga4-v1.js"></script>
+  <script src="analytics/ga4-v1-config.js"></script>
 </body>
 </html>
