@@ -14,6 +14,11 @@ assert.equal(api.start('G-J1JRESTCK5',{consentGranted:false}),false);
 assert.equal(scripts.length,0);
 assert.equal(api.markTestBrowser(),true);
 assert.equal(api.isTestBrowser(),true);
+assert.equal(api.start('G-J1JRESTCK5',{consentGranted:true}),false);
+assert.equal(scripts.length,0,'Browser de prueba excluido antes de cargar Google');
+assert.equal(w.dataLayer,undefined,'Sin solicitud a Google ni eventos de prueba');
+assert.equal(api.unmarkTestBrowser(),true);
+assert.equal(api.isTestBrowser(),false);
 assert.equal(api.start('G-J1JRESTCK5',{consentGranted:true}),true);
 assert.equal(scripts.length,1);
 scripts[0].onload();
@@ -21,7 +26,7 @@ const views=w.dataLayer.filter(x=>x[0]==='event'&&x[1]==='page_view');
 assert.equal(views.length,1);
 assert.equal(views[0][2].page_location,'https://tramipago.com.ar/index.html#/seguimiento');
 assert.equal(views[0][2].page_referrer,'https://www.google.com/');
-assert.equal(views[0][2].debug_mode,true);
+assert.equal(views[0][2].debug_mode,false);
 assert.equal(w.dataLayer.find(x=>x[0]==='config')[2].send_page_view,false);
 assert.ok(!JSON.stringify(w.dataLayer).includes('SECRETO'));
 assert.ok(!JSON.stringify(w.dataLayer).includes('MUYPRIVADO'));
@@ -40,4 +45,4 @@ for(const f of htmls){
  assert.match(h,/analytics\/ga4-v1-consent\.css/);
  assert.match(h,/www\.googletagmanager\.com/);
 }
-console.log('PASS: GA4 bloqueado antes de consentir, sanitización URL, prueba interna, revocación, 39 HTML públicos');
+console.log('PASS: GA4 bloqueado sin consentimiento y excluye navegador de prueba, sanitización URL, revocación, 39 HTML públicos');

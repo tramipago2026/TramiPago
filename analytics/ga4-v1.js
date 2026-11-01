@@ -4,7 +4,7 @@
 const w=window,marker='tramipago_v1_internal_analytics_test';
 let active=false,loading=false,id='';
 function isTestBrowser(){try{return w.localStorage.getItem(marker)==='1';}catch{return false;}}
-function markTestBrowser(){try{w.localStorage.setItem(marker,'1');return true;}catch{return false;}}
+function markTestBrowser(){try{w.localStorage.setItem(marker,'1');if(active||loading){revokeConsent();w.location.reload();}return true;}catch{return false;}}
 function unmarkTestBrowser(){try{w.localStorage.removeItem(marker);return true;}catch{return false;}}
 function safePage(){
   const h=String(w.location.hash||'');
@@ -17,17 +17,17 @@ function safePage(){
 function safeReferrer(){try{const r=new URL(document.referrer);return /^https?:$/.test(r.protocol)?r.origin+'/':'';}catch{return '';}}
 function gtag(){w.dataLayer.push(arguments);}
 function view(){
-  if(!active)return;
+  if(!active||isTestBrowser())return;
   gtag('event','page_view',{page_location:safePage(),page_referrer:safeReferrer(),page_title:'TramiPago',debug_mode:isTestBrowser()});
 }
 function start(measurementId,opts){
-  if(!opts||opts.consentGranted!==true||!/^G-[A-Z0-9]{4,15}$/.test(measurementId)||loading||active)return false;
+  if(isTestBrowser()||!opts||opts.consentGranted!==true||!/^G-[A-Z0-9]{4,15}$/.test(measurementId)||loading||active)return false;
   id=measurementId;loading=true;w.dataLayer=w.dataLayer||[];
   gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
   const s=document.createElement('script');s.async=true;
   s.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(id);
   s.onload=function(){
-    if(!loading)return;
+    if(!loading||isTestBrowser()){loading=false;return;}
     loading=false;active=true;
     gtag('consent','update',{analytics_storage:'granted'});
     gtag('js',new Date());
