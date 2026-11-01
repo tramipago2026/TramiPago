@@ -2,7 +2,7 @@
 <html lang="es-AR">
 <head>
 
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://esm.sh; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://static.wixstatic.com https://josecpaz.gob.ar; connect-src 'self' https://injimzsxbnawnekybfpm.supabase.co https://mapas.msm.gov.ar; font-src 'self' data:; media-src 'self'; object-src 'none'; frame-src 'none'; worker-src 'self' blob:; base-uri 'none'; form-action 'self' https://wa.me mailto:; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://esm.sh https://www.googletagmanager.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://static.wixstatic.com https://josecpaz.gob.ar https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://injimzsxbnawnekybfpm.supabase.co https://mapas.msm.gov.ar https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com; font-src 'self' data:; media-src 'self'; object-src 'none'; frame-src 'none'; worker-src 'self' blob:; base-uri 'none'; form-action 'self' https://wa.me mailto:; upgrade-insecure-requests">
   <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -68,6 +68,7 @@ main.wrap{flex:1 0 auto;width:min(1050px,calc(100% - 30px))}
 </style>
 <link rel="stylesheet" href="shared-site-shell.css?v=88b87ecc5cef" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Trámites municipales","url":"https://tramipago.com.ar/municipales.html","description":"Asistencia para gestiones municipales disponibles en TramiPago.","publisher":{"@type":"Organization","name":"TramiPago","url":"https://tramipago.com.ar/","logo":"https://tramipago.com.ar/assets/logo-tramipago.webp"}}</script>
+<link rel="stylesheet" href="analytics/ga4-v1-consent.css?v=20261101b">
 </head>
 <body>
 <header class="site-header header-featured-active shared-site-header">
@@ -101,4 +102,7 @@ main.wrap{flex:1 0 auto;width:min(1050px,calc(100% - 30px))}
 
 
 <script src="whatsapp-context.js"></script>  <script src="municipales-page.js"></script>
+<script src="analytics/ga4-v1.js?v=20261101b"></script>
+<script src="analytics/ga4-v1-config.js?v=20261101b"></script>
+<script src="analytics/ga4-v1-consent.js?v=20261101b"></script>
 </body></html>
