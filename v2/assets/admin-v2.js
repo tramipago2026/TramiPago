@@ -66,7 +66,9 @@
   function resetStatusChoices(current){
     const select=statusForm.elements.namedItem("status");
     if(!select)return false;
-    const allowed=allowedStatusChanges[current]||[];
+    const allowed=role==="owner" && current!=="draft" && current!=="finalized" && current!=="cancelled"
+      ? ["awaiting_payment","payment_review","payment_confirmed","in_progress","needs_info","finalized","cancelled"].filter(state=>state!==current)
+      : allowedStatusChanges[current]||[];
     statusForm.dataset.currentStatus=current;
     let prompt=select.querySelector('option[value=""]');
     if(!prompt){
@@ -257,7 +259,11 @@
     const fd=new FormData(statusForm);
     const missing=String(fd.get("missingFields")||"").split(",").map(x=>x.trim()).filter(Boolean);
     const target=String(fd.get("status")||"");
-    if(!allowedStatusChanges[statusForm.dataset.currentStatus||""]?.includes(target)){
+    const current=statusForm.dataset.currentStatus||"";
+    const allowed=role==="owner" && current!=="draft" && current!=="finalized" && current!=="cancelled"
+      ? ["awaiting_payment","payment_review","payment_confirmed","in_progress","needs_info","finalized","cancelled"].filter(state=>state!==current)
+      : allowedStatusChanges[current]||[];
+    if(!allowed.includes(target)){
       msg("Seleccioná un cambio de estado permitido.","error");return;
     }
     if(target==="needs_info"&&!missing.length){msg("Indicá los campos faltantes para solicitar la corrección.","error");return}
