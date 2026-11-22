@@ -6,3 +6,6 @@
 .request-row.is-stale{border-left:4px solid #e5a634;background:#fffaf0}.request-row .attention{color:#9a5a00;font-weight:750}.badge.awaiting_payment{background:#e8f5fb;color:#0b3d66!important}.badge.payment_confirmed{background:#e7f7ee;color:#146c3b!important}.badge.cancelled{background:#eceff2;color:#4e5b66!important}.status-buttons button[data-status="cancelled"]{background:#667784}.history small{color:#607789}.metrics{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
 
 .badge.draft{background:#eef2f6;color:#475b6b!important}.help-context{margin:10px 0;background:#fff9ed;border:1px solid #e5c274}.help-context span{display:block;margin-top:3px;color:#607789;font-size:.74rem}
+
+/* Controles nuevos sin modificar la apariencia aprobada del panel */
+.toolbar{grid-template-columns:minmax(0,1fr) 230px 175px}.month-filter{display:flex;align-items:center;gap:8px;margin:0;min-width:150px}.month-filter input{min-width:125px}.admin-maintenance{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:12px 0}.admin-maintenance small{flex-basis:100%;color:#526a7c}.admin-maintenance button:disabled,.test-delete button:disabled{opacity:.55;cursor:not-allowed}.test-delete{margin:18px 0 8px}@media(max-width:560px){.toolbar{grid-template-columns:1fr}}

@@ -25,6 +25,74 @@ let mfaChallengeId="";
 let errorCount24h=0;
 const detailCache=new Map();
 
+const CLEANUP_STATES=new Set(["draft","awaiting_payment","cancelled"]);
+const MONTH_FORMAT=new Intl.DateTimeFormat("es-AR",{timeZone:"America/Argentina/Buenos_Aires",year:"numeric",month:"2-digit"});
+let cleanupEnabled=false;
+function monthKey(value){
+  if(!value)return "";
+  const date=new Date(value);
+  if(Number.isNaN(date.getTime()))return "";
+  const parts=MONTH_FORMAT.formatToParts(date);
+  return parts.find(p=>p.type==="year").value+"-"+parts.find(p=>p.type==="month").value;
+}
+function monthlyRequests(){
+  const month=$("#month").value;
+  return requests.filter(item=>!month||monthKey(item.created_at)===month);
+}
+function refreshCleanupState(){
+  const visible=filteredRequests();
+  const eligible=visible.filter(item=>CLEANUP_STATES.has(item.status));
+  $("#period-summary").textContent=visible.length+" solicitudes visibles · "+monthlyRequests().length+" del período";
+  $("#delete-month").disabled=!cleanupEnabled||!$("#month").value||eligible.length===0||eligible.length>100;
+  $("#cleanup-info").textContent=cleanupEnabled
+    ?"Borrado habilitado solo para pruebas sin pagos ni archivos; exige copia y confirmación."
+    :"Borrado no habilitado en esta base. Consulta y exportación disponibles.";
+  const single=$("#delete-one");if(single)single.disabled=!cleanupEnabled;
+}
+async function checkCleanupCapability(){
+  if(LOCAL_MODE||!supabase){refreshCleanupState();return;}
+  try{
+    const {data,error}=await supabase.rpc("admin_delete_test_requests",{p_ids:[]});
+    cleanupEnabled=!error&&data===0;
+  }catch(_){cleanupEnabled=false;}
+  refreshCleanupState();
+}
+function downloadCopy(records,kind){
+  const content=JSON.stringify({version:1,exported_at:new Date().toISOString(),kind,requests:records},null,2);
+  const blob=new Blob([content],{type:"application/json;charset=utf-8"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="tramipago-"+kind+"-"+new Date().toISOString().slice(0,10)+".json";
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),15000);
+}
+async function exportMonthlyView(){
+  downloadCopy(filteredRequests().map(item=>({
+    id:item.id,tracking_code:item.tracking_code,service_id:item.service_id,
+    status:item.status,created_at:item.created_at,updated_at:item.updated_at
+  })),"consulta");
+}
+async function deleteTestRequests(ids){
+  if(LOCAL_MODE||!cleanupEnabled||!ids.length||ids.length>100)return;
+  try{
+    const {data:aal,error:aalError}=await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if(aalError||aal?.currentLevel!=="aal2")throw Error("Se requiere MFA activo.");
+    const records=await Promise.all(ids.map(fetchRequestDetail));
+    const safe=records.filter(item=>CLEANUP_STATES.has(item.status)
+      &&!item.paid_at&&!item.receipt_uploaded_at&&!(item.request_files||[]).length);
+    if(!safe.length)throw Error("No hay pruebas eliminables. Pagos y documentos protegidos.");
+    if(safe.length!==records.length)window.alert("Se omiten "+(records.length-safe.length)+" solicitudes protegidas.");
+    downloadCopy(safe,"respaldo-pruebas");
+    const phrase="ELIMINAR "+safe.length;
+    if(window.prompt("Se descargó una copia. Comprobá que la guardaste. Vas a borrar "+safe.length+" pruebas e historial. Escribí "+phrase+":")!==phrase)return;
+    const {data,error}=await supabase.rpc("admin_delete_test_requests",{p_ids:safe.map(item=>item.id)});
+    if(error)throw error;
+    if(data!==safe.length)throw Error("Cantidad eliminada inesperada. Verificá antes de seguir.");
+    selectedId=null;detailCache.clear();await loadRequests();
+    window.alert("Se eliminaron "+data+" solicitudes de prueba.");
+  }catch(error){window.alert("No se completó la limpieza: "+String(error.message||error));}
+}
+
+
 async function localJson(path,options={}){
   const response=await fetch(path,{cache:"no-store",headers:{"Content-Type":"application/json",...(options.headers||{})},...options});
   let body={};try{body=await response.json();}catch(_){ }
@@ -97,7 +165,7 @@ async function enterDashboard({mfaVerified=false}={}){
   }else{
     try{if(!(await requireMfa()))return;}catch(error){showLogin("No se pudo validar la verificación en dos pasos.");return;}
   }
-  $("#login-view").hidden=true;$("#mfa-view").hidden=true;$("#dashboard-view").hidden=false;$("#logout").hidden=false;await loadRequests();
+  $("#login-view").hidden=true;$("#mfa-view").hidden=true;$("#dashboard-view").hidden=false;$("#logout").hidden=false;await loadRequests();await checkCleanupCapability();
 }
 
 async function loadRequests(){
@@ -142,7 +210,7 @@ function renderMetrics(){
   const definitions=LOCAL_MODE
     ? [["draft","Borradores"],["awaiting_payment","Nuevos"],["payment_review","Por verificar"],["in_progress","En proceso"],["needs_info","Falta información"],["finalized","Finalizados"]]
     : [["draft","Borradores"],["awaiting_payment","Nuevos"],["payment_review","Por verificar"],["payment_confirmed","Pagos confirmados"],["in_progress","En proceso"],["needs_info","Falta información"],["finalized","Finalizados"]];
-  const cards=definitions.map(([status,label])=>`<article class="metric ${status==="payment_review"?"urgent":""}"><strong>${requests.filter(item=>item.status===status).length}</strong><span>${label}</span></article>`);
+  const cards=definitions.map(([status,label])=>`<article class="metric ${status==="payment_review"?"urgent":""}"><strong>${monthlyRequests().filter(item=>item.status===status).length}</strong><span>${label}</span></article>`);
   if(!LOCAL_MODE)cards.push(`<article class="metric ${errorCount24h?"urgent":""}"><strong>${errorCount24h}</strong><span>Errores técnicos 24 h</span></article>`);
   $("#metrics").innerHTML=cards.join("");
 }
@@ -163,12 +231,13 @@ function allowedNextStates(item){
 
 function filteredRequests(){
   const term=$("#search").value.trim().toLowerCase();const status=$("#filter").value;
-  return requests.filter(item=>(!status||(status==="__attention"?requiresAttention(item):item.status===status))&&(!term||[item.tracking_code,item.services?.name,item.whatsapp,item.client_name].some(value=>String(value||"").toLowerCase().includes(term))))
+  return monthlyRequests().filter(item=>(!status||(status==="__attention"?requiresAttention(item):item.status===status))&&(!term||[item.tracking_code,item.services?.name,item.whatsapp,item.client_name].some(value=>String(value||"").toLowerCase().includes(term))))
     .sort((a,b)=>Number(requiresAttention(b))-Number(requiresAttention(a))||String(b.created_at).localeCompare(String(a.created_at)));
 }
 
 function renderList(){
   const list=filteredRequests();
+  refreshCleanupState();
   $("#request-list").innerHTML=list.length?list.map(item=>`<button class="request-row ${selectedId===item.id?"active":""} ${requiresAttention(item)?"is-stale":""}" data-id="${item.id}" type="button"><span class="request-row-head"><strong>${esc(item.tracking_code)}</strong><span class="badge ${item.status}">${esc(LABELS[item.status]||item.status)}</span></span><span>${esc(item.services?.name||item.service_id)}</span><small>${fmt(item.created_at)}${item.whatsapp?` · ${esc(item.whatsapp)}`:""}</small><small class="${requiresAttention(item)?"attention":""}">${requiresAttention(item)?"Requiere revisión · ":""}${esc(ageLabel(item))}</small></button>`).join(""):'<div class="empty-list">No hay solicitudes con ese filtro.</div>';
 }
 
@@ -205,6 +274,12 @@ async function renderDetail(id){
     <form id="status-form" class="status-controls"><h3>Cambiar estado</h3><label>Plazo aproximado<input name="estimated" type="datetime-local" value="${item.estimated_completion_at?new Date(item.estimated_completion_at).toISOString().slice(0,16):""}"></label><label>Observación para el cliente<textarea name="note" placeholder="Indicación breve y concreta">${esc(item.status_note||"")}</textarea></label><div class="status-buttons">${allowedNextStates(item).map(status=>`<button type="submit" name="status" value="${status}" data-status="${status}">${esc(LABELS[status])}</button>`).join("")||"<p class=\"empty-list\">No hay cambios de estado disponibles.</p>"}</div></form>
     <div class="history"><h3>Historial</h3><ul>${events.map(event=>`<li><strong>${fmt(event.created_at)}</strong> · ${esc(LABELS[event.status]||event.event_type)}${event.note?` — ${esc(event.note)}`:""} <small>· ${event.created_by?"Administrador":"Sistema/cliente"}</small></li>`).join("")||"<li>Sin movimientos.</li>"}</ul></div>`;
 
+  if(CLEANUP_STATES.has(item.status)){
+    const section=document.createElement("div");
+    section.className="test-delete";
+    section.innerHTML='<button type="button" id="delete-one" class="secondary" data-delete-id="'+esc(item.id)+'"'+(cleanupEnabled?'':' disabled')+'>Eliminar esta prueba</button>';
+    detail.appendChild(section);
+  }
   const fileBox=$("#admin-file-list");
   const rawFiles=item.request_files||[];
   if(!rawFiles.length){
@@ -281,7 +356,18 @@ $("#mfa-form").addEventListener("submit",async event=>{
 
 $("#logout").addEventListener("click",async()=>{if(!LOCAL_MODE&&supabase)await supabase.auth.signOut();showLogin();});
 $("#refresh").addEventListener("click",async()=>{detailCache.clear();await loadRequests();});
-$("#search").addEventListener("input",renderList);$("#filter").addEventListener("change",renderList);
+
+$("#search").addEventListener("input",renderList);
+$("#filter").addEventListener("change",()=>{renderMetrics();renderList();});
+$("#month").addEventListener("change",()=>{renderMetrics();renderList();});
+$("#export-month").addEventListener("click",exportMonthlyView);
+$("#delete-month").addEventListener("click",()=>{
+  if(!$("#month").value)return;
+  deleteTestRequests(filteredRequests().filter(item=>CLEANUP_STATES.has(item.status)).map(item=>item.id));
+});
+$("#request-detail").addEventListener("click",event=>{
+  if(event.target.id==="delete-one")deleteTestRequests([event.target.dataset.deleteId]);
+});
 $("#request-list").addEventListener("click",event=>{const row=event.target.closest("[data-id]");if(row)renderDetail(row.dataset.id);});
 $("#request-detail").addEventListener("submit",event=>{if(event.target.id!=="status-form")return;event.preventDefault();const submitter=event.submitter;if(submitter)updateStatus(submitter.value,event.target);});
 boot();
