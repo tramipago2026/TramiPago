@@ -877,6 +877,7 @@
         </div>
         ${service.officialFeeExternal ? `<div class="notice"><strong>Arancel oficial aparte:</strong> se abona directamente al organismo mediante su VEP cuando corresponda. No transfieras ese arancel a TramiPago; esta pantalla cobra únicamente nuestro servicio.</div>` : ""}
         <div class="notice"><strong>Datos de pago:</strong> alias ${escapeHTML(window.TRAMI_CONFIG.alias)} · titular ${escapeHTML(window.TRAMI_CONFIG.paymentHolder)}.</div>
+        <div class="notice"><p>Si querés avisarnos de tu solicitud pendiente, podés enviarnos un mensaje por WhatsApp.</p><button class="button button-secondary" type="button" data-action="whatsapp">Avisar a TramiPago por WhatsApp</button></div>
         <form id="payment-form">
           <div class="field field-full payment-file">
             <label for="receipt">Comprobante de pago *</label>
@@ -910,9 +911,12 @@
           <div class="hero-actions confirmation-actions">
             <button class="button button-primary" type="button" data-action="track-request">Ver estado</button>
             <button class="button button-secondary" type="button" data-action="copy-code">Copiar código</button>
+            <button class="button button-secondary" type="button" data-action="whatsapp">Avisar a TramiPago por WhatsApp</button>
           </div>` : `
           <div class="hero-actions confirmation-actions">
             <button class="button button-primary" type="button" data-action="retry-backend-sync">Reintentar registro</button>
+            <p>Si no se registra, contactanos por WhatsApp para recibir ayuda.</p>
+            <button class="button button-secondary" type="button" data-action="whatsapp">Avisar a TramiPago por WhatsApp</button>
           </div>`}
       </div>
     `;
